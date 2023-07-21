@@ -1,0 +1,28 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#include "ProjectileMissile.h"
+
+#include <Components/CapsuleComponent.h>
+
+AProjectileMissile::AProjectileMissile()
+{
+	
+}
+
+void AProjectileMissile::BeginPlay()
+{
+	Super::BeginPlay();
+
+	//CapsuleComponent->OnComponentHit.AddDynamic(this, &AProjectileMissile::OnHit);
+	CapsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &AProjectileMissile::BeginOverlapEvent);
+}
+
+void AProjectileMissile::_OnHit(UPrimitiveComponent *HitComp, AActor *HitActor, UPrimitiveComponent *OtherComp, FVector NormalImpulse, const FHitResult &HitResult)
+{
+	Super::_OnHit(HitComp, HitActor, OtherComp, NormalImpulse, HitResult);
+}
+
+void AProjectileMissile::_BeginOverlapEvent(class UPrimitiveComponent* InHitComp, class AActor* InOtherActor, class UPrimitiveComponent* InOtherComp, int32 InOtherBodyIndex, bool InbFromSweep, const FHitResult & InSweepResult)
+{
+	Super::_BeginOverlapEvent(InHitComp, InOtherActor, InOtherComp, InOtherBodyIndex, InbFromSweep, InSweepResult);
+}
