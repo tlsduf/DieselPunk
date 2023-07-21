@@ -1,0 +1,13 @@
+/.vs
+/.vscode
+/Intermediate
+/Saved
+/ToonTanks.code-workspace
+/Build
+/*.sln
+/*code-workspace
+*_BuiltData.uasset
+Binaries/Win64/
+*.pdb
+Platforms/HoloLens/Config/HoloLensEngine.ini
+Plugins/Developer/RiderLink/
