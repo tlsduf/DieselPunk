@@ -7,6 +7,7 @@
 #include "../InfoBase.h"
 #include "CharacterInfo.generated.h"
 
+class USkeletalMesh;
 
 /**
  * 캐릭터별 초기 스텟 및 BP 경로 데이터 테이블
@@ -23,6 +24,10 @@ struct DIESELPUNK_API FCharacterInfo : public FInfoBase
 	// BP 경로
 	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	FString Path = TEXT( "" );
+
+	// 스켈레탈 메시
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSoftObjectPtr<USkeletalMesh> SkeletalMesh = nullptr;
 
 	// 최대 체력
 	UPROPERTY( EditAnywhere, BlueprintReadWrite )

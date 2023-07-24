@@ -15,15 +15,17 @@ public class DieselPunk : ModuleRules
 			"CoreUObject", 
 			"Engine", 
 			"InputCore", 
-			"HeadMountedDisplay" , 
+			"HeadMountedDisplay", 
 			"NavigationSystem", 
 			"AIModule", 
 			"Niagara", 
-			"EnhancedInput", 
+			"EnhancedInput" ,
 			"GameplayTasks", 
 			"UMG", 
 			"SlateCore", 
-			"Landscape"
+			"Landscape",
+			"UnrealEd",
+			"EditorSubsystem"
 		});
 	}
 }

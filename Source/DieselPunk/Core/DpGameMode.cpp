@@ -3,9 +3,12 @@
 #include "DpGameMode.h"
 #include "..\Logic\PlayerControllerBase.h"
 
+#include <GameFramework/Pawn.h>
 #include <UObject/ConstructorHelpers.h>
+#include <Modules/ModuleManager.h>
 
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(DpGameMode)
 
 ADpGameMode::ADpGameMode()
 {

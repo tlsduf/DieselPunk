@@ -1,9 +1,19 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "DpGameInstance.h"
+#include "DpGameDelegate.h"
+#include "../Manager/ObjectManager.h"
+#include "../Manager/DataTableManager.h"
+#include "../Manager/UIManager.h"
+#include "../Manager/WorldManager.h"
 
+#include <TimerManager.h>
 #include <Modules/ModuleManager.h>
 #include <PropertyEditorModule.h>
+
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(DpGameInstance)
+
 
 UDpGameInstance::UDpGameInstance()
 {
@@ -44,4 +54,72 @@ UDpGameInstance::UDpGameInstance()
 
 UDpGameInstance::~UDpGameInstance()
 {
+}
+
+// =============================================================
+// 게임이 시작될 때마다 호출됨 ( 에디터의 경우 시작 버튼을 눌렀을 때 )
+// 에디터 시작시 호출되지 않는다
+// =============================================================
+void UDpGameInstance::Init()
+{
+    Super::Init();
+
+    InitSingletons();
+
+    // 여기서 바로 WorldMoveFinished 를 호출하면 UI가 정상적으로 안떠서 1틱 늦게 호출
+    // 추후 다른곳에 적용될 수 있음
+    GetTimerManager().SetTimerForNextTick( [] () 
+    {
+        GetWorldManager().OnWorldMoveFinished();
+    } );
+}
+
+// =============================================================
+// 게임이 종료될 때마다 호출됨 ( 에디터의 경우 종료 버튼을 눌렀을 때 )
+// 에디터 종료시 호출되지 않는다
+// =============================================================
+void UDpGameInstance::Shutdown()
+{
+    Clear();
+
+    Super::Shutdown();
+}
+
+// =============================================================
+// 게임이 종료될 때의 정리되어야 할 데이터들을 처리한다.
+// =============================================================
+void UDpGameInstance::Clear()
+{
+    FDpGameDelegate::Get().Clear();
+
+    ClearSingletons();
+}
+
+// =============================================================
+// 싱글톤 매니저들을 초기화한다.
+// =============================================================
+void UDpGameInstance::InitSingletons()
+{
+    SL.InitSingletons();
+}
+
+// =============================================================
+// 싱글톤 매니저들의 데이터를 정리한다.
+// =============================================================
+void UDpGameInstance::ClearSingletons()
+{
+    SL.ClearSingletons();
+}
+
+// =============================================================
+// 싱글톤 매니저들을 등록한다.
+// =============================================================
+void UDpGameInstance::RegisterSingleton()
+{
+    // 사용하는 싱글톤들은 이곳에 등록해주세요
+
+    REGISTER_SINGLETON( FObjectManager );
+    REGISTER_SINGLETON( FDataTableManager );
+    REGISTER_SINGLETON( FUIManager );
+    REGISTER_SINGLETON( FWorldManager );
 }
