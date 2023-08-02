@@ -46,8 +46,6 @@ void USkillGunnerShift::SkillTriggered()
 		CanDash = false;
 		InCooldownDash = true;
 
-		//ownerPawn->SkillGunnerRM->UnAiming();
-
 		ownerPawn->SetZoomOutProp();
 
 		ownerPawn->GetWorldTimerManager().SetTimer(DashTHandle, this, &USkillGunnerShift::StopDashing, DashingTime, false);

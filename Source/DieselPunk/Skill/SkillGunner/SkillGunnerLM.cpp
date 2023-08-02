@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SkillGunnerLM.h"
-#include "../SkillActor/ProjectileMissile.h"
+#include "../SkillActor/ProjectileGranade.h"
 #include "..\..\Character\CharacterPC.h"
 #include "../../Animation/GunnerAnimInstance.h"
 
@@ -56,7 +56,10 @@ void USkillGunnerLM::SkillTriggered()
 
 	//===========================================
 	// * MainAction 2 // Projectile Spawn
-	FActorSpawnParameters param = FActorSpawnParameters();
-	param.Owner = GetOwner();
-	ProjectileMissile = GetWorld()->SpawnActor<AProjectileMissile>(ProjectileMissileClass, shotLocation, shotRotation, param);
+	if(ProjectileGranadeClass)
+	{
+		FActorSpawnParameters param = FActorSpawnParameters();
+		param.Owner = GetOwner();
+		ProjectileGranade = GetWorld()->SpawnActor<AProjectileGranade>(ProjectileGranadeClass, shotLocation, shotRotation, param);
+	}
 }

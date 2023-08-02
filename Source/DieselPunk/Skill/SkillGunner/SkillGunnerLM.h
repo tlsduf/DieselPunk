@@ -9,7 +9,7 @@
 /**
  *
  */
-class AProjectileMissile;
+class AProjectileGranade;
 class UNiagaraSystem;
 
 UCLASS()
@@ -19,10 +19,10 @@ class DIESELPUNK_API USkillGunnerLM : public UPlayerSkill
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "MyCustomCategory")
-	TSubclassOf<AProjectileMissile> ProjectileMissileClass;
+	TSubclassOf<AProjectileGranade> ProjectileGranadeClass;
 
 	UPROPERTY()
-	AProjectileMissile *ProjectileMissile;
+	AProjectileGranade *ProjectileGranade;
 
 	bool ToggleVar = true;
 	

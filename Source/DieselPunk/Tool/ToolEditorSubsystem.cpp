@@ -5,7 +5,6 @@
 #include "ToolActor.h"
 #include "../Data/Info/CharacterInfo.h"
 
-#include "EditorSubsystem.h"
 #include <Engine/SkeletalMesh.h>
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ToolEditorSubsystem)

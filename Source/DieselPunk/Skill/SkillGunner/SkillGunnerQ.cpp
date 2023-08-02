@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SkillGunnerQ.h"
-#include "../SkillActor/ProjectileMissile.h"
+#include "../SkillActor/ProjectileGranade.h"
 #include "..\..\Character\CharacterPC.h"
 #include "../../Animation/GunnerAnimInstance.h"
 
@@ -45,9 +45,12 @@ void USkillGunnerQ::SkillTriggered()
 	FRotator shotRotation = ThisZeroVector.Rotation();
 
 	// projectile spawn
-	FActorSpawnParameters param = FActorSpawnParameters();
-	param.Owner = GetOwner();
-	ProjectileMissile = GetWorld()->SpawnActor<AProjectileMissile>(ProjectileMissileClass, shotLocation, shotRotation, param);
+	if(ProjectileGranadeClass)
+	{
+		FActorSpawnParameters param = FActorSpawnParameters();
+		param.Owner = GetOwner();
+		ProjectileGranade = GetWorld()->SpawnActor<AProjectileGranade>(ProjectileGranadeClass, shotLocation, shotRotation, param);
+	}
 
 
 	//애니메이션 재생?

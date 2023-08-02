@@ -2,18 +2,18 @@
 
 #include "DieselPunk.h"
 #include "Modules/ModuleManager.h"
-
 #include <GameFramework/Actor.h>
 #include <Kismet/GameplayStatics.h>
+
 
 IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, DieselPunk, "DieselPunk" );
 
 
-
 // =============================================================
 // 월드를 반환한다.
-// 
-// UObject 기반의 클래스는 단순히 GetWorld() 를 쓰면 됩니다 혹은 GwGetWorld( this );
+//
+// 사용시 주의사항
+// UObject 기반의 클래스는 단순히 GetWorld() 를 쓰면 됩니다 혹은 DpGetWorld( this );
 // C++ 네이티브 클래스에서만 필요한 경우 사용해주세요
 // =============================================================
 UWorld* DpGetWorld( UObject* InObject )
@@ -74,8 +74,6 @@ APlayerController* DpGetPlayerController()
 	LOG_SCREEN_COLOR( FColor::Red, TEXT( "Fail Find PlayerController!!" ) );
 	return nullptr;
 }
-
-
 
 
 

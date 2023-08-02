@@ -9,7 +9,7 @@
 /**
  *
  */
-class AProjectileMissile;
+class AProjectileGranade;
 
 UCLASS()
 class DIESELPUNK_API USkillGunnerQ : public UPlayerSkill
@@ -18,10 +18,10 @@ class DIESELPUNK_API USkillGunnerQ : public UPlayerSkill
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "MyCustomCategory")
-	TSubclassOf<AProjectileMissile> ProjectileMissileClass;
+	TSubclassOf<AProjectileGranade> ProjectileGranadeClass;
 
 	UPROPERTY()
-	AProjectileMissile *ProjectileMissile;
+	AProjectileGranade *ProjectileGranade;
 
 	FTimerHandle ZoomTHandle;
 public:
