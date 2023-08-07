@@ -41,7 +41,8 @@ void USkillSoldierLM::SkillTriggered()
 
 	// 왼손 오른손 반복
 	FVector shotLocation =ownerPawn->GetMesh()->GetSocketLocation("Muzzle_01");
-	FRotator shotRotation = (Hit ? hit.Location - shotLocation : end - shotLocation).Rotation();
+	//FRotator shotRotation = (Hit ? hit.Location - shotLocation : end - shotLocation).Rotation();
+	FRotator shotRotation = (end - shotLocation).Rotation();
 
 	//===========================================
 	// * MainAction 1 // 반동 애니메이션
