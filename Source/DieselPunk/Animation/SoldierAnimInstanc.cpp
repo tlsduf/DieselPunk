@@ -2,6 +2,7 @@
 
 
 #include "SoldierAnimInstance.h"
+
 #include "../Util/UtilEnum.h"
 #include "../Skill/SkillSoldier/SkillSoldierQ.h"
 #include "../Character/CharacterPC.h"
@@ -111,11 +112,11 @@ void USoldierAnimInstance::GunRecoil()
 
 void USoldierAnimInstance::AnimNotify_NotifySkillQ() const
 {
-	auto ownerPawn = Cast<ACharacterPC>(GetOwningActor());
+	/*auto ownerPawn = Cast<ACharacterPC>(GetOwningActor());
 	if(ownerPawn->SkillInfos[3])
 		USkillSoldierQ SoldierQ = ownerPawn->SkillInfos[3];
 	
 	if(SoldierQ != nullptr)
-		SoldierQ.Shot();
+		SoldierQ.Shot();*/
 }
 
