@@ -23,6 +23,7 @@ class ACharacterPC : public ACharacterBase
 	class UCameraComponent *FollowCamera;
 
 protected:
+public:
 	// 스킬을 할당받기 위한 배열입니다. (BP에서도 받을 수 있도록 TSubClassOf로 하였습니다)
 	UPROPERTY(EditAnywhere, Category = Skill)
 	TArray<TSubclassOf<UPlayerSkill>> SkillInfos;

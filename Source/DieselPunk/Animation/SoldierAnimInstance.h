@@ -60,6 +60,11 @@ public:
 	void RotateGunRecoil();
 	// 임시 반동 애니메이션
 	void GunRecoil();
+
+private:
+	// SkillQ AnimNotify
+	UFUNCTION()
+	void AnimNotify_NotifySkillQ() const;
 };
 
 // AroundSkill 몽타주

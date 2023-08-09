@@ -2,7 +2,7 @@
 
 #include "SkillSoldierQ.h"
 #include "../SkillActor/ProjectileGranade.h"
-#include "..\..\Character\CharacterPC.h"
+#include "../../Character/CharacterPC.h"
 #include "../../Animation/SoldierAnimInstance.h"
 
 #include <GameFramework/PlayerController.h>
@@ -14,6 +14,8 @@ USkillSoldierQ::USkillSoldierQ() : Super()
 	PrimaryComponentTick.bCanEverTick = false; // 일단 Tick은 OFF 해두었습니다.
 }
 
+
+
 void USkillSoldierQ::BeginPlay()
 {
 	Super::BeginPlay();
@@ -23,6 +25,20 @@ void USkillSoldierQ::SkillTriggered()
 {
 	Super::SkillTriggered();
 
+	auto ownerPawn = Cast<ACharacterPC>(GetOwner());
+	if(ownerPawn == nullptr)
+		return;
+	
+	//애니메이션 재생?
+	USoldierAnimInstance* animInst = Cast<USoldierAnimInstance>(ownerPawn->GetMesh()->GetAnimInstance());
+	if (!animInst)
+		return;
+
+	animInst->PlayMontage(EAbilityType::SkillQ, ESoldierSkillMontageType::AroundAttack1);
+}
+
+void USkillSoldierQ::Shot()
+{
 	auto ownerPawn = Cast<ACharacterPC>(GetOwner());
 	if(ownerPawn == nullptr)
 		return;
@@ -49,12 +65,4 @@ void USkillSoldierQ::SkillTriggered()
 		param.Owner = GetOwner();
 		ProjectileGranade = GetWorld()->SpawnActor<AProjectileGranade>(ProjectileGranadeClass, shotLocation, FRotator(spawnPitch.Pitch, shotRotation.Yaw, 0), param);
 	}
-
-
-	//애니메이션 재생?
-	USoldierAnimInstance* animInst = Cast<USoldierAnimInstance>(ownerPawn->GetMesh()->GetAnimInstance());
-	if (!animInst)
-		return;
-
-	animInst->PlayMontage(EAbilityType::SkillQ, ESoldierSkillMontageType::AroundAttack1);
 }

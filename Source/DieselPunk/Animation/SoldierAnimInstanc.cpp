@@ -3,13 +3,14 @@
 
 #include "SoldierAnimInstance.h"
 #include "../Util/UtilEnum.h"
-
+#include "../Skill/SkillSoldier/SkillSoldierQ.h"
+#include "../Character/CharacterPC.h"
 
 #include <Animation/AnimMontage.h>
 
 // 틱마다 호출되는 함수
 USoldierAnimInstance::USoldierAnimInstance()
-	:ShiftMontage(nullptr), SkillQMontage(nullptr), SkillEMontage(nullptr), SkillRMontage(nullptr), GunRecoilAlpha(0.f), AlphaAnimatorGunRecoil()
+	:ShiftMontage(nullptr), SkillQMontage(nullptr), SkillEMontage(nullptr), SkillRMontage(nullptr), GunRecoilAlpha(0.f)
 {
 }
 
@@ -106,5 +107,15 @@ void USoldierAnimInstance::GunRecoil()
 		if(thisPtr.IsValid())
 			thisPtr->GunRecoilBool = 0;
 	});
+}
+
+void USoldierAnimInstance::AnimNotify_NotifySkillQ() const
+{
+	auto ownerPawn = Cast<ACharacterPC>(GetOwningActor());
+	if(ownerPawn->SkillInfos[3])
+		USkillSoldierQ SoldierQ = ownerPawn->SkillInfos[3];
+	
+	if(SoldierQ != nullptr)
+		SoldierQ.Shot();
 }
 

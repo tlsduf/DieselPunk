@@ -28,6 +28,8 @@ public:
 	// 생성자
 	USkillSoldierQ();
 
+	void Shot();
+
 protected:
 	virtual void BeginPlay() override;
 
