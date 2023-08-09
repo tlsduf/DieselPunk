@@ -112,11 +112,13 @@ void USoldierAnimInstance::GunRecoil()
 
 void USoldierAnimInstance::AnimNotify_NotifySkillQ() const
 {
-	/*auto ownerPawn = Cast<ACharacterPC>(GetOwningActor());
-	if(ownerPawn->SkillInfos[3])
-		USkillSoldierQ SoldierQ = ownerPawn->SkillInfos[3];
+	auto ownerPawn = Cast<ACharacterPC>(GetOwningActor());
+	
+	USkillSoldierQ *SoldierQ = nullptr;
+	if(ownerPawn->Skills[3])
+		SoldierQ = Cast<USkillSoldierQ>(ownerPawn->Skills[3]);
 	
 	if(SoldierQ != nullptr)
-		SoldierQ.Shot();*/
+		SoldierQ->Shot();
 }
 
