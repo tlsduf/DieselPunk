@@ -7,6 +7,7 @@
 #include <GameFramework/Character.h>
 #include <GameFramework/CharacterMovementComponent.h>
 #include <Components/SkeletalMeshComponent.h>
+#include <GameFramework/PlayerController.h>
 
 USkillSoldierShift::USkillSoldierShift() : Super()
 {
@@ -25,18 +26,38 @@ void USkillSoldierShift::SkillTriggered()
 	auto ownerPawn = Cast<ACharacterPC>(GetOwner());
 	if(ownerPawn == nullptr)
 		return;
+	auto ownerController = ownerPawn->GetController();
+	if(ownerController == nullptr)
+		return;
 
+	ownerPawn->InCombat = false;
+	
 	const FVector currentAcceleration = ownerPawn->GetCharacterMovement()->GetCurrentAcceleration();
 	float currentAccelLength = currentAcceleration.SizeSquared();
 	if (CanDash && currentAccelLength > 0)
 	{
-		// const FRotator Rotation = Controller->GetControlRotation();	//카메라방향으로 대쉬
+		// 카메라방향으로 대쉬
+		/*
+		 *const FRotator rotation = ownerController->GetControlRotation();	//카메라방향으로 대쉬
+		const FVector Direction = FRotationMatrix(rotation).GetUnitAxis(EAxis::X);
+		ownerPawn->GetCharacterMovement()->BrakingFrictionFactor = 0.f;
+		ownerPawn->LaunchCharacter(Direction * DashDistance, true, true);
+		*/
+
+		// 액터정면방향으로 대쉬 (Yaw방향)
+		/*
 		const FRotator rotation = ownerPawn->GetActorRotation();	//이동방향으로 대쉬
 		const FRotator yawRotation(0, rotation.Yaw, 0);
-
 		const FVector Direction = FRotationMatrix(yawRotation).GetUnitAxis(EAxis::X);
 		ownerPawn->GetCharacterMovement()->BrakingFrictionFactor = 0.f;
-		ownerPawn->LaunchCharacter(currentAcceleration.GetSafeNormal() * DashDistance, true, true);
+		ownerPawn->LaunchCharacter(Direction * DashDistance, true, true);
+		*/
+		
+		// 액터의 진행방향으로 대쉬 (Yaw방향)
+		ownerPawn->GetCharacterMovement()->BrakingFrictionFactor = 0.f;
+		ownerPawn->LaunchCharacter(currentAcceleration.GetSafeNormal() * DashDistance, true, true);	//현재 가고있는방향으로 대쉬
+		
+		// 일정시간동안 스피드업
 		// GetCharacterMovement()->MaxWalkSpeed = DashDistance;	//다른종류의 대쉬(일정시간동안 스피드업)
 
 		//UParticleSystemComponent *ParticleSystemComponent = UGameplayStatics::SpawnEmitterAttached(DashEffect, GetRootComponent());
@@ -50,7 +71,7 @@ void USkillSoldierShift::SkillTriggered()
 
 		ownerPawn->GetWorldTimerManager().SetTimer(DashTHandle, this, &USkillSoldierShift::StopDashing, DashingTime, false);
 
-		//애니메이션 재생?
+		//애니메이션 재생
 		USoldierAnimInstance* animInst = Cast<USoldierAnimInstance>(ownerPawn->GetMesh()->GetAnimInstance());
 		if (!animInst)
 			return;

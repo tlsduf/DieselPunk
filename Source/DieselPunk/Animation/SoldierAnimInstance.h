@@ -62,7 +62,7 @@ public:
 	void GunRecoil();
 
 private:
-	// SkillQ AnimNotify
+	// SkillQ 전용 애님노티파이 입니다. 
 	UFUNCTION()
 	void AnimNotify_NotifySkillQ() const;
 };

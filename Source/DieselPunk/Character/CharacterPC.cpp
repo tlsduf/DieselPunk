@@ -84,18 +84,23 @@ void ACharacterPC::Tick(float DeltaTime)
 
 	// 줌을 해도 되는지 판별
 	if (CanZoom)
-	{
 		ZoomInOut(DeltaTime);
-	}
 
 	// 전투상태인지 판별하고, 전투상태라면 줌아웃
 	if (InCombat)
 	{
 		if (IsZoomed)
-		{
 			SetZoomOutProp();
+		
+		auto Acceleration = GetCharacterMovement()->GetCurrentAcceleration().Length();
+		if(Acceleration == 0)
+		{
+			RotatePawn(DeltaTime);
 		}
-		RotatePawn(DeltaTime);
+		else
+		{
+			SetActorRotation(FRotator(0, GetController()->GetControlRotation().Yaw, 0));
+		}
 	}
 }
 
@@ -291,7 +296,7 @@ void ACharacterPC::RotatePawn(float DeltaTime)
 		rotation,
 		yawRotation,
 		DeltaTime,
-		20));
+		10));
 }
 
 // Base Movement
