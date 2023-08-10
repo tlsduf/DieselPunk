@@ -75,7 +75,7 @@ void USkillSoldierShift::SkillTriggered()
 		USoldierAnimInstance* animInst = Cast<USoldierAnimInstance>(ownerPawn->GetMesh()->GetAnimInstance());
 		if (!animInst)
 			return;
-
+		
 		animInst->PlayMontage(EAbilityType::Shift, ESoldierSkillMontageType::AroundAttack1);
 	}
 }
