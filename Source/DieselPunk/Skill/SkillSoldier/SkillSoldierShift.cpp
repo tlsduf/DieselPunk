@@ -58,7 +58,9 @@ void USkillSoldierShift::SkillTriggered()
 		ownerPawn->LaunchCharacter(currentAcceleration.GetSafeNormal() * DashDistance, true, true);	//현재 가고있는방향으로 대쉬
 		
 		// 일정시간동안 스피드업
-		// GetCharacterMovement()->MaxWalkSpeed = DashDistance;	//다른종류의 대쉬(일정시간동안 스피드업)
+		/*
+		ownerPawn->GetCharacterMovement()->MaxWalkSpeed = DashDistance;	//다른종류의 대쉬(일정시간동안 스피드업)
+		*/
 
 		//UParticleSystemComponent *ParticleSystemComponent = UGameplayStatics::SpawnEmitterAttached(DashEffect, GetRootComponent());
 
@@ -75,7 +77,8 @@ void USkillSoldierShift::SkillTriggered()
 		USoldierAnimInstance* animInst = Cast<USoldierAnimInstance>(ownerPawn->GetMesh()->GetAnimInstance());
 		if (!animInst)
 			return;
-		
+
+		animInst->Montage_Stop(0.1);
 		animInst->PlayMontage(EAbilityType::Shift, ESoldierSkillMontageType::AroundAttack1);
 	}
 }

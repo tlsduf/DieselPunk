@@ -71,7 +71,7 @@ ACharacterBase::ACharacterBase()
 // =============================================================
 void ACharacterBase::Init( FInfoId InInfoId )
 {
-	//_InitValue();
+	_InitValue();
 
 	CreateStatusUI();
 }

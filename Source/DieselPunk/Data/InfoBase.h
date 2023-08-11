@@ -20,6 +20,10 @@ struct DIESELPUNK_API FInfoBase : public FTableRowBase
 	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	int32 InfoId = G_InvalidInfoId;
 
+	// 주석 ( 실제 게임에서 사용되지 않음 )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
+	FString Summary = TEXT( "" );
+
 public:
 	/**
 	 * Can be overridden by subclasses; Called on every row when the owning data table is modified
@@ -44,7 +48,7 @@ class Type##Ptr                                                                 
 {                                                                                 \
 	FInfoId InfoId;                                                               \
 	const Type* Info;                                                             \
-	                                                                              \
+																				  \
 public:                                                                           \
 	Type##Ptr();                                                                  \
 	Type##Ptr(FInfoId InInfoId);                                                  \
