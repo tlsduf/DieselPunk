@@ -4,7 +4,7 @@
 #include "ObjectManager.h"
 #include "../Character/CharacterPC.h"
 #include "../Character/CharacterNPC.h"
-#include "..\Core\DpGameDelegate.h"
+#include "../Core/DpGameDelegate.h"
 #include "../Data/Info/CharacterInfo.h"
 #include "../Util/UtilEffect.h"
 #include "../Util/UtilPath.h"

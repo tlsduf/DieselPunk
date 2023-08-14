@@ -39,11 +39,15 @@
 //#include "Common/Define.h"
 #include "Common/Enum.h"
 #include "Common/Typedef.h"
-#include "Common\DpLog.h"
-//#include "Common/RTTI.h"
-#include "DataAsset\DpDataAssetHelper.h"
+#include "Common/DpLog.h"
+#include "Common/DpUserData.h"
+#include "Common/RTTI.h"
+#include "DataAsset/DpDataAssetHelper.h"
 #include "Util/Animator.h"
 #include "Util/UtilFunctor.h"
+
+
+class ACharacterPC;
 
 
 // 월드를 반환한다.
@@ -57,6 +61,9 @@ UGameInstance* DpGetGameInstance( UWorld* InWorld = nullptr );
 
 // 내 플레이어 컨트롤러를 반환한다.
 APlayerController* DpGetPlayerController();
+
+// 내 플레이어 캐릭터를 반환한다.
+ACharacterPC* DpGetPlayer();
 
 
 DECLARE_LOG_CATEGORY_EXTERN(LogDieselPunk, Log, All);

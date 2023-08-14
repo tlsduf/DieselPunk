@@ -5,6 +5,7 @@
 #include "../Skill/PlayerSkill.h"
 #include "..\Common\DpLog.h"
 #include "../Util/UtilEnum.h"
+#include "../Manager/ObjectManager.h"
 
 #include <Camera/CameraComponent.h>
 #include <Components/CapsuleComponent.h>
@@ -59,6 +60,18 @@ ACharacterPC::ACharacterPC()
 
 void ACharacterPC::BeginPlay()
 {
+	TODO( "레벨에 미리 세팅되어있는 액터들이라 이곳에서 등록, 추후 논의 필요", 크로 )
+	if ( InfoId == G_InvalidInfoId )
+	{
+		InfoId = TestInfoId;
+	}
+
+	if ( ObjId == G_InvalidObjId )
+	{
+		//ObjId = GetObjectManager().GeneratorObjId();
+		//GetObjectManager().RegisterObject( ObjId, this );
+	}
+	
 	Super::BeginPlay();
 
 	// 게임시작시 기본체력초기화

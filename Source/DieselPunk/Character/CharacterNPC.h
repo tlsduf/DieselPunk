@@ -17,6 +17,8 @@ class DIESELPUNK_API ACharacterNPC : public ACharacterPC
 	GENERATED_BODY()
 
 public:
+
+	
 	ACharacterNPC();
 
 	virtual void Tick(float DeltaTime) override;

@@ -13,7 +13,7 @@ UCLASS(config = Game)
 class ACharacterPC : public ACharacterBase
 {
 	GENERATED_BODY()
-
+	
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent *CameraBoom;
@@ -24,6 +24,10 @@ class ACharacterPC : public ACharacterBase
 
 protected:
 public:
+	TODO( TEXT( "현재 레벨에 미리 배치되어있는 액터는 데이터테이블 정보를 알지 못해서 일단 임시 처리 추후 관리방법 논의 필요" ), 크로 )
+	UPROPERTY( EditAnywhere, Category = "Test" )
+	int32 TestInfoId;
+	
 	// 스킬을 할당받기 위한 배열입니다. (BP에서도 받을 수 있도록 TSubClassOf로 하였습니다)
 	UPROPERTY(EditAnywhere, Category = Skill)
 	TArray<TSubclassOf<UPlayerSkill>> SkillInfos;

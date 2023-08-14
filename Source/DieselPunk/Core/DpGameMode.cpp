@@ -16,14 +16,14 @@ ADpGameMode::ADpGameMode()
 	PlayerControllerClass = APlayerControllerBase::StaticClass();
 	
 	// set default pawn class to our Blueprinted character
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Script/Engine.Blueprint'/Game/GuardiansW/Blueprints/Characters/BP_CharacterPC.BP_CharacterPC_C'"));
+	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Script/Engine.Blueprint'/Game/DieselPunk/Blueprints/Characters/BP_CharacterPC.BP_CharacterPC_C'"));
 	if (PlayerPawnBPClass.Class != NULL)
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
 	
 	// set default controller to our Blueprinted controller
-	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerBPClass(TEXT("/Script/Engine.Blueprint'/Game/GuardiansW/Blueprints/PlayerController/BP_PlayerControllerBase.BP_PlayerControllerBase_C'"));
+	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerBPClass(TEXT("/Script/Engine.Blueprint'/Game/DieselPunk/Blueprints/PlayerController/BP_PlayerControllerBase.BP_PlayerControllerBase_C'"));
 	if(PlayerControllerBPClass.Class != NULL)
 	{
 		PlayerControllerClass = PlayerControllerBPClass.Class;

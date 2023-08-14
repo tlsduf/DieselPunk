@@ -2,6 +2,7 @@
 
 #include "DieselPunk.h"
 #include "Modules/ModuleManager.h"
+#include "Character/CharacterPC.h"
 #include <GameFramework/Actor.h>
 #include <Kismet/GameplayStatics.h>
 
@@ -75,6 +76,17 @@ APlayerController* DpGetPlayerController()
 	return nullptr;
 }
 
+// =============================================================
+// 내 플레이어 캐릭터를 반환한다.
+// =============================================================
+ACharacterPC* GwGetPlayer()
+{
+	APlayerController* playerController = DpGetPlayerController();
+	if ( !playerController )
+		return nullptr;
+
+	return Cast< ACharacterPC >( playerController->GetCharacter() );
+}
 
 
 DEFINE_LOG_CATEGORY(LogDieselPunk)
