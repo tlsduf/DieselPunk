@@ -80,7 +80,7 @@ void AProjectileBase::_OnHit(UPrimitiveComponent *HitComp, AActor *HitActor, UPr
 			TArray<FHitResult> sweepResults;
 			FVector startLocation = GetActorLocation() + GetActorForwardVector() * AttackStartPoint;
 			FVector endLocation = startLocation + GetActorForwardVector() * AttackRange;
-			UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, DebugOnOff);
+			UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, 1, DebugOnOff);
 			if(!sweepResults.IsEmpty())
 			{
 				for (auto It = sweepResults.CreateIterator(); It; It++)
@@ -139,7 +139,7 @@ void AProjectileBase::_BeginOverlapEvent(class UPrimitiveComponent* InHitComp, c
 			TArray<FHitResult> sweepResults;
 			FVector startLocation = GetActorLocation() + GetActorForwardVector() * AttackStartPoint;
 			FVector endLocation = startLocation + GetActorForwardVector() * AttackRange;
-			UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, DebugOnOff);
+			UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, true, DebugOnOff);
 			for (auto It = sweepResults.CreateIterator(); It; It++)
 			{
 				InOtherActor = It->GetActor();

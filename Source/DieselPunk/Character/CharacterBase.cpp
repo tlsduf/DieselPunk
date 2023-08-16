@@ -142,7 +142,7 @@ void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Init( InfoId );
+	//Init( InfoId );
 	AnimHandler = new FAnimationHandler(this);
 }
 

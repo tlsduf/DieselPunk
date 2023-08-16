@@ -22,11 +22,11 @@ void UHitscanFire::SkillTriggered()
 
 	// 데미지 프레임워크를 위한 Instigator, Causer
 	APawn *ownerPawn = Cast<APawn>(GetOwner());
-	AController *ownerController = ownerPawn->GetController();
 	if (ownerPawn == nullptr)
-	{
 		return;
-	}
+	AController *ownerController = ownerPawn->GetController();
+	if (ownerController == nullptr)
+		return;
 
 	// 충돌 검사
 	FHitResult hit = UtilCollision::LineTraceForward(ownerPawn, AttackRange, DebugOnOff);

@@ -18,16 +18,26 @@
 	 * @param InDebugOnOff : 디버그캡슐의 Draw를 결정하는 bool변수입니다.
 	 */
 // =============================================================
-bool UtilCollision::CapsuleSweepMulti(TArray<FHitResult>& OutHitResults, const FVector& InStartLocation, const FVector& InEndLocation, const float& InCapsuleRadius, bool InDebugOnOff)
+void UtilCollision::CapsuleSweepMulti(TArray<FHitResult>& OutHitResults, const FVector& InStartLocation, const FVector& InEndLocation, const float& InCapsuleRadius, bool InPlayerSkill, bool InDebugOnOff)
 {
+	FCollisionQueryParams params;
+	DpGetWorld()->SweepMultiByChannel(
+		OutHitResults,
+		InStartLocation,
+		InEndLocation,
+		FQuat::Identity,
+		InPlayerSkill ? ECollisionChannel::ECC_GameTraceChannel6 : ECollisionChannel::ECC_GameTraceChannel7,
+		FCollisionShape::MakeSphere(InCapsuleRadius),
+		params);
+	
 	// 디버그 캡슐을 그린다. Red - hit 실패/ Green - hit 성공
 	if (InDebugOnOff)
 	{
 		FVector traceVec = InEndLocation - InStartLocation;
-		FVector center = traceVec * 0.5f;
+		FVector center = InStartLocation + traceVec * 0.5f;
 		float halfHeight = traceVec.Size() * 0.5f + InCapsuleRadius;
 		FQuat capsuleRot = FRotationMatrix::MakeFromZ(traceVec).ToQuat();
-		FColor drawColor = FColor::Red;
+		FColor drawColor = !OutHitResults.IsEmpty() ? FColor::Green : FColor::Red;
 		float debugLifeTime = 5.0f;
 
 		DrawDebugCapsule(DpGetWorld(),
@@ -39,16 +49,6 @@ bool UtilCollision::CapsuleSweepMulti(TArray<FHitResult>& OutHitResults, const F
 						 false,
 						 debugLifeTime);
 	}
-	FCollisionQueryParams params;
-	
-	return DpGetWorld()->SweepMultiByChannel(
-		OutHitResults,
-		InStartLocation,
-		InEndLocation,
-		FQuat::Identity,
-		ECollisionChannel::ECC_GameTraceChannel6,
-		FCollisionShape::MakeSphere(InCapsuleRadius),
-		params);
 }
 
 

@@ -1,7 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SkillSoldierRM.h"
+#include "../SkillActor/ProjectileGranade.h"
 #include "..\..\Character\CharacterPC.h"
+
+#include <GameFramework/PlayerController.h>
+#include <Components/SkeletalMeshComponent.h>
 
 USkillSoldierRM::USkillSoldierRM() : Super()
 {
@@ -17,43 +21,29 @@ void USkillSoldierRM::SkillStarted()
 {
 	Super::SkillStarted();
 
-	ZoomIn();
+	auto ownerPawn = Cast<ACharacterPC>(GetOwner());
+	if(ownerPawn == nullptr)
+		return;
+	auto ownerController = ownerPawn->GetController();
+	if(ownerController == nullptr)
+		return;
+
+	FVector lineTraceLocation;
+	FRotator lineTraceRotation;
+	ownerController->GetPlayerViewPoint(lineTraceLocation, lineTraceRotation);
+	FVector end = lineTraceLocation + lineTraceRotation.Vector() * 10000;
+	FVector shotLocation = ownerPawn->GetMesh()->GetSocketLocation("Muzzle_01");
+	FRotator shotRotation = (end - shotLocation).Rotation();
+	// projectile spawn
+	if(ProjectileGranadeClass)
+	{
+		FActorSpawnParameters param = FActorSpawnParameters();
+		param.Owner = GetOwner();
+		ProjectileGranade = GetWorld()->SpawnActor<AProjectileGranade>(ProjectileGranadeClass, shotLocation, shotRotation, param);
+	}
 }
 void USkillSoldierRM::SkillCompleted()
 {
 	Super::SkillCompleted();
-
-	ZoomOut();
-}
-
-void USkillSoldierRM::ZoomIn()
-{
-	auto ownerPawn = Cast<ACharacterPC>(GetOwner());
-	if(ownerPawn == nullptr)
-	{
-		return;
-	}
 	
-	ownerPawn->SetThisSpeed(400);
-	ownerPawn->MyTargetArmLength = 100.0f;
-	ownerPawn->MyTargetArmLocation = FVector(0, 50, 80);
-	ownerPawn->MyCameraLocation = FVector(0, 0, 0);
-
-	ownerPawn->CanZoom = true;
-}
-
-void USkillSoldierRM::ZoomOut()
-{
-	auto ownerPawn = Cast<ACharacterPC>(GetOwner());
-	if(ownerPawn == nullptr)
-	{
-		return;
-	}
-	
-	ownerPawn->SetThisSpeed(600);
-	ownerPawn->MyTargetArmLength = 400.0f;
-	ownerPawn->MyTargetArmLocation = FVector(0, 0, 55);
-	ownerPawn->MyCameraLocation = FVector(0, 0, 55);
-
-	ownerPawn->CanZoom = true;
 }

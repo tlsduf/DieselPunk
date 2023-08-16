@@ -169,13 +169,13 @@ public:
 	float DefaultSpeed = 600.f;
 
 	UPROPERTY(EditAnywhere, Category = "BaseMovement")
-	float ThisSpeed = 400.f;
+	float ThisSpeed = 600.f;
 
 	UPROPERTY(EditAnywhere, Category = "BaseMovement")
 	float DefaultJogSpeed = 1200.f;
 
 	UPROPERTY(EditAnywhere, Category = "BaseMovement")
-	float ThisJogSpeed = 800.f;
+	float ThisJogSpeed = 1200.f;
 
 	// * w눌린상태>달리기가능   달리는상태>w때기>달리기종료
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))

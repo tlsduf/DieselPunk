@@ -420,12 +420,13 @@ float ACharacterPC::TakeDamage(float DamageAmount, struct FDamageEvent const &Da
 				GameMode->PawnKilled(this);
 			}
 
+			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision); // 캡슐콜리전 무효
 			// 20초 뒤 액터 destroy
 			GetWorldTimerManager().SetTimer(
 				TakeDamageHandle, [this]()
 				{ Destroy(); },
 				20.0f, false);
-			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision); // 캡슐콜리전 무효
+			
 		}
 
 		LOG_SCREEN(TEXT("Now Health : %f"), Health);

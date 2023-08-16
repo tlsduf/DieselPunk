@@ -30,7 +30,7 @@ void UPlayerSkill::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 // =============================================================
 void UPlayerSkill::SkillStarted()
 {
-	LOG_SCREEN(TEXT("%s, SkillStarted!"), *GetName());
+	//LOG_SCREEN(TEXT("%s, SkillStarted!"), *GetName());
 }
 
 // =============================================================
@@ -38,7 +38,7 @@ void UPlayerSkill::SkillStarted()
 // =============================================================
 void UPlayerSkill::SkillOngoing()
 {
-	LOG_SCREEN(TEXT("%s, SkillOngoing!"), *GetName());
+	//LOG_SCREEN(TEXT("%s, SkillOngoing!"), *GetName());
 }
 
 // =============================================================
@@ -55,7 +55,7 @@ void UPlayerSkill::SkillTriggered()
 // =============================================================
 void UPlayerSkill::SkillCompleted()
 {
-	LOG_SCREEN(TEXT("%s, SkillCompleted!"), *GetName());
+	//LOG_SCREEN(TEXT("%s, SkillCompleted!"), *GetName());
 }
 
 // =============================================================
@@ -63,7 +63,7 @@ void UPlayerSkill::SkillCompleted()
 // =============================================================
 void UPlayerSkill::SkillCanceled()
 {
-	LOG_SCREEN(TEXT("%s, SkillCanceled!"), *GetName());
+	//LOG_SCREEN(TEXT("%s, SkillCanceled!"), *GetName());
 }
 
 // =============================================================

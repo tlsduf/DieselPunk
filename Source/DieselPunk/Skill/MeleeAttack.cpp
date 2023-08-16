@@ -4,6 +4,7 @@
 #include "../Util/UtilCollision.h"
 
 #include <Kismet/GameplayStatics.h>
+#include <DrawDebugHelpers.h>
 
 void UMeleeAttack::BeginPlay()
 {
@@ -16,17 +17,17 @@ void UMeleeAttack::SkillTriggered()
 
 	// 데미지 프레임워크를 위한 Instigator, Causer
 	APawn *ownerPawn = Cast<APawn>(GetOwner());
-	AController *ownerController = ownerPawn->GetController();
 	if (ownerPawn == nullptr)
-	{
 		return;
-	}
+	AController *ownerController = ownerPawn->GetController();
+	if (ownerController == nullptr)
+		return;
 
 	// 충돌 검사
 	TArray<FHitResult> sweepResults;
 	FVector startLocation = ownerPawn->GetActorLocation() + ownerPawn->GetActorForwardVector() * AttackStartPoint;
 	FVector endLocation = startLocation + ownerPawn->GetActorForwardVector() * AttackRange;
-	UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, DebugOnOff);
+	UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, false, DebugOnOff);
 
 	// 데미지 전달
 	if(!sweepResults.IsEmpty())

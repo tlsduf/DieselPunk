@@ -37,12 +37,12 @@ void USkillSoldierShift::SkillTriggered()
 	if (CanDash && currentAccelLength > 0)
 	{
 		// 카메라방향으로 대쉬
-		/*
-		 *const FRotator rotation = ownerController->GetControlRotation();	//카메라방향으로 대쉬
+		
+		const FRotator rotation = ownerController->GetControlRotation();	//카메라방향으로 대쉬
 		const FVector Direction = FRotationMatrix(rotation).GetUnitAxis(EAxis::X);
 		ownerPawn->GetCharacterMovement()->BrakingFrictionFactor = 0.f;
 		ownerPawn->LaunchCharacter(Direction * DashDistance, true, true);
-		*/
+		
 
 		// 액터정면방향으로 대쉬 (Yaw방향)
 		/*
@@ -54,8 +54,8 @@ void USkillSoldierShift::SkillTriggered()
 		*/
 		
 		// 액터의 진행방향으로 대쉬 (Yaw방향)
-		ownerPawn->GetCharacterMovement()->BrakingFrictionFactor = 0.f;
-		ownerPawn->LaunchCharacter(currentAcceleration.GetSafeNormal() * DashDistance, true, true);	//현재 가고있는방향으로 대쉬
+		/*ownerPawn->GetCharacterMovement()->BrakingFrictionFactor = 0.f;
+		ownerPawn->LaunchCharacter(currentAcceleration.GetSafeNormal() * DashDistance, true, true);	//현재 가고있는방향으로 대쉬*/
 		
 		// 일정시간동안 스피드업
 		/*

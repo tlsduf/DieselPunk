@@ -10,23 +10,25 @@
  *
  */
 
-
+class AProjectileGranade;
 
 UCLASS()
 class DIESELPUNK_API USkillSoldierRM : public UPlayerSkill
 {
 	GENERATED_BODY()
+private:
+	UPROPERTY(EditDefaultsOnly, Category = "MyCustomCategory")
+	TSubclassOf<AProjectileGranade> ProjectileGranadeClass;
 
+	UPROPERTY()
+	AProjectileGranade *ProjectileGranade;
+	
 public:
 	// 생성자
 	USkillSoldierRM();
 
 protected:
 	virtual void BeginPlay() override;
-	//줌인
-	void ZoomIn();
-	//줌아웃
-	void ZoomOut();
 	
 public:
 	virtual void SkillStarted() override;
