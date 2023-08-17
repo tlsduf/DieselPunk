@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "CharacterPC.h"
+#include "../Logic/PlayerControllerBase.h"
 #include "..\Core\DpGameMode.h"
 #include "../Skill/PlayerSkill.h"
 #include "..\Common\DpLog.h"
@@ -88,11 +89,13 @@ void ACharacterPC::Tick(float DeltaTime)
 	if (IsJog && IsWPressed)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = ThisJogSpeed;
+		SetRunZoomOutProp();
 	}
 	else
 	{
 		GetCharacterMovement()->MaxWalkSpeed = ThisSpeed;
 		IsJog = false;
+		SetZoomOutProp();
 	}
 
 	// 줌을 해도 되는지 판별
@@ -102,6 +105,8 @@ void ACharacterPC::Tick(float DeltaTime)
 	// 전투상태인지 판별하고, 전투상태라면 줌아웃
 	if (InCombat)
 	{
+		IsJog = false;
+		
 		if (IsZoomed)
 			SetZoomOutProp();
 		
@@ -115,6 +120,13 @@ void ACharacterPC::Tick(float DeltaTime)
 			SetActorRotation(FRotator(0, GetController()->GetControlRotation().Yaw, 0));
 		}
 	}
+	if (DrawERange)
+	{
+		//*스킬e 범위 디버그
+		DrawDebugSphere(DpGetWorld(), GetUnderCursorLocation().ImpactPoint, 32, 16, FColor::Red, false, -1.f);
+		DrawDebugSphere(DpGetWorld(), GetUnderCursorLocation().ImpactPoint, 500, 64, FColor::Blue, false, -1.f); // 파란 디버그구
+	} 
+	
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -293,8 +305,19 @@ void ACharacterPC::ZoomInOut(float DeltaTime)
 	}
 }
 
+void ACharacterPC::SetRunZoomOutProp()
+{
+	MyTargetArmLength = 600.0f;
+	MyTargetArmLocation = FVector(0, 0, 55);
+	MyCameraLocation = FVector(0, 0, 55);
+
+	IsZoomed = true;
+	ZoomInterpTime = 6;
+	CanZoom = true;
+}
+
 //================================================================
-// 폰 회전 함수 // 전투상태일 때만 자동회전. Tick에서 구현
+// Pawn 회전 함수 // 전투상태일 때만 자동회전. Tick에서 구현
 //================================================================
 void ACharacterPC::RotatePawn(float DeltaTime)
 {
@@ -502,4 +525,19 @@ float ACharacterPC::GetHealthPercent() const
 float ACharacterPC::GetDamage() const
 {
 	return DamageText;
+}
+
+FHitResult ACharacterPC::GetUnderCursorLocation()
+{
+	FHitResult HitResult;
+	APlayerController *ownerController = Cast<APlayerControllerBase>(GetController());
+	if (ownerController)
+	{
+		ownerController->GetHitResultUnderCursor(
+			ECollisionChannel::ECC_Visibility,
+			false,
+			HitResult);
+		return HitResult;
+	}
+	return HitResult;
 }

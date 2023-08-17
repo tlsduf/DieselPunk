@@ -77,6 +77,8 @@ public:
 	void SetZoomInProp();
 	void SetZoomOutProp();
 	void ZoomInOut(float DeltaTime);
+	
+	void SetRunZoomOutProp();
 
 	void Jog();
 	void WPressed();
@@ -101,6 +103,10 @@ public:
 	void HandleCombatState();
 	void SetInCombatFalse();
 
+	//=================================================================================
+	bool DrawERange = false;
+	FHitResult GetUnderCursorLocation();
+	//=================================================================================
 public:
 	bool GetCombatState();
 	// !------------------------------------------------------------
