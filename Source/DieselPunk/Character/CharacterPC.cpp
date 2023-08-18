@@ -126,7 +126,9 @@ void ACharacterPC::Tick(float DeltaTime)
 		DrawDebugSphere(DpGetWorld(), GetUnderCursorLocation().ImpactPoint, 32, 16, FColor::Red, false, -1.f);
 		DrawDebugSphere(DpGetWorld(), GetUnderCursorLocation().ImpactPoint, 500, 64, FColor::Blue, false, -1.f); // 파란 디버그구
 	} 
-	
+
+	// 체력 애니메이팅 [TODO]추후 UI로 
+	AnimatorHealthPercent.Update(DeltaTime);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -418,7 +420,7 @@ float ACharacterPC::TakeDamage(float DamageAmount, struct FDamageEvent const &Da
 		DamageText = Damage;		  // 데미지전역변수에 값 전달
 
 		Damage = FMath::Min(Health, Damage);
-		Health -= Damage;
+		_UpdateHp(Health - Damage, MaxHealth);
 
 		//================================================================
 		// 3.애니메이션 플레이 //bool 변수로 0.3초마다 애니메이션 실행
@@ -517,9 +519,42 @@ bool ACharacterPC::IsDead() const
 	return Health <= 0;
 }
 
-float ACharacterPC::GetHealthPercent() const
+void ACharacterPC::_UpdateHp(int InCurHp, int InMaxHp)
 {
-	return Health / MaxHealth;
+	float curPercent = Health / MaxHealth;
+	curPercent = FMath::Clamp( curPercent, 0.f, 1.f );
+
+	float destPercent = ( float )InCurHp / ( float )InMaxHp;
+	destPercent = FMath::Clamp( destPercent, 0.f, 1.f );
+
+	TempPercent = curPercent;
+
+	if( AnimatorHealthPercent.IsRunning() )
+		AnimatorHealthPercent.Stop();
+	
+	AnimatorParam param;
+	param.AnimType = EAnimType::Linear;
+	param.StartValue = curPercent;
+	param.EndValue = destPercent;
+	param.DurationTime = 0.3f;
+	param.DurationFunc = [ this ] ( float InValue )
+	{
+		TempPercent = InValue;
+	};
+	param.CompleteFunc = [ this ] ( float InValue )
+	{
+		TempPercent = InValue;
+	};
+
+	AnimatorHealthPercent.Start( param );
+
+	Health = InCurHp;
+	MaxHealth = InMaxHp;
+}
+
+float ACharacterPC::GetHealthPercent()
+{
+	return TempPercent;
 }
 
 float ACharacterPC::GetDamage() const

@@ -106,6 +106,11 @@ public:
 	//=================================================================================
 	bool DrawERange = false;
 	FHitResult GetUnderCursorLocation();
+
+	// 체력 퍼센테이지 반환 애니메이팅
+	void _UpdateHp(int InCurHp, int InMaxHp);
+	Animator AnimatorHealthPercent;
+	float TempPercent = Health / MaxHealth;
 	//=================================================================================
 public:
 	bool GetCombatState();
@@ -131,7 +136,7 @@ public:
 
 	// * 체력바UI
 	UFUNCTION(BlueprintPure)
-	float GetHealthPercent() const;
+	float GetHealthPercent();
 
 	// * 데미지UI
 	UFUNCTION(BlueprintPure)
