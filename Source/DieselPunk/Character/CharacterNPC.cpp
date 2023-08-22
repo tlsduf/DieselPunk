@@ -2,7 +2,8 @@
 
 #include "CharacterNPC.h"
 #include "../Skill/PlayerSkill.h"
-
+#include "../Manager/UIManager.h"
+#include "../UI/HUD/StatusUIBase.h"
 
 #include <Components/InputComponent.h>
 
@@ -10,6 +11,7 @@
 #include <Kismet/GameplayStatics.h>
 #include <Particles/ParticleSystemComponent.h>
 #include <Components/SkeletalMeshComponent.h>
+#include <Components/WidgetComponent.h>
 
 
 ACharacterNPC::ACharacterNPC()
@@ -26,6 +28,24 @@ void ACharacterNPC::BeginPlay()
 void ACharacterNPC::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+// =============================================================
+// 상태 UI 위젯을 생성한다.
+// =============================================================
+void ACharacterNPC::CreateStatusUI()
+{
+	/*if( StatusUI.IsValid() )
+		return;
+
+	StatusUI = GetUIManager().CreateUnmanagedUI< UStatusUIBase >( TEXT( "HUD/NPC_HpBar" ) );
+	if ( !WidgetComp || !StatusUI.IsValid() )
+		return;
+
+	WidgetComp->SetWidget( StatusUI.Get() );
+	WidgetComp->SetDrawSize( FVector2D( 250.0f, 80.0f ) );
+
+	StatusUI->InitStatus( this );*/
 }
 
 void ACharacterNPC::SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent)

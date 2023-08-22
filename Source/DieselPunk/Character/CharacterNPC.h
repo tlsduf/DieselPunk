@@ -39,6 +39,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
 	UParticleSystem *GranadeMuzzleEffect;
 
+	// 상태 UI 위젯을 생성한다.
+	virtual void CreateStatusUI() override;
+	
 	void MeleeAttackHandle();
 	void DoMeleeAttack();
 

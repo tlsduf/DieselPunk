@@ -3,6 +3,7 @@
 #include "SkillSoldierE.h"
 #include "..\..\Character\CharacterPC.h"
 #include "../../Animation/SoldierAnimInstance.h"
+#include "../../Skill/SkillSoldier/SkillSoldierLM.h"
 
 #include <GameFramework/PlayerController.h>
 #include <Components/SkeletalMeshComponent.h>
@@ -29,10 +30,18 @@ void USkillSoldierE::SkillTriggered()
 	if(ownerController == nullptr)
 		return;
 
-	//데미지 적용
+	//트리거 이벤트
+	USkillSoldierLM *SoldierLM = nullptr;
+	if(ownerPawn->Skills[0])
+		SoldierLM = Cast<USkillSoldierLM>(ownerPawn->Skills[0]);
 	
+	if(SoldierLM != nullptr)
+	{
+		SoldierLM->EBuffOn = true;
+		SoldierLM->Magazine = 20;
+	}
 	
-	//이펙트 소환
+	//이펙트 
 	
 	
 	//애니메이션 재생?

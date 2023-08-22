@@ -28,6 +28,7 @@ protected:
 	TMap< EActorStatType, FTR_STAT_FUNC > FtrStatFunc;   // _Set 스텟 함수
 
 	UTextBlock*                           TextName;      // 이름 텍스트 블록
+public:
 	UProgressBar*                         ProgressBarHP; // HP 바
 	UImage*                               ImageIcon;     // 아이콘 이미지
 
@@ -57,9 +58,13 @@ protected:
 	virtual void OnStatChanged( FObjId InObjId, EActorStatType InStatType, int64 InOldValue, int64 InNewValue );
 
 private:
+
+public:
 	// 위젯을 초기화한다.
 	void _InitControls();
 
+
+private:
 	// 현재 Hp 변화를 처리한다.
 	void _UpdateHp( int64 InCurHp, int64 InMaxHp );
 

@@ -8,6 +8,9 @@
 #include <GameFramework/PlayerController.h>
 #include <GameFramework/Character.h>
 #include <Components/SkeletalMeshComponent.h>
+#include <Kismet/GameplayStatics.h>
+
+#include "Particles/ParticleSystem.h"
 
 
 USkillSoldierLM::USkillSoldierLM() : Super()
@@ -39,7 +42,7 @@ void USkillSoldierLM::SkillTriggered()
 	FHitResult hit;
 	bool Hit = GetWorld()->LineTraceSingleByChannel(hit, lineTraceLocation, end, ECollisionChannel::ECC_GameTraceChannel1);
 
-	// 왼손 오른손 반복
+	// Muzzle Location by BoneName
 	FVector shotLocation =ownerPawn->GetMesh()->GetSocketLocation("Muzzle_01");
 	//FRotator shotRotation = (Hit ? hit.Location - shotLocation : end - shotLocation).Rotation();
 	FRotator shotRotation = (end - shotLocation).Rotation();
@@ -55,10 +58,33 @@ void USkillSoldierLM::SkillTriggered()
 
 	//===========================================
 	// * MainAction 2 // Projectile Spawn
-	if(ProjectileGranadeClass)
+	if(ProjectileGranadeClass && !EBuffOn)
 	{
 		FActorSpawnParameters param = FActorSpawnParameters();
 		param.Owner = GetOwner();
 		ProjectileGranade = GetWorld()->SpawnActor<AProjectileGranade>(ProjectileGranadeClass, shotLocation, shotRotation, param);
+		if (MuzzleParticles)
+		{
+			UGameplayStatics::SpawnEmitterAttached(MuzzleParticles, ownerPawn->GetMesh(), TEXT("Muzzle_01"),FVector(ForceInit), FRotator(0, -90 ,0), FVector(0.2) );
+		}
 	}
+	// * or if EBuffOn is true
+	if(ProjectileGranadeEBuffClass && EBuffOn)
+	{
+		FActorSpawnParameters param = FActorSpawnParameters();
+		param.Owner = GetOwner();
+		ProjectileGranade = GetWorld()->SpawnActor<AProjectileGranade>(ProjectileGranadeEBuffClass, shotLocation, shotRotation, param);
+		--Magazine;
+		if (Magazine == 0)
+		{
+			Magazine = 20;
+			EBuffOn = false;
+		}
+		if (MuzzleParticlesSpecial)
+		{
+			UGameplayStatics::SpawnEmitterAttached(MuzzleParticlesSpecial, ownerPawn->GetMesh(), TEXT("Muzzle_01"),FVector(ForceInit), FRotator(0, 0 ,0), FVector(0.3));
+		}
+	}
+
+
 }

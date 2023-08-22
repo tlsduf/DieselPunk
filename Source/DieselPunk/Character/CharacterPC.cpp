@@ -4,9 +4,8 @@
 #include "../Logic/PlayerControllerBase.h"
 #include "..\Core\DpGameMode.h"
 #include "../Skill/PlayerSkill.h"
-#include "..\Common\DpLog.h"
-#include "../Util/UtilEnum.h"
-#include "../Manager/ObjectManager.h"
+#include "../Manager/UIManager.h"
+#include "../UI/HUD/StatusUIBase.h"
 
 #include <Camera/CameraComponent.h>
 #include <Components/CapsuleComponent.h>
@@ -19,6 +18,7 @@
 #include <DrawDebugHelpers.h>
 #include <EnhancedInputComponent.h>
 #include <Engine/DamageEvents.h>
+#include <Components/WidgetComponent.h>
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(CharacterPC)
 
@@ -77,6 +77,7 @@ void ACharacterPC::BeginPlay()
 
 	// 게임시작시 기본체력초기화
 	Health = MaxHealth;
+	TempPercent = Health / MaxHealth;
 	JumpMaxCount = ThisJumpMaxCount;
 }
 
@@ -130,6 +131,15 @@ void ACharacterPC::Tick(float DeltaTime)
 	// 체력 애니메이팅 [TODO]추후 UI로 
 	AnimatorHealthPercent.Update(DeltaTime);
 }
+
+// =============================================================
+// 상태 UI 위젯을 생성한다.
+// =============================================================
+void ACharacterPC::CreateStatusUI()
+{
+
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 // Input
@@ -421,6 +431,7 @@ float ACharacterPC::TakeDamage(float DamageAmount, struct FDamageEvent const &Da
 
 		Damage = FMath::Min(Health, Damage);
 		_UpdateHp(Health - Damage, MaxHealth);
+		Health -= Damage;
 
 		//================================================================
 		// 3.애니메이션 플레이 //bool 변수로 0.3초마다 애니메이션 실행
@@ -533,7 +544,7 @@ void ACharacterPC::_UpdateHp(int InCurHp, int InMaxHp)
 		AnimatorHealthPercent.Stop();
 	
 	AnimatorParam param;
-	param.AnimType = EAnimType::Linear;
+	param.AnimType = EAnimType::QuadraticEaseOut;
 	param.StartValue = curPercent;
 	param.EndValue = destPercent;
 	param.DurationTime = 0.3f;
@@ -547,9 +558,6 @@ void ACharacterPC::_UpdateHp(int InCurHp, int InMaxHp)
 	};
 
 	AnimatorHealthPercent.Start( param );
-
-	Health = InCurHp;
-	MaxHealth = InMaxHp;
 }
 
 float ACharacterPC::GetHealthPercent()

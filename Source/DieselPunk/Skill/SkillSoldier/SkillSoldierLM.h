@@ -23,10 +23,24 @@ private:
 
 	UPROPERTY()
 	AProjectileGranade *ProjectileGranade;
-	
+
+	UPROPERTY(EditDefaultsOnly, Category = "MyCustomCategory")
+	TSubclassOf<AProjectileGranade> ProjectileGranadeEBuffClass;
+
+	UPROPERTY()
+	AProjectileGranade *ProjectileGranadeEBuff;
+
+	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
+	UParticleSystem *MuzzleParticles;
+
+	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
+	UParticleSystem *MuzzleParticlesSpecial;
 public:
 	// 생성자
 	USkillSoldierLM();
+
+	bool EBuffOn = false;
+	int8 Magazine = 20;
 
 protected:
 	virtual void BeginPlay() override;

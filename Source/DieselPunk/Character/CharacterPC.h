@@ -47,6 +47,9 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent) override;
 
+	// 상태 UI 위젯을 생성한다.
+	virtual void CreateStatusUI() override;
+	
 	// 런타임에 스킬들을 인스턴스화 시킵니다. PlayerController에서 Pose시 호출합니다.
 	void InitSkills();
 
@@ -110,7 +113,8 @@ public:
 	// 체력 퍼센테이지 반환 애니메이팅
 	void _UpdateHp(int InCurHp, int InMaxHp);
 	Animator AnimatorHealthPercent;
-	float TempPercent = Health / MaxHealth;
+	UPROPERTY(BlueprintReadOnly)
+	float TempPercent;
 	//=================================================================================
 public:
 	bool GetCombatState();
