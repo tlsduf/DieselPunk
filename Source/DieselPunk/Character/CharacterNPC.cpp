@@ -2,8 +2,7 @@
 
 #include "CharacterNPC.h"
 #include "../Skill/PlayerSkill.h"
-#include "../Manager/UIManager.h"
-#include "../UI/HUD/StatusUIBase.h"
+#include "../Skill/MeleeAttack.h"
 
 #include <Components/InputComponent.h>
 
@@ -57,29 +56,10 @@ void ACharacterNPC::SetupPlayerInputComponent(class UInputComponent *PlayerInput
 	//PlayerInputComponent->BindAction("RightMouse", IE_Pressed, this, &ABaseEnemyCharacter::DoProjectileAttack);
 }
 
-void ACharacterNPC::MeleeAttackHandle()
+float ACharacterNPC::DoMeleeAttack()
 {
-	if (CanMeleeAttack)
-	{
-		GetWorldTimerManager().SetTimer(MeleeAttackTHandle, this, &ACharacterNPC::DoMeleeAttack, 0.50f, false);
-		CanMeleeAttack = false;
-		GetWorldTimerManager().SetTimer(CanMeleeAttackTHandle, this, &ACharacterNPC::SetCanMeleeAttackTrue, 1.10f, false);
-		DoingMeleeAttack = true;
-		GetWorldTimerManager().SetTimerForNextTick(this, &ACharacterNPC::SetDoingMeleeAttackFalse);
-	}
-}
-void ACharacterNPC::DoMeleeAttack()
-{
-	MeleeAttack->SkillTriggered();
-}
-
-void ACharacterNPC::SetCanMeleeAttackTrue()
-{
-	CanMeleeAttack = true;
-}
-void ACharacterNPC::SetDoingMeleeAttackFalse()
-{
-	DoingMeleeAttack = false;
+	auto _MeleeAttack = Cast<UMeleeAttack>(MeleeAttack);
+	return _MeleeAttack->Attack();
 }
 
 void ACharacterNPC::DoProjectileAttack()

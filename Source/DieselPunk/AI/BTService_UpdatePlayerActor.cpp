@@ -21,15 +21,11 @@ void UBTService_UpdatePlayerActor::TickNode(UBehaviorTreeComponent &OwnerComp, u
 
     APawn *PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
     if (PlayerPawn == nullptr)
-    {
         return;
-    }
-
     APawn *AIPawn = OwnerComp.GetAIOwner()->GetPawn();
     if (OwnerComp.GetAIOwner() == nullptr)
-    {
         return;
-    }
+    
 
     OwnerComp.GetBlackboardComponent()->SetValueAsVector(TEXT("PlayerLocation"), PlayerPawn->GetActorLocation());
 
@@ -57,7 +53,7 @@ void UBTService_UpdatePlayerActor::TickNode(UBehaviorTreeComponent &OwnerComp, u
     }
 
     AEnemyAIController * Controller = Cast<AEnemyAIController>(OwnerComp.GetAIOwner());
-
+    
     if (Controller->IsDead())
     {
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("IsLive"), false);
@@ -66,7 +62,6 @@ void UBTService_UpdatePlayerActor::TickNode(UBehaviorTreeComponent &OwnerComp, u
     {
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("IsLive"), true);
     }
-
     if (Controller->PlaySpawnAnim())
     {
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("PlaySpawnAnim"), false);
@@ -75,4 +70,5 @@ void UBTService_UpdatePlayerActor::TickNode(UBehaviorTreeComponent &OwnerComp, u
     {
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("PlaySpawnAnim"), true);
     }
+    
 }

@@ -22,8 +22,6 @@ private:
 
 	UPROPERTY()
 	AProjectileGranade *ProjectileGranade;
-
-	FTimerHandle ZoomTHandle;
 public:
 	// 생성자
 	USkillSoldierQ();

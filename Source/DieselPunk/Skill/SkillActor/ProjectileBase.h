@@ -65,10 +65,6 @@ protected:
 
 	//UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
 	//TSubclassOf<class UCameraShakeBase> HitCameraShakeClass;
-
-	// applydamage 프레임워크 ApplyRadialDamage 의 경우 구의 반지름
-	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
-	float RadialDamageRadius = 500.f;
 	
 	// applydamage 프레임워크 ApplyRadialDamage 의 경우 중심에서 멀어질수록 약해지는 데미지를 입힐지말지
 	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")

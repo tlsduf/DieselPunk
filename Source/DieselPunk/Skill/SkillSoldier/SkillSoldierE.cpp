@@ -7,6 +7,7 @@
 
 #include <GameFramework/PlayerController.h>
 #include <Components/SkeletalMeshComponent.h>
+#include <Kismet/GameplayStatics.h>
 
 
 USkillSoldierE::USkillSoldierE() : Super()
@@ -42,7 +43,16 @@ void USkillSoldierE::SkillTriggered()
 	}
 	
 	//이펙트 
-	
+	if (BuffEffect)
+	{
+		UGameplayStatics::SpawnEmitterAttached(
+			BuffEffect,
+			ownerPawn->GetMesh(),
+			TEXT("pelvis"),
+			FVector(ForceInit),
+			FRotator::ZeroRotator,
+			FVector(1));
+	}
 	
 	//애니메이션 재생?
 	USoldierAnimInstance* animInst = Cast<USoldierAnimInstance>(ownerPawn->GetMesh()->GetAnimInstance());

@@ -7,7 +7,6 @@
 
 #include <GameFramework/PlayerController.h>
 #include <Components/SkeletalMeshComponent.h>
-#include <TimerManager.h>
 
 USkillSoldierQ::USkillSoldierQ() : Super()
 {

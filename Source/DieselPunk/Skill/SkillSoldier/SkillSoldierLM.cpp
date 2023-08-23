@@ -63,10 +63,16 @@ void USkillSoldierLM::SkillTriggered()
 		FActorSpawnParameters param = FActorSpawnParameters();
 		param.Owner = GetOwner();
 		ProjectileGranade = GetWorld()->SpawnActor<AProjectileGranade>(ProjectileGranadeClass, shotLocation, shotRotation, param);
+		
 		if (MuzzleParticles)
-		{
-			UGameplayStatics::SpawnEmitterAttached(MuzzleParticles, ownerPawn->GetMesh(), TEXT("Muzzle_01"),FVector(ForceInit), FRotator(0, -90 ,0), FVector(0.2) );
-		}
+			UGameplayStatics::SpawnEmitterAttached(
+				MuzzleParticles,
+				ownerPawn->GetMesh(),
+				TEXT("Muzzle_01"),
+				FVector(ForceInit),
+				FRotator::ZeroRotator,
+				FVector(0.2) );
+		
 	}
 	// * or if EBuffOn is true
 	if(ProjectileGranadeEBuffClass && EBuffOn)
@@ -80,10 +86,16 @@ void USkillSoldierLM::SkillTriggered()
 			Magazine = 20;
 			EBuffOn = false;
 		}
+		
 		if (MuzzleParticlesSpecial)
-		{
-			UGameplayStatics::SpawnEmitterAttached(MuzzleParticlesSpecial, ownerPawn->GetMesh(), TEXT("Muzzle_01"),FVector(ForceInit), FRotator(0, 0 ,0), FVector(0.3));
-		}
+			UGameplayStatics::SpawnEmitterAttached(
+				MuzzleParticlesSpecial,
+				ownerPawn->GetMesh(),
+				TEXT("Muzzle_01"),
+				FVector(ForceInit),
+				FRotator::ZeroRotator,
+				FVector(0.05));
+		
 	}
 
 

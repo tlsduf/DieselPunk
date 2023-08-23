@@ -63,15 +63,17 @@ void USkillSoldierR::SkillTriggered()
 		//*기능 실현부
 		FHitResult HitResult = GetUnderCursorLocation();
 		AActor *HitActor = HitResult.GetActor();
-		if (HitActor != nullptr)
+		if (HitActor)
 		{
-			FActorSpawnParameters param = FActorSpawnParameters();
-			param.Owner = GetOwner();
-			ProjectileGranade = GetWorld()->SpawnActor<AProjectileGranade>(ProjectileGranadeClass, HitResult.Location, FRotator(0,0, 0), param);
-			if (PinPointHitEffect)
+			if(ProjectileGranadeClass)
 			{
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), PinPointHitEffect, HitResult.Location);
+				FActorSpawnParameters param = FActorSpawnParameters();
+				param.Owner = GetOwner();
+				ProjectileGranade = GetWorld()->SpawnActor<AProjectileGranade>(ProjectileGranadeClass, HitResult.Location, FRotator(0,0, 0), param);
 			}
+			if (PinPointHitEffect)
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), PinPointHitEffect, HitResult.Location);
+			
 		}
 
 		// 화면와이드인

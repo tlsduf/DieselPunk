@@ -14,8 +14,10 @@ UBTTask_ProjectileAttack::UBTTask_ProjectileAttack()
 
 EBTNodeResult::Type UBTTask_ProjectileAttack::ExecuteTask(UBehaviorTreeComponent &OwnerComp, uint8 *NodeMemory)
 {
-        Super::ExecuteTask(OwnerComp, NodeMemory);
+    EBTNodeResult::Type result = Super::ExecuteTask(OwnerComp, NodeMemory);
 
+    //공격상태에 들어갈 때 아래에 초기화 작업을 진행합니다.
+    
     if (OwnerComp.GetAIOwner() == nullptr)
     {
         return EBTNodeResult::Failed;
