@@ -17,6 +17,8 @@ void UMeleeAttack::BeginPlay()
 void UMeleeAttack::SkillTriggered()
 {
 	Super::SkillTriggered();
+
+	_Attack();
 }
 
 float UMeleeAttack::Attack()

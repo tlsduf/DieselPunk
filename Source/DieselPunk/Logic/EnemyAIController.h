@@ -2,18 +2,18 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "AIController.h"
 #include "EnemyAIController.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class DIESELPUNK_API AEnemyAIController : public AAIController
 {
 	GENERATED_BODY()
 
+public:
+	static const FName TargetKey;		//블랙보드에 등록된 변수를 지칭합니다.
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

@@ -65,7 +65,7 @@ void UMonsterAnimInstace::ResumeMontage(EAbilityType InAbilityType)
 	Montage_Resume(animMontage);
 }
 
-/*void UMonsterAnimInstace::AnimNotify_NotifyAttack() const
+void UMonsterAnimInstace::AnimNotify_NotifyMeleeAttack() const
 {
 	auto ownerPawn = Cast<ACharacterNPC>(GetOwningActor());
 	
@@ -75,4 +75,4 @@ void UMonsterAnimInstace::ResumeMontage(EAbilityType InAbilityType)
 	
 	if(MA != nullptr)
 		MA->SkillTriggered();
-}*/
+}

@@ -62,6 +62,12 @@ float ACharacterNPC::DoMeleeAttack()
 	return _MeleeAttack->Attack();
 }
 
+void ACharacterNPC::TempDoMeleeAttack()
+{
+	auto _MeleeAttack = Cast<UMeleeAttack>(MeleeAttack);
+	_MeleeAttack->_Attack();
+}
+
 void ACharacterNPC::DoProjectileAttack()
 {
 	ProjectileAttack->SkillTriggered();

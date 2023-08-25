@@ -42,5 +42,6 @@ public:
 	virtual void CreateStatusUI() override;
 	
 	float DoMeleeAttack();
+	void TempDoMeleeAttack();
 	void DoProjectileAttack();
 };

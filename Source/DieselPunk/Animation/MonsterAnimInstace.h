@@ -33,11 +33,11 @@ public:
 	void PauseMontage(EAbilityType InAbilityType);
 	// 몽타주를 다시 재생합니다.
 	void ResumeMontage(EAbilityType InAbilityType);
-	// 왼쪽 손목 반동재생
-	void RotateGunRecoil();
-	// 임시 반동 애니메이션
-	void GunRecoil();
-	
+
+private:
+	// MeleeAttack 전용 애님노티파이 입니다. 
+	UFUNCTION()
+	void AnimNotify_NotifyMeleeAttack() const;
 };
 
 // AroundSkill 몽타주
