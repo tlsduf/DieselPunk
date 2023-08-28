@@ -134,6 +134,9 @@ public:
 
 	// !MyCode------------------------------------------------------
 public:
+	int Exp;
+	int Level;
+	
 	// * 임시 죽는애니메이션 play
 	UFUNCTION(BlueprintPure)
 	bool IsDead() const;

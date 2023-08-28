@@ -3,6 +3,7 @@
 #include "CharacterNPC.h"
 #include "../Skill/PlayerSkill.h"
 #include "../Skill/MeleeAttack.h"
+#include "DieselPunk/Util/UtilLevelCal.h"
 
 #include <Components/InputComponent.h>
 
@@ -77,4 +78,21 @@ void ACharacterNPC::DoProjectileAttack()
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), GranadeMuzzleEffect, Location, GetActorRotation() + FRotator(0, 180, 0));
 	}
+}
+
+float ACharacterNPC::TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent, class AController *EventInstigator, AActor *DamageCauser)
+{
+	float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	//================================================================
+	// 4.죽음구현
+	//================================================================
+	if (IsDead())
+	{
+		auto DamageCauserPlayer = Cast<ACharacterPC>(DamageCauser);
+		// 플레이어의 경험치를 1 올림 //TODO NPC와 구분지어서 레벨디자인 할 수 있게끔
+		DamageCauserPlayer->Exp = DamageCauserPlayer->Exp + 1;
+		DamageCauserPlayer->Level = UtilLevelCal::LevelCal(DamageCauserPlayer->Exp);
+		LOG_SCREEN(TEXT("Exp : %d Level : %d"), DamageCauserPlayer->Exp, DamageCauserPlayer->Level);
+	}
+	return Damage;
 }

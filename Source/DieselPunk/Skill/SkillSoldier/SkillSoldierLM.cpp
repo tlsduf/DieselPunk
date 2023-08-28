@@ -71,8 +71,7 @@ void USkillSoldierLM::SkillTriggered()
 				TEXT("Muzzle_01"),
 				FVector(ForceInit),
 				FRotator::ZeroRotator,
-				FVector(0.2) );
-		
+				FVector(0.1) );
 	}
 	// * or if EBuffOn is true
 	if(ProjectileGranadeEBuffClass && EBuffOn)
@@ -95,7 +94,6 @@ void USkillSoldierLM::SkillTriggered()
 				FVector(ForceInit),
 				FRotator::ZeroRotator,
 				FVector(0.05));
-		
 	}
 
 

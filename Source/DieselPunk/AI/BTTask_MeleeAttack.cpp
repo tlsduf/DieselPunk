@@ -1,9 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "BTTask_MeleeAttack.h"
+
 #include "..\Character\CharacterNPC.h"
 
 #include <AIController.h>
+#include <BehaviorTree/BehaviorTreeComponent.h>
 
 
 UBTTask_MeleeAttack::UBTTask_MeleeAttack()

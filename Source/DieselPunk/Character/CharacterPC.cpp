@@ -20,9 +20,13 @@
 #include <Engine/DamageEvents.h>
 #include <Components/WidgetComponent.h>
 
+
+
 #include UE_INLINE_GENERATED_CPP_BY_NAME(CharacterPC)
 
 ACharacterPC::ACharacterPC()
+	:
+	Exp(0), Level(1)
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -462,7 +466,6 @@ float ACharacterPC::TakeDamage(float DamageAmount, struct FDamageEvent const &Da
 				TakeDamageHandle, [this]()
 				{ Destroy(); },
 				20.0f, false);
-			
 		}
 
 		LOG_SCREEN(TEXT("Now Health : %f"), Health);

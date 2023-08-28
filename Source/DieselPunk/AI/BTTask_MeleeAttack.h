@@ -2,13 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "BehaviorTree/Tasks/BTTask_BlackboardBase.h"
+#include "BehaviorTree/BTTaskNode.h"
 #include "BTTask_MeleeAttack.generated.h"
 
 class ACharacterNPC;
 UCLASS()
-class DIESELPUNK_API UBTTask_MeleeAttack : public UBTTask_BlackboardBase
+class DIESELPUNK_API UBTTask_MeleeAttack : public UBTTaskNode
 {
 	GENERATED_BODY()
 
