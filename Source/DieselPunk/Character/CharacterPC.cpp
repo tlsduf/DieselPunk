@@ -562,6 +562,8 @@ void ACharacterPC::_UpdateHp(int InCurHp, int InMaxHp)
 	float destPercent = ( float )InCurHp / ( float )InMaxHp;
 	destPercent = FMath::Clamp( destPercent, 0.f, 1.f );
 
+	float percentAmount = curPercent - destPercent;
+	
 	// 체력바 애니메이터
 	TempPercent = curPercent;
 
@@ -594,7 +596,10 @@ void ACharacterPC::_UpdateHp(int InCurHp, int InMaxHp)
 	paramAfterImage.AnimType = EAnimType::CubicEaseIn;
 	paramAfterImage.StartValue = curPercent;
 	paramAfterImage.EndValue = destPercent;
-	paramAfterImage.DurationTime = 0.6f;
+	paramAfterImage.DurationTime =
+		(0.f <= percentAmount && percentAmount < 0.2f) ? 0.6f
+	: (0.2f <= percentAmount && percentAmount < 0.4f) ? 0.85f
+	:													1.1f;
 	paramAfterImage.DurationFunc = [ this ] ( float InValue )
 	{
 		TempPercentAfterImage = InValue;
