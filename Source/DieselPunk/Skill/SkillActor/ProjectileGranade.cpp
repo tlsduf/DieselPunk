@@ -13,8 +13,8 @@ void AProjectileGranade::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//CapsuleComponent->OnComponentHit.AddDynamic(this, &AProjectileGranade::OnHit);
-	CapsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &AProjectileGranade::BeginOverlapEvent);
+	CapsuleComponent->OnComponentHit.AddDynamic(this, &AProjectileGranade::OnHit);
+	//CapsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &AProjectileGranade::BeginOverlapEvent);
 }
 
 void AProjectileGranade::_OnHit(UPrimitiveComponent *HitComp, AActor *HitActor, UPrimitiveComponent *OtherComp, FVector NormalImpulse, const FHitResult &HitResult)

@@ -3,11 +3,16 @@
 #include "ProjectileBase.h"
 #include "../../Util/UtilCollision.h"
 
+#include "DieselPunk/Util/UtilEffect.h"
+#include <NiagaraFunctionLibrary.h>
+#include <NiagaraComponent.h>
+
 #include <Components/CapsuleComponent.h>
 #include <Components/StaticMeshComponent.h>
 #include <GameFramework/ProjectileMovementComponent.h>
 #include <Kismet/GameplayStatics.h>
-#include <Particles/ParticleSystemComponent.h>
+
+
 
 
 // Sets default values
@@ -33,14 +38,9 @@ void AProjectileBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	APawn *ownerPawn = Cast<APawn>(GetOwner());
-	if (ShotParticles)
+	if (ShotEffect)
 	{
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ShotParticles, GetActorLocation(), GetActorRotation());
-	}
-	if(ShotAttachParticles)
-	{
-		UGameplayStatics::SpawnEmitterAttached(ShotAttachParticles, GetRootComponent(), "null", FVector(0), FRotator::ZeroRotator, FVector(1), EAttachLocation::KeepRelativeOffset, true);
+		UtilEffect::SpawnParticleComponent(ShotEffect, GetActorLocation(), GetActorRotation());
 	}
 	if (ShotSound)
 	{
@@ -65,6 +65,12 @@ void AProjectileBase::_OnHit(UPrimitiveComponent *HitComp, AActor *HitActor, UPr
 {
 	APawn *ownerPawn = Cast<APawn>(GetOwner());
 	AController *ownerController = ownerPawn->GetController();
+
+	if (HitEffect)
+	{
+		UtilEffect::SpawnParticleComponent(HitEffect, GetActorLocation(), GetActorRotation());
+	}
+	
 	if (ownerPawn == nullptr)
 	{
 		Destroy();
@@ -97,10 +103,7 @@ void AProjectileBase::_OnHit(UPrimitiveComponent *HitComp, AActor *HitActor, UPr
 			// UGameplayStatics::ApplyRadialDamage(GetWorld(), Damage, GetActorLocation(), RadialDamageRadius, nullptr, TArray<AActor *>(), this, ownerController, DoFullDamage, ECC_WorldStatic);
 		}
 	}
-	if (HitParticles)
-	{
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitParticles, GetActorLocation(), GetActorRotation());
-	}
+
 	if (HitSound)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetActorLocation());
@@ -124,7 +127,6 @@ void AProjectileBase::_BeginOverlapEvent(class UPrimitiveComponent* InHitComp, c
 	auto ownerController = ownerPawn->GetController();
 	
 	//UtilEffect::ActivateDecorator( this, EDecorateUseType::Despawn);
-	
 	if (ownerPawn == nullptr)
 	{
 		Destroy();
@@ -153,9 +155,9 @@ void AProjectileBase::_BeginOverlapEvent(class UPrimitiveComponent* InHitComp, c
 			// UGameplayStatics::ApplyRadialDamage(GetWorld(), Damage, GetActorLocation(), RadialDamageRadius, nullptr, TArray<AActor *>(), this, ownerController, DoFullDamage, ECC_WorldStatic);
 		}
 	}
-	if (HitParticles)
+	if (HitEffect)
 	{
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitParticles, GetActorLocation(), GetActorRotation());
+		UtilEffect::SpawnParticleComponent(HitEffect, GetActorLocation(), GetActorRotation());
 	}
 	if (HitSound)
 	{

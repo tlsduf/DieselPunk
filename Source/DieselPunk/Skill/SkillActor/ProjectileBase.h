@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "ProjectileBase.generated.h"
 
-// class USoundBase;
+class UNiagaraSystem;
 
 UCLASS()
 class DIESELPUNK_API AProjectileBase : public AActor
@@ -39,21 +39,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "MyCustomCategory")
 	class UProjectileMovementComponent *ProjectileMovementComponent;
 
-	// 투사체 생성-발사 이펙트 // 생성 이펙트와 발사이펙트를 Base에 구분할 것인가? 생성이펙트가 필요하다면 자손클래스에서 따로 할당할 것인지
 	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
-	UParticleSystem *ShotParticles;
+	TSoftObjectPtr<UNiagaraSystem> HitEffect;
 
-	// 투사체 생성-발사 이펙트 // 생성 이펙트와 발사이펙트를 Base에 구분할 것인가? 생성이펙트가 필요하다면 자손클래스에서 따로 할당할 것인지
 	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
-	UParticleSystem *ShotAttachParticles;
-
-	// 투사체 hit 이펙트 // 파괴 시 이펙트와 오버랩이벤트의 이펙트를 따로 해야하는지
-	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
-	UParticleSystem *HitParticles;
-
-	// 트레일파티클
-	UPROPERTY(VisibleAnywhere, Category = "MyCustomCategory")
-	class UParticleSystemComponent *TrailParticles;
+	TSoftObjectPtr<UNiagaraSystem> ShotEffect;
 
 	// 발사 사운드
 	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")

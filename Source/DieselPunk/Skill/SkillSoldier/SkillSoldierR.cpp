@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SkillSoldierR.h"
-#include "../SkillActor/ProjectileGranade.h"
+#include "..\SkillActor\ProjectileGranade.h"
 #include "../../Character/CharacterPC.h"
 #include "../../Logic/PlayerControllerBase.h"
 #include "../../Animation/SoldierAnimInstance.h"
