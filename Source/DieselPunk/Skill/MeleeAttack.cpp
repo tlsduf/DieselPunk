@@ -38,10 +38,10 @@ float UMeleeAttack::Attack()
 void UMeleeAttack::_Attack()
 {
 	// 데미지 프레임워크를 위한 Instigator, Causer
-	APawn *ownerPawn = Cast<APawn>(GetOwner());
+	auto ownerPawn = Cast<ACharacterNPC>(GetOwner());
 	if (ownerPawn == nullptr)
 		return;
-	AController *ownerController = ownerPawn->GetController();
+	auto ownerController = ownerPawn->GetController();
 	if (ownerController == nullptr)
 		return;
 

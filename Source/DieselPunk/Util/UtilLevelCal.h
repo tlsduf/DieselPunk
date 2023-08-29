@@ -36,4 +36,40 @@ namespace UtilLevelCal
 		: 25	//End
 		;
 	}
+
+	FORCEINLINE int MaxHealthCal(int inLevel)
+	{
+		return
+		  (inLevel == 1) ? 100
+		: (inLevel == 2) ? 110
+		: (inLevel == 3) ? 120
+		: (inLevel == 4) ? 130
+		: (inLevel == 5) ? 140
+		: (inLevel == 6) ? 150
+		: (inLevel == 7) ? 160
+		: (inLevel == 8) ? 170
+		: (inLevel == 9) ? 180
+		: (inLevel == 10) ? 190
+		: (inLevel == 11) ? 200
+		: (inLevel == 12) ? 210
+		: (inLevel == 13) ? 220
+		: (inLevel == 14) ? 230
+		: (inLevel == 15) ? 240
+		: (inLevel == 16) ? 250
+		: (inLevel == 17) ? 260
+		: (inLevel == 18) ? 270
+		: (inLevel == 19) ? 280
+		: (inLevel == 20) ? 290
+		: (inLevel == 21) ? 300
+		: (inLevel == 22) ? 310
+		: (inLevel == 23) ? 320
+		: (inLevel == 24) ? 330
+		: 340
+		;
+	}
+
+	FORCEINLINE int MaxExpCal(int inLevel)
+	{
+		return 1;
+	}
 }

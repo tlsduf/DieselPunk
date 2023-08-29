@@ -113,8 +113,10 @@ public:
 	// 체력 퍼센테이지 반환 애니메이팅
 	void _UpdateHp(int InCurHp, int InMaxHp);
 	Animator AnimatorHealthPercent;
-	UPROPERTY(BlueprintReadOnly)
 	float TempPercent;
+	Animator AnimatorHealthPercentAfterImage;
+	float TempPercentAfterImage;
+	
 	//=================================================================================
 public:
 	bool GetCombatState();
@@ -136,6 +138,9 @@ public:
 public:
 	int Exp;
 	int Level;
+
+	// 임시 레벨 반환함수
+	int GetLevel();
 	
 	// * 임시 죽는애니메이션 play
 	UFUNCTION(BlueprintPure)
@@ -144,6 +149,9 @@ public:
 	// * 체력바UI
 	UFUNCTION(BlueprintPure)
 	float GetHealthPercent();
+	
+	UFUNCTION(BlueprintPure)
+	float GetHealthPercentAfterImage();
 
 	// * 데미지UI
 	UFUNCTION(BlueprintPure)
@@ -210,11 +218,13 @@ public:
 
 	// * 체력 및 방어력 및 특수
 	// TODO 방어력 기능 구현
+	float TempMaxHealth;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Defensive")
-	float MaxHealth = 100;
+	int MaxHealth = 100;
 
 	UPROPERTY(VisibleAnywhere, Category = "Defensive")
-	float Health;
+	int Health;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Defensive")
 	int Armor = 0;
