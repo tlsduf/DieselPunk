@@ -64,7 +64,7 @@ protected:
 
 	// 위젯을 오래 클릭하고 있는 경우 호출되는 함수
 	virtual void OnWidgetLongPressed();
-
+	
 	// 위젯을 검색 후 변수로 설정한다.
 	template<typename T>
 	bool _InitControl( T*& InWidget, const FName& InWidgetName );

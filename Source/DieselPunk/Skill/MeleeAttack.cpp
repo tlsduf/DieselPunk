@@ -2,9 +2,12 @@
 
 #include "MeleeAttack.h"
 #include "../Util/UtilCollision.h"
+#include "../Character/CharacterNPC.h"
+#include "../Animation/MonsterAnimInstace.h"
 
 #include <Kismet/GameplayStatics.h>
-#include <DrawDebugHelpers.h>
+#include <GameFramework/PlayerController.h>
+#include <Components/SkeletalMeshComponent.h>
 
 void UMeleeAttack::BeginPlay()
 {
@@ -15,11 +18,30 @@ void UMeleeAttack::SkillTriggered()
 {
 	Super::SkillTriggered();
 
+	_Attack();
+}
+
+float UMeleeAttack::Attack()
+{
+	auto *ownerPawn = Cast<ACharacterNPC>(GetOwner());
+	if (ownerPawn == nullptr)
+		return 0;
+
+	//애니메이션 재생?
+	UMonsterAnimInstace* animInst = Cast<UMonsterAnimInstace>(ownerPawn->GetMesh()->GetAnimInstance());
+	if (!animInst)
+		return 0;
+	
+	return animInst->PlayMontage(EAbilityType::None, EMonsterSkillMontageType::Attack);
+}
+
+void UMeleeAttack::_Attack()
+{
 	// 데미지 프레임워크를 위한 Instigator, Causer
-	APawn *ownerPawn = Cast<APawn>(GetOwner());
+	auto ownerPawn = Cast<ACharacterNPC>(GetOwner());
 	if (ownerPawn == nullptr)
 		return;
-	AController *ownerController = ownerPawn->GetController();
+	auto ownerController = ownerPawn->GetController();
 	if (ownerController == nullptr)
 		return;
 

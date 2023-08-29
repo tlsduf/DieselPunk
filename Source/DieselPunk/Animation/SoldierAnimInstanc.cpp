@@ -9,12 +9,12 @@
 
 #include <Animation/AnimMontage.h>
 
-// 틱마다 호출되는 함수
+
 USoldierAnimInstance::USoldierAnimInstance()
 	:ShiftMontage(nullptr), SkillQMontage(nullptr), SkillEMontage(nullptr), SkillRMontage(nullptr), GunRecoilAlpha(0.f)
 {
 }
-
+// 틱마다 호출되는 함수
 void USoldierAnimInstance::NativeUpdateAnimation(float InDeltaSeconds)
 {
 	Super::NativeUpdateAnimation(InDeltaSeconds);

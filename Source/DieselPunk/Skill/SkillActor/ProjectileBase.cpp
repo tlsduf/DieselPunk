@@ -120,8 +120,8 @@ void AProjectileBase::BeginOverlapEvent(class UPrimitiveComponent* InHitComp, cl
 
 void AProjectileBase::_BeginOverlapEvent(class UPrimitiveComponent* InHitComp, class AActor* InOtherActor, class UPrimitiveComponent* InOtherComp, int32 InOtherBodyIndex, bool InbFromSweep, const FHitResult & InSweepResult)
 {
-	auto *ownerPawn = Cast<APawn>(GetOwner());
-	auto *ownerController = ownerPawn->GetController();
+	auto ownerPawn = Cast<APawn>(GetOwner());
+	auto ownerController = ownerPawn->GetController();
 	
 	//UtilEffect::ActivateDecorator( this, EDecorateUseType::Despawn);
 	

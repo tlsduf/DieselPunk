@@ -9,7 +9,7 @@
  *
  */
 class AApplyRadialDamage;
-
+class ACharacterNPC;
 
 UCLASS()
 class DIESELPUNK_API UMeleeAttack : public UPlayerSkill
@@ -41,4 +41,8 @@ private:
 
 public:
 	virtual void SkillTriggered() override;
+
+	float Attack();
+	
+	void _Attack();
 };

@@ -114,8 +114,8 @@ void UStatusUIBase::_UpdateHp( int64 InCurHp, int64 InMaxHp )
 	float destPercent = ( float )InCurHp / ( float )InMaxHp;
 	destPercent = FMath::Clamp( destPercent, 0.f, 1.f );
 
-	if ( ProgressBarHP )
-		ProgressBarHP->SetPercent( curPercent );
+	//if ( ProgressBarHP )
+	//	ProgressBarHP->SetPercent( curPercent );
 
 	if( HpAnimator.IsRunning() )
 		HpAnimator.Stop();
@@ -127,13 +127,13 @@ void UStatusUIBase::_UpdateHp( int64 InCurHp, int64 InMaxHp )
 	param.DurationTime = DA_UI( HpAnimSpeed );
 	param.DurationFunc = [ this ] ( float InValue )
 	{
-		if ( ProgressBarHP )
-			ProgressBarHP->SetPercent( InValue );
+		//if ( ProgressBarHP )
+		//	ProgressBarHP->SetPercent( InValue );
 	};
 	param.CompleteFunc = [ this ] ( float InValue )
 	{
-		if ( ProgressBarHP )
-			ProgressBarHP->SetPercent( InValue );
+		//if ( ProgressBarHP )
+		//	ProgressBarHP->SetPercent( InValue );
 	};
 
 	HpAnimator.Start( param );

@@ -29,13 +29,16 @@ void USkillSoldierShift::SkillTriggered()
 	auto ownerController = ownerPawn->GetController();
 	if(ownerController == nullptr)
 		return;
-
-	ownerPawn->InCombat = false;
 	
 	const FVector currentAcceleration = ownerPawn->GetCharacterMovement()->GetCurrentAcceleration();
 	float currentAccelLength = currentAcceleration.SizeSquared();
-	if (CanDash && currentAccelLength > 0)
+	if (CanDash && currentAccelLength > 0 )
 	{
+		// 화면 와이드 아웃(Run)
+		ownerPawn->InCombat = false;
+		//ownerPawn->SetRunZoomOutProp();
+		ownerPawn->IsJog = true;
+		
 		// 카메라방향으로 대쉬
 		
 		const FRotator rotation = ownerController->GetControlRotation();	//카메라방향으로 대쉬
@@ -69,8 +72,6 @@ void USkillSoldierShift::SkillTriggered()
 		CanDash = false;
 		InCooldownDash = true;
 
-		ownerPawn->SetZoomOutProp();
-
 		ownerPawn->GetWorldTimerManager().SetTimer(DashTHandle, this, &USkillSoldierShift::StopDashing, DashingTime, false);
 
 		//애니메이션 재생
@@ -102,8 +103,6 @@ void USkillSoldierShift::ResetDash()
 	}
 	IsDash = false;
 	CanDash = true;
-	//SetInCombatFalse();
-	ownerPawn->IsJog = true;
 
 	ownerPawn->GetWorldTimerManager().SetTimer(DashTHandle, this, &USkillSoldierShift::ResetCooldownDash, ShiftCooldownTime, false);
 }

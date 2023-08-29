@@ -16,7 +16,8 @@ class DIESELPUNK_API USkillSoldierE : public UPlayerSkill
 {
 	GENERATED_BODY()
 
-	FTimerHandle ZoomTHandle;
+	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
+	UParticleSystem *BuffEffect;
 public:
 	// 생성자
 	USkillSoldierE();

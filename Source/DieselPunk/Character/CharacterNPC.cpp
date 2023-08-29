@@ -2,7 +2,7 @@
 
 #include "CharacterNPC.h"
 #include "../Skill/PlayerSkill.h"
-
+#include "../Skill/MeleeAttack.h"
 
 #include <Components/InputComponent.h>
 
@@ -10,6 +10,7 @@
 #include <Kismet/GameplayStatics.h>
 #include <Particles/ParticleSystemComponent.h>
 #include <Components/SkeletalMeshComponent.h>
+#include <Components/WidgetComponent.h>
 
 
 ACharacterNPC::ACharacterNPC()
@@ -28,6 +29,24 @@ void ACharacterNPC::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+// =============================================================
+// 상태 UI 위젯을 생성한다.
+// =============================================================
+void ACharacterNPC::CreateStatusUI()
+{
+	/*if( StatusUI.IsValid() )
+		return;
+
+	StatusUI = GetUIManager().CreateUnmanagedUI< UStatusUIBase >( TEXT( "HUD/NPC_HpBar" ) );
+	if ( !WidgetComp || !StatusUI.IsValid() )
+		return;
+
+	WidgetComp->SetWidget( StatusUI.Get() );
+	WidgetComp->SetDrawSize( FVector2D( 250.0f, 80.0f ) );
+
+	StatusUI->InitStatus( this );*/
+}
+
 void ACharacterNPC::SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -37,29 +56,16 @@ void ACharacterNPC::SetupPlayerInputComponent(class UInputComponent *PlayerInput
 	//PlayerInputComponent->BindAction("RightMouse", IE_Pressed, this, &ABaseEnemyCharacter::DoProjectileAttack);
 }
 
-void ACharacterNPC::MeleeAttackHandle()
+float ACharacterNPC::DoMeleeAttack()
 {
-	if (CanMeleeAttack)
-	{
-		GetWorldTimerManager().SetTimer(MeleeAttackTHandle, this, &ACharacterNPC::DoMeleeAttack, 0.50f, false);
-		CanMeleeAttack = false;
-		GetWorldTimerManager().SetTimer(CanMeleeAttackTHandle, this, &ACharacterNPC::SetCanMeleeAttackTrue, 1.10f, false);
-		DoingMeleeAttack = true;
-		GetWorldTimerManager().SetTimerForNextTick(this, &ACharacterNPC::SetDoingMeleeAttackFalse);
-	}
-}
-void ACharacterNPC::DoMeleeAttack()
-{
-	MeleeAttack->SkillTriggered();
+	auto _MeleeAttack = Cast<UMeleeAttack>(MeleeAttack);
+	return _MeleeAttack->Attack();
 }
 
-void ACharacterNPC::SetCanMeleeAttackTrue()
+void ACharacterNPC::TempDoMeleeAttack()
 {
-	CanMeleeAttack = true;
-}
-void ACharacterNPC::SetDoingMeleeAttackFalse()
-{
-	DoingMeleeAttack = false;
+	auto _MeleeAttack = Cast<UMeleeAttack>(MeleeAttack);
+	_MeleeAttack->_Attack();
 }
 
 void ACharacterNPC::DoProjectileAttack()

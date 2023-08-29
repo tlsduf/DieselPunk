@@ -4,9 +4,9 @@
 #include "../Logic/PlayerControllerBase.h"
 #include "..\Core\DpGameMode.h"
 #include "../Skill/PlayerSkill.h"
-#include "..\Common\DpLog.h"
-#include "../Util/UtilEnum.h"
-#include "../Manager/ObjectManager.h"
+#include "../Manager/UIManager.h"
+#include "../UI/HUD/StatusUIBase.h"
+#include "DieselPunk/Util/UtilLevelCal.h"
 
 #include <Camera/CameraComponent.h>
 #include <Components/CapsuleComponent.h>
@@ -19,10 +19,15 @@
 #include <DrawDebugHelpers.h>
 #include <EnhancedInputComponent.h>
 #include <Engine/DamageEvents.h>
+#include <Components/WidgetComponent.h>
+
+
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(CharacterPC)
 
 ACharacterPC::ACharacterPC()
+	:
+	Exp(0), Level(1), TempMaxHealth(MaxHealth)
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -77,6 +82,8 @@ void ACharacterPC::BeginPlay()
 
 	// 게임시작시 기본체력초기화
 	Health = MaxHealth;
+	TempPercent = Health / MaxHealth;
+	TempPercentAfterImage = Health / MaxHealth;
 	JumpMaxCount = ThisJumpMaxCount;
 }
 
@@ -85,6 +92,12 @@ void ACharacterPC::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if(TempMaxHealth != MaxHealth)
+	{
+		_UpdateHp(Health, MaxHealth);
+		TempMaxHealth = MaxHealth;
+	}
+	
 	// 뛰는 상태인지 판별하여 MaxWalkSpeed 초기화.
 	if (IsJog && IsWPressed)
 	{
@@ -129,7 +142,17 @@ void ACharacterPC::Tick(float DeltaTime)
 
 	// 체력 애니메이팅 [TODO]추후 UI로 
 	AnimatorHealthPercent.Update(DeltaTime);
+	AnimatorHealthPercentAfterImage.Update(DeltaTime);
 }
+
+// =============================================================
+// 상태 UI 위젯을 생성한다.
+// =============================================================
+void ACharacterPC::CreateStatusUI()
+{
+
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 // Input
@@ -421,6 +444,7 @@ float ACharacterPC::TakeDamage(float DamageAmount, struct FDamageEvent const &Da
 
 		Damage = FMath::Min(Health, Damage);
 		_UpdateHp(Health - Damage, MaxHealth);
+		Health -= Damage;
 
 		//================================================================
 		// 3.애니메이션 플레이 //bool 변수로 0.3초마다 애니메이션 실행
@@ -438,7 +462,7 @@ float ACharacterPC::TakeDamage(float DamageAmount, struct FDamageEvent const &Da
 		//================================================================
 		if (IsDead())
 		{
-			LOG_SCREEN(TEXT("He Died"));
+			//LOG_SCREEN(TEXT("He Died"));
 			ADpGameMode *GameMode = GetWorld()->GetAuthGameMode<ADpGameMode>();
 			if (GameMode != nullptr)
 			{
@@ -451,10 +475,16 @@ float ACharacterPC::TakeDamage(float DamageAmount, struct FDamageEvent const &Da
 				TakeDamageHandle, [this]()
 				{ Destroy(); },
 				20.0f, false);
-			
+
+			auto DamageCauserPlayer = Cast<ACharacterPC>(DamageCauser);
+			// 플레이어의 경험치를 1 올림 //TODO NPC와 구분지어서 레벨디자인 할 수 있게끔
+			DamageCauserPlayer->Exp = DamageCauserPlayer->Exp + 1;
+			DamageCauserPlayer->Level = UtilLevelCal::LevelCal(DamageCauserPlayer->Exp);
+			DamageCauserPlayer->MaxHealth = UtilLevelCal::MaxHealthCal(DamageCauserPlayer->Level);
+			LOG_SCREEN(TEXT("MAxHealth : %d Exp : %d Level : %d"), DamageCauserPlayer->MaxHealth , DamageCauserPlayer->Exp, DamageCauserPlayer->Level);
 		}
 
-		LOG_SCREEN(TEXT("Now Health : %f"), Health);
+		//LOG_SCREEN(TEXT("Now Health : %f"), Health);
 		return Damage;
 	}
 	else // DamageImmunity가 true 일 때 Damage = 0
@@ -513,6 +543,11 @@ bool ACharacterPC::GetCombatState()
 	return InCombat;
 }
 
+int ACharacterPC::GetLevel()
+{
+	return Level;
+}
+
 // ufunction 으로 임시 anim 재생
 bool ACharacterPC::IsDead() const
 {
@@ -521,22 +556,25 @@ bool ACharacterPC::IsDead() const
 
 void ACharacterPC::_UpdateHp(int InCurHp, int InMaxHp)
 {
-	float curPercent = Health / MaxHealth;
+	float curPercent = Health / TempMaxHealth;
 	curPercent = FMath::Clamp( curPercent, 0.f, 1.f );
 
 	float destPercent = ( float )InCurHp / ( float )InMaxHp;
 	destPercent = FMath::Clamp( destPercent, 0.f, 1.f );
 
+	float percentAmount = curPercent - destPercent;
+	
+	// 체력바 애니메이터
 	TempPercent = curPercent;
 
 	if( AnimatorHealthPercent.IsRunning() )
 		AnimatorHealthPercent.Stop();
 	
 	AnimatorParam param;
-	param.AnimType = EAnimType::Linear;
+	param.AnimType = EAnimType::CubicEaseOut;
 	param.StartValue = curPercent;
 	param.EndValue = destPercent;
-	param.DurationTime = 0.3f;
+	param.DurationTime = 0.6f;
 	param.DurationFunc = [ this ] ( float InValue )
 	{
 		TempPercent = InValue;
@@ -547,14 +585,40 @@ void ACharacterPC::_UpdateHp(int InCurHp, int InMaxHp)
 	};
 
 	AnimatorHealthPercent.Start( param );
+	
+	// 체력바잔상 애니메이터
+	TempPercentAfterImage = curPercent;
 
-	Health = InCurHp;
-	MaxHealth = InMaxHp;
+	if( AnimatorHealthPercentAfterImage.IsRunning() )
+		AnimatorHealthPercentAfterImage.Stop();
+	
+	AnimatorParam paramAfterImage;
+	paramAfterImage.AnimType = EAnimType::CubicEaseIn;
+	paramAfterImage.StartValue = curPercent;
+	paramAfterImage.EndValue = destPercent;
+	paramAfterImage.DurationTime =
+		(0.f <= percentAmount && percentAmount < 0.2f) ? 0.6f
+	: (0.2f <= percentAmount && percentAmount < 0.4f) ? 0.85f
+	:													1.1f;
+	paramAfterImage.DurationFunc = [ this ] ( float InValue )
+	{
+		TempPercentAfterImage = InValue;
+	};
+	paramAfterImage.CompleteFunc = [ this ] ( float InValue )
+	{
+		TempPercentAfterImage = InValue;
+	};
+
+	AnimatorHealthPercentAfterImage.Start( paramAfterImage );
 }
 
 float ACharacterPC::GetHealthPercent()
 {
 	return TempPercent;
+}
+float ACharacterPC::GetHealthPercentAfterImage()
+{
+	return TempPercentAfterImage;
 }
 
 float ACharacterPC::GetDamage() const

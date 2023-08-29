@@ -4,8 +4,11 @@
 #include "..\Character\CharacterPC.h"
 
 #include <Kismet/GameplayStatics.h>
+#include <BehaviorTree/BehaviorTree.h>
 #include <BehaviorTree/BlackboardComponent.h>
 #include <Math/Vector.h>
+
+const FName AEnemyAIController::TargetKey(TEXT("Target"));
 
 void AEnemyAIController::BeginPlay()
 {

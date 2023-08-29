@@ -17,8 +17,6 @@ class DIESELPUNK_API ACharacterNPC : public ACharacterPC
 	GENERATED_BODY()
 
 public:
-
-	
 	ACharacterNPC();
 
 	virtual void Tick(float DeltaTime) override;
@@ -28,6 +26,7 @@ protected:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent) override;
 
+public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyCustomCategory", meta = (AllowPrivateAccess = "true"))
 	UPlayerSkill *MeleeAttack;
 
@@ -39,18 +38,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
 	UParticleSystem *GranadeMuzzleEffect;
 
-	void MeleeAttackHandle();
-	void DoMeleeAttack();
-
-	void SetCanMeleeAttackTrue();
-	void SetDoingMeleeAttackFalse();
-
+	// 상태 UI 위젯을 생성한다.
+	virtual void CreateStatusUI() override;
+	
+	float DoMeleeAttack();
+	void TempDoMeleeAttack();
 	void DoProjectileAttack();
-
-	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	bool DoingMeleeAttack = false;
-
-	bool CanMeleeAttack = true;
-	FTimerHandle MeleeAttackTHandle;
-	FTimerHandle CanMeleeAttackTHandle;
 };

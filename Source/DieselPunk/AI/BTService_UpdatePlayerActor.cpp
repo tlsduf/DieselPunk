@@ -21,22 +21,19 @@ void UBTService_UpdatePlayerActor::TickNode(UBehaviorTreeComponent &OwnerComp, u
 
     APawn *PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
     if (PlayerPawn == nullptr)
-    {
         return;
-    }
-
+    
     APawn *AIPawn = OwnerComp.GetAIOwner()->GetPawn();
     if (OwnerComp.GetAIOwner() == nullptr)
-    {
         return;
-    }
+    
 
     OwnerComp.GetBlackboardComponent()->SetValueAsVector(TEXT("PlayerLocation"), PlayerPawn->GetActorLocation());
 
     FVector VRange = AIPawn->GetActorLocation() - PlayerPawn->GetActorLocation();
     float FRange = VRange.Size();
-    // UE_LOG(LogTemp, Warning, TEXT("%f"), FRange);
 
+    // 몬스터와 플레이어의 거리에 따른 조건 설정 // 이딴식으로 하는게 맞는것인가?
     if (FRange > 1500)
     {
         OwnerComp.GetBlackboardComponent()->SetValueAsObject(TEXT("Player"), PlayerPawn);
@@ -56,8 +53,10 @@ void UBTService_UpdatePlayerActor::TickNode(UBehaviorTreeComponent &OwnerComp, u
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InMeleeRange"), true);
     }
 
-    AEnemyAIController * Controller = Cast<AEnemyAIController>(OwnerComp.GetAIOwner());
 
+    // 스폰 시, 죽음 시 블랙보드를 멈추기위해서 임시로 구현함 // 이딴식으로 하는 게 맞는 것인가?
+    AEnemyAIController * Controller = Cast<AEnemyAIController>(OwnerComp.GetAIOwner());
+    
     if (Controller->IsDead())
     {
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("IsLive"), false);
@@ -66,7 +65,6 @@ void UBTService_UpdatePlayerActor::TickNode(UBehaviorTreeComponent &OwnerComp, u
     {
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("IsLive"), true);
     }
-
     if (Controller->PlaySpawnAnim())
     {
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("PlaySpawnAnim"), false);
@@ -75,4 +73,5 @@ void UBTService_UpdatePlayerActor::TickNode(UBehaviorTreeComponent &OwnerComp, u
     {
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("PlaySpawnAnim"), true);
     }
+    
 }

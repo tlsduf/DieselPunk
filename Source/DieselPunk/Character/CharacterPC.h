@@ -47,6 +47,9 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent) override;
 
+	// 상태 UI 위젯을 생성한다.
+	virtual void CreateStatusUI() override;
+	
 	// 런타임에 스킬들을 인스턴스화 시킵니다. PlayerController에서 Pose시 호출합니다.
 	void InitSkills();
 
@@ -110,7 +113,10 @@ public:
 	// 체력 퍼센테이지 반환 애니메이팅
 	void _UpdateHp(int InCurHp, int InMaxHp);
 	Animator AnimatorHealthPercent;
-	float TempPercent = Health / MaxHealth;
+	float TempPercent;
+	Animator AnimatorHealthPercentAfterImage;
+	float TempPercentAfterImage;
+	
 	//=================================================================================
 public:
 	bool GetCombatState();
@@ -130,6 +136,12 @@ public:
 
 	// !MyCode------------------------------------------------------
 public:
+	int Exp;
+	int Level;
+
+	// 임시 레벨 반환함수
+	int GetLevel();
+	
 	// * 임시 죽는애니메이션 play
 	UFUNCTION(BlueprintPure)
 	bool IsDead() const;
@@ -137,6 +149,9 @@ public:
 	// * 체력바UI
 	UFUNCTION(BlueprintPure)
 	float GetHealthPercent();
+	
+	UFUNCTION(BlueprintPure)
+	float GetHealthPercentAfterImage();
 
 	// * 데미지UI
 	UFUNCTION(BlueprintPure)
@@ -203,11 +218,13 @@ public:
 
 	// * 체력 및 방어력 및 특수
 	// TODO 방어력 기능 구현
+	float TempMaxHealth;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Defensive")
-	float MaxHealth = 100;
+	int MaxHealth = 100;
 
 	UPROPERTY(VisibleAnywhere, Category = "Defensive")
-	float Health;
+	int Health;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Defensive")
 	int Armor = 0;
