@@ -41,19 +41,21 @@ void AProjectileBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// 콜리전 반응 설정
 	SetCapsuleCollisionResponses();
-	
-	if (ShotEffect)
-	{
-		UtilEffect::SpawnParticleComponent(ShotEffect, GetActorLocation(), GetActorRotation());
-	}
-	if (ShotSound)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, ShotSound, GetActorLocation());
-	}
 
+	// 사운드, 이펙트 재생
+	if (ShotEffect)
+		UtilEffect::SpawnParticleComponent(ShotEffect, GetActorLocation(), GetActorRotation());
+	if (ShotSound)
+		UGameplayStatics::PlaySoundAtLocation(this, ShotSound, GetActorLocation());
+
+	// 1틱만 사용시 처리
 	if(bUseOneTick)
 		OneTickTask();
+
+	// 투사체 10초 뒤 자동 파괴
+	GetWorld()->GetTimerManager().SetTimer(DestroyTimeHandler, [this](){Destroy();}, 10, false);
 }
 
 // Called every frame

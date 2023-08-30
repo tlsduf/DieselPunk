@@ -12,17 +12,14 @@ AProjectileGranade::AProjectileGranade()
 void AProjectileGranade::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if(!bUseOneTick)
+	
+	if(CollisionResponses == ECollisionResponsesType::OnHit && !bUseOneTick)
 	{
-		if(CollisionResponses == ECollisionResponsesType::OnHit)
-		{
-			CapsuleComponent->OnComponentHit.AddDynamic(this, &AProjectileGranade::OnHit);
-		}
-		else if(CollisionResponses == ECollisionResponsesType::Overlap)
-		{
-			CapsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &AProjectileGranade::BeginOverlapEvent);
-		}
+		CapsuleComponent->OnComponentHit.AddDynamic(this, &AProjectileGranade::OnHit);
+	}
+	else if(CollisionResponses == ECollisionResponsesType::Overlap && !bUseOneTick)
+	{
+		CapsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &AProjectileGranade::BeginOverlapEvent);
 	}
 }
 

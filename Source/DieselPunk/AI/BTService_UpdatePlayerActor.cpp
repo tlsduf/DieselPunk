@@ -2,12 +2,13 @@
 
 #include "BTService_UpdatePlayerActor.h"
 #include "..\Logic\EnemyAIController.h"
+#include "../Character/CharacterNPC.h"
 
+#include <Components/CapsuleComponent.h>
 #include <BehaviorTree/BlackboardComponent.h>
 #include <Kismet/GameplayStatics.h>
 #include <GameFramework/Pawn.h>
 #include <AIController.h>
-
 
 
 UBTService_UpdatePlayerActor::UBTService_UpdatePlayerActor()
@@ -27,20 +28,22 @@ void UBTService_UpdatePlayerActor::TickNode(UBehaviorTreeComponent &OwnerComp, u
     if (OwnerComp.GetAIOwner() == nullptr)
         return;
     
-
+    auto AICharacter = Cast<ACharacterNPC>(AIPawn);
+    float MeleeRange = AICharacter->GetCapsuleComponent()->GetScaledCapsuleRadius() + 200;
+    
     OwnerComp.GetBlackboardComponent()->SetValueAsVector(TEXT("PlayerLocation"), PlayerPawn->GetActorLocation());
 
     FVector VRange = AIPawn->GetActorLocation() - PlayerPawn->GetActorLocation();
     float FRange = VRange.Size();
 
     // 몬스터와 플레이어의 거리에 따른 조건 설정 // 이딴식으로 하는게 맞는것인가?
-    if (FRange > 1500)
+    if (1500 < FRange)
     {
         OwnerComp.GetBlackboardComponent()->SetValueAsObject(TEXT("Player"), PlayerPawn);
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InRange"), false);
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InMeleeRange"), false);
     }
-    else if (FRange < 1500 && FRange > 250)
+    else if (MeleeRange < FRange && FRange < 1500)
     {
         OwnerComp.GetBlackboardComponent()->SetValueAsObject(TEXT("Player"), PlayerPawn);
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InRange"), true);
