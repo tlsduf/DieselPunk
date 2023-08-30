@@ -188,3 +188,19 @@ enum class EMontageSectionType : uint8
 	AvoidSkill			UMETA( ToolTip = "회피 스킬"),
 	Max,
 };
+
+// 콜리전 충돌 타입
+UENUM( BlueprintType )
+enum class ECollisionResponsesType : uint8
+{
+	OnHit		UMETA( ToolTip = "온힛 이벤트 전용" ),
+	Overlap		UMETA( ToolTip = "오버랩 이벤트 전용" ),
+};
+
+// 투사체 종류 Player or Enemy
+UENUM( BlueprintType )
+enum class EProjectileOwnerType : uint8
+{
+	Player		UMETA( ToolTip = "플레이어" ),
+	Enemy		UMETA( ToolTip = "적" )
+};

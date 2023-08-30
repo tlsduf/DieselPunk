@@ -73,7 +73,6 @@ void USkillSoldierR::SkillTriggered()
 			}
 			if (PinPointHitEffect)
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), PinPointHitEffect, HitResult.Location);
-			
 		}
 
 		// 화면와이드인
