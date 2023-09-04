@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SkillSoldierRM.h"
-#include "..\SkillActor\ProjectileBase.h"
+#include "../../Actor\ProjectileBase.h"
 #include "..\..\Character\CharacterPC.h"
 
 #include <GameFramework/PlayerController.h>

@@ -102,3 +102,27 @@ FString UtilPath::GetDataAssetPath( const FString& InFileName )
 	FString resourcePath = FString::Printf( TEXT( "/Script/Engine.DataAsset'/Game/DieselPunk/Data/DataAsset/%s.%s'" ), *InFileName, *InFileName );
 	return resourcePath;
 }
+
+// =============================================================
+// /임시/스킬 및 스킬 액터의 경로를 반환한다. ( 레퍼런스 복사 + _C 형태 )
+// 
+// Skill 폴더 기준으로 레퍼런스 경로를 구현한다.
+// ex) .../Character/SkillSoldier/BP_Test 인 경우 SkillSoldier/BP_Test 만 입력하면 동작함
+// =============================================================
+FString UtilPath::GetSkillPath( const FString& InPath )
+{
+	FString bpName = TEXT( "" );
+	FString folderPath = TEXT( "" );
+	bool useFolder = InPath.Split( TEXT( "/" ), &folderPath, &bpName, ESearchCase::CaseSensitive, ESearchDir::FromEnd );
+
+	FString resourcePath;
+
+	if ( useFolder )
+		resourcePath = FString::Printf( TEXT( "/Script/Engine.Blueprint'/Game/DieselPunk/Blueprints/Skill/%s/%s.%s'" ), *folderPath, *bpName, *bpName );
+	else
+		resourcePath = FString::Printf( TEXT( "/Script/Engine.Blueprint'/Game/DieselPunk/Blueprints/Skill/%s.%s'" ), *InPath, *InPath );
+
+	resourcePath.RemoveAt( resourcePath.Len() - 1 );
+
+	return FString::Printf( TEXT( "%s_C'" ), *resourcePath );
+}

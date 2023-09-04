@@ -28,4 +28,7 @@ namespace UtilPath
 
 	// Player 관련 데이터 에셋의 레퍼런스 경로를 반환한다
 	FString GetPlayerDataAssetPath( const FString& InFileName );
+	
+	// /임시/스킬 및 스킬 액터의 경로를 반환한다. ( 레퍼런스 복사 + _C 형태 )
+	FString GetSkillPath( const FString& InPath );
 }

@@ -1,0 +1,40 @@
+﻿// Copyright GuardiansW. All Rights Reserved.
+
+
+#pragma once
+
+
+#include "../UserWidgetBase.h"
+#include "DamageUI.generated.h"
+
+
+class UTextBlock;
+
+UCLASS()
+class DIESELPUNK_API UDamageUI : public UUserWidgetBase
+{
+	GENERATED_BODY()
+	
+protected:
+	UTextBlock* Damage;	// 데미지 텍스트
+public:
+	// 데미지를 세팅한다.
+	void SetDamage(float inDamage);
+	
+protected:
+	// 생성자
+	virtual void OnCreated() override;
+
+	// 소멸자
+	virtual void BeginDestroy() override;
+
+	// 화면에 보이는 시점에 호출되는 함수
+	virtual void OnAppeared() override;
+
+	// 화면에서 사라지는 시점에 호출되는 함수
+	virtual void OnDisappeared() override;
+
+private:
+	// 위젯을 초기화한다.
+	void _InitControls();
+};
