@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SkillSoldierRM.h"
-#include "..\SkillActor\ProjectileGranade.h"
+#include "..\SkillActor\ProjectileBase.h"
 #include "..\..\Character\CharacterPC.h"
 
 #include <GameFramework/PlayerController.h>
@@ -35,11 +35,11 @@ void USkillSoldierRM::SkillStarted()
 	FVector shotLocation = ownerPawn->GetMesh()->GetSocketLocation("Muzzle_01");
 	FRotator shotRotation = (end - shotLocation).Rotation();
 	// projectile spawn
-	if(ProjectileGranadeClass)
+	if(ProjectileClass)
 	{
 		FActorSpawnParameters param = FActorSpawnParameters();
 		param.Owner = GetOwner();
-		ProjectileGranade = GetWorld()->SpawnActor<AProjectileGranade>(ProjectileGranadeClass, shotLocation, shotRotation, param);
+		Projectile = GetWorld()->SpawnActor<AProjectileBase>(ProjectileClass, shotLocation, shotRotation, param);
 	}
 }
 void USkillSoldierRM::SkillCompleted()

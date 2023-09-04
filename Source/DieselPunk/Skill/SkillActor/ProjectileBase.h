@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "ProjectileBase.generated.h"
 
@@ -37,7 +36,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
 	EProjectileOwnerType ProjectileOwnerType = EProjectileOwnerType::Player;
 	
-	// 데미지 // 데이터테이블에서 이곳으로 값을 받아올 것인
+	// 데미지 // 데이터테이블에서 이곳으로 값을 받아와야되는데 따이
 	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
 	float Damage = 10.f;
 

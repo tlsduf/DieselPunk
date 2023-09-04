@@ -1,15 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SkillSoldierR.h"
-#include "..\SkillActor\ProjectileGranade.h"
+#include "..\SkillActor\ProjectileBase.h"
 #include "../../Character/CharacterPC.h"
 #include "../../Logic/PlayerControllerBase.h"
 #include "../../Animation/SoldierAnimInstance.h"
 
 #include <GameFramework/PlayerController.h>
-#include <GameFramework/Character.h>
 #include <Kismet/GameplayStatics.h>
-#include <DrawDebugHelpers.h>
 
 
 USkillSoldierR::USkillSoldierR() : Super()
@@ -21,7 +19,6 @@ void USkillSoldierR::BeginPlay()
 {
 	Super::BeginPlay();
 }
-
 
 void USkillSoldierR::SkillTriggered()
 {
@@ -65,11 +62,11 @@ void USkillSoldierR::SkillTriggered()
 		AActor *HitActor = HitResult.GetActor();
 		if (HitActor)
 		{
-			if(ProjectileGranadeClass)
+			if(ProjectileClass)
 			{
 				FActorSpawnParameters param = FActorSpawnParameters();
 				param.Owner = GetOwner();
-				ProjectileGranade = GetWorld()->SpawnActor<AProjectileGranade>(ProjectileGranadeClass, HitResult.Location, FRotator(0,0, 0), param);
+				Projectile = GetWorld()->SpawnActor<AProjectileBase>(ProjectileClass, HitResult.Location, FRotator(0,0, 0), param);
 			}
 			if (PinPointHitEffect)
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), PinPointHitEffect, HitResult.Location);

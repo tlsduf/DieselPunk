@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SkillSoldierQ.h"
-#include "..\SkillActor\ProjectileGranade.h"
+#include "..\SkillActor\ProjectileBase.h"
 #include "../../Character/CharacterPC.h"
 #include "../../Animation/SoldierAnimInstance.h"
 
@@ -58,10 +58,10 @@ void USkillSoldierQ::Shot()
 		spawnPitch.Pitch = shotRotation.Pitch + 30;
 	}
 	// projectile spawn
-	if(ProjectileGranadeClass)
+	if(ProjectileClass)
 	{
 		FActorSpawnParameters param = FActorSpawnParameters();
 		param.Owner = GetOwner();
-		ProjectileGranade = GetWorld()->SpawnActor<AProjectileGranade>(ProjectileGranadeClass, shotLocation, FRotator(spawnPitch.Pitch, shotRotation.Yaw, 0), param);
+		Projectile = GetWorld()->SpawnActor<AProjectileBase>(ProjectileClass, shotLocation, FRotator(spawnPitch.Pitch, shotRotation.Yaw, 0), param);
 	}
 }

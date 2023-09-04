@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "CharacterPC.h"
 #include "CharacterNPC.generated.h"
 

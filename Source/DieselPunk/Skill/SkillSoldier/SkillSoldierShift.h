@@ -3,7 +3,6 @@
 #pragma once
 
 #include "../PlayerSkill.h"
-#include <CoreMinimal.h>
 #include "SkillSoldierShift.generated.h"
 
 /**

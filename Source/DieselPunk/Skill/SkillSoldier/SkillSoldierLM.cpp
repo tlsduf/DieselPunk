@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SkillSoldierLM.h"
-#include "..\SkillActor\ProjectileGranade.h"
+#include "..\SkillActor\ProjectileBase.h"
 #include "..\..\Character\CharacterPC.h"
 #include "../../Animation/SoldierAnimInstance.h"
 
@@ -10,12 +10,21 @@
 #include <Components/SkeletalMeshComponent.h>
 #include <Kismet/GameplayStatics.h>
 
-#include "Particles/ParticleSystem.h"
+#include <InputTriggers.h>
+#include <Particles/ParticleSystem.h>
 
+#include UE_INLINE_GENERATED_CPP_BY_NAME(SkillSoldierLM)
 
 USkillSoldierLM::USkillSoldierLM() : Super()
 {
 	PrimaryComponentTick.bCanEverTick = false; // 일단 Tick은 OFF 해두었습니다.
+}
+
+void USkillSoldierLM::UpdateSetting()
+{
+	auto triggerType = Cast<UInputTriggerPulse>(GetTriggerType());
+	triggerType->bTriggerOnStart = true;
+	triggerType->Interval = 0.15;
 }
 
 void USkillSoldierLM::BeginPlay()
@@ -58,11 +67,11 @@ void USkillSoldierLM::SkillTriggered()
 
 	//===========================================
 	// * MainAction 2 // Projectile Spawn
-	if(ProjectileGranadeClass && !EBuffOn)
+	if(ProjectileClass && !EBuffOn)
 	{
 		FActorSpawnParameters param = FActorSpawnParameters();
 		param.Owner = GetOwner();
-		ProjectileGranade = GetWorld()->SpawnActor<AProjectileGranade>(ProjectileGranadeClass, shotLocation, shotRotation, param);
+		Projectile = GetWorld()->SpawnActor<AProjectileBase>(ProjectileClass, shotLocation, shotRotation, param);
 		
 		if (MuzzleParticles)
 			UGameplayStatics::SpawnEmitterAttached(
@@ -74,11 +83,11 @@ void USkillSoldierLM::SkillTriggered()
 				FVector(0.1) );
 	}
 	// * or if EBuffOn is true
-	if(ProjectileGranadeEBuffClass && EBuffOn)
+	if(ProjectileEBuffClass && EBuffOn)
 	{
 		FActorSpawnParameters param = FActorSpawnParameters();
 		param.Owner = GetOwner();
-		ProjectileGranade = GetWorld()->SpawnActor<AProjectileGranade>(ProjectileGranadeEBuffClass, shotLocation, shotRotation, param);
+		Projectile = GetWorld()->SpawnActor<AProjectileBase>(ProjectileEBuffClass, shotLocation, shotRotation, param);
 		--Magazine;
 		if (Magazine == 0)
 		{

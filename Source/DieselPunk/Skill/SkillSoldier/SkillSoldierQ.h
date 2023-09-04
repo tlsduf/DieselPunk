@@ -8,7 +8,7 @@
 /**
  *
  */
-class AProjectileGranade;
+class AProjectileBase;
 
 UCLASS()
 class DIESELPUNK_API USkillSoldierQ : public UPlayerSkill
@@ -17,10 +17,10 @@ class DIESELPUNK_API USkillSoldierQ : public UPlayerSkill
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "MyCustomCategory")
-	TSubclassOf<AProjectileGranade> ProjectileGranadeClass;
+	TSubclassOf<AProjectileBase> ProjectileClass;
 
 	UPROPERTY()
-	AProjectileGranade *ProjectileGranade;
+	AProjectileBase *Projectile;
 public:
 	// 생성자
 	USkillSoldierQ();

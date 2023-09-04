@@ -2,8 +2,8 @@
 
 #include "ProjectileBase.h"
 #include "../../Util/UtilCollision.h"
-
 #include "DieselPunk/Util/UtilEffect.h"
+
 #include <NiagaraFunctionLibrary.h>
 #include <NiagaraComponent.h>
 
@@ -56,6 +56,12 @@ void AProjectileBase::BeginPlay()
 
 	// 투사체 10초 뒤 자동 파괴
 	GetWorld()->GetTimerManager().SetTimer(DestroyTimeHandler, [this](){Destroy();}, 10, false);
+	
+	if(CollisionResponses == ECollisionResponsesType::OnHit && !bUseOneTick)
+		CapsuleComponent->OnComponentHit.AddDynamic(this, &AProjectileBase::OnHit);
+	
+	else if(CollisionResponses == ECollisionResponsesType::Overlap && !bUseOneTick)
+		CapsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &AProjectileBase::BeginOverlapEvent);
 }
 
 // Called every frame

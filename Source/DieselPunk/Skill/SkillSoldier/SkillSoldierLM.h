@@ -3,13 +3,10 @@
 #pragma once
 
 #include "../PlayerSkill.h"
-#include <CoreMinimal.h>
 #include "SkillSoldierLM.generated.h"
 
-/**
- *
- */
-class AProjectileGranade;
+class UInputTrigger;
+class AProjectileBase;
 class UNiagaraSystem;
 
 UCLASS()
@@ -19,16 +16,13 @@ class DIESELPUNK_API USkillSoldierLM : public UPlayerSkill
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "MyCustomCategory")
-	TSubclassOf<AProjectileGranade> ProjectileGranadeClass;
-
-	UPROPERTY()
-	AProjectileGranade *ProjectileGranade;
+	TSubclassOf<AProjectileBase> ProjectileClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "MyCustomCategory")
-	TSubclassOf<AProjectileGranade> ProjectileGranadeEBuffClass;
-
+	TSubclassOf<AProjectileBase> ProjectileEBuffClass;
+	
 	UPROPERTY()
-	AProjectileGranade *ProjectileGranadeEBuff;
+	AProjectileBase *Projectile;
 
 	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
 	UParticleSystem *MuzzleParticles;
@@ -38,6 +32,8 @@ private:
 public:
 	// 생성자
 	USkillSoldierLM();
+
+	void UpdateSetting();
 
 	bool EBuffOn = false;
 	int8 Magazine = 20;

@@ -3,13 +3,12 @@
 #pragma once
 
 #include "../PlayerSkill.h"
-#include <CoreMinimal.h>
 #include "SkillSoldierR.generated.h"
 
 /**
  *
  */
-class AProjectileGranade;
+class AProjectileBase;
 
 
 UCLASS()
@@ -42,10 +41,10 @@ private:
 	UParticleSystem *PinPointHitEffect;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "MyCustomCategory")
-	TSubclassOf<AProjectileGranade> ProjectileGranadeClass;
+	TSubclassOf<AProjectileBase> ProjectileClass;
 
 	UPROPERTY()
-	AProjectileGranade *ProjectileGranade;
+	AProjectileBase *Projectile;
 
 	FHitResult GetUnderCursorLocation();
 };

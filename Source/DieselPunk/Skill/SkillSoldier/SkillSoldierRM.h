@@ -3,14 +3,13 @@
 #pragma once
 
 #include "../PlayerSkill.h"
-#include <CoreMinimal.h>
 #include "SkillSoldierRM.generated.h"
 
 /**
  *
  */
 
-class AProjectileGranade;
+class AProjectileBase;
 
 UCLASS()
 class DIESELPUNK_API USkillSoldierRM : public UPlayerSkill
@@ -18,10 +17,10 @@ class DIESELPUNK_API USkillSoldierRM : public UPlayerSkill
 	GENERATED_BODY()
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "MyCustomCategory")
-	TSubclassOf<AProjectileGranade> ProjectileGranadeClass;
+	TSubclassOf<AProjectileBase> ProjectileClass;
 
 	UPROPERTY()
-	AProjectileGranade *ProjectileGranade;
+	AProjectileBase *Projectile;
 	
 public:
 	// 생성자

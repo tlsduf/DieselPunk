@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "BehaviorTree/Services/BTService_BlackboardBase.h"
 #include "BTService_UpdatePlayerActor.generated.h"
 

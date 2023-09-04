@@ -3,7 +3,7 @@
 #pragma once
 
 #include "ProjectileBase.h"
-#include "ProjectileGranade.generated.h"
+#include "ProjectileGranades.generated.h"
 
 /**
  *
