@@ -1,19 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SkillSoldierLM.h"
-#include "..\SkillActor\ProjectileBase.h"
+#include "../../Actor\ProjectileBase.h"
 #include "..\..\Character\CharacterPC.h"
 #include "../../Animation/SoldierAnimInstance.h"
 
-#include <GameFramework/PlayerController.h>
-#include <GameFramework/Character.h>
-#include <Components/SkeletalMeshComponent.h>
 #include <Kismet/GameplayStatics.h>
-
 #include <InputTriggers.h>
-#include <Particles/ParticleSystem.h>
-
-#include UE_INLINE_GENERATED_CPP_BY_NAME(SkillSoldierLM)
 
 USkillSoldierLM::USkillSoldierLM() : Super()
 {
@@ -47,13 +40,14 @@ void USkillSoldierLM::SkillTriggered()
 	FVector lineTraceLocation;
 	FRotator lineTraceRotation;
 	ownerController->GetPlayerViewPoint(lineTraceLocation, lineTraceRotation);
+	
 	FVector end = lineTraceLocation + lineTraceRotation.Vector() * 10000;
-	FHitResult hit;
-	bool Hit = GetWorld()->LineTraceSingleByChannel(hit, lineTraceLocation, end, ECollisionChannel::ECC_GameTraceChannel1);
+	//FHitResult hit;
+	//bool Hit = GetWorld()->LineTraceSingleByChannel(hit, lineTraceLocation, end, ECollisionChannel::ECC_GameTraceChannel1);	//라인 트레이스 
 
 	// Muzzle Location by BoneName
 	FVector shotLocation =ownerPawn->GetMesh()->GetSocketLocation("Muzzle_01");
-	//FRotator shotRotation = (Hit ? hit.Location - shotLocation : end - shotLocation).Rotation();
+	//FRotator shotRotation = (Hit ? hit.Location - shotLocation : end - shotLocation).Rotation();	//트레이스 히트된 위치로 발사
 	FRotator shotRotation = (end - shotLocation).Rotation();
 
 	//===========================================
@@ -69,9 +63,15 @@ void USkillSoldierLM::SkillTriggered()
 	// * MainAction 2 // Projectile Spawn
 	if(ProjectileClass && !EBuffOn)
 	{
-		FActorSpawnParameters param = FActorSpawnParameters();
-		param.Owner = GetOwner();
-		Projectile = GetWorld()->SpawnActor<AProjectileBase>(ProjectileClass, shotLocation, shotRotation, param);
+		//FString resourcePath = UtilPath::GetSkillPath( TEXT("SkillActor/BP_ProjectileBullet") );
+		//ProjectileClass = LoadClass<AProjectileBase>( NULL, *resourcePath );
+		FTransform SpawnTransform( shotRotation, shotLocation);
+		Projectile = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileClass, SpawnTransform, GetOwner());
+		if(Projectile)
+		{
+			//Projectile->SetDamage(inDamage);
+			Projectile->FinishSpawning(SpawnTransform);
+		}
 		
 		if (MuzzleParticles)
 			UGameplayStatics::SpawnEmitterAttached(

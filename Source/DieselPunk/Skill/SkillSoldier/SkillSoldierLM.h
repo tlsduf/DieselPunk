@@ -30,13 +30,14 @@ private:
 	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
 	UParticleSystem *MuzzleParticlesSpecial;
 public:
+
+	bool EBuffOn = false;		//임시 구현 SkillE
+	int8 Magazine = 20;			//임시 구현 SkillE 탄창 수
+	
 	// 생성자
 	USkillSoldierLM();
 
 	void UpdateSetting();
-
-	bool EBuffOn = false;
-	int8 Magazine = 20;
 
 protected:
 	virtual void BeginPlay() override;

@@ -439,14 +439,15 @@ float ACharacterPC::TakeDamage(float DamageAmount, struct FDamageEvent const &Da
 		//================================================================
 		// TODO 방어력, 공격효과 적용해서 데미지공식 적용하기
 		// TODO 효과적용 방식 : 체력비례피해(최대or현재), 고정피해(방어구관통), 지속피해(틱뎀), 방어력감소(영구or시간), 폭발스택
-		Damage = Damage * (100 / 100 + Armor);
+		Damage = Damage * (100 / (100 + Armor));
 		Damage = (int)(Damage + 0.2); // 데미지 소수점 처리 *소수점첫째자리가 0.8 이상이면 올림, 미만시 내림
 		DamageText = Damage;		  // 데미지전역변수에 값 전달
 
 		Damage = FMath::Min(Health, Damage);
 		_UpdateHp(Health - Damage, MaxHealth);
 		Health -= Damage;
-
+		DisplayDamage(Damage);
+		
 		//================================================================
 		// 3.애니메이션 플레이 //bool 변수로 0.3초마다 애니메이션 실행
 		//================================================================
@@ -492,7 +493,8 @@ float ACharacterPC::TakeDamage(float DamageAmount, struct FDamageEvent const &Da
 	{
 		HandleCombatState();
 		Damage = 0.f;
-
+		DisplayDamage(Damage);
+		
 		// 애니메이션 플레이 //bool 변수로 0.3초마다 애니메이션 실행
 		if (CanTakeDamageAnim)
 		{

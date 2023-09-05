@@ -11,6 +11,8 @@
 #include "../Handler/AnimationHandler.h"
 #include "..\Animation\DpAnimInstance.h"
 
+#include "../Actor/DamageUIActor.h"
+
 #include <Components/DecalComponent.h>
 #include <Components/WidgetComponent.h>
 
@@ -190,3 +192,14 @@ void ACharacterBase::_InitValue()
 	}
 }
 
+
+void ACharacterBase::DisplayDamage(float inDamage)
+{
+	FTransform SpawnTransform( FRotator::ZeroRotator, GetActorLocation());
+	DamageUIActor = DpGetWorld()->SpawnActorDeferred<ADamageUIActor>(ADamageUIActor::StaticClass(), SpawnTransform, this);
+	if(DamageUIActor)
+	{
+		DamageUIActor->SetDamage(inDamage);
+		DamageUIActor->FinishSpawning(SpawnTransform);
+	}
+}

@@ -19,6 +19,14 @@ class DIESELPUNK_API ACharacterBase : public ACharacter
 	GENERATED_BODY()
 
 public:
+	//================================================
+	// 데미지 UI 액터
+	class ADamageUIActor *DamageUIActor;
+
+	//데미지를 입으면 데미지ui액터를 생성합니다.
+	void			DisplayDamage(float inDamage);
+	//================================================
+	
 	// Anim Notify가 실행된 SectionName 발송용
 	DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateAnimNotify, const EMontageSectionType)
 	FDelegateAnimNotify DelegateAnimNotify;
