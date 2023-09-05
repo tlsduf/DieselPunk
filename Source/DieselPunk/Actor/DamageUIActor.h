@@ -13,22 +13,23 @@ class DIESELPUNK_API ADamageUIActor : public AActor
 {
 	GENERATED_BODY()
 
-public:
-	// 위젯 컴포넌트
-	UPROPERTY( EditAnywhere )
-	UWidgetComponent* WidgetComp;
-
-	// 액터속도 확인용 임시 변수
-	UPROPERTY( EditAnywhere )
-	float TempVelocity = 100;
 	
 protected:
-	TWeakObjectPtr< UDamageUI > DamageUI; // 데미지 UI 포인터
 
+	UWidgetComponent* WidgetComp;			// 위젯 컴포넌트
+	TWeakObjectPtr< UDamageUI > DamageUI;	// 데미지 UI 포인터
+	
 	float Damage;						// DamageUI에 전달할 데미지 값
 
-	float Accel;						// DamageUIActor Z 가속도 변수
-	Animator AccelAnimator;				// DamageUIActor Z 가속도 변수를 애니메이팅 합니다.
+	float XVelocity = 50;				// x 상수
+	float YVelocity = 50;				// y 상수
+	float ZVelocity = 200;				// z 상수
+
+	float XYAccel;						// DamageUIActor XY 가속도 변수
+	Animator XYAccelAnimator;			// DamageUIActor XY 가속도 변수를 애니메이팅 합니다.
+	
+	float ZAccel;						// DamageUIActor Z 가속도 변수
+	Animator ZAccelAnimator;			// DamageUIActor Z 가속도 변수를 애니메이팅 합니다.
 	
 	float LifeTime = 1.5f;				// 액터 생명주기
 	FTimerHandle DestroyTHandle;		// Destroy 함수 타이머핸들
@@ -40,6 +41,7 @@ public:
 	// 데미지UI 위젯을 생성한다.
 	void CreateDamageUI();
 
+	// 데미지 세팅
 	void SetDamage(float inDamage);
 	
 	// AccelAnimator 애니메이터

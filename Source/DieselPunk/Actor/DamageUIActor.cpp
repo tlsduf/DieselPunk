@@ -63,32 +63,51 @@ void ADamageUIActor::Tick(float InDeltaTime)
 	Super::Tick(InDeltaTime);
 
 	// AccelAnimator 업데이트
-	AccelAnimator.Update(InDeltaTime);
+	XYAccelAnimator.Update(InDeltaTime);
+	ZAccelAnimator.Update(InDeltaTime);
 
-	// Z 위치 업데이트
+	// 위치 업데이트
 	FVector currentLocation = GetActorLocation();
-	FVector velocity = FVector(0,0,TempVelocity);
-	currentLocation += Accel * velocity * InDeltaTime;
+	FVector XYVector = FVector(XVelocity,YVelocity,0);
+	FVector ZVector = FVector(0,0,ZVelocity);
+	currentLocation += (XYAccel * XYVector * InDeltaTime) + (ZAccel * ZVector * InDeltaTime);
 	SetActorLocation(currentLocation);
 }
 
 // AccelAnimator 애니메이터
 void ADamageUIActor::StartAnimator()
 {
-	AnimatorParam param;
-	param.AnimType = EAnimType::QuadraticEaseOut;
-	param.StartValue = 1.f;
-	param.EndValue = 0.f;
-	param.DurationTime = LifeTime;
+	// XY 애니메이터
+	AnimatorParam XYparam;
+	XYparam.AnimType = EAnimType::CubicEaseIn;
+	XYparam.StartValue = 1.f;
+	XYparam.EndValue = 0.f;
+	XYparam.DurationTime = LifeTime;
 
 	TWeakObjectPtr<ADamageUIActor> thisPtr = this;
-	param.DurationFunc = [thisPtr](float InCurValue)
+	XYparam.DurationFunc = [thisPtr](float InCurValue)
 	{
 		if(thisPtr.IsValid())
-			thisPtr->Accel = InCurValue;
+			thisPtr->XYAccel = InCurValue;
 	};
 
-	AccelAnimator.Start(param);
+	XYAccelAnimator.Start(XYparam);
+
+	// Z 애니메이터
+	AnimatorParam Zparam;
+	Zparam.AnimType = EAnimType::QuadraticEaseOut;
+	Zparam.StartValue = 1.f;
+	Zparam.EndValue = 0.f;
+	Zparam.DurationTime = LifeTime;
+
+	TWeakObjectPtr<ADamageUIActor> thisPtr2 = this;
+	Zparam.DurationFunc = [thisPtr2](float InCurValue)
+	{
+		if(thisPtr2.IsValid())
+			thisPtr2->ZAccel = InCurValue;
+	};
+
+	ZAccelAnimator.Start(Zparam);
 }
 
 // LifeTime 후 파괴됩니다.
