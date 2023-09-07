@@ -2,9 +2,8 @@
 
 #pragma once
 
-#include "Templates/SubclassOf.h"
-#include "GameFramework/PlayerController.h"
-#include "InputActionValue.h"
+#include <InputActionValue.h>
+#include <GameFramework/PlayerController.h>
 #include "PlayerControllerBase.generated.h"
 
 /** Forward declaration to improve compiling times */
@@ -12,6 +11,7 @@ class UNiagaraSystem;
 class UInputAction;
 class UInputMappingContext;
 struct FInputActionInstance;
+enum class EAbilityType : uint8;
 
 UCLASS()
 class DIESELPUNK_API APlayerControllerBase : public APlayerController
@@ -49,7 +49,7 @@ private:
 
 	// 6개의 스킬 InputAction // 순서대로 LM, RM, LShift, Q, E, R
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	TArray<TObjectPtr<UInputAction>> SkillInputActions;
+	TMap<EAbilityType, TObjectPtr<UInputAction>> SkillInputActions;
 	
 protected:
 	// Called when the game starts or when spawned
@@ -73,12 +73,13 @@ private:
 	void SetZoomInProp();
 	void SetZoomOutProp();
 
-	// 스킬들의 트리거 타입을 변경. OnPosses에서 호출
-	void RemapSkillTriggerTypes();
+	// InputType에 맞춰 MappingContext을 적용하는 함수입니다.
+	UFUNCTION()
+	void SetMappingContextByInputType();
 
-	// 입력된 ActionInput의 이름을 비교하여 몇번째 스킬인지 (Index)를 알아 내는 함수
-	int8 GetSkillIndexFromAction(const FInputActionInstance &InInstance);
-
+	// 입력된 ActionInput의 이름을 비교하여 무슨 능력인지 (Key)를 알아 내는 함수입니다.
+	const EAbilityType GetAbilityKeyFromAction(const FInputActionInstance& InInstance) const;
+	
 	// 스킬 관련 바인딩
 	void OnInputSkillStarted(const FInputActionInstance &InInstance);
 	void OnInputSkillOngoing(const FInputActionInstance &InInstance);

@@ -107,3 +107,10 @@ FORCEINLINE T* LoadSoftObject(TSoftObjectPtr<T> InSoftObj)
 	
 	return LoadObject<T>(nullptr, *path.ToString());
 }
+
+FORCEINLINE int GetRandomNumber(int min, int max)
+{
+	static const double fraction = 1.0 / (RAND_MAX + 1.0);  // static used for efficiency, so we only calculate this value once
+	// evenly distribute the random number across our range
+	return min + static_cast<int>((max - min + 1) * (std::rand() * fraction));
+}

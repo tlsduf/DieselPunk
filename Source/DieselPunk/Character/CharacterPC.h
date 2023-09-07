@@ -6,7 +6,8 @@
 #include "InputActionValue.h"
 #include "CharacterPC.generated.h"
 
-class UPlayerSkill;
+class USkillBase;
+enum class EAbilityType : uint8;
 
 UCLASS(config = Game)
 class ACharacterPC : public ACharacterBase
@@ -29,11 +30,10 @@ public:
 	
 	// 스킬을 할당받기 위한 배열입니다. (BP에서도 받을 수 있도록 TSubClassOf로 하였습니다)
 	UPROPERTY(EditAnywhere, Category = Skill)
-	TArray<TSubclassOf<UPlayerSkill>> SkillInfos;
+	TMap<EAbilityType, TSubclassOf<USkillBase>> SkillInfos;
 
 	// 런타임에 인스턴스화된 스킬들을 담는 배열입니다. (실제로 이 배열에 담긴 스킬들을 호출)
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Transient, Category = Skill, meta = (AllowPrivateAccess = "true"))
-	TArray<TObjectPtr<UPlayerSkill>> Skills;
+	TMap<EAbilityType, TObjectPtr<USkillBase>> Skills;
 
 public:
 	ACharacterPC();
@@ -53,14 +53,14 @@ public:
 	void InitSkills();
 
 	// 런타임에 인스턴스화 된 Skills Getter입니다.
-	FORCEINLINE const TArray<TObjectPtr<UPlayerSkill>> &GetSkills() const { return Skills; }
+	FORCEINLINE const TMap<EAbilityType, TObjectPtr<USkillBase>> &GetSkills() const { return Skills; }
 
 	// PlayerController에서 호출될 스킬 발동 함수들입니다.
-	virtual void SkillStarted(const uint8 &InSkillIndex);
-	virtual void SkillOngoing(const uint8 &InSkillIndex);
-	virtual void SkillTriggered(const uint8 &InSkillIndex);
-	virtual void SkillCompleted(const uint8 &InSkillIndex);
-	virtual void SkillCanceled(const uint8 &InSkillIndex);
+	void SkillStarted(const EAbilityType InAbilityType);
+	void SkillOngoing(const EAbilityType InAbilityType);
+	void SkillTriggered(const EAbilityType InAbilityType);
+	void SkillCompleted(const EAbilityType InAbilityType);
+	void SkillCanceled(const EAbilityType InAbilityType);
 
 public:
 	/** Called for movement input */

@@ -3,10 +3,9 @@
 #include "CharacterPC.h"
 #include "../Logic/PlayerControllerBase.h"
 #include "..\Core\DpGameMode.h"
-#include "../Skill/PlayerSkill.h"
-#include "../Manager/UIManager.h"
-#include "../UI/HUD/StatusUIBase.h"
-#include "DieselPunk/Util/UtilLevelCal.h"
+#include "../Skill/SkillBase.h"
+#include "../Interface/PlayerInputInterface.h"
+#include "../Util/UtilLevelCal.h"
 
 
 #include <Camera/CameraComponent.h>
@@ -67,6 +66,8 @@ ACharacterPC::ACharacterPC()
 
 void ACharacterPC::BeginPlay()
 {
+	//InitSkills();
+	
 	TODO( "레벨에 미리 세팅되어있는 액터들이라 이곳에서 등록, 추후 논의 필요", 크로 )
 	if ( InfoId == G_InvalidInfoId )
 	{
@@ -213,9 +214,10 @@ void ACharacterPC::Look(const FInputActionValue &Value)
 void ACharacterPC::InitSkills()
 {
 	Skills.Empty();
-	for (const auto &skillInfo : SkillInfos)
+	for (const TPair<EAbilityType, TSubclassOf<USkillBase>>& ability : SkillInfos)
 	{
-		Skills.Add(NewObject<UPlayerSkill>(this, skillInfo));
+		Skills.Add(ability.Key, NewObject<USkillBase>(this, ability.Value));
+		Skills[ability.Key]->RegisterComponent(); // 컴포넌트를 등록합니다.
 	}
 }
 
@@ -223,41 +225,47 @@ void ACharacterPC::InitSkills()
 // 아래부터 각 상황에 맞는 스킬 호출 함수입니다. PlayerController에서 호출하면, 받아온 Index대로
 // 인스턴스화 된 배열의 스킬에서 상황에 맞는 함수를 호출합니다.
 // =============================================================
-void ACharacterPC::SkillStarted(const uint8 &InSkillIndex)
+void ACharacterPC::SkillStarted(const EAbilityType InAbilityType)
 {
-	if (InSkillIndex < Skills.Num())
+	// 어빌리티가 현재 사용 가능한지 부터 확인하며, 어빌리티가 사용 가능하면 상태머신에게 입장을 요청합니다.
+	if (Skills[InAbilityType]->CanActivateAbility())
 	{
 		HandleCombatState();
-		Skills[InSkillIndex]->SkillStarted();
+		if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
+		{
+			ability->SkillStarted();
+		}
 	}
 }
-void ACharacterPC::SkillOngoing(const uint8 &InSkillIndex)
+void ACharacterPC::SkillOngoing(const EAbilityType InAbilityType)
 {
-	if (InSkillIndex < Skills.Num())
+	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
 	{
-		Skills[InSkillIndex]->SkillOngoing();
+		ability->SkillOngoing();
 	}
 }
-void ACharacterPC::SkillTriggered(const uint8 &InSkillIndex)
+void ACharacterPC::SkillTriggered(const EAbilityType InAbilityType)
 {
-	if (InSkillIndex < Skills.Num())
+	HandleCombatState();
+	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
 	{
-		HandleCombatState();
-		Skills[InSkillIndex]->SkillTriggered();
+		ability->SkillTriggered();
 	}
+	
 }
-void ACharacterPC::SkillCompleted(const uint8 &InSkillIndex)
+void ACharacterPC::SkillCompleted(const EAbilityType InAbilityType)
 {
-	if (InSkillIndex < Skills.Num())
+	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
 	{
-		Skills[InSkillIndex]->SkillCompleted();
+		ability->SkillCompleted();
 	}
+	
 }
-void ACharacterPC::SkillCanceled(const uint8 &InSkillIndex)
+void ACharacterPC::SkillCanceled(const EAbilityType InAbilityType)
 {
-	if (InSkillIndex < Skills.Num())
+	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
 	{
-		Skills[InSkillIndex]->SkillCanceled();
+		ability->SkillCanceled();
 	}
 }
 

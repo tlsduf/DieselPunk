@@ -5,10 +5,7 @@
 #include "CharacterPC.h"
 #include "CharacterNPC.generated.h"
 
-/**
- *
- */
-
+class UPlayerSkill;
 
 UCLASS()
 class DIESELPUNK_API ACharacterNPC : public ACharacterPC

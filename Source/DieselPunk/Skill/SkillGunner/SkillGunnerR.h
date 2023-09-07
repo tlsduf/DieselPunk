@@ -9,7 +9,7 @@
 /**
  *
  */
-class AProjectileGranade;
+class AProjectileBase;
 
 
 UCLASS()
@@ -29,8 +29,8 @@ public:
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "MyCustomCategory")
-	TSubclassOf<AProjectileGranade> ProjectileGranadeClass;
+	TSubclassOf<AProjectileBase> ProjectileGranadeClass;
 
 	UPROPERTY()
-	AProjectileGranade *ProjectileGranade;
+	AProjectileBase *ProjectileGranade;
 };

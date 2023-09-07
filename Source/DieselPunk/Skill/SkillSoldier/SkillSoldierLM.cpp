@@ -7,6 +7,7 @@
 
 #include <Kismet/GameplayStatics.h>
 #include <InputTriggers.h>
+#include <Components/SkeletalMeshComponent.h>
 
 USkillSoldierLM::USkillSoldierLM() : Super()
 {

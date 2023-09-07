@@ -115,8 +115,8 @@ void USoldierAnimInstance::AnimNotify_NotifySkillQ() const
 	auto ownerPawn = Cast<ACharacterPC>(GetOwningActor());
 	
 	USkillSoldierQ *SoldierQ = nullptr;
-	if(ownerPawn->Skills[3])
-		SoldierQ = Cast<USkillSoldierQ>(ownerPawn->Skills[3]);
+	if(ownerPawn->Skills[EAbilityType::SkillQ])
+		SoldierQ = Cast<USkillSoldierQ>(ownerPawn->Skills[EAbilityType::SkillQ]);
 	
 	if(SoldierQ != nullptr)
 		SoldierQ->Shot();

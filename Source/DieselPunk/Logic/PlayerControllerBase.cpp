@@ -1,14 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PlayerControllerBase.h"
-#include "../Skill/PlayerSkill.h"
 #include "..\Character\CharacterPC.h"
+#include "../Util/UtilEnum.h"
+#include "../Skill/SkillBase.h"
+#include "../Skill/PlayerSkill.h"
 
 #include <Blueprint/UserWidget.h>
 #include <EnhancedInputComponent.h>
 #include <EnhancedInputSubsystems.h>
 #include <InputMappingContext.h>
-
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PlayerControllerBase)
 
@@ -16,6 +17,8 @@ void APlayerControllerBase::BeginPlay()
 {
     Super::BeginPlay();
 
+	SetMappingContextByInputType();
+	
     if (UEnhancedInputLocalPlayerSubsystem *Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
     {
         Subsystem->AddMappingContext(MappingContext, 0);
@@ -48,13 +51,13 @@ void APlayerControllerBase::SetupInputComponent()
         EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerControllerBase::Look);
 
         //스킬 호출에 관한 바인딩
-        for (uint8 i = 0; i < SkillInputActions.Num(); ++i)
+        for (EAbilityType type : ENUM_RANGE(EAbilityType))
         {
-        EnhancedInputComponent->BindAction(SkillInputActions[i], ETriggerEvent::Started, this, &APlayerControllerBase::OnInputSkillStarted);
-        EnhancedInputComponent->BindAction(SkillInputActions[i], ETriggerEvent::Ongoing, this, &APlayerControllerBase::OnInputSkillOngoing);
-        EnhancedInputComponent->BindAction(SkillInputActions[i], ETriggerEvent::Triggered, this, &APlayerControllerBase::OnInputSkillTriggered);
-        EnhancedInputComponent->BindAction(SkillInputActions[i], ETriggerEvent::Completed, this, &APlayerControllerBase::OnInputSkillCompleted);
-        EnhancedInputComponent->BindAction(SkillInputActions[i], ETriggerEvent::Canceled, this, &APlayerControllerBase::OnInputSkillCanceled);
+        EnhancedInputComponent->BindAction(SkillInputActions[type], ETriggerEvent::Started, this, &APlayerControllerBase::OnInputSkillStarted);
+        EnhancedInputComponent->BindAction(SkillInputActions[type], ETriggerEvent::Ongoing, this, &APlayerControllerBase::OnInputSkillOngoing);
+        EnhancedInputComponent->BindAction(SkillInputActions[type], ETriggerEvent::Triggered, this, &APlayerControllerBase::OnInputSkillTriggered);
+        EnhancedInputComponent->BindAction(SkillInputActions[type], ETriggerEvent::Completed, this, &APlayerControllerBase::OnInputSkillCompleted);
+        EnhancedInputComponent->BindAction(SkillInputActions[type], ETriggerEvent::Canceled, this, &APlayerControllerBase::OnInputSkillCanceled);
         }
     }
 }
@@ -66,68 +69,67 @@ void APlayerControllerBase::SetupInputComponent()
 void APlayerControllerBase::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
-	RemapSkillTriggerTypes();
+	SetMappingContextByInputType();
 }
 
-void APlayerControllerBase::RemapSkillTriggerTypes()
+// =============================================================
+// InputType에 맞춰 MappingContext을 적용하는 함수입니다.
+// =============================================================
+void APlayerControllerBase::SetMappingContextByInputType()
 {
 	// 스킬에 관한 바인딩
 	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
 	{
 		character->InitSkills(); // TSubClassOf로 설정된 캐릭터의 스킬들을 인스턴스화 시킵니다.
 		
-		uint8 index = 0;
-		while(index < character->GetSkills().Num() && index < SkillInputActions.Num())
+		for (const TPair<EAbilityType, TObjectPtr<UInputAction>>& inputActions : SkillInputActions)
 		{
 			// 설정해둔 트리거 타입을 넣습니다.
-			SkillInputActions[index]->Triggers.Reset();
-			SkillInputActions[index]->Triggers.Add(character->GetSkills()[index]->GetTriggerType());
-			index++;
+			SkillInputActions[inputActions.Key]->Triggers.Reset();
+			SkillInputActions[inputActions.Key]->Triggers.Add(Cast<UPlayerSkill>(character->GetSkills()[inputActions.Key])->GetTriggerType());
 		}
 	}
 	
-	// 추후 확인해야 할지도 모름.
-	// If you have made changes to the triggers/modifiers associated with a UInputAction that was previously mapped a flush is required to reset the tracked data for that action.
-	// 위에서 Trigger를 변경하여 리빌드 진행.
-	if (UEnhancedInputLocalPlayerSubsystem* subSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+	if (UEnhancedInputLocalPlayerSubsystem *subSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
-		subSystem->RequestRebuildControlMappings(FModifyContextOptions(), EInputMappingRebuildType::RebuildWithFlush);
+		// Setting에 맞는 Mapping Context를 추가합니다.
+		subSystem->AddMappingContext(MappingContext,0);
 	}
 }
 
 // =============================================================
-// 입력된 ActionInput의 이름을 비교하여 몇번째 스킬인지 (Index)를 알아 내는 함수입니다.
+// 입력된 ActionInput의 이름을 비교하여 무슨 능력인지 (Key)를 알아 내는 함수입니다.
 // =============================================================
-int8 APlayerControllerBase::GetSkillIndexFromAction(const FInputActionInstance& InInstance)
+const EAbilityType APlayerControllerBase::GetAbilityKeyFromAction(const FInputActionInstance &InInstance) const
 {
-	if(const UInputAction* inputAction = InInstance.GetSourceAction())
+	if (const UInputAction *inputAction = InInstance.GetSourceAction())
 	{
-		if(inputAction->GetName().Contains(TEXT("LeftMouse")))
+		if (inputAction->GetName().Contains(TEXT("IA_LeftMouse")))
 		{
-			return 0;
+			return EAbilityType::MouseLM;
 		}
-		else if(inputAction->GetName().Contains(TEXT("RightMouse")))
+		else if (inputAction->GetName().Contains(TEXT("IA_RightMouse")))
 		{
-			return 1;
+			return EAbilityType::MouseRM;
 		}
-		else if(inputAction->GetName().Contains(TEXT("Shift")))
+		else if (inputAction->GetName().Contains(TEXT("IA_LeftShift")))
 		{
-			return 2;
+			return EAbilityType::Shift;
 		}
-		else if(inputAction->GetName().Contains(TEXT("InputQ")))
+		else if (inputAction->GetName().Contains(TEXT("IA_InputQ")))
 		{
-			return 3;
+			return EAbilityType::SkillQ;
 		}
-		else if(inputAction->GetName().Contains(TEXT("InputE")))
+		else if (inputAction->GetName().Contains(TEXT("IA_InputE")))
 		{
-			return 4;
+			return EAbilityType::SkillE;
 		}
-        else if(inputAction->GetName().Contains(TEXT("InputR")))
+		else if (inputAction->GetName().Contains(TEXT("IA_InputR")))
 		{
-			return 5;
+			return EAbilityType::SkillR;
 		}
 	}
-	return -1;
+	return EAbilityType::None;
 }
 
 // =============================================================
@@ -140,10 +142,10 @@ void APlayerControllerBase::OnInputSkillStarted(const FInputActionInstance& InIn
 {
 	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
 	{
-		const int8 skillIndex = GetSkillIndexFromAction(InInstance);
-		if(skillIndex > -1)
+		const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
+		if (abilityKey != EAbilityType::None)
 		{
-			character->SkillStarted(skillIndex);
+			character->SkillStarted(abilityKey);
 		}
 	}
 }
@@ -152,10 +154,10 @@ void APlayerControllerBase::OnInputSkillOngoing(const FInputActionInstance& InIn
 {
 	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
 	{
-		const int8 skillIndex = GetSkillIndexFromAction(InInstance);
-		if(skillIndex > -1)
+		const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
+		if (abilityKey != EAbilityType::None)
 		{
-			character->SkillOngoing(skillIndex);
+			character->SkillOngoing(abilityKey);
 		}
 	}
 }
@@ -164,10 +166,10 @@ void APlayerControllerBase::OnInputSkillTriggered(const FInputActionInstance& In
 {
 	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
 	{
-		const int8 skillIndex = GetSkillIndexFromAction(InInstance);
-		if(skillIndex > -1)
+		const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
+		if (abilityKey != EAbilityType::None)
 		{
-			character->SkillTriggered(skillIndex);
+			character->SkillTriggered(abilityKey);
 		}
 	}
 }
@@ -176,10 +178,10 @@ void APlayerControllerBase::OnInputSkillCompleted(const FInputActionInstance& In
 {
 	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
 	{
-		const int8 skillIndex = GetSkillIndexFromAction(InInstance);
-		if(skillIndex > -1)
+		const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
+		if (abilityKey != EAbilityType::None)
 		{
-			character->SkillCompleted(skillIndex);
+			character->SkillCompleted(abilityKey);
 		}
 	}
 }
@@ -188,10 +190,10 @@ void APlayerControllerBase::OnInputSkillCanceled(const FInputActionInstance& InI
 {
 	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
 	{
-		const int8 skillIndex = GetSkillIndexFromAction(InInstance);
-		if(skillIndex > -1)
+		const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
+		if (abilityKey != EAbilityType::None)
 		{
-			character->SkillCanceled(skillIndex);
+			character->SkillCanceled(abilityKey);
 		}
 	}
 }

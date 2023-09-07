@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SkillGunnerR.h"
-#include "..\../Actor\ProjectileGranades.h"
+#include "..\../Actor\ProjectileBase.h"
 #include "..\..\Character\CharacterPC.h"
 #include "../../Animation/GunnerAnimInstance.h"
 
@@ -47,7 +47,7 @@ void USkillGunnerR::SkillTriggered()
 	{
 		FActorSpawnParameters param = FActorSpawnParameters();
 		param.Owner = GetOwner();
-		ProjectileGranade = GetWorld()->SpawnActor<AProjectileGranade>(ProjectileGranadeClass, shotLocation, FRotator(spawnPitch.Pitch, ownerPawn->GetActorRotation().Yaw, 0), param);
+		ProjectileGranade = GetWorld()->SpawnActor<AProjectileBase>(ProjectileGranadeClass, shotLocation, FRotator(spawnPitch.Pitch, ownerPawn->GetActorRotation().Yaw, 0), param);
 	}
 
 	//애니메이션 재생?

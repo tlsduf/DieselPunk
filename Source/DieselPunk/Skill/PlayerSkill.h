@@ -3,23 +3,28 @@
 #pragma once
 
 #include "SkillBase.h"
+#include "../Interface/PlayerInputInterface.h"
 #include "PlayerSkill.generated.h"
 
-/**
- * 
- */
+
+
+
 UCLASS(Blueprintable)
-class DIESELPUNK_API UPlayerSkill : public USkillBase
+class DIESELPUNK_API UPlayerSkill : public USkillBase, public IPlayerInputInterface
 {
 	GENERATED_BODY()
 	
-	public:
+
+	
+public:
 	// 생성자
 	UPlayerSkill();
 	
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void BeginDestroy() override;
+	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
 private:
 	// 해당 스킬이 어떤 입력 방식을 가지는지 설정합니다.

@@ -33,8 +33,8 @@ void USkillSoldierE::SkillTriggered()
 
 	//트리거 이벤트
 	USkillSoldierLM *SoldierLM = nullptr;
-	if(ownerPawn->Skills[0])
-		SoldierLM = Cast<USkillSoldierLM>(ownerPawn->Skills[0]);
+	if(ownerPawn->Skills[EAbilityType::MouseLM])
+		SoldierLM = Cast<USkillSoldierLM>(ownerPawn->Skills[EAbilityType::MouseLM]);
 	
 	if(SoldierLM != nullptr)
 	{

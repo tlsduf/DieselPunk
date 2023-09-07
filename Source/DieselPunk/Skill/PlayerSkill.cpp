@@ -2,7 +2,6 @@
 
 
 #include "PlayerSkill.h"
-#include "..\Common\DpLog.h"
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PlayerSkill)
@@ -10,7 +9,6 @@
 UPlayerSkill::UPlayerSkill() : Super()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-
 }
 
 void UPlayerSkill::BeginPlay()
@@ -18,11 +16,14 @@ void UPlayerSkill::BeginPlay()
 	Super::BeginPlay();
 }
 
+void UPlayerSkill::BeginDestroy()
+{
+	Super::BeginDestroy();
+}
+
 void UPlayerSkill::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
 }
 
 // =============================================================
@@ -46,7 +47,7 @@ void UPlayerSkill::SkillOngoing()
 // =============================================================
 void UPlayerSkill::SkillTriggered()
 {
-	//LOG_SCREEN(TEXT("%s, SkillTriggered!"), *GetName());
+	LOG_SCREEN(TEXT("%s, SkillTriggered!"), *GetName());
 }
 
 // =============================================================
@@ -73,3 +74,4 @@ void UPlayerSkill::CancelSkill()
 {
 	Super::CancelSkill();
 }
+

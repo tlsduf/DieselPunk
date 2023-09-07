@@ -26,7 +26,7 @@ void UtilCollision::CapsuleSweepMulti(TArray<FHitResult>& OutHitResults, const F
 		InStartLocation,
 		InEndLocation,
 		FQuat::Identity,
-		InPlayerSkill ? ECollisionChannel::ECC_GameTraceChannel6 : ECollisionChannel::ECC_GameTraceChannel7,
+		InPlayerSkill ? ECollisionChannel::ECC_GameTraceChannel7 : ECollisionChannel::ECC_GameTraceChannel8,
 		FCollisionShape::MakeSphere(InCapsuleRadius),
 		params);
 	

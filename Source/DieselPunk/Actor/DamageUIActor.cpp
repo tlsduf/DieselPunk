@@ -54,6 +54,8 @@ void ADamageUIActor::BeginPlay()
 	Super::BeginPlay();
 
 	CreateDamageUI();
+	XVelocity = GetRandomNumber(-100, 100);
+	YVelocity = GetRandomNumber(-100, 100);
 	StartAnimator();
 	GetWorldTimerManager().SetTimer(DestroyTHandle, this, &ADamageUIActor::SelfDestroy, LifeTime, false);
 }

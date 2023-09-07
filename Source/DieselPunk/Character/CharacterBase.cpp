@@ -199,6 +199,7 @@ void ACharacterBase::DisplayDamage(float inDamage)
 	DamageUIActor = DpGetWorld()->SpawnActorDeferred<ADamageUIActor>(ADamageUIActor::StaticClass(), SpawnTransform, this);
 	if(DamageUIActor)
 	{
+		DamageUIActor->AttachToComponent( GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
 		DamageUIActor->SetDamage(inDamage);
 		DamageUIActor->FinishSpawning(SpawnTransform);
 	}
