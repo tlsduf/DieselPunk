@@ -25,6 +25,7 @@ void UDamageUI::OnCreated()
 	Super::OnCreated();
 
 	_InitControls();
+	StartAnimator();
 }
 
 // =============================================================
@@ -51,10 +52,38 @@ void UDamageUI::OnDisappeared()
 	Super::OnDisappeared();
 }
 
+void UDamageUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	AlphaAnimator.Update(InDeltaTime);
+	FLinearColor linearColor = FLinearColor(GetColorAndOpacity().R, GetColorAndOpacity().G, GetColorAndOpacity().B, Alpha);
+	SetColorAndOpacity(linearColor);
+}
+
 // =============================================================
 // 위젯을 초기화한다.
 // =============================================================
 void UDamageUI::_InitControls()
 {
 	_InitControl( Damage, TEXT( "Damage" ) );
+}
+
+void UDamageUI::StartAnimator()
+{
+	// XY 애니메이터
+	AnimatorParam param;
+	param.AnimType = EAnimType::CubicEaseIn;
+	param.StartValue = 1.f;
+	param.EndValue = 0.f;
+	param.DurationTime = 1.5f;
+
+	TWeakObjectPtr<UDamageUI> thisPtr = this;
+	param.DurationFunc = [thisPtr](float InCurValue)
+	{
+		if(thisPtr.IsValid())
+			thisPtr->Alpha = InCurValue;
+	};
+
+	AlphaAnimator.Start(param);
 }

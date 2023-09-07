@@ -3,11 +3,13 @@
 #include "SkillSoldierShift.h"
 #include "..\..\Character\CharacterPC.h"
 #include "../../Animation/SoldierAnimInstance.h"
+#include "../../Handler/CoolTimeHandler.h"
 
 #include <GameFramework/Character.h>
 #include <GameFramework/CharacterMovementComponent.h>
 #include <Components/SkeletalMeshComponent.h>
 #include <GameFramework/PlayerController.h>
+#include <TimerManager.h>
 
 USkillSoldierShift::USkillSoldierShift() : Super()
 {
@@ -22,13 +24,21 @@ void USkillSoldierShift::BeginPlay()
 void USkillSoldierShift::SkillTriggered()
 {
 	Super::SkillTriggered();
-
+	
 	auto ownerPawn = Cast<ACharacterPC>(GetOwner());
 	if(ownerPawn == nullptr)
 		return;
 	auto ownerController = ownerPawn->GetController();
 	if(ownerController == nullptr)
 		return;
+
+	// 쿨타임!!!!!!!!!!!!!!!!!!
+	CoolTimeHandler->SetCoolTime(CoolTime);
+	ownerPawn->SkillActivating[EAbilityType::Shift] = true;
+	DpGetWorld()->GetTimerManager().SetTimer(
+	PlaySkillTHandle, [this]()
+	{ Cast<ACharacterPC>(GetOwner())->SkillActivating[EAbilityType::Shift] = false; },
+	SkillPlayTime, false);
 	
 	const FVector currentAcceleration = ownerPawn->GetCharacterMovement()->GetCurrentAcceleration();
 	float currentAccelLength = currentAcceleration.SizeSquared();

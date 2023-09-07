@@ -5,6 +5,7 @@
 #include "../../Character/CharacterPC.h"
 #include "../../Logic/PlayerControllerBase.h"
 #include "../../Animation/SoldierAnimInstance.h"
+#include "../../Handler/CoolTimeHandler.h"
 
 #include <GameFramework/PlayerController.h>
 #include <Kismet/GameplayStatics.h>
@@ -23,7 +24,7 @@ void USkillSoldierR::BeginPlay()
 void USkillSoldierR::SkillTriggered()
 {
 	Super::SkillTriggered();
-
+	
 	auto ownerPawn = Cast<ACharacterPC>(GetOwner());
 	if(ownerPawn == nullptr)
 		return;
@@ -33,6 +34,9 @@ void USkillSoldierR::SkillTriggered()
 	
 	if (!IsE)
 	{
+		// 쿨타임!!!!!!!!!!!!!!!!!!
+		ownerPawn->SkillActivating[EAbilityType::SkillR] = true;
+		
 		//*기능 실현부
 		// 마우스 화면 중앙위치 //TODO 필요에 따라 마우스 위치변경 //TODO 마우스 우클릭으로도 fire 가능하게
 		int32 ScreenWidth;
@@ -57,6 +61,10 @@ void USkillSoldierR::SkillTriggered()
 	}
 	else if (IsE) //*선행 조건 설정부
 	{
+		// 쿨타임!!!!!!!!!!!!!!!!!!
+		CoolTimeHandler->SetCoolTime(CoolTime);
+		ownerPawn->SkillActivating[EAbilityType::SkillR] = false;
+		
 		//*기능 실현부
 		FHitResult HitResult = GetUnderCursorLocation();
 		AActor *HitActor = HitResult.GetActor();

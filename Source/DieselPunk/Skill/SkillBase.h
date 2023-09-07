@@ -18,7 +18,12 @@ class DIESELPUNK_API USkillBase : public UActorComponent
 protected:
 	// 쿨타임을 관리하기 위한 CoolTime Handler입니다.
 	FCoolTimeHandler* CoolTimeHandler;
-	
+
+	UPROPERTY(EditAnywhere, Category = Skill)
+	float CoolTime = 5;
+
+	UPROPERTY(EditAnywhere, Category = Skill)
+	float SkillPlayTime = 1;
 public:
 	// Sets default values for this component's properties
 	USkillBase();
@@ -41,4 +46,8 @@ public:
 	// 마나, 상태 이상 등 더 필요한 것들을 추후 추가할 예정입니다.
 	// 더 자세한 확인 필요 시 오버라이드하여 Super::를 통해 같이 호출하여 사용하시면 됩니다.
 	virtual bool CanActivateAbility();
+
+	virtual float GetCoolTime();
+
+	virtual float GetCoolTimePercent();
 };

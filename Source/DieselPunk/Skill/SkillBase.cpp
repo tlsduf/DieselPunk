@@ -42,3 +42,13 @@ bool USkillBase::CanActivateAbility()
 {
 	return (CoolTimeHandler->GetCoolTime() <= 0.f);
 }
+
+float USkillBase::GetCoolTime()
+{
+	return CoolTimeHandler->GetCoolTime();
+}
+
+float USkillBase::GetCoolTimePercent()
+{
+	return CoolTimeHandler->GetCoolTime() / CoolTime;
+}

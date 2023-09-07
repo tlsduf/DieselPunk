@@ -105,29 +105,22 @@ const EAbilityType APlayerControllerBase::GetAbilityKeyFromAction(const FInputAc
 	if (const UInputAction *inputAction = InInstance.GetSourceAction())
 	{
 		if (inputAction->GetName().Contains(TEXT("IA_LeftMouse")))
-		{
 			return EAbilityType::MouseLM;
-		}
+		
 		else if (inputAction->GetName().Contains(TEXT("IA_RightMouse")))
-		{
 			return EAbilityType::MouseRM;
-		}
+		
 		else if (inputAction->GetName().Contains(TEXT("IA_LeftShift")))
-		{
 			return EAbilityType::Shift;
-		}
+		
 		else if (inputAction->GetName().Contains(TEXT("IA_InputQ")))
-		{
 			return EAbilityType::SkillQ;
-		}
+		
 		else if (inputAction->GetName().Contains(TEXT("IA_InputE")))
-		{
 			return EAbilityType::SkillE;
-		}
+		
 		else if (inputAction->GetName().Contains(TEXT("IA_InputR")))
-		{
 			return EAbilityType::SkillR;
-		}
 	}
 	return EAbilityType::None;
 }

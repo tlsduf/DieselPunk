@@ -61,7 +61,6 @@ void AProjectileBase::BeginPlay()
 	
 	if(CollisionResponses == ECollisionResponsesType::OnHit && !bUseOneTick)
 		CapsuleComponent->OnComponentHit.AddDynamic(this, &AProjectileBase::OnHit);
-	
 	else if(CollisionResponses == ECollisionResponsesType::Overlap && !bUseOneTick)
 		CapsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &AProjectileBase::BeginOverlapEvent);
 

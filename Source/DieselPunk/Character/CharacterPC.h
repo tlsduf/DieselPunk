@@ -109,12 +109,22 @@ public:
 	bool DrawERange = false;
 	FHitResult GetUnderCursorLocation();
 
+	// * 체력바UI
+	UFUNCTION(BlueprintPure)
+	float GetHealthPercent();
+	
+	UFUNCTION(BlueprintPure)
+	float GetHealthPercentAfterImage();
+	
 	// 체력 퍼센테이지 반환 애니메이팅
 	void _UpdateHp(int InCurHp, int InMaxHp);
 	Animator AnimatorHealthPercent;
 	float TempPercent;
 	Animator AnimatorHealthPercentAfterImage;
 	float TempPercentAfterImage;
+
+	UFUNCTION(BlueprintPure)
+	float GetSkillCoolTimePercent(EAbilityType inType);
 	
 	//=================================================================================
 public:
@@ -138,25 +148,16 @@ public:
 	int Exp;
 	int Level;
 
-	// 임시 레벨 반환함수
+	// 임시 레벨 반환함수 //안쓰임 어디쓰지
 	int GetLevel();
+
+	TMap<EAbilityType, bool> SkillActivating;
+
+	bool GetOtherSkillActivating(EAbilityType inType);
 	
 	// * 임시 죽는애니메이션 play
 	UFUNCTION(BlueprintPure)
 	bool IsDead() const;
-
-	// * 체력바UI
-	UFUNCTION(BlueprintPure)
-	float GetHealthPercent();
-	
-	UFUNCTION(BlueprintPure)
-	float GetHealthPercentAfterImage();
-
-	// * 데미지UI
-	UFUNCTION(BlueprintPure)
-	float GetDamage() const;
-
-	float DamageText;
 	
 	// * 디버그on/off
 	UPROPERTY(EditDefaultsOnly, Category = "Debug")

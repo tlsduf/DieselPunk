@@ -37,6 +37,5 @@ protected:
 	
 public:
 	virtual void SkillTriggered() override;
-
-
+	
 };

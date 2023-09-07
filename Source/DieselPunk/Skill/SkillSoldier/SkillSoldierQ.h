@@ -16,11 +16,14 @@ class DIESELPUNK_API USkillSoldierQ : public UPlayerSkill
 	GENERATED_BODY()
 
 private:
+	FTimerHandle PlaySkillTHandle;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "MyCustomCategory")
 	TSubclassOf<AProjectileBase> ProjectileClass;
 
 	UPROPERTY()
 	AProjectileBase *Projectile;
+	
 public:
 	// 생성자
 	USkillSoldierQ();
@@ -29,7 +32,6 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
 	
 public:
 	virtual void SkillTriggered() override;

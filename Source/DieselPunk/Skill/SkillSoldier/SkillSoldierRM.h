@@ -16,6 +16,8 @@ class DIESELPUNK_API USkillSoldierRM : public UPlayerSkill
 {
 	GENERATED_BODY()
 private:
+	FTimerHandle PlaySkillTHandle;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "MyCustomCategory")
 	TSubclassOf<AProjectileBase> ProjectileClass;
 
@@ -30,8 +32,7 @@ protected:
 	virtual void BeginPlay() override;
 	
 public:
-	virtual void SkillStarted() override;
-	virtual void SkillCompleted() override;
+	virtual void SkillTriggered() override;
 
 private:
 	bool IsZoom = false;

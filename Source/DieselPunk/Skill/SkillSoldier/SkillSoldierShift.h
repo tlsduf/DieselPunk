@@ -27,6 +27,8 @@ public:
 	virtual void SkillTriggered() override;
 
 private:
+	FTimerHandle PlaySkillTHandle;
+	
 	bool IsDash = false;
 	UPROPERTY(EditAnywhere, Category = "ThisMovement")
 	float DashingTime = 0.1f;

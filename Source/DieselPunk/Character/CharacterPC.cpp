@@ -219,6 +219,14 @@ void ACharacterPC::InitSkills()
 		Skills.Add(ability.Key, NewObject<USkillBase>(this, ability.Value));
 		Skills[ability.Key]->RegisterComponent(); // 컴포넌트를 등록합니다.
 	}
+
+	SkillActivating.Empty();
+	SkillActivating.Add(EAbilityType::MouseLM, false);
+	SkillActivating.Add(EAbilityType::MouseRM, false);
+	SkillActivating.Add(EAbilityType::Shift, false);
+	SkillActivating.Add(EAbilityType::SkillQ, false);
+	SkillActivating.Add(EAbilityType::SkillE, false);
+	SkillActivating.Add(EAbilityType::SkillR, false);
 }
 
 // =============================================================
@@ -227,14 +235,9 @@ void ACharacterPC::InitSkills()
 // =============================================================
 void ACharacterPC::SkillStarted(const EAbilityType InAbilityType)
 {
-	// 어빌리티가 현재 사용 가능한지 부터 확인하며, 어빌리티가 사용 가능하면 상태머신에게 입장을 요청합니다.
-	if (Skills[InAbilityType]->CanActivateAbility())
+	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
 	{
-		HandleCombatState();
-		if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
-		{
-			ability->SkillStarted();
-		}
+		ability->SkillStarted();
 	}
 }
 void ACharacterPC::SkillOngoing(const EAbilityType InAbilityType)
@@ -246,12 +249,15 @@ void ACharacterPC::SkillOngoing(const EAbilityType InAbilityType)
 }
 void ACharacterPC::SkillTriggered(const EAbilityType InAbilityType)
 {
-	HandleCombatState();
-	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
+	//LOG_SCREEN(TEXT("%s || GetCoolTime : %f"), *Skills[InAbilityType]->GetName(), Skills[InAbilityType]->GetCoolTime());
+	if (Skills[InAbilityType]->CanActivateAbility() && !GetOtherSkillActivating(InAbilityType))
 	{
-		ability->SkillTriggered();
+		HandleCombatState();
+		if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
+		{
+			ability->SkillTriggered();
+		}
 	}
-	
 }
 void ACharacterPC::SkillCompleted(const EAbilityType InAbilityType)
 {
@@ -449,7 +455,6 @@ float ACharacterPC::TakeDamage(float DamageAmount, struct FDamageEvent const &Da
 		// TODO 효과적용 방식 : 체력비례피해(최대or현재), 고정피해(방어구관통), 지속피해(틱뎀), 방어력감소(영구or시간), 폭발스택
 		Damage = Damage * (100 / (100 + Armor));
 		Damage = (int)(Damage + 0.2); // 데미지 소수점 처리 *소수점첫째자리가 0.8 이상이면 올림, 미만시 내림
-		DamageText = Damage;		  // 데미지전역변수에 값 전달
 
 		Damage = FMath::Min(Health, Damage);
 		_UpdateHp(Health - Damage, MaxHealth);
@@ -559,6 +564,35 @@ int ACharacterPC::GetLevel()
 	return Level;
 }
 
+bool ACharacterPC::GetOtherSkillActivating(EAbilityType inType)
+{
+	switch(inType)
+	{
+	case EAbilityType::MouseLM :
+		return
+		( SkillActivating[EAbilityType::MouseRM]|| SkillActivating[EAbilityType::Shift]|| SkillActivating[EAbilityType::SkillQ] || SkillActivating[EAbilityType::SkillE]|| SkillActivating[EAbilityType::SkillR] );
+	case EAbilityType::MouseRM :
+		return
+		( SkillActivating[EAbilityType::MouseLM]|| SkillActivating[EAbilityType::Shift]|| SkillActivating[EAbilityType::SkillQ] || SkillActivating[EAbilityType::SkillE]|| SkillActivating[EAbilityType::SkillR]);
+	case EAbilityType::Shift :
+		return
+		( SkillActivating[EAbilityType::MouseLM]|| SkillActivating[EAbilityType::MouseRM]|| SkillActivating[EAbilityType::SkillQ] || SkillActivating[EAbilityType::SkillE]|| SkillActivating[EAbilityType::SkillR]);
+	case EAbilityType::SkillQ :
+		return
+		( SkillActivating[EAbilityType::MouseLM]|| SkillActivating[EAbilityType::MouseRM]|| SkillActivating[EAbilityType::Shift] || SkillActivating[EAbilityType::SkillE]|| SkillActivating[EAbilityType::SkillR]);
+	case EAbilityType::SkillE :
+		return
+		( SkillActivating[EAbilityType::MouseLM]|| SkillActivating[EAbilityType::MouseRM]|| SkillActivating[EAbilityType::Shift] || SkillActivating[EAbilityType::SkillQ]|| SkillActivating[EAbilityType::SkillR]);
+	case EAbilityType::SkillR :
+		return
+		( SkillActivating[EAbilityType::MouseLM]|| SkillActivating[EAbilityType::MouseRM]|| SkillActivating[EAbilityType::Shift] || SkillActivating[EAbilityType::SkillQ]|| SkillActivating[EAbilityType::SkillE]);
+	case EAbilityType::None :
+		return false;
+	default:
+		return false;
+	}
+}
+
 // ufunction 으로 임시 anim 재생
 bool ACharacterPC::IsDead() const
 {
@@ -632,11 +666,6 @@ float ACharacterPC::GetHealthPercentAfterImage()
 	return TempPercentAfterImage;
 }
 
-float ACharacterPC::GetDamage() const
-{
-	return DamageText;
-}
-
 FHitResult ACharacterPC::GetUnderCursorLocation()
 {
 	FHitResult HitResult;
@@ -650,4 +679,9 @@ FHitResult ACharacterPC::GetUnderCursorLocation()
 		return HitResult;
 	}
 	return HitResult;
+}
+
+float ACharacterPC::GetSkillCoolTimePercent(EAbilityType inType)
+{
+	return Skills[inType]->GetCoolTimePercent();
 }

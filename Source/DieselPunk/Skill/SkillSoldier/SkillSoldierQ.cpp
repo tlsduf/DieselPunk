@@ -4,16 +4,16 @@
 #include "../../Actor\ProjectileBase.h"
 #include "../../Character/CharacterPC.h"
 #include "../../Animation/SoldierAnimInstance.h"
+#include "../../Handler/CoolTimeHandler.h"
 
 #include <GameFramework/PlayerController.h>
 #include <Components/SkeletalMeshComponent.h>
+#include <TimerManager.h>
 
 USkillSoldierQ::USkillSoldierQ() : Super()
 {
 	PrimaryComponentTick.bCanEverTick = false; // 일단 Tick은 OFF 해두었습니다.
 }
-
-
 
 void USkillSoldierQ::BeginPlay()
 {
@@ -23,10 +23,18 @@ void USkillSoldierQ::BeginPlay()
 void USkillSoldierQ::SkillTriggered()
 {
 	Super::SkillTriggered();
-
+	
 	auto ownerPawn = Cast<ACharacterPC>(GetOwner());
 	if(ownerPawn == nullptr)
 		return;
+
+	// 쿨타임!!!!!!!!!!!!!!!!!! && 스킬플레이타임
+	CoolTimeHandler->SetCoolTime(CoolTime);
+	ownerPawn->SkillActivating[EAbilityType::SkillQ] = true;
+	DpGetWorld()->GetTimerManager().SetTimer(
+	PlaySkillTHandle, [this]()
+	{ Cast<ACharacterPC>(GetOwner())->SkillActivating[EAbilityType::SkillQ] = false; },
+	SkillPlayTime, false);
 	
 	//애니메이션 재생?
 	USoldierAnimInstance* animInst = Cast<USoldierAnimInstance>(ownerPawn->GetMesh()->GetAnimInstance());

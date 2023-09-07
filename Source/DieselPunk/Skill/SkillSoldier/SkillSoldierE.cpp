@@ -4,11 +4,11 @@
 #include "..\..\Character\CharacterPC.h"
 #include "../../Animation/SoldierAnimInstance.h"
 #include "../../Skill/SkillSoldier/SkillSoldierLM.h"
+#include "../../Handler/CoolTimeHandler.h"
 
 #include <GameFramework/PlayerController.h>
 #include <Components/SkeletalMeshComponent.h>
 #include <Kismet/GameplayStatics.h>
-
 
 USkillSoldierE::USkillSoldierE() : Super()
 {
@@ -23,7 +23,7 @@ void USkillSoldierE::BeginPlay()
 void USkillSoldierE::SkillTriggered()
 {
 	Super::SkillTriggered();
-
+	
 	auto ownerPawn = Cast<ACharacterPC>(GetOwner());
 	if(ownerPawn == nullptr)
 		return;
@@ -31,6 +31,9 @@ void USkillSoldierE::SkillTriggered()
 	if(ownerController == nullptr)
 		return;
 
+	// 쿨타임!!!!!!!!!!!!!!!!!!
+	CoolTimeHandler->SetCoolTime(CoolTime);
+	
 	//트리거 이벤트
 	USkillSoldierLM *SoldierLM = nullptr;
 	if(ownerPawn->Skills[EAbilityType::MouseLM])

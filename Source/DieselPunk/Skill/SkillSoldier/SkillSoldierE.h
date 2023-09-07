@@ -14,7 +14,7 @@ UCLASS()
 class DIESELPUNK_API USkillSoldierE : public UPlayerSkill
 {
 	GENERATED_BODY()
-
+	
 	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
 	UParticleSystem *BuffEffect;
 public:

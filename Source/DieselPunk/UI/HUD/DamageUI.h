@@ -17,6 +17,9 @@ class DIESELPUNK_API UDamageUI : public UUserWidgetBase
 	
 protected:
 	UTextBlock* Damage;	// 데미지 텍스트
+
+	float Alpha;					// UI Alpha
+	Animator AlphaAnimator;			// UI Alpha를 애니메이팅 합니다.
 public:
 	// 데미지를 세팅한다.
 	void SetDamage(float inDamage);
@@ -34,7 +37,14 @@ protected:
 	// 화면에서 사라지는 시점에 호출되는 함수
 	virtual void OnDisappeared() override;
 
+	// 틱
+	virtual void NativeTick( const FGeometry& MyGeometry, float InDeltaTime ) override;
+
 private:
 	// 위젯을 초기화한다.
 	void _InitControls();
+
+	// AlphaAnimator 애니메이터
+	void StartAnimator();
+
 };
