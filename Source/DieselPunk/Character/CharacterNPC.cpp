@@ -10,7 +10,6 @@
 #include <Kismet/GameplayStatics.h>
 #include <Particles/ParticleSystemComponent.h>
 #include <Components/SkeletalMeshComponent.h>
-#include <Components/WidgetComponent.h>
 
 
 ACharacterNPC::ACharacterNPC()
@@ -73,8 +72,6 @@ void ACharacterNPC::DoProjectileAttack()
 	ProjectileAttack->SkillTriggered();
 
 	FVector Location = GetMesh()->GetSocketLocation("Granade_socket");
-	if (GranadeMuzzleEffect)
-	{
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), GranadeMuzzleEffect, Location, GetActorRotation() + FRotator(0, 180, 0));
-	}
+	if (GrenadeMuzzleEffect)
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), GrenadeMuzzleEffect, Location, GetActorRotation() + FRotator(0, 180, 0));
 }

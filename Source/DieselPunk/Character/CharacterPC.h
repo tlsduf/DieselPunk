@@ -115,6 +115,7 @@ public:
 	
 	UFUNCTION(BlueprintPure)
 	float GetHealthPercentAfterImage();
+
 	
 	// 체력 퍼센테이지 반환 애니메이팅
 	void _UpdateHp(int InCurHp, int InMaxHp);
@@ -148,8 +149,11 @@ public:
 	int Exp;
 	int Level;
 
-	// 임시 레벨 반환함수 //안쓰임 어디쓰지
-	int GetLevel();
+	UFUNCTION(BlueprintPure)
+	int GetCharacterLevel();
+
+	UFUNCTION(BlueprintPure)
+	float GetCharacterExpPercent();
 
 	TMap<EAbilityType, bool> SkillActivating;
 

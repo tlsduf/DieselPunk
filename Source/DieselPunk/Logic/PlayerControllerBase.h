@@ -21,32 +21,35 @@ class DIESELPUNK_API APlayerControllerBase : public APlayerController
 private:
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputMappingContext *MappingContext;
+	UInputMappingContext *MappingContext;
 
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction *MoveAction;
+	UInputAction *MoveAction;
 
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction *LookAction;
+	UInputAction *LookAction;
 
 	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction *JumpAction;
+	UInputAction *JumpAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction *InputC;
+	UInputAction *InputC;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction *InputW;
+	UInputAction *InputW;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction *MouseWheelUp;
+	UInputAction *MouseWheelUp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction *MouseWheelDown;
+	UInputAction *MouseWheelDown;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction *InputF;
+	
 	// 6개의 스킬 InputAction // 순서대로 LM, RM, LShift, Q, E, R
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TMap<EAbilityType, TObjectPtr<UInputAction>> SkillInputActions;
@@ -72,6 +75,8 @@ private:
 
 	void SetZoomInProp();
 	void SetZoomOutProp();
+
+	void Interaction();
 
 	// InputType에 맞춰 MappingContext을 적용하는 함수입니다.
 	UFUNCTION()

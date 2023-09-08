@@ -13,7 +13,7 @@ private:
 
 public:
 	// 생성자
-	FDpUserData() : Key( TEXT("") ), Value( TEXT( "" ) ) {}
+	FDpUserData() : Key( TEXT("") ), Value( TEXT("") ) {}
 	// 생성자
 	FDpUserData( const FString& InKey, const FString& InValue ) : Key( InKey ), Value( InValue ) {}
 

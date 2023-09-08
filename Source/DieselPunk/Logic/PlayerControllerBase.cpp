@@ -50,6 +50,8 @@ void APlayerControllerBase::SetupInputComponent()
         EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerControllerBase::Move);
         EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerControllerBase::Look);
 
+    	EnhancedInputComponent->BindAction(InputF, ETriggerEvent::Triggered, this, &APlayerControllerBase::Interaction);
+
         //스킬 호출에 관한 바인딩
         for (EAbilityType type : ENUM_RANGE(EAbilityType))
         {
@@ -246,6 +248,14 @@ void APlayerControllerBase::SetZoomOutProp()
     {
         character->SetZoomOutProp();
     }
+}
+
+void APlayerControllerBase::Interaction()
+{
+	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
+	{
+		//character->
+	}
 }
 
 void APlayerControllerBase::Move(const FInputActionValue &Value)

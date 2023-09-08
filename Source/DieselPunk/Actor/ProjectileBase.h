@@ -110,10 +110,10 @@ protected:
 	bool DebugOnOff = false;
 
 	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
-	TSoftObjectPtr<UNiagaraSystem> HitEffect;
+	TSoftObjectPtr<UNiagaraSystem> HitEffect = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
-	TSoftObjectPtr<UNiagaraSystem> ShotEffect;
+	TSoftObjectPtr<UNiagaraSystem> ShotEffect = nullptr;
 
 	// 발사 사운드
 	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")

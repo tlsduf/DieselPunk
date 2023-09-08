@@ -23,16 +23,16 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent) override;
 
 public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyCustomCategory", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "skills", meta = (AllowPrivateAccess = "true"))
 	UPlayerSkill *MeleeAttack;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyCustomCategory", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "skills", meta = (AllowPrivateAccess = "true"))
 	UPlayerSkill *ProjectileAttack;
 
 public:
 
 	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
-	UParticleSystem *GranadeMuzzleEffect;
+	UParticleSystem *GrenadeMuzzleEffect;
 
 	// 상태 UI 위젯을 생성한다.
 	virtual void CreateStatusUI() override;

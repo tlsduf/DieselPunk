@@ -516,7 +516,7 @@ float ACharacterPC::TakeDamage(float DamageAmount, struct FDamageEvent const &Da
 			CanTakeDamageAnim = false;
 			GetWorldTimerManager().SetTimer(TakeDamageHandle, this, &ACharacterPC::SetCanTakeDamageAnimTrue, 0.3f, false);
 		}
-		LOG_SCREEN(TEXT("Damage Immune! || Now Health : %f"), Health);
+		LOG_SCREEN(TEXT("Damage Immune! || Now Health : %d"), Health);
 		return Damage;
 	}
 }
@@ -559,9 +559,17 @@ bool ACharacterPC::GetCombatState()
 	return InCombat;
 }
 
-int ACharacterPC::GetLevel()
+int ACharacterPC::GetCharacterLevel()
 {
 	return Level;
+}
+
+float ACharacterPC::GetCharacterExpPercent()
+{
+	if(Level == 1)
+		return (float)Exp / (float)10;
+		
+	return ((float)Exp - (float)UtilLevelCal::MaxExpCal(Level - 1)) / ((float)UtilLevelCal::MaxExpCal(Level) - (float)UtilLevelCal::MaxExpCal(Level - 1));
 }
 
 bool ACharacterPC::GetOtherSkillActivating(EAbilityType inType)

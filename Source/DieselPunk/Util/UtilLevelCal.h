@@ -9,7 +9,7 @@ namespace UtilLevelCal
 	FORCEINLINE int LevelCal(int inExp)
 	{
 		return
-		  (1 <= inExp && inExp < 10) ? 1
+		  (0 <= inExp && inExp < 10) ? 1
 		: (10 <= inExp && inExp < 25) ? 2
 		: (25 <= inExp && inExp < 45) ? 3
 		: (45 <= inExp && inExp < 70) ? 4
@@ -70,6 +70,32 @@ namespace UtilLevelCal
 
 	FORCEINLINE int MaxExpCal(int inLevel)
 	{
-		return 1;
+		return 
+		  (inLevel == 1) ? 10
+		: (inLevel == 2) ? 25
+		: (inLevel == 3) ? 45
+		: (inLevel == 4) ? 70
+		: (inLevel == 5) ? 100
+		: (inLevel == 6) ? 135
+		: (inLevel == 7) ? 175
+		: (inLevel == 8) ? 220
+		: (inLevel == 9) ? 270
+		: (inLevel == 10) ? 325
+		: (inLevel == 11) ? 385
+		: (inLevel == 12) ? 450
+		: (inLevel == 13) ? 515
+		: (inLevel == 14) ? 585
+		: (inLevel == 15) ? 660
+		: (inLevel == 16) ? 740
+		: (inLevel == 17) ? 825
+		: (inLevel == 18) ? 915
+		: (inLevel == 19) ? 1010
+		: (inLevel == 20) ? 1110
+		: (inLevel == 21) ? 1215
+		: (inLevel == 22) ? 1325
+		: (inLevel == 23) ? 1440
+		: (inLevel == 24) ? 1560
+		: 9999
+	  ;
 	}
 }
