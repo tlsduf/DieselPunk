@@ -71,6 +71,8 @@ public:
 
 	// !MyCode------------------------------------------------------
 protected:
+	
+	
 	// Debug
 	void DebugActorRotation();
 
@@ -85,6 +87,8 @@ public:
 	void Jog();
 	void WPressed();
 	void WReleased();
+	void SPressed();
+	void SReleased();
 	
 	// RotatePawn
 	void RotatePawn(float DeltaTime);
@@ -215,6 +219,8 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	bool IsWPressed = false;
+
+	bool IsSPressed = false;
 
 	// * 연속점프횟수 bp에서 간접적으로 건드리기
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BaseMovement", meta = (AllowPrivateAccess = "true"))

@@ -5,6 +5,7 @@
 #include "../Util/UtilEnum.h"
 #include "../Skill/SkillBase.h"
 #include "../Skill/PlayerSkill.h"
+#include "../Core/DpCheatManager.h"
 
 #include <Blueprint/UserWidget.h>
 #include <EnhancedInputComponent.h>
@@ -12,6 +13,15 @@
 #include <InputMappingContext.h>
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PlayerControllerBase)
+
+// =============================================================
+// 생성자
+// =============================================================
+APlayerControllerBase::APlayerControllerBase()
+{
+	
+	CheatClass = UDpCheatManager::StaticClass();
+}
 
 void APlayerControllerBase::BeginPlay()
 {
@@ -43,6 +53,8 @@ void APlayerControllerBase::SetupInputComponent()
         EnhancedInputComponent->BindAction(InputC, ETriggerEvent::Started, this, &APlayerControllerBase::ToggleJog);
         EnhancedInputComponent->BindAction(InputW, ETriggerEvent::Started, this, &APlayerControllerBase::WPressed);
         EnhancedInputComponent->BindAction(InputW, ETriggerEvent::Completed, this, &APlayerControllerBase::WReleased);
+    	EnhancedInputComponent->BindAction(InputS, ETriggerEvent::Started, this, &APlayerControllerBase::SPressed);
+    	EnhancedInputComponent->BindAction(InputS, ETriggerEvent::Completed, this, &APlayerControllerBase::SReleased);
 
         EnhancedInputComponent->BindAction(MouseWheelUp, ETriggerEvent::Started, this, &APlayerControllerBase::SetZoomInProp);
         EnhancedInputComponent->BindAction(MouseWheelDown, ETriggerEvent::Started, this, &APlayerControllerBase::SetZoomOutProp);
@@ -232,6 +244,22 @@ void APlayerControllerBase::WReleased()
     {
         character->WReleased();
     }
+}
+
+void APlayerControllerBase::SPressed()
+{
+	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
+	{
+		character->SPressed();
+	}
+}
+
+void APlayerControllerBase::SReleased()
+{
+	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
+	{
+		character->SReleased();
+	}
 }
 
 void APlayerControllerBase::SetZoomInProp()

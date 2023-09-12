@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SkillSoldierRM.h"
-#include "../../Actor\ProjectileBase.h"
+#include "../../Actor\SoldierProjectile.h"
 #include "..\..\Character\CharacterPC.h"
 #include "../../Handler/CoolTimeHandler.h"
 
@@ -44,11 +44,14 @@ void USkillSoldierRM::SkillTriggered()
 	FVector end = lineTraceLocation + lineTraceRotation.Vector() * 10000;
 	FVector shotLocation = ownerPawn->GetMesh()->GetSocketLocation("Muzzle_01");
 	FRotator shotRotation = (end - shotLocation).Rotation();
+	
 	// projectile spawn
 	if(ProjectileClass)
 	{
-		FActorSpawnParameters param = FActorSpawnParameters();
-		param.Owner = GetOwner();
-		Projectile = GetWorld()->SpawnActor<AProjectileBase>(ProjectileClass, shotLocation, shotRotation, param);
+		FTransform SpawnTransform( shotRotation, shotLocation);
+		Projectile = DpGetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
+		Projectile->SetUpdateRotation(FRotator(0,0,10));
+		Projectile->IsStackBoom = true;
+		Projectile->FinishSpawning(SpawnTransform);
 	}
 }

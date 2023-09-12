@@ -41,7 +41,7 @@ protected:
 	EProjectileOwnerType ProjectileOwnerType = EProjectileOwnerType::Player;
 
 	// =================================================================================================
-	// 
+	// 데미지 및 범위 공격관련
 	// =================================================================================================
 	
 	// 데미지
@@ -75,6 +75,9 @@ protected:
 	// 호밍 // 궤적
 	// =================================================================================================
 
+	// 로테이션
+	FRotator UpdateRotation = FRotator(0,0,0);
+	
 	// 호밍 유무
 	bool bIsHoming = false;
 	
@@ -143,14 +146,14 @@ protected:
 	void SetCapsuleCollisionResponses();
 
 	// bUseOneTick = true 일 시, 처리를 담당
-	void OneTickTask();
+	virtual void OneTickTask();
 	
 	// 히트시 호출해서 데미지 적용, 투사체 파괴 등을 수행
 	UFUNCTION()
-	void OnHit(UPrimitiveComponent *HitComp, AActor *HitActor, UPrimitiveComponent *OtherComp, FVector NormalImpulse, const FHitResult &HitResult);
+	void OnHit(UPrimitiveComponent* InHitComp, AActor* InOtherActor, UPrimitiveComponent* InOtherComp, FVector InNormalImpulse, const FHitResult& InHitResult);
 
 	// OnHit의 실질적인 기능을 담고있는 함수 // OnHit이 상속이안됨.
-	virtual void _OnHit(UPrimitiveComponent *HitComp, AActor *HitActor, UPrimitiveComponent *OtherComp, FVector NormalImpulse, const FHitResult &HitResult);
+	virtual void _OnHit(UPrimitiveComponent* InHitComp, AActor* InOtherActor, UPrimitiveComponent* InOtherComp, FVector InNormalImpulse, const FHitResult& InHitResult);
 
 	// 오버랩시 호출해서 데미지 적용, 투사체 파괴 등을 수행
 	UFUNCTION()
@@ -168,4 +171,7 @@ public:
 	
 	// ProjectilePathingSpline 애니메이터
 	void StartAnimator();
+
+	// 투사체의 업데이트 로테이션을 셋합니다. 틱에서 세팅된 로테이션값 만큼 업데이트합니다.
+	void SetUpdateRotation(const FRotator& inRotate);
 };

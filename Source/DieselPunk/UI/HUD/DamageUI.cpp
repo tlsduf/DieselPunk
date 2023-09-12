@@ -13,8 +13,23 @@
 void UDamageUI::SetDamage(float inDamage)
 {
 	int intDamage = inDamage;
-	if( Damage )
-		Damage->SetText( FText::FromString( FString::FromInt(intDamage) ) );
+	Damage = inDamage;
+	if( DamageText )
+		DamageText->SetText( FText::FromString( FString::FromInt(intDamage) ) );
+
+	// 데미지 별 색상 set
+	if(0 < Damage && Damage <= 14)
+		DamageText->SetColorAndOpacity(FSlateColor(FLinearColor(1, 1, 1)));
+	else if(14 < Damage && Damage <= 29)
+		DamageText->SetColorAndOpacity(FSlateColor(FLinearColor(0.5, 0.2, 0.2)));
+	else if(29 < Damage && Damage <= 49)
+		DamageText->SetColorAndOpacity(FSlateColor(FLinearColor(0.5, 0.1, 0)));
+	else if(49 < Damage && Damage <= 74)
+		DamageText->SetColorAndOpacity(FSlateColor(FLinearColor(0.5, 0.05, 0)));
+	else if(74 < Damage )
+		DamageText->SetColorAndOpacity(FSlateColor(FLinearColor(0.4, 0, 0.2)));
+	else
+		DamageText->SetColorAndOpacity(FSlateColor(FLinearColor(1, 1, 1)));
 }
 
 // =============================================================
@@ -25,6 +40,7 @@ void UDamageUI::OnCreated()
 	Super::OnCreated();
 
 	_InitControls();
+
 	StartAnimator();
 }
 
@@ -66,7 +82,7 @@ void UDamageUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 // =============================================================
 void UDamageUI::_InitControls()
 {
-	_InitControl( Damage, TEXT( "Damage" ) );
+	_InitControl( DamageText, TEXT( "DamageText" ) );
 }
 
 void UDamageUI::StartAnimator()

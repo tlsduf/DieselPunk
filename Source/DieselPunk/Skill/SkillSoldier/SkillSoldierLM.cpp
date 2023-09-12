@@ -1,9 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SkillSoldierLM.h"
-#include "../../Actor\ProjectileBase.h"
+#include "../../Actor\SoldierProjectile.h"
 #include "..\..\Character\CharacterPC.h"
 #include "../../Animation/SoldierAnimInstance.h"
+#include "../../Handler/CoolTimeHandler.h"
 
 #include <Kismet/GameplayStatics.h>
 #include <InputTriggers.h>
@@ -14,16 +15,11 @@ USkillSoldierLM::USkillSoldierLM() : Super()
 	PrimaryComponentTick.bCanEverTick = false; // 일단 Tick은 OFF 해두었습니다.
 }
 
-void USkillSoldierLM::UpdateSetting()
-{
-	auto triggerType = Cast<UInputTriggerPulse>(GetTriggerType());
-	triggerType->bTriggerOnStart = true;
-	triggerType->Interval = 0.15;
-}
-
 void USkillSoldierLM::BeginPlay()
 {
 	Super::BeginPlay();
+
+	TempCoolTime = CoolTime;
 }
 
 void USkillSoldierLM::SkillTriggered()
@@ -36,6 +32,9 @@ void USkillSoldierLM::SkillTriggered()
 	auto ownerController = ownerPawn->GetController();
 	if(ownerController == nullptr)
 		return;
+
+	// 쿨타임!!!!!!!!!!!!!!!!!!!!!!
+	CoolTimeHandler->SetCoolTime(CoolTime);
 	
 	// 라인트레이스로 최종경로설정
 	FVector lineTraceLocation;
@@ -65,9 +64,9 @@ void USkillSoldierLM::SkillTriggered()
 	if(ProjectileClass && !EBuffOn)
 	{
 		//FString resourcePath = UtilPath::GetSkillPath( TEXT("SkillActor/BP_ProjectileBullet") );
-		//ProjectileClass = LoadClass<AProjectileBase>( NULL, *resourcePath );
+		//ProjectileClass = LoadClass<ASoldierProjectile>( NULL, *resourcePath );
 		FTransform SpawnTransform( shotRotation, shotLocation);
-		Projectile = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileClass, SpawnTransform, GetOwner());
+		Projectile = GetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
 		if(Projectile)
 		{
 			//Projectile->SetDamage(inDamage);
@@ -86,15 +85,11 @@ void USkillSoldierLM::SkillTriggered()
 	// * or if EBuffOn is true
 	if(ProjectileEBuffClass && EBuffOn)
 	{
-		FActorSpawnParameters param = FActorSpawnParameters();
-		param.Owner = GetOwner();
-		Projectile = GetWorld()->SpawnActor<AProjectileBase>(ProjectileEBuffClass, shotLocation, shotRotation, param);
+		FTransform SpawnTransform( shotRotation, shotLocation);
+		Projectile = DpGetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileEBuffClass, SpawnTransform, GetOwner());
+		Projectile->Stack = 5;
+		Projectile->FinishSpawning(SpawnTransform);
 		--Magazine;
-		if (Magazine == 0)
-		{
-			Magazine = 20;
-			EBuffOn = false;
-		}
 		
 		if (MuzzleParticlesSpecial)
 			UGameplayStatics::SpawnEmitterAttached(
@@ -104,7 +99,12 @@ void USkillSoldierLM::SkillTriggered()
 				FVector(ForceInit),
 				FRotator::ZeroRotator,
 				FVector(0.05));
+
+		// 탄창 수 다 소진 시 버프 off
+		if (Magazine == 0)
+		{
+			EBuffOn = false;
+			CoolTime = TempCoolTime;
+		}
 	}
-
-
 }

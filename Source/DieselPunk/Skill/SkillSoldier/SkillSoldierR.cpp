@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SkillSoldierR.h"
-#include "../../Actor\ProjectileBase.h"
+#include "../../Actor\SoldierProjectile.h"
 #include "../../Character/CharacterPC.h"
 #include "../../Logic/PlayerControllerBase.h"
 #include "../../Animation/SoldierAnimInstance.h"
@@ -9,6 +9,7 @@
 
 #include <GameFramework/PlayerController.h>
 #include <Kismet/GameplayStatics.h>
+#include <Components/SkeletalMeshComponent.h>
 
 
 USkillSoldierR::USkillSoldierR() : Super()
@@ -32,10 +33,18 @@ void USkillSoldierR::SkillTriggered()
 	if(ownerController == nullptr)
 		return;
 	
+	//애니메이션 재생?
+	USoldierAnimInstance* animInst = Cast<USoldierAnimInstance>(ownerPawn->GetMesh()->GetAnimInstance());
+	if (!animInst)
+		return;
+	
 	if (!IsE)
 	{
 		// 쿨타임!!!!!!!!!!!!!!!!!!
 		ownerPawn->SkillActivating[EAbilityType::SkillR] = true;
+
+		
+		animInst->PlayMontage(EAbilityType::SkillR, ESoldierSkillMontageType::AroundAttack1);
 		
 		//*기능 실현부
 		// 마우스 화면 중앙위치 //TODO 필요에 따라 마우스 위치변경 //TODO 마우스 우클릭으로도 fire 가능하게
@@ -64,6 +73,9 @@ void USkillSoldierR::SkillTriggered()
 		// 쿨타임!!!!!!!!!!!!!!!!!!
 		CoolTimeHandler->SetCoolTime(CoolTime);
 		ownerPawn->SkillActivating[EAbilityType::SkillR] = false;
+
+		// 몽타주 정지
+		animInst->StopMontage(EAbilityType::SkillR, 0.2f);
 		
 		//*기능 실현부
 		FHitResult HitResult = GetUnderCursorLocation();
@@ -72,9 +84,10 @@ void USkillSoldierR::SkillTriggered()
 		{
 			if(ProjectileClass)
 			{
-				FActorSpawnParameters param = FActorSpawnParameters();
-				param.Owner = GetOwner();
-				Projectile = GetWorld()->SpawnActor<AProjectileBase>(ProjectileClass, HitResult.Location, FRotator(0,0, 0), param);
+				FTransform SpawnTransform( FRotator(0,0, 0), HitResult.Location);
+				Projectile = DpGetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
+				Projectile->Stack = 5;
+				Projectile->FinishSpawning(SpawnTransform);
 			}
 			if (PinPointHitEffect)
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), PinPointHitEffect, HitResult.Location);

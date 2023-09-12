@@ -8,7 +8,7 @@
 /**
  *
  */
-class AProjectileBase;
+class ASoldierProjectile;
 
 
 UCLASS()
@@ -41,10 +41,10 @@ private:
 	UParticleSystem *PinPointHitEffect;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "MyCustomCategory")
-	TSubclassOf<AProjectileBase> ProjectileClass;
+	TSubclassOf<ASoldierProjectile> ProjectileClass;
 
 	UPROPERTY()
-	AProjectileBase *Projectile;
+	ASoldierProjectile *Projectile;
 
 	FHitResult GetUnderCursorLocation();
 };

@@ -204,3 +204,12 @@ enum class EProjectileOwnerType : uint8
 	Player		UMETA( ToolTip = "플레이어" ),
 	Enemy		UMETA( ToolTip = "적" )
 };
+
+// 적 종류 Minions , Elite, Boss
+UENUM( BlueprintType )
+enum class EEnemyType : uint8
+{
+	Minions		UMETA( ToolTip = "일반" ),
+	Elite		UMETA( ToolTip = "엘리트" ),
+	Boss		UMETA( ToolTip = "보스" )
+};

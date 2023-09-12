@@ -42,7 +42,8 @@ void USkillSoldierE::SkillTriggered()
 	if(SoldierLM != nullptr)
 	{
 		SoldierLM->EBuffOn = true;
-		SoldierLM->Magazine = 20;
+		SoldierLM->Magazine = 5;
+		SoldierLM->CoolTime = 0.5;
 	}
 	
 	//이펙트 

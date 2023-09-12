@@ -79,7 +79,7 @@ APlayerController* DpGetPlayerController()
 // =============================================================
 // 내 플레이어 캐릭터를 반환한다.
 // =============================================================
-ACharacterPC* GwGetPlayer()
+ACharacterPC* DpGetPlayer()
 {
 	APlayerController* playerController = DpGetPlayerController();
 	if ( !playerController )

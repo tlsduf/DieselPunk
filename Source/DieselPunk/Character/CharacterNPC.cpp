@@ -3,13 +3,14 @@
 #include "CharacterNPC.h"
 #include "../Skill/PlayerSkill.h"
 #include "../Skill/MeleeAttack.h"
+#include "../Manager/UIManager.h"
+#include "../UI/HUD/EnemyStatusUI.h"
 
-#include <Components/InputComponent.h>
-
-#include <TimerManager.h>
+//#include <Components/InputComponent.h>
 #include <Kismet/GameplayStatics.h>
 #include <Particles/ParticleSystemComponent.h>
 #include <Components/SkeletalMeshComponent.h>
+#include <Components/WidgetComponent.h>
 
 
 ACharacterNPC::ACharacterNPC()
@@ -26,6 +27,16 @@ void ACharacterNPC::BeginPlay()
 void ACharacterNPC::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if( EnemyStatusUI != nullptr )
+	{
+		EnemyStatusUI->SetHPPercent(TempPercent);
+		EnemyStatusUI->SetHPPercentAfterImage(TempPercentAfterImage);
+		EnemyStatusUI->SetTextStack(SoldierStack);
+	}
+	if(IsDead())
+		WidgetComp->bHiddenInGame = 1;
+		
 }
 
 // =============================================================
@@ -33,17 +44,20 @@ void ACharacterNPC::Tick(float DeltaTime)
 // =============================================================
 void ACharacterNPC::CreateStatusUI()
 {
-	/*if( StatusUI.IsValid() )
+	if( EnemyStatusUI.IsValid() )
 		return;
 
-	StatusUI = GetUIManager().CreateUnmanagedUI< UStatusUIBase >( TEXT( "HUD/NPC_HpBar" ) );
-	if ( !WidgetComp || !StatusUI.IsValid() )
+	EnemyStatusUI = GetUIManager().CreateUnmanagedUI< UEnemyStatusUI >( TEXT( "HUD/NPC_HpBar" ) );
+	if ( !WidgetComp || !EnemyStatusUI.IsValid() )
 		return;
 
-	WidgetComp->SetWidget( StatusUI.Get() );
+	WidgetComp->SetWidget( EnemyStatusUI.Get() );
 	WidgetComp->SetDrawSize( FVector2D( 250.0f, 80.0f ) );
-
-	StatusUI->InitStatus( this );*/
+	WidgetComp->bHiddenInGame = 1;
+	
+	//EnemyStatusUI->InitStatus( this );
+	EnemyStatusUI->SetHPPercent(TempPercent);
+	EnemyStatusUI->SetHPPercentAfterImage(TempPercentAfterImage);
 }
 
 void ACharacterNPC::SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent)
@@ -53,6 +67,27 @@ void ACharacterNPC::SetupPlayerInputComponent(class UInputComponent *PlayerInput
 
 	//PlayerInputComponent->BindAction("LeftMouse", IE_Pressed, this, &ABaseEnemyCharacter::MeleeAttackHandle);
 	//PlayerInputComponent->BindAction("RightMouse", IE_Pressed, this, &ABaseEnemyCharacter::DoProjectileAttack);
+}
+
+float ACharacterNPC::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,AActor* DamageCauser)
+{
+	WidgetComp->bHiddenInGame = 0;
+	TWeakObjectPtr<ACharacterNPC> thisPtr = this;
+	SetTimerWithDelegate(EnemyStatusUISetHiddenInGameTHandle, FTimerDelegate::CreateUObject(this, &ACharacterNPC::EnemyStatusUISetHiddenInGame), 10.f, false);
+	
+	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+}
+
+void ACharacterNPC::SetTimerWithDelegate(FTimerHandle& TimerHandle, TBaseDelegate<void> ObjectDelegate, float Time,
+	bool bLoop)
+{
+	GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, ObjectDelegate, Time, bLoop);
+}
+
+void ACharacterNPC::EnemyStatusUISetHiddenInGame()
+{
+	WidgetComp->bHiddenInGame = 1;
 }
 
 float ACharacterNPC::DoMeleeAttack()

@@ -40,6 +40,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction *InputW;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction *InputS;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction *MouseWheelUp;
@@ -55,6 +58,8 @@ private:
 	TMap<EAbilityType, TObjectPtr<UInputAction>> SkillInputActions;
 	
 protected:
+	APlayerControllerBase();
+	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -72,6 +77,8 @@ private:
 	void ToggleJog();
 	void WPressed();
 	void WReleased();
+	void SPressed();
+	void SReleased();
 
 	void SetZoomInProp();
 	void SetZoomOutProp();

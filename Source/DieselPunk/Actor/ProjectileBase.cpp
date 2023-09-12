@@ -78,7 +78,9 @@ void AProjectileBase::BeginPlay()
 void AProjectileBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
+	AddActorLocalRotation(UpdateRotation);
+	
 	// 호밍여부 true 시, 호밍타겟을 세팅
 	if(ProjectileMovementComponent->bIsHomingProjectile)
 		SetHomingTargetActor();
@@ -193,13 +195,13 @@ void AProjectileBase::OneTickTask()
 }
 
 // _OnHit 호출용으로 사용
-void AProjectileBase::OnHit(UPrimitiveComponent *HitComp, AActor *HitActor, UPrimitiveComponent *OtherComp, FVector NormalImpulse, const FHitResult &HitResult)
+void AProjectileBase::OnHit(UPrimitiveComponent* InHitComp, AActor* InOtherActor, UPrimitiveComponent* InOtherComp, FVector InNormalImpulse, const FHitResult& InHitResult)
 {
-	_OnHit(HitComp, HitActor, OtherComp, NormalImpulse, HitResult);
+	_OnHit(InHitComp, InOtherActor, InOtherComp, InNormalImpulse, InHitResult);
 }
 
 // 히트시 호출해서 데미지 적용, 투사체 파괴 등을 수행
-void AProjectileBase::_OnHit(UPrimitiveComponent *HitComp, AActor *HitActor, UPrimitiveComponent *OtherComp, FVector NormalImpulse, const FHitResult &HitResult)
+void AProjectileBase::_OnHit(UPrimitiveComponent* InHitComp, AActor* InOtherActor, UPrimitiveComponent* InOtherComp, FVector InNormalImpulse, const FHitResult& InHitResult)
 {
 	auto ownerPawn = Cast<APawn>(GetOwner());
 	if(ownerPawn == nullptr)
@@ -222,7 +224,7 @@ void AProjectileBase::_OnHit(UPrimitiveComponent *HitComp, AActor *HitActor, UPr
 	Destroy();
 
 	// 데미지 전달
-	if (HitActor && HitActor != this && HitActor != ownerPawn)
+	if (InOtherActor && InOtherActor != this && InOtherActor != ownerPawn)
 	{
 		if(DoRadialDamage)
 		{
@@ -234,14 +236,14 @@ void AProjectileBase::_OnHit(UPrimitiveComponent *HitComp, AActor *HitActor, UPr
 			{
 				for (auto It = sweepResults.CreateIterator(); It; It++)
 				{
-					HitActor = It->GetActor();
-					UGameplayStatics::ApplyDamage(HitActor, Damage, ownerController, ownerPawn, nullptr);
+					InOtherActor = It->GetActor();
+					UGameplayStatics::ApplyDamage(InOtherActor, Damage, ownerController, ownerPawn, nullptr);
 				}
 			}
 		}
 		else
 		{
-			UGameplayStatics::ApplyDamage(HitActor, Damage, ownerController, ownerPawn, nullptr);
+			UGameplayStatics::ApplyDamage(InOtherActor, Damage, ownerController, ownerPawn, nullptr);
 			// UGameplayStatics::ApplyPointDamage(HitActor, Damage, HitActor->GetActorLocation(), HitResult, ownerController, OwnerPawn, nullptr);
 			// UGameplayStatics::ApplyRadialDamage(GetWorld(), Damage, GetActorLocation(), RadialDamageRadius, nullptr, TArray<AActor *>(), this, ownerController, DoFullDamage, ECC_WorldStatic);
 		}
@@ -289,10 +291,13 @@ void AProjectileBase::_BeginOverlapEvent(class UPrimitiveComponent* InHitComp, c
 			FVector startLocation = GetActorLocation() + GetActorForwardVector() * AttackStartPoint;
 			FVector endLocation = startLocation + GetActorForwardVector() * AttackRange;
 			UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, true, DebugOnOff);
-			for (auto It = sweepResults.CreateIterator(); It; It++)
+			if(!sweepResults.IsEmpty())
 			{
-				InOtherActor = It->GetActor();
-				UGameplayStatics::ApplyDamage(InOtherActor, Damage, ownerController, ownerPawn, nullptr);
+				for (auto It = sweepResults.CreateIterator(); It; It++)
+				{
+					InOtherActor = It->GetActor();
+					UGameplayStatics::ApplyDamage(InOtherActor, Damage, ownerController, ownerPawn, nullptr);
+				}
 			}
 		}
 		else
@@ -344,4 +349,9 @@ void AProjectileBase::StartAnimator()
 	};
 
 	AlphaAnimator.Start(param);
+}
+
+void AProjectileBase::SetUpdateRotation(const FRotator& inRotate)
+{
+	UpdateRotation = inRotate;	
 }

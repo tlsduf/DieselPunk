@@ -6,7 +6,7 @@
 #include "SkillSoldierLM.generated.h"
 
 class UInputTrigger;
-class AProjectileBase;
+class ASoldierProjectile;
 class UNiagaraSystem;
 
 UCLASS()
@@ -16,13 +16,13 @@ class DIESELPUNK_API USkillSoldierLM : public UPlayerSkill
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "MyCustomCategory")
-	TSubclassOf<AProjectileBase> ProjectileClass;
+	TSubclassOf<ASoldierProjectile> ProjectileClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "MyCustomCategory")
-	TSubclassOf<AProjectileBase> ProjectileEBuffClass;
+	TSubclassOf<ASoldierProjectile> ProjectileEBuffClass;
 	
 	UPROPERTY()
-	AProjectileBase *Projectile;
+	ASoldierProjectile *Projectile;
 
 	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
 	UParticleSystem *MuzzleParticles;
@@ -32,12 +32,11 @@ private:
 public:
 
 	bool EBuffOn = false;		//임시 구현 SkillE
-	int8 Magazine = 20;			//임시 구현 SkillE 탄창 수
+	int8 Magazine = 5;			//임시 구현 SkillE 탄창 수
+	float TempCoolTime;			//e버프 쿨타임 롤백용 
 	
 	// 생성자
 	USkillSoldierLM();
-
-	void UpdateSetting();
 
 protected:
 	virtual void BeginPlay() override;

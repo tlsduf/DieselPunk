@@ -415,6 +415,16 @@ void ACharacterPC::WReleased()
 	IsWPressed = false;
 }
 
+void ACharacterPC::SPressed()
+{
+	IsSPressed = true;
+}
+
+void ACharacterPC::SReleased()
+{
+	IsSPressed = false;
+}
+
 //================================================================
 // 데미지 받는 함수
 //================================================================

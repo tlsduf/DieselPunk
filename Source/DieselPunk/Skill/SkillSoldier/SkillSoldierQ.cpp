@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SkillSoldierQ.h"
-#include "../../Actor\ProjectileBase.h"
+#include "../../Actor\SoldierProjectile.h"
 #include "../../Character/CharacterPC.h"
 #include "../../Animation/SoldierAnimInstance.h"
 #include "../../Handler/CoolTimeHandler.h"
@@ -68,8 +68,9 @@ void USkillSoldierQ::Shot()
 	// projectile spawn
 	if(ProjectileClass)
 	{
-		FActorSpawnParameters param = FActorSpawnParameters();
-		param.Owner = GetOwner();
-		Projectile = GetWorld()->SpawnActor<AProjectileBase>(ProjectileClass, shotLocation, FRotator(spawnPitch.Pitch, shotRotation.Yaw, 0), param);
+		FTransform SpawnTransform( FRotator(spawnPitch.Pitch, shotRotation.Yaw, 0), shotLocation);
+		Projectile = DpGetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
+		Projectile->Stack = 5;
+		Projectile->FinishSpawning(SpawnTransform);
 	}
 }

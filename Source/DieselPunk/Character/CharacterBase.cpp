@@ -145,6 +145,7 @@ void ACharacterBase::BeginPlay()
 	Super::BeginPlay();
 
 	//Init( InfoId );
+	CreateStatusUI();
 	AnimHandler = new FAnimationHandler(this);
 }
 
@@ -197,6 +198,7 @@ void ACharacterBase::DisplayDamage(float inDamage)
 {
 	FTransform SpawnTransform( FRotator::ZeroRotator, GetActorLocation());
 	DamageUIActor = DpGetWorld()->SpawnActorDeferred<ADamageUIActor>(ADamageUIActor::StaticClass(), SpawnTransform, this);
+	
 	if(DamageUIActor)
 	{
 		DamageUIActor->AttachToComponent( GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);

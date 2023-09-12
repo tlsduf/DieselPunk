@@ -19,6 +19,7 @@ protected:
 	// 쿨타임을 관리하기 위한 CoolTime Handler입니다.
 	FCoolTimeHandler* CoolTimeHandler;
 
+public:
 	UPROPERTY(EditAnywhere, Category = Skill)
 	float CoolTime = 5;
 

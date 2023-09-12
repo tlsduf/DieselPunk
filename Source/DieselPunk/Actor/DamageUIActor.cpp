@@ -71,7 +71,7 @@ void ADamageUIActor::Tick(float InDeltaTime)
 	// 위치 업데이트
 	FVector currentLocation = GetActorLocation();
 	FVector XYVector = FVector(XVelocity,YVelocity,0);
-	FVector ZVector = FVector(0,0,ZVelocity);
+	FVector ZVector = FVector( 0, 0, ZVelocity);
 	currentLocation += (XYAccel * XYVector * InDeltaTime) + (ZAccel * ZVector * InDeltaTime);
 	SetActorLocation(currentLocation);
 }

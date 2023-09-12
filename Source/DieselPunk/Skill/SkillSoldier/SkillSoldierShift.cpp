@@ -32,6 +32,10 @@ void USkillSoldierShift::SkillTriggered()
 	if(ownerController == nullptr)
 		return;
 
+	// 뒤로가는 키(s) 가 눌려있을 때 즉, 뒤로가는 중이면 리턴
+	if(ownerPawn->IsSPressed)
+		return;
+	
 	// 쿨타임!!!!!!!!!!!!!!!!!!
 	CoolTimeHandler->SetCoolTime(CoolTime);
 	ownerPawn->SkillActivating[EAbilityType::Shift] = true;

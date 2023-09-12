@@ -24,7 +24,7 @@ public:
 	class ADamageUIActor *DamageUIActor;
 
 	//데미지를 입으면 데미지ui액터를 생성합니다.
-	void			DisplayDamage(float inDamage);
+	void DisplayDamage(float inDamage);
 	//================================================
 	
 	// Anim Notify가 실행된 SectionName 발송용

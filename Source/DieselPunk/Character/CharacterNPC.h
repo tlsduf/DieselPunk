@@ -6,6 +6,7 @@
 #include "CharacterNPC.generated.h"
 
 class UPlayerSkill;
+class UEnemyStatusUI;
 
 UCLASS()
 class DIESELPUNK_API ACharacterNPC : public ACharacterPC
@@ -13,6 +14,21 @@ class DIESELPUNK_API ACharacterNPC : public ACharacterPC
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "skills", meta = (AllowPrivateAccess = "true"))
+	UPlayerSkill *MeleeAttack;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "skills", meta = (AllowPrivateAccess = "true"))
+	UPlayerSkill *ProjectileAttack;
+
+	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
+	UParticleSystem *GrenadeMuzzleEffect;
+
+	int8 SoldierStack = 0;
+
+	TWeakObjectPtr< UEnemyStatusUI > EnemyStatusUI; // 상태 UI 포인터
+
+	FTimerHandle EnemyStatusUISetHiddenInGameTHandle;
+	
 	ACharacterNPC();
 
 	virtual void Tick(float DeltaTime) override;
@@ -22,18 +38,14 @@ protected:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent) override;
 
+	// TakeDamageHandle
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent, class AController *EventInstigator, AActor *DamageCauser) override;
+
+	void SetTimerWithDelegate(FTimerHandle& TimerHandle, TBaseDelegate<void> ObjectDelegate, float Time, bool bLoop);
+
+	void EnemyStatusUISetHiddenInGame();
+
 public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "skills", meta = (AllowPrivateAccess = "true"))
-	UPlayerSkill *MeleeAttack;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "skills", meta = (AllowPrivateAccess = "true"))
-	UPlayerSkill *ProjectileAttack;
-
-public:
-
-	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
-	UParticleSystem *GrenadeMuzzleEffect;
-
 	// 상태 UI 위젯을 생성한다.
 	virtual void CreateStatusUI() override;
 	
