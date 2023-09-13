@@ -70,7 +70,7 @@ void USkillSoldierQ::Shot()
 	{
 		FTransform SpawnTransform( FRotator(spawnPitch.Pitch, shotRotation.Yaw, 0), shotLocation);
 		Projectile = DpGetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
-		Projectile->Stack = 5;
+		Projectile->Stack = 10;
 		Projectile->FinishSpawning(SpawnTransform);
 	}
 }

@@ -2,7 +2,7 @@
 
 #include "SkillSoldierR.h"
 #include "../../Actor\SoldierProjectile.h"
-#include "../../Character/CharacterPC.h"
+#include "../../Character/CharacterSoldier.h"
 #include "../../Logic/PlayerControllerBase.h"
 #include "../../Animation/SoldierAnimInstance.h"
 #include "../../Handler/CoolTimeHandler.h"
@@ -26,7 +26,7 @@ void USkillSoldierR::SkillTriggered()
 {
 	Super::SkillTriggered();
 	
-	auto ownerPawn = Cast<ACharacterPC>(GetOwner());
+	auto ownerPawn = Cast<ACharacterSoldier>(GetOwner());
 	if(ownerPawn == nullptr)
 		return;
 	APlayerController *ownerController = Cast<APlayerControllerBase>(ownerPawn->GetController());
@@ -42,7 +42,6 @@ void USkillSoldierR::SkillTriggered()
 	{
 		// 쿨타임!!!!!!!!!!!!!!!!!!
 		ownerPawn->SkillActivating[EAbilityType::SkillR] = true;
-
 		
 		animInst->PlayMontage(EAbilityType::SkillR, ESoldierSkillMontageType::AroundAttack1);
 		
@@ -86,7 +85,7 @@ void USkillSoldierR::SkillTriggered()
 			{
 				FTransform SpawnTransform( FRotator(0,0, 0), HitResult.Location);
 				Projectile = DpGetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
-				Projectile->Stack = 5;
+				Projectile->Stack = 15;
 				Projectile->FinishSpawning(SpawnTransform);
 			}
 			if (PinPointHitEffect)

@@ -19,6 +19,8 @@
 // =============================================================
 APlayerControllerBase::APlayerControllerBase()
 {
+	bShowMouseCursor = false;
+	DefaultMouseCursor = EMouseCursor::Default;
 	
 	CheatClass = UDpCheatManager::StaticClass();
 }

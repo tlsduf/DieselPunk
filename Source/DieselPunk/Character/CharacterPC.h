@@ -110,8 +110,6 @@ public:
 	void SetInCombatFalse();
 
 	//=================================================================================
-	bool DrawERange = false;
-	FHitResult GetUnderCursorLocation();
 
 	// * 체력바UI
 	UFUNCTION(BlueprintPure)

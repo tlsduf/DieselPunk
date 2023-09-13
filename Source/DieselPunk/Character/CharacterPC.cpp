@@ -135,12 +135,6 @@ void ACharacterPC::Tick(float DeltaTime)
 			SetActorRotation(FRotator(0, GetController()->GetControlRotation().Yaw, 0));
 		}
 	}
-	if (DrawERange)
-	{
-		//*스킬e 범위 디버그
-		DrawDebugSphere(DpGetWorld(), GetUnderCursorLocation().ImpactPoint, 32, 16, FColor::Red, false, -1.f);
-		DrawDebugSphere(DpGetWorld(), GetUnderCursorLocation().ImpactPoint, 500, 64, FColor::Blue, false, -1.f); // 파란 디버그구
-	} 
 
 	// 체력 애니메이팅 [TODO]추후 UI로 
 	AnimatorHealthPercent.Update(DeltaTime);
@@ -466,7 +460,7 @@ float ACharacterPC::TakeDamage(float DamageAmount, struct FDamageEvent const &Da
 		Damage = Damage * (100 / (100 + Armor));
 		Damage = (int)(Damage + 0.2); // 데미지 소수점 처리 *소수점첫째자리가 0.8 이상이면 올림, 미만시 내림
 
-		Damage = FMath::Min(Health, Damage);
+		Damage = FMath::Min(Health, (int)Damage);
 		_UpdateHp(Health - Damage, MaxHealth);
 		Health -= Damage;
 		DisplayDamage(Damage);
@@ -495,10 +489,14 @@ float ACharacterPC::TakeDamage(float DamageAmount, struct FDamageEvent const &Da
 			}
 
 			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision); // 캡슐콜리전 무효
-			// 20초 뒤 액터 destroy
-			GetWorldTimerManager().SetTimer(
-				TakeDamageHandle, [this]()
-				{ Destroy(); },
+			// 20초 뒤 액터 destroy // 이거 크래시남 왜인지는 몰 루?
+			TWeakObjectPtr<ACharacterPC> thisPtr = this;
+			GetWorld()->GetTimerManager().SetTimer(
+				TakeDamageHandle, [thisPtr]()
+				{
+					if(thisPtr.IsValid())
+						thisPtr->Destroy();
+				},
 				20.0f, false);
 
 			auto DamageCauserPlayer = Cast<ACharacterPC>(DamageCauser);
@@ -638,13 +636,16 @@ void ACharacterPC::_UpdateHp(int InCurHp, int InMaxHp)
 	param.StartValue = curPercent;
 	param.EndValue = destPercent;
 	param.DurationTime = 0.6f;
-	param.DurationFunc = [ this ] ( float InValue )
+	TWeakObjectPtr<ACharacterPC> thisPtr = this;
+	param.DurationFunc = [ thisPtr ] ( float InValue )
 	{
-		TempPercent = InValue;
+		if(thisPtr.IsValid())
+			thisPtr->TempPercent = InValue;
 	};
-	param.CompleteFunc = [ this ] ( float InValue )
+	param.CompleteFunc = [ thisPtr ] ( float InValue )
 	{
-		TempPercent = InValue;
+		if(thisPtr.IsValid())
+			thisPtr->TempPercent = InValue;
 	};
 
 	AnimatorHealthPercent.Start( param );
@@ -663,13 +664,13 @@ void ACharacterPC::_UpdateHp(int InCurHp, int InMaxHp)
 		(0.f <= percentAmount && percentAmount < 0.2f) ? 0.6f
 	: (0.2f <= percentAmount && percentAmount < 0.4f) ? 0.85f
 	:													1.1f;
-	paramAfterImage.DurationFunc = [ this ] ( float InValue )
+	paramAfterImage.DurationFunc = [ thisPtr ] ( float InValue )
 	{
-		TempPercentAfterImage = InValue;
+		thisPtr->TempPercentAfterImage = InValue;
 	};
-	paramAfterImage.CompleteFunc = [ this ] ( float InValue )
+	paramAfterImage.CompleteFunc = [ thisPtr ] ( float InValue )
 	{
-		TempPercentAfterImage = InValue;
+		thisPtr->TempPercentAfterImage = InValue;
 	};
 
 	AnimatorHealthPercentAfterImage.Start( paramAfterImage );
@@ -682,21 +683,6 @@ float ACharacterPC::GetHealthPercent()
 float ACharacterPC::GetHealthPercentAfterImage()
 {
 	return TempPercentAfterImage;
-}
-
-FHitResult ACharacterPC::GetUnderCursorLocation()
-{
-	FHitResult HitResult;
-	APlayerController *ownerController = Cast<APlayerControllerBase>(GetController());
-	if (ownerController)
-	{
-		ownerController->GetHitResultUnderCursor(
-			ECollisionChannel::ECC_Visibility,
-			false,
-			HitResult);
-		return HitResult;
-	}
-	return HitResult;
 }
 
 float ACharacterPC::GetSkillCoolTimePercent(EAbilityType inType)

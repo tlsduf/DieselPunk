@@ -43,6 +43,12 @@ public:
 	// 액터 제거시 호출되는 델리게이트
 	DEFINE_GAME_DELEGATE_TYPED( DelegateActorDespawned, FDelegateSimpleActor );
 
+	// 액터 클릭시 호출되는 델리게이트
+	DEFINE_GAME_DELEGATE_TYPED( DelegateActorClicked, FDelegateSimpleActor );
+
+	// 타겟팅 갱신시 호출되는 델리게이트
+	DEFINE_GAME_DELEGATE_TYPED( DelegateTargetUpdated, FDelegateSimpleActor );
+
 	// UI 생성시 호출되는 델리게이트
 	DEFINE_GAME_DELEGATE_TYPED( DelegateUserWidgetCreated, FDelegateUserWidget );
 

@@ -67,11 +67,8 @@ void USkillSoldierLM::SkillTriggered()
 		//ProjectileClass = LoadClass<ASoldierProjectile>( NULL, *resourcePath );
 		FTransform SpawnTransform( shotRotation, shotLocation);
 		Projectile = GetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
-		if(Projectile)
-		{
-			//Projectile->SetDamage(inDamage);
-			Projectile->FinishSpawning(SpawnTransform);
-		}
+		Projectile->FinishSpawning(SpawnTransform);
+		
 		
 		if (MuzzleParticles)
 			UGameplayStatics::SpawnEmitterAttached(
@@ -87,7 +84,7 @@ void USkillSoldierLM::SkillTriggered()
 	{
 		FTransform SpawnTransform( shotRotation, shotLocation);
 		Projectile = DpGetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileEBuffClass, SpawnTransform, GetOwner());
-		Projectile->Stack = 5;
+		Projectile->Stack = 3;
 		Projectile->FinishSpawning(SpawnTransform);
 		--Magazine;
 		

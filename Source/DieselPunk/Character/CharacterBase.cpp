@@ -197,7 +197,7 @@ void ACharacterBase::_InitValue()
 void ACharacterBase::DisplayDamage(float inDamage)
 {
 	FTransform SpawnTransform( FRotator::ZeroRotator, GetActorLocation());
-	DamageUIActor = DpGetWorld()->SpawnActorDeferred<ADamageUIActor>(ADamageUIActor::StaticClass(), SpawnTransform, this);
+	DamageUIActor = GetWorld()->SpawnActorDeferred<ADamageUIActor>(ADamageUIActor::StaticClass(), SpawnTransform, this);
 	
 	if(DamageUIActor)
 	{
