@@ -44,4 +44,5 @@ protected:
 public:
 	virtual void SkillTriggered() override;
 
+	virtual void InitSkill() override;
 };

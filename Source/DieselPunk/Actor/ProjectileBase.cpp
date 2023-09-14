@@ -48,7 +48,7 @@ void AProjectileBase::BeginPlay()
 
 	// 사운드, 이펙트 재생
 	if (ShotEffect)
-		UtilEffect::SpawnParticleComponent(ShotEffect, GetActorLocation(), GetActorRotation());
+		UtilEffect::SpawnParticleComponent(ShotEffect, GetActorLocation(), GetActorRotation(), ShotEffectScale);
 	if (ShotSound)
 		UGameplayStatics::PlaySoundAtLocation(this, ShotSound, GetActorLocation());
 
@@ -177,12 +177,12 @@ void AProjectileBase::OneTickTask()
 		return;
 	
 	if (HitEffect)
-		UtilEffect::SpawnParticleComponent(HitEffect, GetActorLocation(), GetActorRotation());
+		UtilEffect::SpawnParticleComponent(HitEffect, GetActorLocation(), GetActorRotation(), HitEffectScale);
 	
 	TArray<FHitResult> sweepResults;
 	FVector startLocation = GetActorLocation() + GetActorForwardVector() * AttackStartPoint;
 	FVector endLocation = startLocation + GetActorForwardVector() * AttackRange;
-	UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, 1, DebugOnOff);
+	UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, ProjectileOwnerType, DebugOnOff);
 	if(!sweepResults.IsEmpty())
 	{
 		for (auto It = sweepResults.CreateIterator(); It; It++)
@@ -212,7 +212,7 @@ void AProjectileBase::_OnHit(UPrimitiveComponent* InHitComp, AActor* InOtherActo
 
 	// 이펙트
 	if (HitEffect)
-		UtilEffect::SpawnParticleComponent(HitEffect, GetActorLocation(), GetActorRotation());
+		UtilEffect::SpawnParticleComponent(HitEffect, GetActorLocation(), GetActorRotation(), HitEffectScale);
 	if (HitSound)
 		UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetActorLocation());
 
@@ -231,7 +231,7 @@ void AProjectileBase::_OnHit(UPrimitiveComponent* InHitComp, AActor* InOtherActo
 			TArray<FHitResult> sweepResults;
 			FVector startLocation = GetActorLocation() + GetActorForwardVector() * AttackStartPoint;
 			FVector endLocation = startLocation + GetActorForwardVector() * AttackRange;
-			UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, 1, DebugOnOff);
+			UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, ProjectileOwnerType, DebugOnOff);
 			if(!sweepResults.IsEmpty())
 			{
 				for (auto It = sweepResults.CreateIterator(); It; It++)
@@ -271,7 +271,7 @@ void AProjectileBase::_BeginOverlapEvent(class UPrimitiveComponent* InHitComp, c
 
 	// 이펙트
 	if (HitEffect)
-		UtilEffect::SpawnParticleComponent(HitEffect, GetActorLocation(), GetActorRotation());
+		UtilEffect::SpawnParticleComponent(HitEffect, GetActorLocation(), GetActorRotation(), HitEffectScale);
 	if (HitSound)
 		UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetActorLocation());
 
@@ -290,7 +290,7 @@ void AProjectileBase::_BeginOverlapEvent(class UPrimitiveComponent* InHitComp, c
 			TArray<FHitResult> sweepResults;
 			FVector startLocation = GetActorLocation() + GetActorForwardVector() * AttackStartPoint;
 			FVector endLocation = startLocation + GetActorForwardVector() * AttackRange;
-			UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, true, DebugOnOff);
+			UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, ProjectileOwnerType, DebugOnOff);
 			if(!sweepResults.IsEmpty())
 			{
 				for (auto It = sweepResults.CreateIterator(); It; It++)

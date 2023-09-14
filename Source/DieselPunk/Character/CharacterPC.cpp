@@ -21,13 +21,14 @@
 #include <Engine/DamageEvents.h>
 #include <Components/WidgetComponent.h>
 
+#include <GameFramework/WorldSettings.h>
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(CharacterPC)
 
 ACharacterPC::ACharacterPC()
 	:
-	Exp(0), Level(1), TempMaxHealth(MaxHealth)
+	Exp(0), Level(1), TempLevel(Level), TempMaxHealth(MaxHealth)
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -139,6 +140,13 @@ void ACharacterPC::Tick(float DeltaTime)
 	// 체력 애니메이팅 [TODO]추후 UI로 
 	AnimatorHealthPercent.Update(DeltaTime);
 	AnimatorHealthPercentAfterImage.Update(DeltaTime);
+
+	if(TempLevel != Level)
+	{
+		Health = MaxHealth;
+		TempLevel = Level;
+		LevelUpEvent();
+	}
 }
 
 // =============================================================
@@ -565,6 +573,11 @@ void ACharacterPC::SetInCombatFalse()
 bool ACharacterPC::GetCombatState()
 {
 	return InCombat;
+}
+
+void ACharacterPC::LevelUpEvent()
+{
+	GetWorldSettings()->SetTimeDilation(0.f);
 }
 
 int ACharacterPC::GetCharacterLevel()

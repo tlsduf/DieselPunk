@@ -116,7 +116,13 @@ protected:
 	TSoftObjectPtr<UNiagaraSystem> HitEffect = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
+	FVector HitEffectScale = FVector(1);
+
+	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
 	TSoftObjectPtr<UNiagaraSystem> ShotEffect = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
+	FVector ShotEffectScale = FVector(1);
 
 	// 발사 사운드
 	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")

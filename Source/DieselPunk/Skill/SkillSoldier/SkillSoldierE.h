@@ -28,5 +28,4 @@ public:
 	virtual void SkillTriggered() override;
 
 private:
-
 };

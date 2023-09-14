@@ -71,7 +71,7 @@ public:
 
 	// !MyCode------------------------------------------------------
 protected:
-	
+
 	
 	// Debug
 	void DebugActorRotation();
@@ -150,6 +150,9 @@ public:
 public:
 	int Exp;
 	int Level;
+	int TempLevel;
+
+	void LevelUpEvent();
 
 	UFUNCTION(BlueprintPure)
 	int GetCharacterLevel();

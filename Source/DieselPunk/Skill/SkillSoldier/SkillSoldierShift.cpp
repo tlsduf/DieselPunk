@@ -84,7 +84,6 @@ void USkillSoldierShift::SkillTriggered()
 		//*후행 조건 설정부
 		IsDash = true;
 		CanDash = false;
-		InCooldownDash = true;
 
 		ownerPawn->GetWorldTimerManager().SetTimer(DashTHandle, this, &USkillSoldierShift::StopDashing, DashingTime, false);
 
@@ -117,10 +116,4 @@ void USkillSoldierShift::ResetDash()
 	}
 	IsDash = false;
 	CanDash = true;
-
-	ownerPawn->GetWorldTimerManager().SetTimer(DashTHandle, this, &USkillSoldierShift::ResetCooldownDash, ShiftCooldownTime, false);
-}
-void USkillSoldierShift::ResetCooldownDash()
-{
-	InCooldownDash = false;
 }

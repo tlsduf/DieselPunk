@@ -22,7 +22,7 @@ void ASoldierProjectile::OneTickTask()
 	TArray<FHitResult> sweepResults;
 	FVector startLocation = GetActorLocation() + GetActorForwardVector() * AttackStartPoint;
 	FVector endLocation = startLocation + GetActorForwardVector() * AttackRange;
-	UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, 1, DebugOnOff);
+	UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, ProjectileOwnerType, DebugOnOff);
 	if(!sweepResults.IsEmpty())
 	{
 		for (auto It = sweepResults.CreateIterator(); It; It++)
@@ -55,7 +55,7 @@ void ASoldierProjectile::_OnHit(UPrimitiveComponent* InHitComp, AActor* InOtherA
 			TArray<FHitResult> sweepResults;
 			FVector startLocation = GetActorLocation() + GetActorForwardVector() * AttackStartPoint;
 			FVector endLocation = startLocation + GetActorForwardVector() * AttackRange;
-			UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, true, DebugOnOff);
+			UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, ProjectileOwnerType, DebugOnOff);
 			if(!sweepResults.IsEmpty())
 			{
 				for (auto It = sweepResults.CreateIterator(); It; It++)
@@ -100,7 +100,7 @@ void ASoldierProjectile::_BeginOverlapEvent(UPrimitiveComponent* InHitComp, AAct
 			TArray<FHitResult> sweepResults;
 			FVector startLocation = GetActorLocation() + GetActorForwardVector() * AttackStartPoint;
 			FVector endLocation = startLocation + GetActorForwardVector() * AttackRange;
-			UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, true, DebugOnOff);
+			UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, ProjectileOwnerType, DebugOnOff);
 			if(!sweepResults.IsEmpty())
 			{
 				for (auto It = sweepResults.CreateIterator(); It; It++)
