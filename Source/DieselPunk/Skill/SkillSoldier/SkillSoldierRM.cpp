@@ -29,9 +29,11 @@ void USkillSoldierRM::SkillTriggered()
 	auto ownerController = ownerPawn->GetController();
 	if(ownerController == nullptr)
 		return;
-
+	
+	// 쿨타임 감소
+	float CoolDown = 0.2 * ownerPawn->PCSkillManager.SoldierMouseRMUpgradeType[ESoldierMouseRMUpgradeType::CoolDown];
 	// 쿨타임!!!!!!!!!!!!!!!!!!
-	CoolTimeHandler->SetCoolTime(CoolTime);
+	CoolTimeHandler->SetCoolTime(CoolTime - CoolDown);
 	ownerPawn->SkillActivating[EAbilityType::MouseRM] = true;
 	DpGetWorld()->GetTimerManager().SetTimer(
 	PlaySkillTHandle, [this]()
@@ -52,6 +54,10 @@ void USkillSoldierRM::SkillTriggered()
 		Projectile = DpGetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
 		Projectile->SetUpdateRotation(FRotator(0,0,10));
 		Projectile->IsStackBoom = true;
+		
+		Projectile->Damage += 10 * ownerPawn->PCSkillManager.SoldierMouseRMUpgradeType[ESoldierMouseRMUpgradeType::DamageUp];
+		Projectile->StackDamage += ownerPawn->PCSkillManager.SoldierMouseRMUpgradeType[ESoldierMouseRMUpgradeType::StackingDamageUp];
+		
 		Projectile->FinishSpawning(SpawnTransform);
 	}
 }

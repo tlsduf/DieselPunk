@@ -40,6 +40,7 @@ void USkillSoldierR::SkillTriggered()
 	
 	if (!IsE)
 	{
+
 		// 쿨타임!!!!!!!!!!!!!!!!!!
 		ownerPawn->SkillActivating[EAbilityType::SkillR] = true;
 		
@@ -69,8 +70,11 @@ void USkillSoldierR::SkillTriggered()
 	}
 	else if (IsE) //*선행 조건 설정부
 	{
+
+		// 쿨타임 감소
+		float CoolDown = 0.5 * ownerPawn->PCSkillManager.SoldierSkillRUpgradeType[ESoldierSkillRUpgradeType::CoolDown];
 		// 쿨타임!!!!!!!!!!!!!!!!!!
-		CoolTimeHandler->SetCoolTime(CoolTime);
+		CoolTimeHandler->SetCoolTime(CoolTime - CoolDown);
 		ownerPawn->SkillActivating[EAbilityType::SkillR] = false;
 
 		// 몽타주 정지
@@ -85,7 +89,11 @@ void USkillSoldierR::SkillTriggered()
 			{
 				FTransform SpawnTransform( FRotator(0,0, 0), HitResult.Location);
 				Projectile = DpGetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
+
+				Projectile->Damage += 10 * ownerPawn->PCSkillManager.SoldierSkillRUpgradeType[ESoldierSkillRUpgradeType::CoolDown];
 				Projectile->Stack = 15;
+				Projectile->AttackRadius += 30 * ownerPawn->PCSkillManager.SoldierSkillRUpgradeType[ESoldierSkillRUpgradeType::WideRange];
+				
 				Projectile->FinishSpawning(SpawnTransform);
 			}
 			if (PinPointHitEffect)

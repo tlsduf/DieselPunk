@@ -33,8 +33,10 @@ void USkillSoldierLM::SkillTriggered()
 	if(ownerController == nullptr)
 		return;
 
+	// 공격속도 업
+	float CoolDown = 0.025 * ownerPawn->PCSkillManager.SoldierMouseLMUpgradeType[ESoldierMouseLMUpgradeType::CastSpeedUp];
 	// 쿨타임!!!!!!!!!!!!!!!!!!!!!!
-	CoolTimeHandler->SetCoolTime(CoolTime);
+	CoolTimeHandler->SetCoolTime(CoolTime - CoolDown);
 	
 	// 라인트레이스로 최종경로설정
 	FVector lineTraceLocation;
@@ -67,6 +69,11 @@ void USkillSoldierLM::SkillTriggered()
 		//ProjectileClass = LoadClass<ASoldierProjectile>( NULL, *resourcePath );
 		FTransform SpawnTransform( shotRotation, shotLocation);
 		Projectile = GetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
+
+		Projectile->Damage += 5 * ownerPawn->PCSkillManager.SoldierMouseLMUpgradeType[ESoldierMouseLMUpgradeType::DamageUp];
+		if(CalPercentage(ownerPawn->PCSkillManager.SoldierMouseLMUpgradeType[ESoldierMouseLMUpgradeType::StackingPercentage] / 100))
+			Projectile->Stack = 1;
+		
 		Projectile->FinishSpawning(SpawnTransform);
 		
 		
@@ -84,7 +91,10 @@ void USkillSoldierLM::SkillTriggered()
 	{
 		FTransform SpawnTransform( shotRotation, shotLocation);
 		Projectile = DpGetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileEBuffClass, SpawnTransform, GetOwner());
-		Projectile->Stack = 3;
+
+		Projectile->Damage += 10 * ownerPawn->PCSkillManager.SoldierSkillEUpgradeType[ESoldierSkillEUpgradeType::DamageUp];;
+		Projectile->Stack = 3 + ownerPawn->PCSkillManager.SoldierSkillEUpgradeType[ESoldierSkillEUpgradeType::StackUp];;
+
 		Projectile->FinishSpawning(SpawnTransform);
 		--Magazine;
 		

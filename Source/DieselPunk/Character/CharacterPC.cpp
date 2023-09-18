@@ -21,8 +21,6 @@
 #include <Engine/DamageEvents.h>
 #include <Components/WidgetComponent.h>
 
-#include <GameFramework/WorldSettings.h>
-
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(CharacterPC)
 
@@ -69,7 +67,6 @@ void ACharacterPC::BeginPlay()
 {
 	//InitSkills();
 	
-	TODO( "레벨에 미리 세팅되어있는 액터들이라 이곳에서 등록, 추후 논의 필요", 크로 )
 	if ( InfoId == G_InvalidInfoId )
 	{
 		InfoId = TestInfoId;
@@ -88,6 +85,8 @@ void ACharacterPC::BeginPlay()
 	TempPercent = Health / MaxHealth;
 	TempPercentAfterImage = Health / MaxHealth;
 	JumpMaxCount = ThisJumpMaxCount;
+
+	PCSkillManager.ResetSkill();
 }
 
 // Called every frame
@@ -577,7 +576,7 @@ bool ACharacterPC::GetCombatState()
 
 void ACharacterPC::LevelUpEvent()
 {
-	GetWorldSettings()->SetTimeDilation(0.f);
+	Cast<APlayerControllerBase>(DpGetPlayerController())->SkillUpgradeEventStart();
 }
 
 int ACharacterPC::GetCharacterLevel()

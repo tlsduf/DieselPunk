@@ -13,6 +13,8 @@ class UInputMappingContext;
 struct FInputActionInstance;
 enum class EAbilityType : uint8;
 
+
+
 UCLASS()
 class DIESELPUNK_API APlayerControllerBase : public APlayerController
 {
@@ -52,6 +54,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction *InputF;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction *InputK;
 	
 	// 6개의 스킬 InputAction // 순서대로 LM, RM, LShift, Q, E, R
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -103,12 +108,23 @@ public:
 	void SetPlayerEnabledState(bool bPlayerEnabled);
 
 private:
-	UUserWidget *HUD;
-	UUserWidget *Menu;
+	UUserWidget* Menu;
+	UUserWidget* HUD;
+	UUserWidget* SkillBrowser;
+	UUserWidget* SkillUpgradeUI;
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<class UUserWidget> UIMenuClass;
+	TSubclassOf<UUserWidget> UIMenuClass;
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<class UUserWidget> HUDClass;
+	TSubclassOf<UUserWidget> HUDClass;
+
+public:
+	//임시 스킬정보창
+	bool OnSkillBrowser = false;
+	void SetOnSkillBrowser();
+	void SetOffSkillBrowser();
+	
+	void SkillUpgradeEventStart();
+	void SkillUpgradeEventEnd();
 };

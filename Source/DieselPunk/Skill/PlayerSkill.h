@@ -14,8 +14,6 @@ class DIESELPUNK_API UPlayerSkill : public USkillBase, public IPlayerInputInterf
 {
 	GENERATED_BODY()
 	
-
-	
 public:
 	// 생성자
 	UPlayerSkill();
@@ -44,59 +42,11 @@ public:
 
 	// 스킬이 어떠한 이유로 인해 캔슬될 때 호출됩니다.
 	virtual void CancelSkill() override;
-
-	TMap<EAbilityType, bool> temp;
-
+	
 	virtual void InitSkill() {};
 };
 
 
-// 각 스킬들의 강화 특성입니다. 프로토타입용
-UENUM(BlueprintType)
-enum class ESoldierSkillLMUpgradeType : uint8
-{
-	DamageUp				UMETA( ToolTip = "데미지 상승"),
-	CastSpeedUp				UMETA( ToolTip = "공격속도 상승"),
-	StackingPercentage		UMETA( ToolTip = "스택 확률 상승"),
-};
-
-UENUM(BlueprintType)
-enum class ESoldierSkillRMUpgradeType : uint8
-{
-	DamageUp				UMETA( ToolTip = "데미지 상승"),
-	StackingDamageUp		UMETA( ToolTip = "스택데미지 상승"),
-	CoolDown				UMETA( ToolTip = "쿨감"),
-};
-
-UENUM(BlueprintType)
-enum class ESoldierSkillShiftUpgradeType : uint8
-{
-	CoolDown				UMETA( ToolTip = "쿨감"),
-};
-
-UENUM(BlueprintType)
-enum class ESoldierSkillQUpgradeType : uint8
-{
-	DamageUp				UMETA( ToolTip = "데미지 상승"),
-	CoolDown				UMETA( ToolTip = "쿨감"),
-	WideRange				UMETA( ToolTip = "범위증가"),
-};
-
-UENUM(BlueprintType)
-enum class ESoldierSkillEUpgradeType : uint8
-{
-	DamageUp				UMETA( ToolTip = "데미지 상승"),
-	CoolDown				UMETA( ToolTip = "쿨감"),
-	StackUp					UMETA( ToolTip = "스택 상승"),
-};
-
-UENUM(BlueprintType)
-enum class ESoldierSkillRUpgradeType : uint8
-{
-	DamageUp				UMETA( ToolTip = "데미지 상승"),
-	CoolDown				UMETA( ToolTip = "쿨감"),
-	WideRange				UMETA( ToolTip = "범위증가"),
-};
 
 
 

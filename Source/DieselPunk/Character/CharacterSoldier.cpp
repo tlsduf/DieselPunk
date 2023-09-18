@@ -23,7 +23,7 @@ void ACharacterSoldier::Tick(float DeltaTime)
 	{
 		//*스킬e 범위 디버그
 		DrawDebugSphere(GetWorld(), GetUnderCursorLocation().ImpactPoint, 32, 16, FColor::Red, false, -1.f);
-		DrawDebugSphere(GetWorld(), GetUnderCursorLocation().ImpactPoint, 500, 64, FColor::Blue, false, -1.f); // 파란 디버그구
+		DrawDebugSphere(GetWorld(), GetUnderCursorLocation().ImpactPoint, 500 + 30 * PCSkillManager.SoldierSkillRUpgradeType[ESoldierSkillRUpgradeType::WideRange], 64, FColor::Blue, false, -1.f); // 파란 디버그구
 	} 
 }
 

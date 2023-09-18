@@ -4,6 +4,7 @@
 
 #include "CharacterBase.h"
 #include "InputActionValue.h"
+#include "DieselPunk/Skill/SkillManager.h"
 #include "CharacterPC.generated.h"
 
 class USkillBase;
@@ -62,6 +63,7 @@ public:
 	void SkillCompleted(const EAbilityType InAbilityType);
 	void SkillCanceled(const EAbilityType InAbilityType);
 
+	SkillManager PCSkillManager;
 public:
 	/** Called for movement input */
 	void Move(const FInputActionValue &Value);

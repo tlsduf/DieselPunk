@@ -31,8 +31,10 @@ void USkillSoldierE::SkillTriggered()
 	if(ownerController == nullptr)
 		return;
 
+	// 쿨타임 감소
+	float CoolDown = 0.5 * ownerPawn->PCSkillManager.SoldierSkillEUpgradeType[ESoldierSkillEUpgradeType::CoolDown];
 	// 쿨타임!!!!!!!!!!!!!!!!!!
-	CoolTimeHandler->SetCoolTime(CoolTime);
+	CoolTimeHandler->SetCoolTime(CoolTime - CoolDown);
 	
 	//트리거 이벤트
 	USkillSoldierLM *SoldierLM = nullptr;

@@ -6,11 +6,16 @@
 #include "../Skill/SkillBase.h"
 #include "../Skill/PlayerSkill.h"
 #include "../Core/DpCheatManager.h"
+#include "../UI/HUD/SkillUpgradeUI.h"
+#include "..\UI\HUD\DamageBrowserUI.h"
+
 
 #include <Blueprint/UserWidget.h>
 #include <EnhancedInputComponent.h>
 #include <EnhancedInputSubsystems.h>
 #include <InputMappingContext.h>
+
+#include <GameFramework/WorldSettings.h>
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PlayerControllerBase)
 
@@ -36,11 +41,20 @@ void APlayerControllerBase::BeginPlay()
         Subsystem->AddMappingContext(MappingContext, 0);
     }
 
-    HUD = CreateWidget(this, HUDClass);
-    if (HUD != nullptr)
-    {
-        HUD->AddToViewport();
-    }
+	if(HUDClass)
+		HUD = CreateWidget(this, HUDClass);
+	if (HUD)
+		HUD->AddToViewport();
+
+	SkillBrowser = UDamageBrowserUI::CreateUI();
+	if (SkillBrowser)
+		SkillBrowser->AddToViewport();
+	SkillBrowser->SetVisibility(ESlateVisibility::Hidden);
+	
+	SkillUpgradeUI = USkillUpgradeUI::CreateUI();
+	if(SkillUpgradeUI)
+		SkillUpgradeUI->AddToViewport();
+	SkillUpgradeUI->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void APlayerControllerBase::SetupInputComponent()
@@ -64,7 +78,8 @@ void APlayerControllerBase::SetupInputComponent()
         EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerControllerBase::Move);
         EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerControllerBase::Look);
 
-    	EnhancedInputComponent->BindAction(InputF, ETriggerEvent::Triggered, this, &APlayerControllerBase::Interaction);
+    	EnhancedInputComponent->BindAction(InputF, ETriggerEvent::Started, this, &APlayerControllerBase::Interaction);
+    	EnhancedInputComponent->BindAction(InputK, ETriggerEvent::Started, this, &APlayerControllerBase::SetOnSkillBrowser);
 
         //스킬 호출에 관한 바인딩
         for (EAbilityType type : ENUM_RANGE(EAbilityType))
@@ -308,4 +323,103 @@ void APlayerControllerBase::SetPlayerEnabledState(bool bPlayerEnabled)
 {
 	// enhanced input 용으로 만들어야됨
     bShowMouseCursor = bPlayerEnabled;
+}
+
+
+void APlayerControllerBase::SetOnSkillBrowser()
+{
+	if(!OnSkillBrowser)
+	{
+		// 시간 정지
+		GetWorldSettings()->SetTimeDilation(0.f);
+
+		// 기존 HUD Remove
+		if (HUD)
+			HUD->SetVisibility(ESlateVisibility::Hidden);
+	
+		// 스킬브라우저 UI Add
+		if (SkillBrowser)
+			SkillBrowser->SetVisibility(ESlateVisibility::Visible);
+		
+		DpGetPlayer()->CanCameraControl = false;
+		
+		OnSkillBrowser = true;
+	}
+	else
+	{
+		// 시간 재게
+		GetWorldSettings()->SetTimeDilation(1.f);
+	
+		//  스킬브라우저 UI Remove
+		if (SkillBrowser)
+			SkillBrowser->SetVisibility(ESlateVisibility::Hidden);
+
+		// 기존 HUD Add
+		if (HUD)
+			HUD->SetVisibility(ESlateVisibility::Visible);
+
+		DpGetPlayer()->CanCameraControl = true;
+		
+		OnSkillBrowser = false;
+	}
+}
+
+/*void APlayerControllerBase::SetOffSkillBrowser()
+{
+	if(OnSkillBrowser)
+	{
+		// 시간 재게
+		GetWorldSettings()->SetTimeDilation(1.f);
+	
+		//  스킬브라우저 UI Remove
+		if (SkillBrowser)
+			SkillBrowser->SetVisibility(ESlateVisibility::Hidden);
+
+		// 기존 HUD Add
+		if (HUD)
+			HUD->SetVisibility(ESlateVisibility::Visible);
+	}
+}*/
+
+void APlayerControllerBase::SkillUpgradeEventStart()
+{
+	// 시간 정지
+	GetWorldSettings()->SetTimeDilation(0.f);
+	
+	// 기존 HUD Remove
+	if (HUD)
+		HUD->SetVisibility(ESlateVisibility::Hidden);
+	
+	// 스킬 업그레이드 UI Add
+	if (SkillUpgradeUI)
+	{
+		SkillUpgradeUI->SetVisibility(ESlateVisibility::Visible);
+		Cast<USkillUpgradeUI>(SkillUpgradeUI)->SetControls();
+	}
+	
+	// 마우스 위치 세팅 // 마우스 커서 on //키보드 입력 off
+	int32 ScreenWidth;
+	int32 ScreenHeight;
+	GetViewportSize(ScreenWidth, ScreenHeight);
+	SetMouseLocation(ScreenWidth * 0.5f, ScreenHeight * 0.5f);
+	bShowMouseCursor = true;
+	DpGetPlayer()->CanCameraControl = false;
+}
+
+void APlayerControllerBase::SkillUpgradeEventEnd()
+{
+	// 시간 재게
+	GetWorldSettings()->SetTimeDilation(1.f);
+	
+	//  스킬 업그레이드 UI Remove
+	if (SkillUpgradeUI)
+		SkillUpgradeUI->SetVisibility(ESlateVisibility::Hidden);
+
+	// 기존 HUD Add
+	if (HUD)
+		HUD->SetVisibility(ESlateVisibility::Visible);
+	
+	// 마우스 커서 off //키보드 입력 on
+	bShowMouseCursor = false;
+	DpGetPlayer()->CanCameraControl = true;
 }
