@@ -256,4 +256,14 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "CombatProp")
 	float FireRate = 0.25f;
 	// !------------------------------------------------------------
+
+private:
+	// 레일 타는 거 임시구현!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	virtual void Landed(const FHitResult& Hit) override;
+	
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	float MoveForward = 0;
+
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	float MoveRight = 0;
 };

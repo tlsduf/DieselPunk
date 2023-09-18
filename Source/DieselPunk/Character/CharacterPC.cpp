@@ -194,6 +194,9 @@ void ACharacterPC::Move(const FInputActionValue &Value)
 		// add movement
 		AddMovementInput(ForwardDirection, MovementVector.Y);
 		AddMovementInput(RightDirection, MovementVector.X);
+
+		MoveForward = MovementVector.Y;
+		MoveRight = MovementVector.X;
 	}
 }
 void ACharacterPC::Look(const FInputActionValue &Value)
@@ -700,4 +703,9 @@ float ACharacterPC::GetHealthPercentAfterImage()
 float ACharacterPC::GetSkillCoolTimePercent(EAbilityType inType)
 {
 	return Skills[inType]->GetCoolTimePercent();
+}
+
+void ACharacterPC::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
 }
