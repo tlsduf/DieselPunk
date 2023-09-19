@@ -103,3 +103,39 @@ FHitResult UtilCollision::LineTraceForward(APawn *OwnerPawn, float InAttackRange
 	
 	return hit;
 }
+
+// =============================================================
+// 커서 아래 위치 히트를 반환
+// =============================================================
+FHitResult UtilCollision::GetUnderCursor()
+{
+	FHitResult HitResult;
+	APlayerController *ownerController = DpGetPlayerController();
+	if (ownerController)
+	{
+		ownerController->GetHitResultUnderCursor(
+			ECollisionChannel::ECC_Visibility,
+			false,
+			HitResult);
+		return HitResult;
+	}
+	return HitResult;
+}
+
+// =============================================================
+// inStartLocation 으로부터 z방향의 트레이스 히트를 반환한다. inUpDown = 1 > Z  / inUpDown = -1 > -Z
+// =============================================================
+FHitResult UtilCollision::GetZTrace(FVector inStartLocation, int8 inUpDown)
+{
+	FHitResult hit;
+	FCollisionQueryParams params;
+	
+	bool hasHit = DpGetWorld()->LineTraceSingleByChannel(
+	hit,
+	inStartLocation,
+	FVector(inStartLocation.X, inStartLocation.Y,inStartLocation.Z + (1000 * inUpDown)),
+	ECollisionChannel::ECC_Visibility,
+	params);
+
+	return hit;
+}
