@@ -17,21 +17,10 @@ class DIESELPUNK_API USkillSoldierR : public UPlayerSkill
 	GENERATED_BODY()
 
 public:
-	// 생성자
-	USkillSoldierR();
-
-protected:
-	virtual void BeginPlay() override;
-
-public:
-	virtual void SkillTriggered() override;
-
-private:
 	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
 	float EDamage = 50;
 	
 	bool IsE = false;
-	bool CanE = true;
 	bool InCooldownE = false;
 	
 	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
@@ -45,6 +34,17 @@ private:
 
 	UPROPERTY()
 	ASoldierProjectile *Projectile;
+	
+public:
+	// 생성자
+	USkillSoldierR();
 
-	FHitResult GetUnderCursorLocation();
+protected:
+	virtual void BeginPlay() override;
+
+public:
+	virtual void SkillTriggered() override;
+	
+	void AfterLogic();
+
 };

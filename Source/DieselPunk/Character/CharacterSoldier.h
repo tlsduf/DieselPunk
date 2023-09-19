@@ -21,8 +21,5 @@ protected:
 
 public:
 	bool DrawERange = false;
-	FHitResult GetUnderCursorLocation();
-	
-
 
 };

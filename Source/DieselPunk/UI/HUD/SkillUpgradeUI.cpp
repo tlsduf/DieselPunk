@@ -317,17 +317,17 @@ void USkillUpgradeUI::SetText(int inNum)
 		break;
 	case 5 :
 		Text_Skill_Left->SetText( FText::FromString( TEXT("SkillR") ) );
-		Text_SkillName_Left->SetText( FText::FromString( TEXT("지정폭파") ) );
+		Text_SkillName_Left->SetText( FText::FromString( TEXT("공습") ) );
 		Text_SkillUpgradeName_Left->SetText( FText::FromString( TEXT("데미지 상승") ) );
 		Text_SkillUpgradeExpl_Left->SetText( FText::FromString( TEXT("폭파 데미지가\n10 상승한다.") ) );
 
 		Text_Skill_Middle->SetText( FText::FromString( TEXT("SkillR") ) );
-		Text_SkillName_Middle->SetText( FText::FromString( TEXT("지정폭파") ) );
+		Text_SkillName_Middle->SetText( FText::FromString( TEXT("공습") ) );
 		Text_SkillUpgradeName_Middle->SetText( FText::FromString( TEXT("쿨타임 감소") ) );
 		Text_SkillUpgradeExpl_Middle->SetText( FText::FromString( TEXT("쿨타임이\n0.5 줄어든다.") ) );
 
 		Text_Skill_Right->SetText( FText::FromString( TEXT("SkillR") ) );
-		Text_SkillName_Right->SetText( FText::FromString( TEXT("지정폭파") ) );
+		Text_SkillName_Right->SetText( FText::FromString( TEXT("공습") ) );
 		Text_SkillUpgradeName_Right->SetText( FText::FromString( TEXT("범위 증가") ) );
 		Text_SkillUpgradeExpl_Right->SetText( FText::FromString( TEXT("폭파범위 30 증가") ) );
 		break;
