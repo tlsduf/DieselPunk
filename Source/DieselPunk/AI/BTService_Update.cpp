@@ -27,6 +27,10 @@ void UBTService_Update::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 *NodeM
     APawn *AIPawn = OwnerComp.GetAIOwner()->GetPawn();
     if (OwnerComp.GetAIOwner() == nullptr)
         return;
+
+
+    auto AICharacter = Cast<ACharacterNPC>(AIPawn);
+    float MeleeRange = AICharacter->GetCapsuleComponent()->GetScaledCapsuleRadius() + 400;
     
     OwnerComp.GetBlackboardComponent()->SetValueAsVector(TEXT("PlayerLocation"), PlayerPawn->GetActorLocation());
     
@@ -35,7 +39,7 @@ void UBTService_Update::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 *NodeM
     float FRange = VRange.Size();
 
     // 몬스터와 플레이어의 거리에 따른 조건 설정 // 이딴식으로 하는게 맞는것인가?
-    if (1700 < FRange)
+    /*if (1700 < FRange)
     {
         OwnerComp.GetBlackboardComponent()->ClearValue(TEXT("InRange"));
         OwnerComp.GetBlackboardComponent()->SetValueAsObject(TEXT("Player"), PlayerPawn);
@@ -44,8 +48,27 @@ void UBTService_Update::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 *NodeM
     {
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InRange"), true);
         OwnerComp.GetBlackboardComponent()->ClearValue(TEXT("Player"));
-    }
+    }*/
 
+    // 몬스터와 플레이어의 거리에 따른 조건 설정 // 이딴식으로 하는게 맞는것인가?
+    if (1700 < FRange)
+    {
+        OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("OutRange"), true);
+        OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InRange"), false);
+        OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InMeleeRange"), false);
+    }
+    else if (MeleeRange < FRange && FRange < 1700)
+    {
+        OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("OutRange"), false);
+        OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InRange"), true);
+        OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InMeleeRange"), false);
+    }
+    else
+    {
+        OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("OutRange"), false);
+        OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InRange"), false);
+        OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InMeleeRange"), true);
+    }
 
     // 스폰 시, 죽음 시 블랙보드를 멈추기위해서 임시로 구현함 // 이딴식으로 하는 게 맞는 것인가?
     AEnemyAIController * Controller = Cast<AEnemyAIController>(OwnerComp.GetAIOwner());

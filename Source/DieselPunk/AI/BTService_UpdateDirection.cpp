@@ -26,9 +26,11 @@ void UBTService_UpdateDirection::TickNode(UBehaviorTreeComponent &OwnerComp, uin
     APawn *AIPawn = OwnerComp.GetAIOwner()->GetPawn();
     if (OwnerComp.GetAIOwner() == nullptr)
         return;
-
-    FVector location =PlayerPawn->GetActorLocation() - AIPawn->GetActorLocation();
-    FRotator direction = location.Rotation();
     
-    AIPawn->SetActorRotation( FRotator(direction.Pitch ,AIPawn->GetActorRotation().Yaw, AIPawn->GetActorRotation().Roll));
+    FVector location = AIPawn->GetActorForwardVector().GetSafeNormal() - (PlayerPawn->GetActorLocation() - AIPawn->GetActorLocation()).GetSafeNormal();
+    
+    FRotator direction = location.Rotation().GetDenormalized();
+    
+   // AIPawn->SetActorRotation();
+    AIPawn->AddActorLocalRotation(FRotator(0 ,direction.Yaw * DeltaSeconds, 0));
 }
