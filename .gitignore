@@ -9,9 +9,9 @@ DieselPunk.code-workspace
 Platforms/HoloLens/Config/HoloLensEngine.ini
 Plugins/Developer/RiderLink/
 DieselPunk.sln.DotSettings.user
-Binaries/Win64/GuardiansWEditor-Win64-DebugGame.target
-Binaries/Win64/UnrealEditor-GuardiansW-Win64-DebugGame.dll
-Binaries/Win64/UnrealEditor-GuardiansW-Win64-DebugGame.pdb
+Binaries/Win64/DieselPunkEditor-Win64-DebugGame.target
+Binaries/Win64/UnrealEditor-DieselPunk-Win64-DebugGame.dll
+Binaries/Win64/UnrealEditor-DieselPunk-Win64-DebugGame.pdb
 Binaries/Win64/UnrealEditor-Win64-DebugGame.modules
 Binaries/Win64/boost_atomic-mt-x64.dll
 Binaries/Win64/boost_chrono-mt-x64.dll
