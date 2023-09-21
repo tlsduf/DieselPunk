@@ -255,12 +255,15 @@ void AProjectileBase::_OnHit(UPrimitiveComponent* InHitComp, AActor* InOtherActo
 	*/
 }
 
-void AProjectileBase::BeginOverlapEvent(class UPrimitiveComponent* InHitComp, class AActor* InOtherActor, class UPrimitiveComponent* InOtherComp, int32 InOtherBodyIndex, bool InbFromSweep, const FHitResult & InSweepResult)
+void AProjectileBase::BeginOverlapEvent(UPrimitiveComponent* InOverlappedComponent, AActor* InOtherActor, UPrimitiveComponent* InOtherComp, int32 InOtherBodyIndex,
+	bool InbFromSweep, const FHitResult & InSweepResult)
 {
-	_BeginOverlapEvent(InHitComp, InOtherActor, InOtherComp, InOtherBodyIndex, InbFromSweep, InSweepResult);
+	_BeginOverlapEvent(InOverlappedComponent, InOtherActor, InOtherComp, InOtherBodyIndex,
+		InbFromSweep, InSweepResult);
 }
 
-void AProjectileBase::_BeginOverlapEvent(class UPrimitiveComponent* InHitComp, class AActor* InOtherActor, class UPrimitiveComponent* InOtherComp, int32 InOtherBodyIndex, bool InbFromSweep, const FHitResult & InSweepResult)
+void AProjectileBase::_BeginOverlapEvent(UPrimitiveComponent* InOverlappedComponent, AActor* InOtherActor, UPrimitiveComponent* InOtherComp, int32 InOtherBodyIndex,
+	bool InbFromSweep, const FHitResult & InSweepResult)
 {
 	auto ownerPawn = Cast<APawn>(GetOwner());
 	if(ownerPawn == nullptr)
