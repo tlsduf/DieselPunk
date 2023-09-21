@@ -73,7 +73,8 @@ public:
 
 	// !MyCode------------------------------------------------------
 protected:
-
+	// 로테이션 레이트 RotationRate
+	float GetRotationRateVelocity();
 	
 	// Debug
 	void DebugActorRotation();
