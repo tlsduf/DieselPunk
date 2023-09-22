@@ -2,9 +2,18 @@
 
 
 #include "InteractiveActor.h"
+#include "../Character/CharacterPC.h"
+#include "../Util/UtilEffect.h"
+#include "../Manager/UIManager.h"
+#include "../UI/HUD/ItemGuideUI.h"
+
+#include <NiagaraFunctionLibrary.h>
+#include <NiagaraComponent.h>
+#include <Kismet/GameplayStatics.h>
 
 #include <Components/CapsuleComponent.h>
 #include <Components/StaticMeshComponent.h>
+#include <Components/WidgetComponent.h>
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(InteractiveActor)
@@ -14,24 +23,43 @@
 // =============================================================
 AInteractiveActor::AInteractiveActor()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
-	// 블락 캡슐 컴포넌트
+	// 오버랩 캡슐 컴포넌트
 	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
-	CapsuleComponent->InitCapsuleSize(90.f, 90.f);
+	CapsuleComponent->InitCapsuleSize(360.f, 360.f);
 	SetRootComponent(CapsuleComponent);
 
 	// 메쉬
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(CapsuleComponent);
 
-	// 오버랩용 캡슐 컴포넌트
-	CapsuleComponentInteractive = CreateDefaultSubobject<UCapsuleComponent>(TEXT("OverlapComponent"));
-	CapsuleComponentInteractive->InitCapsuleSize(360.f, 360.f);
-	// 오버랩 이벤트 바인딩
-	CapsuleComponentInteractive->OnComponentBeginOverlap.AddDynamic(this, &AInteractiveActor::BindingDelegate);
-	CapsuleComponentInteractive->OnComponentEndOverlap.AddDynamic(this, &AInteractiveActor::RemoveDelegate);
+	// 위젯 컴포넌트 세팅
+	WidgetComp = CreateDefaultSubobject< UWidgetComponent >( TEXT( "StatusUI" ) );
+	if ( WidgetComp )
+	{
+		WidgetComp->SetupAttachment( GetRootComponent() );
+		WidgetComp->SetCollisionEnabled( ECollisionEnabled::Type::NoCollision );
+		WidgetComp->SetGenerateOverlapEvents( false );
+		WidgetComp->SetSimulatePhysics( false );
+		WidgetComp->SetWidgetSpace( EWidgetSpace::Screen );
+	}
+
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
+}
+
+// 데미지UI 위젯을 생성한다.
+void AInteractiveActor::CreateDamageUI()
+{
+	if( GuideUI.IsValid() )
+		return;
+
+	GuideUI = GetUIManager().CreateUnmanagedUI< UItemGuideUI >( TEXT( "HUD/WBP_ItemGuideUI" ) );
+	if ( !WidgetComp || !GuideUI.IsValid() )
+		return;
+
+	WidgetComp->SetWidget( GuideUI.Get() );
+	WidgetComp->SetDrawSize( FVector2D( 250.0f, 80.0f ) );
+	GuideUI->SetVisibility(ESlateVisibility::Hidden);
 }
 
 // =============================================================
@@ -40,7 +68,12 @@ AInteractiveActor::AInteractiveActor()
 void AInteractiveActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	// 오버랩 이벤트 바인딩
+	CapsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &AInteractiveActor::BindingDelegate);
+	CapsuleComponent->OnComponentEndOverlap.AddDynamic(this, &AInteractiveActor::RemoveDelegate);
+
+	CreateDamageUI();
 }
 
 // =============================================================
@@ -58,7 +91,12 @@ void AInteractiveActor::Tick(float InDeltaTime)
 void AInteractiveActor::BindingDelegate(UPrimitiveComponent* InOverlappedComponent, AActor* InOtherActor,
 	UPrimitiveComponent* InOtherComp, int32 InOtherBodyIndex, bool InbFromSweep, const FHitResult& InSweepResult)
 {
-	//InOtherActor->DelegateInteractTask.BindDynamic(this, &AInteractiveActor::AInteractiveActor::task);
+	if(Cast<ACharacterPC>(InOtherActor)->DelegateInteractTask.IsBound())
+		Cast<ACharacterPC>(InOtherActor)->DelegateInteractTask.Unbind();
+	Cast<ACharacterPC>(InOtherActor)->DelegateInteractTask.BindDynamic(this, &AInteractiveActor::task);
+
+	// UI 생성
+	GuideUI->SetVisibility(ESlateVisibility::Visible);
 }
 
 // =============================================================
@@ -67,14 +105,31 @@ void AInteractiveActor::BindingDelegate(UPrimitiveComponent* InOverlappedCompone
 void AInteractiveActor::RemoveDelegate(UPrimitiveComponent* OverlappedComponent, AActor* InOtherActor,
 	UPrimitiveComponent* InOtherComp, int32 InOtherBodyIndex)
 {
-	//InOtherActor->DelegateInteractTask.UnBind();
+	if(Cast<ACharacterPC>(InOtherActor)->DelegateInteractTask.IsBound())
+		Cast<ACharacterPC>(InOtherActor)->DelegateInteractTask.Unbind();
+
+	// UI 제거
+	GuideUI->SetVisibility(ESlateVisibility::Hidden);
 }
 
 // =============================================================
-// ChracterPC의 DelegateInteractTask에 바인딩되는 함수
+// ChracterPC의 DelegateInteractTask에 바인딩되는 함수 // 각종 효과 실행
 // =============================================================
 void AInteractiveActor::task()
 {
 	
+	// 이펙트, 사운드 출력
+	if (ActionEffect)
+		UtilEffect::SpawnParticleComponent(ActionEffect, GetActorLocation(), GetActorRotation(), HitEffectScale);
+	if (ActionParticle)
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ActionParticle,  GetActorLocation());
+	if (ActionSound)
+		UGameplayStatics::PlaySoundAtLocation(this, ActionSound, GetActorLocation());
+	
+	// UI 제거
+	GuideUI->SetVisibility(ESlateVisibility::Hidden);
+	
+	// 액터 파괴
+	Destroy();
 }
 

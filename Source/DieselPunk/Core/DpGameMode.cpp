@@ -23,7 +23,7 @@ ADpGameMode::ADpGameMode()
 	}
 	
 	// set default controller to our Blueprinted controller
-	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerBPClass(TEXT("/Script/Engine.Blueprint'/Game/DieselPunk/Blueprints/PlayerController/BP_PlayerControllerBase.BP_PlayerControllerBase_C'"));
+	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerBPClass(TEXT("/Script/Engine.Blueprint'/Game/DieselPunk/Blueprints/Core/BP_PlayerControllerBase.BP_PlayerControllerBase_C'"));
 	if(PlayerControllerBPClass.Class != NULL)
 	{
 		PlayerControllerClass = PlayerControllerBPClass.Class;
