@@ -21,6 +21,8 @@
 #include <Engine/DamageEvents.h>
 #include <Components/WidgetComponent.h>
 
+#include "AIHelpers.h"
+
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(CharacterPC)
 
@@ -210,6 +212,12 @@ void ACharacterPC::Look(const FInputActionValue &Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+float ACharacterPC::GetRotationRateVelocity()
+{
+	
+	return 0;
 }
 
 // =============================================================

@@ -76,3 +76,8 @@ void UMonsterAnimInstace::AnimNotify_NotifyMeleeAttack() const
 	if(MA != nullptr)
 		MA->SkillTriggered();
 }
+
+void UMonsterAnimInstace::SetSpineRotation()
+{
+	
+}

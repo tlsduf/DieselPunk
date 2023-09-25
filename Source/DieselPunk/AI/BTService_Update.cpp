@@ -82,5 +82,14 @@ void UBTService_Update::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 *NodeM
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("PlaySpawnAnim"), false);
     else
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("PlaySpawnAnim"), true);
+
+    // 몬스터의 머리 앞에 플레이어가 위치할 경우 true 반환
+    float AIDirection = AICharacter->GetActorForwardVector().GetSafeNormal().Rotation().Yaw;
+    float AItoPlayerDirection = (DpGetPlayer()->GetActorLocation() - AICharacter->GetActorLocation()).GetSafeNormal().Rotation().Yaw;
+    if(-30 < (AIDirection - AItoPlayerDirection) && (AIDirection - AItoPlayerDirection) < 30)
+        OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("IsPlayerInFront"), true);
+    else
+        OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("IsPlayerInFront"), false);
+    
     
 }

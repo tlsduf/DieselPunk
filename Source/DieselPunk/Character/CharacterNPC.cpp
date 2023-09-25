@@ -36,7 +36,7 @@ void ACharacterNPC::Tick(float DeltaTime)
 	}
 	if(IsDead())
 		WidgetComp->bHiddenInGame = 1;
-		
+	
 }
 
 // =============================================================

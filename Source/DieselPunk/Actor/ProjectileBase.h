@@ -164,10 +164,12 @@ protected:
 
 	// 오버랩시 호출해서 데미지 적용, 투사체 파괴 등을 수행
 	UFUNCTION()
-	void BeginOverlapEvent(class UPrimitiveComponent* InHitComp, class AActor* InOtherActor, class UPrimitiveComponent* InOtherComp, int32 InOtherBodyIndex, bool InbFromSweep, const FHitResult & InSweepResult);
+	void BeginOverlapEvent(UPrimitiveComponent* InOverlappedComponent, AActor* InOtherActor, UPrimitiveComponent* InOtherComp, int32 InOtherBodyIndex,
+		bool InbFromSweep, const FHitResult & InSweepResult);
 
 	// Overlap의 실질적인 기능을 담고있는 함수 // Overlap이 상속이안됨.
-	virtual void _BeginOverlapEvent(class UPrimitiveComponent* InHitComp, class AActor* InOtherActor, class UPrimitiveComponent* InOtherComp, int32 InOtherBodyIndex, bool InbFromSweep, const FHitResult & InSweepResult);
+	virtual void _BeginOverlapEvent(UPrimitiveComponent* InOverlappedComponent, AActor* InOtherActor, UPrimitiveComponent* InOtherComp, int32 InOtherBodyIndex,
+		bool InbFromSweep, const FHitResult & InSweepResult);
 
 public:
 	// 데미지 변경함수

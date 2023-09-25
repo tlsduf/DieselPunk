@@ -23,7 +23,7 @@ class ACharacterPC : public ACharacterBase
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent *FollowCamera;
 
-protected:
+
 public:
 	TODO( TEXT( "현재 레벨에 미리 배치되어있는 액터는 데이터테이블 정보를 알지 못해서 일단 임시 처리 추후 관리방법 논의 필요" ), 크로 )
 	UPROPERTY( EditAnywhere, Category = "Test" )
@@ -73,7 +73,8 @@ public:
 
 	// !MyCode------------------------------------------------------
 protected:
-
+	// 로테이션 레이트 RotationRate
+	float GetRotationRateVelocity();
 	
 	// Debug
 	void DebugActorRotation();
@@ -266,4 +267,10 @@ private:
 
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float MoveRight = 0;
+
+public:
+	DECLARE_DYNAMIC_DELEGATE(FDelegateInteractTask);
+
+	//상호작용 액터용 댈리게이트, 컨트롤러에서 입력 시 Excute 
+	FDelegateInteractTask DelegateInteractTask;
 };

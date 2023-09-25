@@ -38,6 +38,9 @@ private:
 	// MeleeAttack 전용 애님노티파이 입니다. 
 	UFUNCTION()
 	void AnimNotify_NotifyMeleeAttack() const;
+
+	// 몬스터의 척추 본을 플레이어에게 바라보도록 세팅합니다.
+	void SetSpineRotation();
 };
 
 // AroundSkill 몽타주
