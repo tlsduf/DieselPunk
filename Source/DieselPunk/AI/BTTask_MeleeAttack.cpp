@@ -38,6 +38,7 @@ EBTNodeResult::Type UBTTask_MeleeAttack::ExecuteTask(UBehaviorTreeComponent &Own
     LoopCount = 0;
     DeltaTime = 0.f;
 
+    
     Duration = OwnerCharacter->DoMeleeAttack();
 
     return EBTNodeResult::InProgress;
