@@ -109,17 +109,15 @@ void APlayerControllerBase::OnPossess(APawn* InPawn)
 void APlayerControllerBase::SetMappingContextByInputType()
 {
 	// 스킬에 관한 바인딩
-	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-	{
-		character->InitSkills(); // TSubClassOf로 설정된 캐릭터의 스킬들을 인스턴스화 시킵니다.
+	DpGetPlayer()->InitSkills(); // TSubClassOf로 설정된 캐릭터의 스킬들을 인스턴스화 시킵니다.
 		
-		for (const TPair<EAbilityType, TObjectPtr<UInputAction>>& inputActions : SkillInputActions)
-		{
-			// 설정해둔 트리거 타입을 넣습니다.
-			SkillInputActions[inputActions.Key]->Triggers.Reset();
-			SkillInputActions[inputActions.Key]->Triggers.Add(Cast<UPlayerSkill>(character->GetSkills()[inputActions.Key])->GetTriggerType());
-		}
+	for (const TPair<EAbilityType, TObjectPtr<UInputAction>>& inputActions : SkillInputActions)
+	{
+		// 설정해둔 트리거 타입을 넣습니다.
+		SkillInputActions[inputActions.Key]->Triggers.Reset();
+		SkillInputActions[inputActions.Key]->Triggers.Add(Cast<UPlayerSkill>(DpGetPlayer()->GetSkills()[inputActions.Key])->GetTriggerType());
 	}
+	
 	
 	if (UEnhancedInputLocalPlayerSubsystem *subSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
@@ -164,159 +162,99 @@ const EAbilityType APlayerControllerBase::GetAbilityKeyFromAction(const FInputAc
 // =============================================================
 void APlayerControllerBase::OnInputSkillStarted(const FInputActionInstance& InInstance)
 {
-	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-	{
-		const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
-		if (abilityKey != EAbilityType::None)
-		{
-			character->SkillStarted(abilityKey);
-		}
-	}
+	const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
+	if (abilityKey != EAbilityType::None)
+		DpGetPlayer()->SkillStarted(abilityKey);
 }
 
 void APlayerControllerBase::OnInputSkillOngoing(const FInputActionInstance& InInstance)
 {
-	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-	{
-		const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
-		if (abilityKey != EAbilityType::None)
-		{
-			character->SkillOngoing(abilityKey);
-		}
-	}
+	const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
+	if (abilityKey != EAbilityType::None)
+		DpGetPlayer()->SkillOngoing(abilityKey);
 }
 
 void APlayerControllerBase::OnInputSkillTriggered(const FInputActionInstance& InInstance)
 {
-	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-	{
-		const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
-		if (abilityKey != EAbilityType::None)
-		{
-			character->SkillTriggered(abilityKey);
-		}
-	}
+	const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
+	if (abilityKey != EAbilityType::None)
+		DpGetPlayer()->SkillTriggered(abilityKey);
 }
 
 void APlayerControllerBase::OnInputSkillCompleted(const FInputActionInstance& InInstance)
 {
-	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-	{
-		const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
-		if (abilityKey != EAbilityType::None)
-		{
-			character->SkillCompleted(abilityKey);
-		}
-	}
+	const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
+	if (abilityKey != EAbilityType::None)
+		DpGetPlayer()->SkillCompleted(abilityKey);
 }
 
 void APlayerControllerBase::OnInputSkillCanceled(const FInputActionInstance& InInstance)
 {
-	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-	{
-		const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
-		if (abilityKey != EAbilityType::None)
-		{
-			character->SkillCanceled(abilityKey);
-		}
-	}
+	const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
+	if (abilityKey != EAbilityType::None)
+		DpGetPlayer()->SkillCanceled(abilityKey);
 }
 
 
 void APlayerControllerBase::Jump()
 {
-    if (ACharacter *character = Cast<ACharacter>(GetCharacter()))
-    {
-        character->Jump();
-    }
+	DpGetPlayer()->Jump();
 }
 
 void APlayerControllerBase::StopJumping()
 {
-    if (ACharacter *character = Cast<ACharacter>(GetCharacter()))
-    {
-        character->StopJumping();
-    }
+	DpGetPlayer()->StopJumping();
 }
 
 void APlayerControllerBase::ToggleJog()
 {
-    if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-    {
-        character->Jog();
-    }
+    DpGetPlayer()->Jog();
 }
 
 void APlayerControllerBase::WPressed()
 {
-    if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-    {
-        character->WPressed();
-    }
+    DpGetPlayer()->WPressed();
 }
 
 void APlayerControllerBase::WReleased()
 {
-    if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-    {
-        character->WReleased();
-    }
+    DpGetPlayer()->WReleased();
 }
 
 void APlayerControllerBase::SPressed()
 {
-	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-	{
-		character->SPressed();
-	}
+	DpGetPlayer()->SPressed();
 }
 
 void APlayerControllerBase::SReleased()
 {
-	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-	{
-		character->SReleased();
-	}
+	DpGetPlayer()->SReleased();
 }
 
 void APlayerControllerBase::SetZoomInProp()
 {
-    if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-    {
-        character->SetZoomInProp();
-    }
+	DpGetPlayer()->SetZoomInProp();
 }
 
 void APlayerControllerBase::SetZoomOutProp()
 {
-    if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-    {
-        character->SetZoomOutProp();
-    }
+	DpGetPlayer()->SetZoomOutProp();
 }
 
 void APlayerControllerBase::Interaction()
 {
-	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-	{
-		//character->
-	}
+	if(DpGetPlayer()->DelegateInteractTask.IsBound())
+		DpGetPlayer()->DelegateInteractTask.Execute();
 }
 
 void APlayerControllerBase::Move(const FInputActionValue &Value)
 {
-    if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-    {
-        character->Move(Value);
-    }
+    DpGetPlayer()->Move(Value);
 }
 
 void APlayerControllerBase::Look(const FInputActionValue &Value)
 {
-    if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-    {
-        character->Look(Value);
-    }
+	DpGetPlayer()->Look(Value);
 }
 
 void APlayerControllerBase::SetPlayerEnabledState(bool bPlayerEnabled)
