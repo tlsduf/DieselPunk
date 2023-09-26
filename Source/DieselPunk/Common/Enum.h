@@ -5,7 +5,7 @@
 
 
 // Enum 값 정의 모음
-// UENUM(BlueprintType) 을 사용한 enum class 인 경우 주석으로 UMETA(ToolTip = "") 사용해주세요 ( 크로 )
+// UENUM(BlueprintType) 을 사용한 enum class 인 경우 주석으로 UMETA(ToolTip = "") 사용해주세요
 // 
 // ExtraDamage (추가 피해량) 은 여기에 있으면 안될것 같은 느낌이지만 임시 추가
 
@@ -67,7 +67,7 @@ enum class EAbilityCompletedType : uint8
 };
 
 // CharacterPC가 가질 수 있는 상태입니다.
-// 추후 각성기 사용중, 캐릭터 교대중 등 필요한 상태를 더 추가할 예정입니다. ( 성윤 )
+// 추후 각성기 사용중, 캐릭터 교대중 등 필요한 상태를 더 추가할 예정입니다.
 UENUM( BlueprintType )
 enum class EPCStateType : uint8
 {
