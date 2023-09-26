@@ -1,4 +1,4 @@
-﻿// Copyright GuardiansW. All Rights Reserved.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 //
 // Enum 관련 편의 함수 모음
 

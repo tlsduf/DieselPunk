@@ -174,7 +174,6 @@ enum class EDecorateUseType : uint8
 };
 
 // AnimMontage의 섹션 타입
-// TODO : 회의때 어떻게 사용할건지 알려야함.
 UENUM( BlueprintType )
 enum class EMontageSectionType : uint8
 {
