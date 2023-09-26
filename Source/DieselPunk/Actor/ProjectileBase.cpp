@@ -57,7 +57,13 @@ void AProjectileBase::BeginPlay()
 		OneTickTask();
 
 	// 투사체 10초 뒤 자동 파괴
-	GetWorld()->GetTimerManager().SetTimer(DestroyTimeHandler, [this](){Destroy();}, 10, false);
+	TWeakObjectPtr<AProjectileBase> thisPtr = this;
+	GetWorld()->GetTimerManager().SetTimer(
+		DestroyTimeHandler,[thisPtr]()
+		{
+			if(thisPtr.IsValid())
+				thisPtr->Destroy();
+		}, 10, false);
 	
 	if(CollisionResponses == ECollisionResponsesType::OnHit && !bUseOneTick)
 		CapsuleComponent->OnComponentHit.AddDynamic(this, &AProjectileBase::OnHit);
