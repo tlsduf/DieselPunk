@@ -1,0 +1,5 @@
+		{
+			"Name": "DieselPunkEditor",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
+		}

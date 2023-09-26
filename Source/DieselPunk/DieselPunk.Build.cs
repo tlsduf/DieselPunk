@@ -11,6 +11,7 @@ public class DieselPunk : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[]
 		{
+			"DieselPunk", 
 			"Core", 
 			"CoreUObject", 
 			"Engine", 
@@ -24,8 +25,14 @@ public class DieselPunk : ModuleRules
 			"UMG", 
 			"SlateCore", 
 			"Landscape",
-			"UnrealEd",
-			"EditorSubsystem"
+			//"UnrealEd",
+			//"EditorSubsystem"
 		});
+		if (Target.bBuildEditor)
+		{
+			PrivateDependencyModuleNames.Add("UnrealEd");
+			PrivateDependencyModuleNames.Add("EditorSubsystem");
+		}
 	}
 }
+
