@@ -29,8 +29,8 @@ public:
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "MyCustomCategory")
-	TSubclassOf<AProjectileBase> ProjectileGranadeClass;
+	TSubclassOf<AProjectileBase> ProjectileBaseClass;
 
 	UPROPERTY()
-	AProjectileBase *ProjectileGranade;
+	AProjectileBase *ProjectileBase;
 };

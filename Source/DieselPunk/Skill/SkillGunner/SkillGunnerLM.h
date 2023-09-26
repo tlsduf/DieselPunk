@@ -3,13 +3,12 @@
 #pragma once
 
 #include "../PlayerSkill.h"
-#include <CoreMinimal.h>
 #include "SkillGunnerLM.generated.h"
 
 /**
  *
  */
-class AProjectileGranade;
+class AProjectileBase;
 class UNiagaraSystem;
 
 UCLASS()
@@ -19,10 +18,10 @@ class DIESELPUNK_API USkillGunnerLM : public UPlayerSkill
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "MyCustomCategory")
-	TSubclassOf<AProjectileGranade> ProjectileGranadeClass;
+	TSubclassOf<AProjectileBase> ProjectileBaseClass;
 
 	UPROPERTY()
-	AProjectileGranade *ProjectileGranade;
+	AProjectileBase *ProjectileBase;
 
 	bool ToggleVar = true;
 	

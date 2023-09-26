@@ -43,11 +43,11 @@ void USkillGunnerR::SkillTriggered()
 		spawnPitch.Pitch = shotRotation.Pitch + 15;
 	}
 	// projectile spawn
-	if(ProjectileGranadeClass)
+	if(ProjectileBaseClass)
 	{
 		FActorSpawnParameters param = FActorSpawnParameters();
 		param.Owner = GetOwner();
-		ProjectileGranade = GetWorld()->SpawnActor<AProjectileBase>(ProjectileGranadeClass, shotLocation, FRotator(spawnPitch.Pitch, ownerPawn->GetActorRotation().Yaw, 0), param);
+		ProjectileBase = GetWorld()->SpawnActor<AProjectileBase>(ProjectileBaseClass, shotLocation, FRotator(spawnPitch.Pitch, ownerPawn->GetActorRotation().Yaw, 0), param);
 	}
 
 	//애니메이션 재생?
