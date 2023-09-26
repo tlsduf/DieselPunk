@@ -506,7 +506,7 @@ float ACharacterPC::TakeDamage(float DamageAmount, struct FDamageEvent const &Da
 			}
 
 			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision); // 캡슐콜리전 무효
-			// 20초 뒤 액터 destroy // 이거 크래시남 왜인지는 몰 루?
+			// 20초 뒤 액터 destroy 
 			TWeakObjectPtr<ACharacterPC> thisPtr = this;
 			GetWorld()->GetTimerManager().SetTimer(
 				TakeDamageHandle, [thisPtr]()
@@ -659,12 +659,12 @@ void ACharacterPC::_UpdateHp(int InCurHp, int InMaxHp)
 	param.EndValue = destPercent;
 	param.DurationTime = 0.6f;
 	TWeakObjectPtr<ACharacterPC> thisPtr = this;
-	param.DurationFunc = [ thisPtr ] ( float InValue )
+	param.DurationFunc = [ thisPtr ]( float InValue )
 	{
 		if(thisPtr.IsValid())
 			thisPtr->TempPercent = InValue;
 	};
-	param.CompleteFunc = [ thisPtr ] ( float InValue )
+	param.CompleteFunc = [ thisPtr ]( float InValue )
 	{
 		if(thisPtr.IsValid())
 			thisPtr->TempPercent = InValue;
