@@ -1,9 +1,9 @@
-// Copyright GuardiansW. All Rights Reserved.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 /**
  * TimerManager를 이용한 쿨타임 관리 클래스입니다.
- * 필요한 기능 있으시면 요청해주세용.(성윤)
+ * 필요한 기능 있으시면 요청해주세용.
  */
 struct FTimerHandle;
 

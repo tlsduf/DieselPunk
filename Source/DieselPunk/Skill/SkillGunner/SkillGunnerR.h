@@ -3,7 +3,6 @@
 #pragma once
 
 #include "../PlayerSkill.h"
-#include <CoreMinimal.h>
 #include "SkillGunnerR.generated.h"
 
 /**
@@ -29,8 +28,8 @@ public:
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "MyCustomCategory")
-	TSubclassOf<AProjectileBase> ProjectileGranadeClass;
+	TSubclassOf<AProjectileBase> ProjectileBaseClass;
 
 	UPROPERTY()
-	AProjectileBase *ProjectileGranade;
+	AProjectileBase *ProjectileBase;
 };

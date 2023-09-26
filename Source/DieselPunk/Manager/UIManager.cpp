@@ -1,4 +1,4 @@
-﻿// Copyright GuardiansW. All Rights Reserved.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "UIManager.h"
@@ -173,7 +173,7 @@ bool FUIManager::RemoveUI( UUserWidget* InUserWidget )
 			widgetPtr->OnDisappearing();
 		};
 
-		TODO( "UI Object Pool 고민해보기", ( 크로 ) );
+		// TODO( "UI Object Pool 고민해보기");
 		param.CompleteFunc = [ widgetPtr ] ( float InValue )
 		{
 			if ( !widgetPtr.IsValid() ) return;

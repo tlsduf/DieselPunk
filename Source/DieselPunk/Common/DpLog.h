@@ -16,7 +16,7 @@
 #define chSTR(x)  __chSTR(x)
 
 // 리마인드, 추후 수정 용도로 사용 주석 끝 문장에는 ( 작업자 ) 를 반드시 써줄것
-// ex) TODO( "테스트 중, 추후 수정 예정", ( 크로 ) )
+// ex) TODO( "테스트 중, 추후 수정 예정" )
 #define __TODO(msg, name) message(__FILE__ "(" chSTR(__LINE__) "): [ TODO ] " #msg " " #name)
 #define TODO(msg, name) __pragma(__TODO(msg, name)) 
 

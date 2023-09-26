@@ -1,4 +1,4 @@
-﻿// Copyright GuardiansW. All Rights Reserved.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 //
 // 게임에서 전역적으로 자주 접근하는 델리게이트 모음
 
