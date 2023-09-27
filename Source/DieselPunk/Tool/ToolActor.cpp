@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+
+/*
 #include "ToolActor.h"
 #include "ToolEditorSubsystem.h"
 
@@ -15,6 +17,7 @@ AToolActor::AToolActor()
 
 void AToolActor::OnConstruction(const FTransform& InTransform)
 {
+#if WITH_EDITOR
 	Super::OnConstruction(InTransform);
 	UToolEditorSubsystem* toolSubsystem = GEditor->GetEditorSubsystem<UToolEditorSubsystem>();
 	if(nullptr != toolSubsystem && nullptr == toolSubsystem->FindToolActor(this))
@@ -22,6 +25,7 @@ void AToolActor::OnConstruction(const FTransform& InTransform)
 		ToolId = toolSubsystem->GeneratorToolId();
 		toolSubsystem->AddToolActor(ToolId, this);
 	}
+#endif
 }
 
 // Called when the game starts or when spawned
@@ -37,3 +41,4 @@ void AToolActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+*/

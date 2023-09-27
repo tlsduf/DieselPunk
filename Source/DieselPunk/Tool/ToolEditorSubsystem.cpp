@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+/*
 #include "ToolEditorSubsystem.h"
 #include "ToolActor.h"
 #include "../Data/Info/CharacterInfo.h"
@@ -9,7 +10,7 @@
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(ToolEditorSubsystem)
 
-/** Implement this for initialization of instances of the system */
+// Implement this for initialization of instances of the system 
 void UToolEditorSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
@@ -19,7 +20,7 @@ void UToolEditorSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 }
 
-/** Implement this for deinitialization of instances of the system */
+// Implement this for deinitialization of instances of the system 
 void UToolEditorSubsystem::Deinitialize()
 {
 	Super::Deinitialize();
@@ -116,3 +117,4 @@ void UToolEditorSubsystem::_RebuildInfo()
 		}
 	}
 }
+*/

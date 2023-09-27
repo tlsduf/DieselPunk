@@ -9,7 +9,7 @@
 
 #include <TimerManager.h>
 #include <Modules/ModuleManager.h>
-#include <PropertyEditorModule.h>
+//#include <PropertyEditorModule.h>
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(DpGameInstance)
@@ -17,7 +17,7 @@
 
 UDpGameInstance::UDpGameInstance()
 {
-    static const FName PropertyEditor("PropertyEditor");
+    /*static const FName PropertyEditor("PropertyEditor");
     FPropertyEditorModule &PropertyModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>(PropertyEditor);
 
 #define LOCTEXT_NAMESPACE "PropertySection"
@@ -48,7 +48,7 @@ UDpGameInstance::UDpGameInstance()
     SectionB3->AddCategory("MyCustomCategory");
     // - 스킬로직
     TSharedRef<FPropertySection> SectionC1 = PropertyModule.FindOrCreateSection("SkillGunnerQ", "CustomSection", LOCTEXT("CustomSection", "CustomSection"));
-    SectionC1->AddCategory("MyCustomCategory");
+    SectionC1->AddCategory("MyCustomCategory");*/
 #undef LOCTEXT_NAMESPACE
 }
 

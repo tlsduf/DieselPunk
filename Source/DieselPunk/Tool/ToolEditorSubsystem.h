@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+/*
 #pragma once
+
 
 #include <EditorSubsystem.h>
 #include "ToolEditorSubsystem.generated.h"
@@ -9,9 +11,8 @@
 class AToolActor;
 class USkeletalMesh;
 struct FCharacterInfo;
-/**
- * 
- */
+
+
 UCLASS()
 class DIESELPUNK_API UToolEditorSubsystem : public UEditorSubsystem
 {
@@ -21,10 +22,10 @@ private:
 	TIdGenerator<FToolId>						IdGenerator;	//툴 오브젝트 고유 아이디 생성기
 	TMap<FInfoId, FCharacterInfo*>				CharacterInfos;	//툴 미리보기용 메시 출력을 위한 캐릭터 인포
 public:
-	/** Implement this for initialization of instances of the system */
+	// Implement this for initialization of instances of the system 
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
-	/** Implement this for deinitialization of instances of the system */
+	// Implement this for deinitialization of instances of the system 
 	virtual void Deinitialize() override;
 
 	// 데이터 테이블, 에셋등의 변경으로 리빌드가 필요할 경우 호출합니다.
@@ -50,3 +51,5 @@ protected:
 	// 데이터 테이블을 리빌드 합니다.
 	void _RebuildInfo();
 };
+*/
+

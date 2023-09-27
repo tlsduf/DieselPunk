@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "Misc/EnumRange.h"
 
 // Enum 값 정의 모음
 // UENUM(BlueprintType) 을 사용한 enum class 인 경우 주석으로 UMETA(ToolTip = "") 사용해주세요
