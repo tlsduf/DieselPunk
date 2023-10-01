@@ -25,7 +25,7 @@ class ACharacterPC : public ACharacterBase
 
 
 public:
-	TODO( TEXT( "현재 레벨에 미리 배치되어있는 액터는 데이터테이블 정보를 알지 못해서 일단 임시 처리 추후 관리방법 논의 필요" ), 크로 )
+	//TODO"현재 레벨에 미리 배치되어있는 액터는 데이터테이블 정보를 알지 못해서 일단 임시 처리 추후 관리방법 논의 필요"
 	UPROPERTY( EditAnywhere, Category = "Test" )
 	int32 TestInfoId;
 	
@@ -34,6 +34,7 @@ public:
 	TMap<EAbilityType, TSubclassOf<USkillBase>> SkillInfos;
 
 	// 런타임에 인스턴스화된 스킬들을 담는 배열입니다. (실제로 이 배열에 담긴 스킬들을 호출)
+	UPROPERTY()
 	TMap<EAbilityType, TObjectPtr<USkillBase>> Skills;
 
 public:

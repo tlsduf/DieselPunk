@@ -15,6 +15,8 @@ UMonsterAnimInstace::UMonsterAnimInstace(){}
 void UMonsterAnimInstace::NativeUpdateAnimation(float InDeltaSeconds)
 {
 	Super::NativeUpdateAnimation(InDeltaSeconds);
+
+	AddRotation();
 }
 
 // AbilityType에 따른 몽타주를 반환합니다. None입력시 기본 몽타주 반환
@@ -77,7 +79,12 @@ void UMonsterAnimInstace::AnimNotify_NotifyMeleeAttack() const
 		MA->SkillTriggered();
 }
 
-void UMonsterAnimInstace::SetSpineRotation()
+int16 UMonsterAnimInstace::AddRotation()
 {
+	radian++;
+
+	if(radian == 360)
+		radian = 0;
 	
+	return radian;
 }

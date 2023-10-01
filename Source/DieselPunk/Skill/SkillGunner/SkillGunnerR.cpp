@@ -31,7 +31,7 @@ void USkillGunnerR::SkillTriggered()
 	if(ownerController == nullptr)
 		return;
 	
-	FVector shotLocation = ownerPawn->GetMesh()->GetSocketLocation("Granade_socket");
+	FVector shotLocation = ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket");
 	const FRotator shotRotation = ownerController->GetControlRotation();
 	FRotator spawnPitch = FRotator(0, 0, 0);
 	if (60 <= shotRotation.Pitch && shotRotation.Pitch <= 90)

@@ -77,9 +77,9 @@ EBTNodeResult::Type UBTTask_FlyMoveToTarget::MoveToTarget(UBehaviorTreeComponent
 	{
 		const FVector targetLocation = MyBlackboard->GetValue<UBlackboardKeyType_Vector>(BlackboardKey.GetSelectedKeyID());
 		const FVector myLocation = OwnerCharacter->GetActorLocation();
-		const FVector normalDirection = (targetLocation - myLocation).GetSafeNormal();
+		const FVector normalDirection = (targetLocation + FVector(0,0,500) - myLocation).GetSafeNormal();
 		OwnerCharacter->GetCharacterMovement()->AddForce(normalDirection * 200000);
-		//OwnerCharacter->GetCharacterMovement()->AddInputVector(normalDirection * 10);
+		//OwnerCharacter->GetCharacterMovement()->AddInputVector(normalDirection * 100);
 		
 		NodeResult = EBTNodeResult::Succeeded;
 	}

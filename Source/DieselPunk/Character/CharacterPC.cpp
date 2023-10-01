@@ -224,14 +224,16 @@ float ACharacterPC::GetRotationRateVelocity()
 // =============================================================
 void ACharacterPC::InitSkills()
 {
-	Skills.Empty();
+	if(Skills.Num() > 0)
+		Skills.Empty();
 	for (const TPair<EAbilityType, TSubclassOf<USkillBase>>& ability : SkillInfos)
 	{
 		Skills.Add(ability.Key, NewObject<USkillBase>(this, ability.Value));
 		Skills[ability.Key]->RegisterComponent(); // 컴포넌트를 등록합니다.
 	}
 
-	SkillActivating.Empty();
+	if(SkillActivating.Num() < 0)
+		SkillActivating.Empty();
 	SkillActivating.Add(EAbilityType::MouseLM, false);
 	SkillActivating.Add(EAbilityType::MouseRM, false);
 	SkillActivating.Add(EAbilityType::Shift, false);

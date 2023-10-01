@@ -39,8 +39,11 @@ private:
 	UFUNCTION()
 	void AnimNotify_NotifyMeleeAttack() const;
 
-	// 몬스터의 척추 본을 플레이어에게 바라보도록 세팅합니다.
-	void SetSpineRotation();
+	// 공중몹 프로펠러 회전
+	int16 AddRotation();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+	int radian = 0;
 };
 
 // AroundSkill 몽타주
