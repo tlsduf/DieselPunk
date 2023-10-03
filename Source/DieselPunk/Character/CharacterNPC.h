@@ -36,9 +36,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	
-	virtual void BeginDestroy() override;
-	
+
 	virtual void SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent) override;
 
 	// TakeDamageHandle

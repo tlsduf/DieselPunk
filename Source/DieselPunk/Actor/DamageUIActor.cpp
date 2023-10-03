@@ -56,15 +56,7 @@ void ADamageUIActor::BeginPlay()
 	XVelocity = GetRandomNumber(-100, 100);
 	YVelocity = GetRandomNumber(-100, 100);
 	StartAnimator();
-	
-	TWeakObjectPtr<ADamageUIActor> thisPtr = this;
-	GetWorld()->GetTimerManager().SetTimer(
-		DestroyTHandle, [thisPtr]()
-		{
-			if(thisPtr.IsValid())
-				thisPtr->SelfDestroy();
-		},
-		1.5f, false);
+	GetWorldTimerManager().SetTimer(DestroyTHandle, this, &ADamageUIActor::SelfDestroy, LifeTime, false);
 }
 
 void ADamageUIActor::Tick(float InDeltaTime)
@@ -124,6 +116,5 @@ void ADamageUIActor::SelfDestroy()
 {
 	// 초기화해야 할게 있나?
 	DamageUI->Destruct();
-	
 	Destroy();
 }
