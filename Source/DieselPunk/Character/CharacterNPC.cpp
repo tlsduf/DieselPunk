@@ -24,6 +24,14 @@ void ACharacterNPC::BeginPlay()
 	Super::BeginPlay();
 }
 
+void ACharacterNPC::BeginDestroy()
+{
+	Super::BeginDestroy();
+	
+	//EnemyStatusUI->Destruct();
+	//EnemyStatusUI->ConditionalBeginDestroy();
+}
+
 void ACharacterNPC::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -71,9 +79,14 @@ void ACharacterNPC::SetupPlayerInputComponent(class UInputComponent *PlayerInput
 
 float ACharacterNPC::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,AActor* DamageCauser)
 {
+	// UI 등장관리
 	WidgetComp->bHiddenInGame = 0;
 	TWeakObjectPtr<ACharacterNPC> thisPtr = this;
 	SetTimerWithDelegate(EnemyStatusUISetHiddenInGameTHandle, FTimerDelegate::CreateUObject(this, &ACharacterNPC::EnemyStatusUISetHiddenInGame), 10.f, false);
+
+	// UI 삭제
+	if (IsDead())
+		EnemyStatusUI->Destruct();
 	
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
