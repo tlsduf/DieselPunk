@@ -23,7 +23,9 @@
 #include "AIHelpers.h"
 
 
+
 #include UE_INLINE_GENERATED_CPP_BY_NAME(CharacterPC)
+
 
 ACharacterPC::ACharacterPC()
 	:
@@ -86,8 +88,10 @@ void ACharacterPC::BeginPlay()
 	TempPercent = Health / MaxHealth;
 	TempPercentAfterImage = Health / MaxHealth;
 	JumpMaxCount = ThisJumpMaxCount;
-
+	
 	PCSkillManager.ResetSkill();
+
+	_UpdateHp(Health, MaxHealth);
 }
 
 // Called every frame
