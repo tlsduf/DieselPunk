@@ -53,6 +53,10 @@ void ADpGameMode::PawnKilled(APawn *PawnKilled)
 	{
 		LOG_SCREEN(TEXT("Disable Input"))
 		PlayerController->SetPlayerEnabledState(false);
+
+		// 임시 UI 불러오기
+		PlayerController->SetEndUI();
+		
 		EndGame();
 	}
 

@@ -391,3 +391,13 @@ void APlayerControllerBase::SetUIControlOff()
 	bShowMouseCursor = false;
 	DpGetPlayer()->CanCameraControl = true;
 }
+
+void APlayerControllerBase::SetEndUI()
+{
+	if(EndUIClass)
+		EndUI = CreateWidget(this, EndUIClass);
+	if (EndUI)
+		EndUI->AddToViewport();
+
+	SetUIControlOn();
+}

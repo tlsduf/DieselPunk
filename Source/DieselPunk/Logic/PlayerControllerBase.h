@@ -119,18 +119,23 @@ private:
 	UUserWidget* SkillBrowser;
 	UPROPERTY()
 	UUserWidget* SkillUpgradeUI;
+	UPROPERTY()
+    UUserWidget* EndUI;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> UIMenuClass;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> HUDClass;
+	
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> EndUIClass;
 
 public:
 	//임시 스킬정보창
 	bool OnSkillBrowser = false;
 	void SetOnSkillBrowser();
-	void SetOffSkillBrowser();
+	//void SetOffSkillBrowser();
 	
 	void SkillUpgradeEventStart();
 	void SkillUpgradeEventEnd();
@@ -143,4 +148,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetUIControlOff();
+
+	void SetEndUI();
 };
