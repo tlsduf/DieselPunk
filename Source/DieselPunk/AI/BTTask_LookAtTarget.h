@@ -10,8 +10,10 @@ UCLASS()
 class DIESELPUNK_API UBTTask_LookAtTarget : public UBTTaskNode
 {
 	GENERATED_BODY()
-	
+
+	UPROPERTY()
 	TWeakObjectPtr<ACharacterBase>	OwnerCharacter;	//몬스터
+	
 	float							DegreeRange;	//몬스터가 바라보는 방향과 타겟이 있는 위치사이의 허용 각도입니다. 이 각도 내부로 들어오면 태스크를 마칩니다.
 public:
 	//생성자

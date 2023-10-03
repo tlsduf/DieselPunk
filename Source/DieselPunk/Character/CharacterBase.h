@@ -21,6 +21,7 @@ class DIESELPUNK_API ACharacterBase : public ACharacter
 public:
 	//================================================
 	// 데미지 UI 액터
+	UPROPERTY()
 	class ADamageUIActor *DamageUIActor;
 
 	//데미지를 입으면 데미지ui액터를 생성합니다.

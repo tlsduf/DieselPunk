@@ -80,6 +80,7 @@ void APlayerControllerBase::SetupInputComponent()
 
     	EnhancedInputComponent->BindAction(InputF, ETriggerEvent::Started, this, &APlayerControllerBase::Interaction);
     	EnhancedInputComponent->BindAction(InputK, ETriggerEvent::Started, this, &APlayerControllerBase::SetOnSkillBrowser);
+    	EnhancedInputComponent->BindAction(InputM, ETriggerEvent::Started, this, &APlayerControllerBase::Pause);
 
         //스킬 호출에 관한 바인딩
         for (EAbilityType type : ENUM_RANGE(EAbilityType))
@@ -357,6 +358,35 @@ void APlayerControllerBase::SkillUpgradeEventEnd()
 	if (HUD)
 		HUD->SetVisibility(ESlateVisibility::Visible);
 	
+	// 마우스 커서 off //키보드 입력 on
+	bShowMouseCursor = false;
+	DpGetPlayer()->CanCameraControl = true;
+}
+
+void APlayerControllerBase::ThisPause()
+{
+	
+}
+
+void APlayerControllerBase::SetUIControlOn()
+{
+	// 시간 정지
+	GetWorldSettings()->SetTimeDilation(0.f);
+	
+	// 마우스 위치 세팅 // 마우스 커서 on //키보드 입력 off
+	int32 ScreenWidth;
+	int32 ScreenHeight;
+	GetViewportSize(ScreenWidth, ScreenHeight);
+	SetMouseLocation(ScreenWidth * 0.5f, ScreenHeight * 0.5f);
+	bShowMouseCursor = true;
+	DpGetPlayer()->CanCameraControl = false;
+}
+
+void APlayerControllerBase::SetUIControlOff()
+{
+	// 시간 재게
+	GetWorldSettings()->SetTimeDilation(1.f);
+
 	// 마우스 커서 off //키보드 입력 on
 	bShowMouseCursor = false;
 	DpGetPlayer()->CanCameraControl = true;

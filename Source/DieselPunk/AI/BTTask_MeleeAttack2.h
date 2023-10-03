@@ -13,6 +13,7 @@ class DIESELPUNK_API UBTTask_MeleeAttack2 : public UBTTask_BlackboardBase
 	GENERATED_BODY()
 
 private:
+	UPROPERTY()
 	TWeakObjectPtr<ACharacterNPC>		OwnerCharacter;		//몬스터를 들고있습니다.
 	
 public:

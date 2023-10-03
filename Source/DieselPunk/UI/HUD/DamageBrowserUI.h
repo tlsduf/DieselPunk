@@ -16,7 +16,7 @@ class DIESELPUNK_API UDamageBrowserUI : public UUserWidgetBase
 	GENERATED_BODY()
 	
 protected:
-
+	UPROPERTY()
 	UTextBlock* DamageText;				// 왼쪽 스킬 할당키
 	
 public:

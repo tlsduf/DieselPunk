@@ -14,8 +14,10 @@ class DIESELPUNK_API ADamageUIActor : public AActor
 
 	
 protected:
-
+	UPROPERTY()
 	UWidgetComponent* WidgetComp;			// 위젯 컴포넌트
+
+	UPROPERTY()
 	TWeakObjectPtr< UDamageUI > DamageUI;	// 데미지 UI 포인터
 	
 	float Damage;						// DamageUI에 전달할 데미지 값

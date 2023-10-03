@@ -16,6 +16,7 @@ class DIESELPUNK_API UItemGuideUI : public UUserWidgetBase
 	GENERATED_BODY()
 	
 protected:
+	UPROPERTY()
 	UTextBlock* DamageText;		// 데미지 텍스트
 	
 protected:

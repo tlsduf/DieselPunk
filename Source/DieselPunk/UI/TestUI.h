@@ -20,6 +20,7 @@ class DIESELPUNK_API UTestUI : public UUserWidgetBase
 	GENERATED_BODY()
 	
 private:
+	UPROPERTY()
 	UButton* ButtonExit;
 
 protected:

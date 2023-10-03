@@ -17,11 +17,11 @@ class DIESELPUNK_API UEnemyStatusUI : public UStatusUIBase
 	GENERATED_BODY()
 	
 protected:
-	UProgressBar*			ProgressBarHP;				// HP 바
-	UProgressBar*			ProgressBarHPAfterImage;	// HP 바 잔상
-	UTextBlock*				Stack;						// 스택
-	UTextBlock*				StackMulti;					// 곱하기
-	UImage*                 ImageIcon;					// 아이콘 이미지
+	UProgressBar*			InProgressBarHP;				// HP 바
+	UProgressBar*			InProgressBarHPAfterImage;	// HP 바 잔상
+	UTextBlock*				InStack;						// 스택
+	UTextBlock*				InStackMulti;					// 곱하기
+	UImage*                 InImageIcon;					// 아이콘 이미지
 
 public:
 	void SetHPPercent(float inPercent);

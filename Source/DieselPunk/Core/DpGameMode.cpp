@@ -5,8 +5,9 @@
 
 #include <GameFramework/Pawn.h>
 #include <UObject/ConstructorHelpers.h>
-#include <Modules/ModuleManager.h>
 
+
+#include <Blueprint/UserWidget.h>
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(DpGameMode)
 
@@ -28,6 +29,8 @@ ADpGameMode::ADpGameMode()
 	{
 		PlayerControllerClass = PlayerControllerBPClass.Class;
 	}
+
+	
 	
 }
 
@@ -50,7 +53,7 @@ void ADpGameMode::PawnKilled(APawn *PawnKilled)
 	{
 		LOG_SCREEN(TEXT("Disable Input"))
 		PlayerController->SetPlayerEnabledState(false);
-		EndGame(false);
+		EndGame();
 	}
 
  	/*for (ABaseEnemyAIController *Controller : TActorRange<ABaseEnemyAIController>(GetWorld()))
@@ -69,7 +72,8 @@ void ADpGameMode::HandleGameStart()
 {
 }
 
-void ADpGameMode::EndGame(bool bIsPlayerWinner)
+void ADpGameMode::EndGame()
 {
-	LOG_SCREEN(TEXT("YouDied"));
+	
 }
+

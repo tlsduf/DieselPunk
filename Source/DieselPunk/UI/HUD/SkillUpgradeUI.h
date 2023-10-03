@@ -34,23 +34,38 @@ class DIESELPUNK_API USkillUpgradeUI : public UUserWidgetBase
 	GENERATED_BODY()
 	
 protected:
-	UButton*	Button_Left;					// 왼쪽 버튼
-	UTextBlock* Text_Skill_Left;				// 왼쪽 스킬 할당키
-	UTextBlock* Text_SkillName_Left;			// 왼쪽 스킬 이름
-	UTextBlock* Text_SkillUpgradeName_Left;		// 왼쪽 스킬 특성 이름
-	UTextBlock* Text_SkillUpgradeExpl_Left;		// 왼쪽 스킬 특성 설명
+	UPROPERTY()
+	UButton*	InButton_Left;					// 왼쪽 버튼
+	UPROPERTY()
+	UTextBlock* InText_Skill_Left;				// 왼쪽 스킬 할당키
+	UPROPERTY()
+	UTextBlock* InText_SkillName_Left;			// 왼쪽 스킬 이름
+	UPROPERTY()
+	UTextBlock* InText_SkillUpgradeName_Left;		// 왼쪽 스킬 특성 이름
+	UPROPERTY()
+	UTextBlock* InText_SkillUpgradeExpl_Left;		// 왼쪽 스킬 특성 설명
 
-	UButton*	Button_Middle;					// 중간 버튼
-	UTextBlock* Text_Skill_Middle;				// 중간 스킬 할당키
-	UTextBlock* Text_SkillName_Middle;			// 중간 스킬 이름
-	UTextBlock* Text_SkillUpgradeName_Middle;	// 중간 스킬 특성 이름
-	UTextBlock* Text_SkillUpgradeExpl_Middle;	// 중간 스킬 특성 설명
+	UPROPERTY()
+	UButton*	InButton_Middle;					// 중간 버튼
+	UPROPERTY()
+	UTextBlock* InText_Skill_Middle;				// 중간 스킬 할당키
+	UPROPERTY()
+	UTextBlock* InText_SkillName_Middle;			// 중간 스킬 이름
+	UPROPERTY()
+	UTextBlock* InText_SkillUpgradeName_Middle;	// 중간 스킬 특성 이름
+	UPROPERTY()
+	UTextBlock* InText_SkillUpgradeExpl_Middle;	// 중간 스킬 특성 설명
 
-	UButton*	Button_Right;					// 오른쪽 버튼
-	UTextBlock* Text_Skill_Right;				// 오른쪽 스킬 할당키
-	UTextBlock* Text_SkillName_Right;			// 오른쪽 스킬 이름
-	UTextBlock* Text_SkillUpgradeName_Right;	// 오른쪽 스킬 특성 이름
-	UTextBlock* Text_SkillUpgradeExpl_Right;	// 오른쪽 스킬 특성 설명
+	UPROPERTY()
+	UButton*	InButton_Right;					// 오른쪽 버튼
+	UPROPERTY()
+	UTextBlock* InText_Skill_Right;				// 오른쪽 스킬 할당키
+	UPROPERTY()
+	UTextBlock* InText_SkillName_Right;			// 오른쪽 스킬 이름
+	UPROPERTY()
+	UTextBlock* InText_SkillUpgradeName_Right;	// 오른쪽 스킬 특성 이름
+	UPROPERTY()
+	UTextBlock* InText_SkillUpgradeExpl_Right;	// 오른쪽 스킬 특성 설명
 	
 public:
 	// UI를 생성한다.

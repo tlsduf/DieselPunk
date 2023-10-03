@@ -16,6 +16,7 @@ class DIESELPUNK_API UDamageUI : public UUserWidgetBase
 	GENERATED_BODY()
 	
 protected:
+	UPROPERTY()
 	UTextBlock* DamageText;		// 데미지 텍스트
 
 	float Alpha;				// UI Alpha

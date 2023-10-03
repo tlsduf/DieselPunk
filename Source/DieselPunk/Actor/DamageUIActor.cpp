@@ -115,5 +115,6 @@ void ADamageUIActor::StartAnimator()
 void ADamageUIActor::SelfDestroy()
 {
 	// 초기화해야 할게 있나?
+	DamageUI->Destruct();
 	Destroy();
 }

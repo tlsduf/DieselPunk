@@ -23,8 +23,8 @@ void UStatusUIBase::UpdateTarget( FInfoId InInfoId )
 	if ( !characterInfo )
 		return;
 
-	if( TextName )
-		TextName->SetText( FText::FromString( characterInfo->Name ) );
+	if( InTextName )
+		InTextName->SetText( FText::FromString( characterInfo->Name ) );
 }
 
 // =============================================================
@@ -98,9 +98,9 @@ void UStatusUIBase::OnStatChanged( FObjId InObjId, EActorStatType InStatType, in
 // =============================================================
 void UStatusUIBase::_InitControls()
 {
-	_InitControl( TextName     , TEXT( "TextName"      ) );
-	_InitControl( ProgressBarHP, TEXT( "ProgressBarHP" ) );
-	_InitControl( ImageIcon    , TEXT( "ImageIcon"     ) );
+	_InitControl( InTextName     , TEXT( "TextName"      ) );
+	_InitControl( InProgressBarHP, TEXT( "ProgressBarHP" ) );
+	_InitControl( InImageIcon    , TEXT( "ImageIcon"     ) );
 }
 
 // =============================================================

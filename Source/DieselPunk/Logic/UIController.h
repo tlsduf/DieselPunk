@@ -13,6 +13,7 @@ class UUserWidgetBase;
 class FUIController
 {
 private:
+	UPROPERTY()
 	typedef TArray<UUserWidgetBase*> FUIStack; // UI 스택
 
 private:

@@ -14,23 +14,23 @@
 
 void UEnemyStatusUI::SetHPPercent(float inPercent)
 {
-	if ( ProgressBarHP )
-		ProgressBarHP->SetPercent( inPercent );
+	if ( InProgressBarHP )
+		InProgressBarHP->SetPercent( inPercent );
 }
 
 void UEnemyStatusUI::SetHPPercentAfterImage(float inPercent)
 {
-	if ( ProgressBarHPAfterImage )
-		ProgressBarHPAfterImage->SetPercent( inPercent );
+	if ( InProgressBarHPAfterImage )
+		InProgressBarHPAfterImage->SetPercent( inPercent );
 }
 
 void UEnemyStatusUI::SetTextStack(int inNumber)
 {
-	Stack->SetText( FText::FromString( FString::FromInt(inNumber) ) );
-	if( Stack == 0 )
-		Stack;
+	InStack->SetText( FText::FromString( FString::FromInt(inNumber) ) );
+	if( InStack == 0 )
+		InStack;
 	else
-		Stack;
+		InStack;
 }
 
 // =============================================================
@@ -72,9 +72,9 @@ void UEnemyStatusUI::OnDisappeared()
 // =============================================================
 void UEnemyStatusUI::_InitControls()
 {
-	_InitControl( ProgressBarHP, TEXT( "ProgressBarHP" ) );
-	_InitControl( ProgressBarHPAfterImage, TEXT( "ProgressBarHPAfterImage" ) );
-	_InitControl( Stack, TEXT( "Stack" ) );
-	_InitControl( StackMulti, TEXT( "StackMulti" ) );
-	_InitControl( ImageIcon, TEXT( "ImageIcon" ) );
+	_InitControl( InProgressBarHP, TEXT( "ProgressBarHP" ) );
+	_InitControl( InProgressBarHPAfterImage, TEXT( "ProgressBarHPAfterImage" ) );
+	_InitControl( InStack, TEXT( "Stack" ) );
+	_InitControl( InStackMulti, TEXT( "StackMulti" ) );
+	_InitControl( InImageIcon, TEXT( "ImageIcon" ) );
 }

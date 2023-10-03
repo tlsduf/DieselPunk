@@ -25,6 +25,7 @@ public:
 
 	int8 SoldierStack = 0;
 
+	UPROPERTY()
 	TWeakObjectPtr< UEnemyStatusUI > EnemyStatusUI; // 상태 UI 포인터
 
 	FTimerHandle EnemyStatusUISetHiddenInGameTHandle;

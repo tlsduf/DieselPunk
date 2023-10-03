@@ -20,6 +20,7 @@ private:
 
 private:
 	UClass*        UserWidgetClass;   // UI Manager 에서 사용하기 위한 네이티브 클래스 정보
+	
 	FVector2D      LastTouchPosition; // 가장 최근에 터치가 된 위치
 	bool           IsMousePressed;    // 마우스가 눌려지고 있는지 여부
 	FIntervalTimer LongPressedTimer;  // 롱 프레스 인식 타이머

@@ -21,5 +21,8 @@ protected:
 private:
 	void HandleGameStart();
 
-	void EndGame(bool bIsPlayerWinner);
+	
+	void EndGame();
+	
+
 };

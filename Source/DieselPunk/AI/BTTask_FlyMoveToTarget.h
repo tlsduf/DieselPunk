@@ -11,7 +11,8 @@ UCLASS()
 class DIESELPUNK_API UBTTask_FlyMoveToTarget : public UBTTask_BlackboardBase
 {
 	GENERATED_BODY()
-	
+
+	UPROPERTY()
 	TWeakObjectPtr<ACharacterBase>	OwnerCharacter;	//몬스터
 public:
 	//생성자

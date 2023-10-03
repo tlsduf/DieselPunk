@@ -12,7 +12,9 @@ class DIESELPUNK_API UBTTask_MeleeAttack : public UBTTaskNode
 	GENERATED_BODY()
 
 private:
+	UPROPERTY()
 	TWeakObjectPtr<ACharacterNPC>		OwnerCharacter;		//몬스터를 들고있습니다.
+	
 	bool								Looping;			//실행할 애니메이션을 반복할 지 결정합니다. 클래스 내부에서 사용할 스킬의 정보를 받아와 세팅합니다.
 	int32								LoopValue;			//반복할 횟수를 지정합니다. 클래스 내부에서 사용할 스킬의 정보를 받아와 세팅합니다.
 	float								Duration;			//공격하는 데 걸리는 시간입니다.

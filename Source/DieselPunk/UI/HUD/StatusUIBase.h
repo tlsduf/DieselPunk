@@ -27,10 +27,13 @@ protected:
 	TWeakObjectPtr< ACharacterBase >      Character;     // 소유 캐릭터
 	TMap< EActorStatType, FTR_STAT_FUNC > FtrStatFunc;   // _Set 스텟 함수
 
-	UTextBlock*                           TextName;      // 이름 텍스트 블록
+	UPROPERTY()
+	UTextBlock*                           InTextName;      // 이름 텍스트 블록
 public:
-	UProgressBar*                         ProgressBarHP; // HP 바
-	UImage*                               ImageIcon;     // 아이콘 이미지
+	UPROPERTY()
+	UProgressBar*                         InProgressBarHP; // HP 바
+	UPROPERTY()
+	UImage*                               InImageIcon;     // 아이콘 이미지
 
 	FInfoId                               InfoId;        // 캐릭터 테이블 식별자
 	Animator                              HpAnimator;    // Hp 애니메이션

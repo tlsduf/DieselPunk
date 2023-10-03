@@ -57,6 +57,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction *InputK;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction *InputM;
 	
 	// 6개의 스킬 InputAction // 순서대로 LM, RM, LShift, Q, E, R
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -108,9 +111,13 @@ public:
 	void SetPlayerEnabledState(bool bPlayerEnabled);
 
 private:
+	UPROPERTY()
 	UUserWidget* Menu;
+	UPROPERTY()
 	UUserWidget* HUD;
+	UPROPERTY()
 	UUserWidget* SkillBrowser;
+	UPROPERTY()
 	UUserWidget* SkillUpgradeUI;
 
 	UPROPERTY(EditAnywhere)
@@ -127,4 +134,13 @@ public:
 	
 	void SkillUpgradeEventStart();
 	void SkillUpgradeEventEnd();
+
+	UFUNCTION(BlueprintCallable)
+	void ThisPause();
+	
+	UFUNCTION(BlueprintCallable)
+	void SetUIControlOn();
+
+	UFUNCTION(BlueprintCallable)
+	void SetUIControlOff();
 };

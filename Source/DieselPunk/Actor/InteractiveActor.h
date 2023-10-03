@@ -26,6 +26,7 @@ protected:
 	UPROPERTY( EditAnywhere )
 	UWidgetComponent* WidgetComp;				// 상호작용 안내 UI
 
+	UPROPERTY()
 	TWeakObjectPtr< UItemGuideUI > GuideUI;		// 상호작용 UI 포인터
 	
 	// 상호작용 이펙트 파티클

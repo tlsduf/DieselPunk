@@ -508,7 +508,7 @@ float ACharacterPC::TakeDamage(float DamageAmount, struct FDamageEvent const &Da
 			}
 
 			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision); // 캡슐콜리전 무효
-			// 20초 뒤 액터 destroy 
+			// 20초 뒤 액터 destroy
 			TWeakObjectPtr<ACharacterPC> thisPtr = this;
 			GetWorld()->GetTimerManager().SetTimer(
 				TakeDamageHandle, [thisPtr]()

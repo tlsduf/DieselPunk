@@ -173,3 +173,19 @@ void UDpCheatManager::LevelUp()
 	player->Exp = UtilLevelCal::MaxExpCal(player->Level - 1);
 	player->MaxHealth = UtilLevelCal::MaxHealthCal(player->Level);
 }
+
+// =============================================================
+// 테스트용 치트 - 풀HP
+// =============================================================
+void UDpCheatManager::GetHP()
+{
+	APlayerController* playerController = DpGetPlayerController();
+	if ( !playerController )
+		return;
+
+	ACharacterPC* player = Cast<ACharacterPC>( playerController->GetCharacter() );
+	if ( !player )
+		return;
+
+	player->Health = player->MaxHealth;
+}

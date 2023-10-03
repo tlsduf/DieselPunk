@@ -56,4 +56,8 @@ public:
 	// 테스트용 치트 - 레벨 업
 	UFUNCTION( exec )
 	void LevelUp();
+
+	// 테스트용 치트 - 풀HP
+	UFUNCTION( exec )
+	void GetHP();
 };
