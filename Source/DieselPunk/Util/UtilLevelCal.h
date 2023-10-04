@@ -40,16 +40,16 @@ namespace UtilLevelCal
 	FORCEINLINE int MaxHealthCal(int inLevel)
 	{
 		return
-		  (inLevel == 1) ? 100
-		: (inLevel == 2) ? 110
-		: (inLevel == 3) ? 120
-		: (inLevel == 4) ? 130
-		: (inLevel == 5) ? 140
-		: (inLevel == 6) ? 150
-		: (inLevel == 7) ? 160
-		: (inLevel == 8) ? 170
-		: (inLevel == 9) ? 180
-		: (inLevel == 10) ? 190
+		  (inLevel == 1) ? 200
+		: (inLevel == 2) ? 210
+		: (inLevel == 3) ? 220
+		: (inLevel == 4) ? 230
+		: (inLevel == 5) ? 240
+		: (inLevel == 6) ? 250
+		: (inLevel == 7) ? 260
+		: (inLevel == 8) ? 270
+		: (inLevel == 9) ? 280
+		: (inLevel == 10) ? 290
 		: (inLevel == 11) ? 200
 		: (inLevel == 12) ? 210
 		: (inLevel == 13) ? 220

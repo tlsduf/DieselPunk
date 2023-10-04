@@ -24,5 +24,5 @@ private:
 	
 	void EndGame();
 	
-
+	FTimerHandle GameEndTHandle;
 };

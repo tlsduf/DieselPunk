@@ -368,6 +368,19 @@ void APlayerControllerBase::ThisPause()
 	
 }
 
+void APlayerControllerBase::SetUIControlOnForStartMenu()
+{	
+// 시간 정지
+ 	GetWorldSettings()->SetTimeDilation(0.f);
+ 	
+ 	// 마우스 위치 세팅 // 마우스 커서 on //키보드 입력 off
+ 	int32 ScreenWidth;
+ 	int32 ScreenHeight;
+ 	GetViewportSize(ScreenWidth, ScreenHeight);
+ 	SetMouseLocation(ScreenWidth * 0.5f, ScreenHeight * 0.5f);
+ 	bShowMouseCursor = true;
+}
+
 void APlayerControllerBase::SetUIControlOn()
 {
 	// 시간 정지

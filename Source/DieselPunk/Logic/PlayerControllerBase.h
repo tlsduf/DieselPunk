@@ -142,6 +142,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ThisPause();
+
+	UFUNCTION(BlueprintCallable)
+	void SetUIControlOnForStartMenu();
 	
 	UFUNCTION(BlueprintCallable)
 	void SetUIControlOn();

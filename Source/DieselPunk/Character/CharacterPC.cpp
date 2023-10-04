@@ -521,9 +521,11 @@ float ACharacterPC::TakeDamage(float DamageAmount, struct FDamageEvent const &Da
 			auto DamageCauserPlayer = Cast<ACharacterPC>(DamageCauser);
 			// 플레이어의 경험치를 1 올림 //TODO NPC와 구분지어서 레벨디자인 할 수 있게끔
 			DamageCauserPlayer->Exp = DamageCauserPlayer->Exp + 1;
-			DamageCauserPlayer->Level = UtilLevelCal::LevelCal(DamageCauserPlayer->Exp);
-			DamageCauserPlayer->MaxHealth = UtilLevelCal::MaxHealthCal(DamageCauserPlayer->Level);
-			LOG_SCREEN(TEXT("MAxHealth : %d Exp : %d Level : %d"), DamageCauserPlayer->MaxHealth , DamageCauserPlayer->Exp, DamageCauserPlayer->Level);
+			if(DamageCauserPlayer->Level != UtilLevelCal::LevelCal(DamageCauserPlayer->Exp))
+				DamageCauserPlayer->Level = UtilLevelCal::LevelCal(DamageCauserPlayer->Exp);
+			if(DamageCauserPlayer->MaxHealth != UtilLevelCal::MaxHealthCal(DamageCauserPlayer->Level))
+				DamageCauserPlayer->MaxHealth = UtilLevelCal::MaxHealthCal(DamageCauserPlayer->Level);
+			//LOG_SCREEN(TEXT("MAxHealth : %d Exp : %d Level : %d"), DamageCauserPlayer->MaxHealth , DamageCauserPlayer->Exp, DamageCauserPlayer->Level);
 		}
 
 		//LOG_SCREEN(TEXT("Now Health : %f"), Health);
@@ -543,7 +545,7 @@ float ACharacterPC::TakeDamage(float DamageAmount, struct FDamageEvent const &Da
 			CanTakeDamageAnim = false;
 			GetWorldTimerManager().SetTimer(TakeDamageHandle, this, &ACharacterPC::SetCanTakeDamageAnimTrue, 0.3f, false);
 		}
-		LOG_SCREEN(TEXT("Damage Immune! || Now Health : %d"), Health);
+		//LOG_SCREEN(TEXT("Damage Immune! || Now Health : %d"), Health);
 		return Damage;
 	}
 }

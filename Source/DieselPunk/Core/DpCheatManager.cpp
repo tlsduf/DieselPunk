@@ -188,4 +188,5 @@ void UDpCheatManager::GetHP()
 		return;
 
 	player->Health = player->MaxHealth;
+	player->_UpdateHp(player->Health, player->MaxHealth);
 }

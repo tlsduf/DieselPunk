@@ -45,17 +45,25 @@ void ADpGameMode::PawnKilled(APawn *PawnKilled)
 {
 	if(PawnKilled->GetController() != DpGetPlayerController())
 	{
-		LOG_SCREEN(TEXT("EnemyDied"))
+		//LOG_SCREEN(TEXT("EnemyDied"))
 		return;
 	}
 	auto PlayerController = Cast<APlayerControllerBase>(PawnKilled->GetController());
 	if (PlayerController != nullptr)
 	{
-		LOG_SCREEN(TEXT("Disable Input"))
+		//LOG_SCREEN(TEXT("Disable Input"))
 		PlayerController->SetPlayerEnabledState(false);
 
 		// 임시 UI 불러오기
-		PlayerController->SetEndUI();
+		TWeakObjectPtr<ADpGameMode> thisPtr = this;
+		GetWorld()->GetTimerManager().SetTimer(
+			GameEndTHandle, [thisPtr]()
+			{
+				if(thisPtr.IsValid())
+					Cast<APlayerControllerBase>(DpGetPlayerController())->SetEndUI();
+			},
+			1.5f, false);
+		//PlayerController->SetEndUI();
 		
 		EndGame();
 	}
@@ -78,6 +86,5 @@ void ADpGameMode::HandleGameStart()
 
 void ADpGameMode::EndGame()
 {
-	
 }
 
