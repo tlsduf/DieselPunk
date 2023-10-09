@@ -28,7 +28,7 @@ void FInfoBase::OnDataTableChanged( const UDataTable* InDataTable, const FName I
 			// InfoId == 0
 			FText Title = FText::FromString( FString::Printf( TEXT( "%s Warning" ), *InDataTable->GetName() ) );
 			FText Text = FText::FromString( FString::Printf( TEXT( "%s InfoId %d Must Not Be 0" ), *InRowName.ToString(), info->InfoId ) );
-			EAppReturnType::Type ReturnType = FMessageDialog::Open( EAppMsgType::Ok, Text, &Title );
+			EAppReturnType::Type ReturnType = FMessageDialog::Open( EAppMsgType::Ok, Text, Title );
 		}
 
 		FInfoBase*& otherInfo = tableDatas.FindOrAdd( info->InfoId );
@@ -42,7 +42,7 @@ void FInfoBase::OnDataTableChanged( const UDataTable* InDataTable, const FName I
 		// InfoId 중복!
 		FText Title = FText::FromString( FString::Printf( TEXT( "%s Error" ), *InDataTable->GetName() ) );
 		FText Text = FText::FromString( FString::Printf( TEXT( "%s InfoId %d Is Duplicated!!" ), *InRowName.ToString(), info->InfoId ) );
-		EAppReturnType::Type ReturnType = FMessageDialog::Open( EAppMsgType::Ok, Text, &Title );
+		EAppReturnType::Type ReturnType = FMessageDialog::Open( EAppMsgType::Ok, Text, Title );
 	}
 #endif
 }

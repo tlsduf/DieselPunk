@@ -73,17 +73,17 @@ float ACharacterNPC::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 {
 	WidgetComp->bHiddenInGame = 0;
 	TWeakObjectPtr<ACharacterNPC> thisPtr = this;
-	SetTimerWithDelegate(EnemyStatusUISetHiddenInGameTHandle, FTimerDelegate::CreateUObject(this, &ACharacterNPC::EnemyStatusUISetHiddenInGame), 10.f, false);
+	//SetTimerWithDelegate(EnemyStatusUISetHiddenInGameTHandle, FTimerDelegate::CreateUObject(this, &ACharacterNPC::EnemyStatusUISetHiddenInGame), 10.f, false);
 	
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 
-void ACharacterNPC::SetTimerWithDelegate(FTimerHandle& TimerHandle, TBaseDelegate<void> ObjectDelegate, float Time,
+/*void ACharacterNPC::SetTimerWithDelegate(FTimerHandle& TimerHandle, TBaseDelegate<void> ObjectDelegate, float Time,
 	bool bLoop)
 {
 	GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, ObjectDelegate, Time, bLoop);
-}
+}*/
 
 void ACharacterNPC::EnemyStatusUISetHiddenInGame()
 {

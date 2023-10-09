@@ -31,7 +31,7 @@ void FInfoGroupBase::OnDataTableChanged( const UDataTable* InDataTable, const FN
 			// InfoId == 0
 			FText Title = FText::FromString( FString::Printf( TEXT( "%s Warning" ), *InDataTable->GetName() ) );
 			FText Text = FText::FromString( FString::Printf( TEXT( "%s Group %d Must Not Be 0" ), *InRowName.ToString(), info->GroupId ) );
-			EAppReturnType::Type ReturnType = FMessageDialog::Open( EAppMsgType::Ok, Text, &Title );
+			EAppReturnType::Type ReturnType = FMessageDialog::Open( EAppMsgType::Ok, Text, Title );
 			continue;
 		}
 
