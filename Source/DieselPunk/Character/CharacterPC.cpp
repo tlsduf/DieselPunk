@@ -278,7 +278,6 @@ void ACharacterPC::SkillCompleted(const EAbilityType InAbilityType)
 	{
 		ability->SkillCompleted();
 	}
-	
 }
 void ACharacterPC::SkillCanceled(const EAbilityType InAbilityType)
 {
