@@ -35,7 +35,6 @@ EBTNodeResult::Type UBTTask_FlyMoveToTarget::ExecuteTask(UBehaviorTreeComponent&
 	OwnerCharacter = Cast<ACharacterNPC>(OwnerComp.GetAIOwner()->GetPawn());
 	if (!OwnerCharacter.IsValid())
 	{
-		WARN_LOG(TEXT("UBTTask_Attack::ExecuteTask Failed! : OwnerCharacter가 없습니다."));
 		NodeResult = EBTNodeResult::Failed;
 	}
 	else

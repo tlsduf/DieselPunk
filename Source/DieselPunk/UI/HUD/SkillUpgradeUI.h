@@ -4,9 +4,11 @@
 #pragma once
 
 
+#include "AITestsCommon.h"
 #include "../UserWidgetBase.h"
 #include "../../Skill/SkillManager.h"
 #include "../../Character/CharacterPC.h"
+#include "Kismet/GameplayStatics.h"
 #include "SkillUpgradeUI.generated.h"
 
 
@@ -19,8 +21,12 @@
 private:																			\
 	UFUNCTION()																		\
 	void Plus##SkillType##UpgradeTypeName()											\
-	{																				\
-		++DpGetPlayer()->PCSkillManager.SkillType[E##SkillType::UpgradeTypeName];	\
+	{																										\
+		FWorldContext* world = GEngine->GetWorldContextFromGameViewport( GEngine->GameViewport );			\
+		if ( !world )																						\
+			return ;																						\
+		auto *character = Cast<ACharacterPC>(UGameplayStatics::GetPlayerCharacter(world->World(), 0));		\
+		++character->PCSkillManager.SkillType[E##SkillType::UpgradeTypeName];		\
 		AfterClick();																\
 	}																				\
 
@@ -34,69 +40,41 @@ class DIESELPUNK_API USkillUpgradeUI : public UUserWidgetBase
 	GENERATED_BODY()
 	
 protected:
-	UPROPERTY()
 	UButton*	InButton_Left;					// 왼쪽 버튼
-	UPROPERTY()
 	UTextBlock* InText_Skill_Left;				// 왼쪽 스킬 할당키
-	UPROPERTY()
 	UTextBlock* InText_SkillName_Left;			// 왼쪽 스킬 이름
-	UPROPERTY()
 	UTextBlock* InText_SkillUpgradeName_Left;		// 왼쪽 스킬 특성 이름
-	UPROPERTY()
 	UTextBlock* InText_SkillUpgradeExpl_Left;		// 왼쪽 스킬 특성 설명
-
-	UPROPERTY()
+	
 	UButton*	InButton_Middle;					// 중간 버튼
-	UPROPERTY()
 	UTextBlock* InText_Skill_Middle;				// 중간 스킬 할당키
-	UPROPERTY()
 	UTextBlock* InText_SkillName_Middle;			// 중간 스킬 이름
-	UPROPERTY()
 	UTextBlock* InText_SkillUpgradeName_Middle;	// 중간 스킬 특성 이름
-	UPROPERTY()
 	UTextBlock* InText_SkillUpgradeExpl_Middle;	// 중간 스킬 특성 설명
-
-	UPROPERTY()
+	
 	UButton*	InButton_Right;					// 오른쪽 버튼
-	UPROPERTY()
 	UTextBlock* InText_Skill_Right;				// 오른쪽 스킬 할당키
-	UPROPERTY()
 	UTextBlock* InText_SkillName_Right;			// 오른쪽 스킬 이름
-	UPROPERTY()
 	UTextBlock* InText_SkillUpgradeName_Right;	// 오른쪽 스킬 특성 이름
-	UPROPERTY()
 	UTextBlock* InText_SkillUpgradeExpl_Right;	// 오른쪽 스킬 특성 설명
 	
 public:
-	// UI를 생성한다.
-	static USkillUpgradeUI* CreateUI();
 
 	// 난수값 저장용 인티저
 	int8 RandomNum;
 
 	// 난수값에 따라 위젯을 세팅합니다.
 	void SetControls();
-	
-protected:
-	
+
 	// 생성자
 	virtual void OnCreated() override;
-
-	// 소멸자
-	virtual void BeginDestroy() override;
-
-	// 화면에 보이는 시점에 호출되는 함수
-	virtual void OnAppeared() override;
-
-	// 화면에서 사라지는 시점에 호출되는 함수
-	virtual void OnDisappeared() override;
 
 	// 틱
 	virtual void NativeTick( const FGeometry& MyGeometry, float InDeltaTime ) override;
 
 private:
 	// 위젯을 초기화한다.
-	void _InitControls();
+	void InitWidget();
 
 	// 왼쪽 버튼이 클릭되었을 때 호출되는 함수
 	UFUNCTION()

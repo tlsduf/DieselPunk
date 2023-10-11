@@ -41,7 +41,7 @@ void USkillSoldierShift::SkillTriggered()
 	// 쿨타임!!!!!!!!!!!!!!!!!!
 	CoolTimeHandler->SetCoolTime(CoolTime - CoolDown);
 	ownerPawn->SkillActivating[EAbilityType::Shift] = true;
-	DpGetWorld()->GetTimerManager().SetTimer(
+	GetWorld()->GetTimerManager().SetTimer(
 	PlaySkillTHandle, [this]()
 	{ Cast<ACharacterPC>(GetOwner())->SkillActivating[EAbilityType::Shift] = false; },
 	SkillPlayTime, false);

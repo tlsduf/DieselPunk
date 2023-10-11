@@ -3,10 +3,8 @@
 #include "CharacterNPC.h"
 #include "../Skill/PlayerSkill.h"
 #include "../Skill/MeleeAttack.h"
-#include "../Manager/UIManager.h"
 #include "../UI/HUD/EnemyStatusUI.h"
 
-//#include <Components/InputComponent.h>
 #include <Kismet/GameplayStatics.h>
 #include <Particles/ParticleSystemComponent.h>
 #include <Components/SkeletalMeshComponent.h>
@@ -47,7 +45,32 @@ void ACharacterNPC::CreateStatusUI()
 	if( EnemyStatusUI.IsValid() )
 		return;
 
-	EnemyStatusUI = GetUIManager().CreateUnmanagedUI< UEnemyStatusUI >( TEXT( "HUD/NPC_HpBar" ) );
+	FString inPath = TEXT( "/Script/UMGEditor.WidgetBlueprint'/Game/GuardiansW/UI/Widgets/%HUD/%NPC_HpBar.%NPC_HpBar'" );
+	UClass* widgetClass = ConstructorHelpersInternal::FindOrLoadClass( inPath, UUserWidget::StaticClass() );
+	if(!widgetClass)
+		return;
+
+	// 월드 get
+	FWorldContext* world = GEngine->GetWorldContextFromGameViewport( GEngine->GameViewport );
+	if ( !world )
+		return ;
+
+	UUserWidget* userWidget = CreateWidget<UUserWidget>( world->World(), widgetClass );
+	if ( userWidget != nullptr )
+	{
+		userWidget->AddToRoot();
+
+		UUserWidgetBase* userWidgetBase = Cast<UUserWidgetBase>( userWidget );
+		if ( userWidgetBase )
+			userWidgetBase->OnCreated();
+	}
+	UEnemyStatusUI* myWidget = Cast<UEnemyStatusUI>(userWidget);
+	if(myWidget)
+		myWidget->RemoveFromRoot();
+		
+	EnemyStatusUI = myWidget;
+
+	
 	if ( !WidgetComp || !EnemyStatusUI.IsValid() )
 		return;
 
@@ -55,7 +78,6 @@ void ACharacterNPC::CreateStatusUI()
 	WidgetComp->SetDrawSize( FVector2D( 250.0f, 80.0f ) );
 	WidgetComp->bHiddenInGame = 1;
 	
-	//EnemyStatusUI->InitStatus( this );
 	EnemyStatusUI->SetHPPercent(TempPercent);
 	EnemyStatusUI->SetHPPercentAfterImage(TempPercentAfterImage);
 }

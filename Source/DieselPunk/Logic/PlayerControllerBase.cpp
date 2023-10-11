@@ -2,12 +2,9 @@
 
 #include "PlayerControllerBase.h"
 #include "..\Character\CharacterPC.h"
-#include "../Util/UtilEnum.h"
 #include "../Skill/SkillBase.h"
 #include "../Skill/PlayerSkill.h"
-#include "../Core/DpCheatManager.h"
 #include "../UI/HUD/SkillUpgradeUI.h"
-#include "..\UI\HUD\DamageBrowserUI.h"
 
 
 #include <Blueprint/UserWidget.h>
@@ -27,7 +24,7 @@ APlayerControllerBase::APlayerControllerBase()
 	bShowMouseCursor = false;
 	DefaultMouseCursor = EMouseCursor::Default;
 	
-	CheatClass = UDpCheatManager::StaticClass();
+	//CheatClass = UDpCheatManager::StaticClass();
 }
 
 void APlayerControllerBase::BeginPlay()
@@ -45,16 +42,15 @@ void APlayerControllerBase::BeginPlay()
 		HUD = CreateWidget(this, HUDClass);
 	if (HUD)
 		HUD->AddToViewport();
-
-	SkillBrowser = UDamageBrowserUI::CreateUI();
-	if (SkillBrowser)
-		SkillBrowser->AddToViewport();
-	SkillBrowser->SetVisibility(ESlateVisibility::Hidden);
 	
-	SkillUpgradeUI = USkillUpgradeUI::CreateUI();
+	if(SkillUpgradeUIClass)
+	{
+		SkillUpgradeUI = CreateWidget(this, SkillUpgradeUIClass);
+		Cast<USkillUpgradeUI>(SkillUpgradeUI)->OnCreated();
+	}
 	if(SkillUpgradeUI)
 		SkillUpgradeUI->AddToViewport();
-	SkillUpgradeUI->SetVisibility(ESlateVisibility::Hidden);
+	//SkillUpgradeUI->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void APlayerControllerBase::SetupInputComponent()
@@ -79,11 +75,10 @@ void APlayerControllerBase::SetupInputComponent()
         EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerControllerBase::Look);
 
     	EnhancedInputComponent->BindAction(InputF, ETriggerEvent::Started, this, &APlayerControllerBase::Interaction);
-    	EnhancedInputComponent->BindAction(InputK, ETriggerEvent::Started, this, &APlayerControllerBase::SetOnSkillBrowser);
     	EnhancedInputComponent->BindAction(InputM, ETriggerEvent::Started, this, &APlayerControllerBase::Pause);
 
         //스킬 호출에 관한 바인딩
-        for (EAbilityType type : ENUM_RANGE(EAbilityType))
+        for (EAbilityType type : TEnumRange<EAbilityType>())
         {
         EnhancedInputComponent->BindAction(SkillInputActions[type], ETriggerEvent::Started, this, &APlayerControllerBase::OnInputSkillStarted);
         EnhancedInputComponent->BindAction(SkillInputActions[type], ETriggerEvent::Ongoing, this, &APlayerControllerBase::OnInputSkillOngoing);
@@ -110,15 +105,17 @@ void APlayerControllerBase::OnPossess(APawn* InPawn)
 void APlayerControllerBase::SetMappingContextByInputType()
 {
 	// 스킬에 관한 바인딩
-	DpGetPlayer()->InitSkills(); // TSubClassOf로 설정된 캐릭터의 스킬들을 인스턴스화 시킵니다.
-		
-	for (const TPair<EAbilityType, TObjectPtr<UInputAction>>& inputActions : SkillInputActions)
+	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
 	{
-		// 설정해둔 트리거 타입을 넣습니다.
-		SkillInputActions[inputActions.Key]->Triggers.Reset();
-		SkillInputActions[inputActions.Key]->Triggers.Add(Cast<UPlayerSkill>(DpGetPlayer()->GetSkills()[inputActions.Key])->GetTriggerType());
+		character->InitSkills(); // TSubClassOf로 설정된 캐릭터의 스킬들을 인스턴스화 시킵니다.
+		
+		for (const TPair<EAbilityType, TObjectPtr<UInputAction>>& inputActions : SkillInputActions)
+		{
+			// 설정해둔 트리거 타입을 넣습니다.
+			SkillInputActions[inputActions.Key]->Triggers.Reset();
+			SkillInputActions[inputActions.Key]->Triggers.Add(Cast<UPlayerSkill>(character->GetSkills()[inputActions.Key])->GetTriggerType());
+		}
 	}
-	
 	
 	if (UEnhancedInputLocalPlayerSubsystem *subSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
@@ -163,99 +160,150 @@ const EAbilityType APlayerControllerBase::GetAbilityKeyFromAction(const FInputAc
 // =============================================================
 void APlayerControllerBase::OnInputSkillStarted(const FInputActionInstance& InInstance)
 {
-	const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
-	if (abilityKey != EAbilityType::None)
-		DpGetPlayer()->SkillStarted(abilityKey);
+	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
+	{
+		const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
+		if (abilityKey != EAbilityType::None)
+			character->SkillStarted(abilityKey);
+	}
 }
 
 void APlayerControllerBase::OnInputSkillOngoing(const FInputActionInstance& InInstance)
 {
-	const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
-	if (abilityKey != EAbilityType::None)
-		DpGetPlayer()->SkillOngoing(abilityKey);
+	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
+	{
+		const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
+		if (abilityKey != EAbilityType::None)
+			character->SkillOngoing(abilityKey);
+	}
 }
 
 void APlayerControllerBase::OnInputSkillTriggered(const FInputActionInstance& InInstance)
 {
-	const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
-	if (abilityKey != EAbilityType::None)
-		DpGetPlayer()->SkillTriggered(abilityKey);
+	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
+	{
+		const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
+		if (abilityKey != EAbilityType::None)
+			character->SkillTriggered(abilityKey);
+	}
 }
 
 void APlayerControllerBase::OnInputSkillCompleted(const FInputActionInstance& InInstance)
 {
-	const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
-	if (abilityKey != EAbilityType::None)
-		DpGetPlayer()->SkillCompleted(abilityKey);
+	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
+	{
+		const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
+		if (abilityKey != EAbilityType::None)
+			character->SkillCompleted(abilityKey);
+	}
 }
 
 void APlayerControllerBase::OnInputSkillCanceled(const FInputActionInstance& InInstance)
 {
-	const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
-	if (abilityKey != EAbilityType::None)
-		DpGetPlayer()->SkillCanceled(abilityKey);
+	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
+	{
+		const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
+		if (abilityKey != EAbilityType::None)
+			character->SkillCanceled(abilityKey);
+	}
 }
 
 
 void APlayerControllerBase::Jump()
 {
-	DpGetPlayer()->Jump();
+	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
+	{
+		character->Jump();
+	}
 }
 
 void APlayerControllerBase::StopJumping()
 {
-	DpGetPlayer()->StopJumping();
+	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
+	{
+		character->StopJumping();
+	}
 }
 
 void APlayerControllerBase::ToggleJog()
 {
-    DpGetPlayer()->Jog();
+	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
+	{
+		character->Jog();
+	}
 }
 
 void APlayerControllerBase::WPressed()
 {
-    DpGetPlayer()->WPressed();
+	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
+	{
+		character->WPressed();
+	}
 }
 
 void APlayerControllerBase::WReleased()
 {
-    DpGetPlayer()->WReleased();
+	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
+	{
+		character->WReleased();
+	}
 }
 
 void APlayerControllerBase::SPressed()
 {
-	DpGetPlayer()->SPressed();
+	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
+	{
+		character->SPressed();
+	}
 }
 
 void APlayerControllerBase::SReleased()
 {
-	DpGetPlayer()->SReleased();
+	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
+	{
+		character->SReleased();
+	}
 }
 
 void APlayerControllerBase::SetZoomInProp()
 {
-	DpGetPlayer()->SetZoomInProp();
+	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
+	{
+		character->SetZoomInProp();
+	}
 }
 
 void APlayerControllerBase::SetZoomOutProp()
 {
-	DpGetPlayer()->SetZoomOutProp();
+	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
+	{
+		character->SetZoomOutProp();
+	}
 }
 
 void APlayerControllerBase::Interaction()
 {
-	if(DpGetPlayer()->DelegateInteractTask.IsBound())
-		DpGetPlayer()->DelegateInteractTask.Execute();
+	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
+	{
+		if(character->DelegateInteractTask.IsBound())
+			character->DelegateInteractTask.Execute();
+	}
 }
 
 void APlayerControllerBase::Move(const FInputActionValue &Value)
 {
-    DpGetPlayer()->Move(Value);
+	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
+	{
+		character->Move(Value);
+	}
 }
 
 void APlayerControllerBase::Look(const FInputActionValue &Value)
 {
-	DpGetPlayer()->Look(Value);
+	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
+	{
+		character->Look(Value);
+	}
 }
 
 void APlayerControllerBase::SetPlayerEnabledState(bool bPlayerEnabled)
@@ -264,64 +312,15 @@ void APlayerControllerBase::SetPlayerEnabledState(bool bPlayerEnabled)
     bShowMouseCursor = bPlayerEnabled;
 }
 
-
-void APlayerControllerBase::SetOnSkillBrowser()
-{
-	if(!OnSkillBrowser)
-	{
-		// 시간 정지
-		GetWorldSettings()->SetTimeDilation(0.f);
-
-		// 기존 HUD Remove
-		if (HUD)
-			HUD->SetVisibility(ESlateVisibility::Hidden);
-	
-		// 스킬브라우저 UI Add
-		if (SkillBrowser)
-			SkillBrowser->SetVisibility(ESlateVisibility::Visible);
-		
-		DpGetPlayer()->CanCameraControl = false;
-		
-		OnSkillBrowser = true;
-	}
-	else
-	{
-		// 시간 재게
-		GetWorldSettings()->SetTimeDilation(1.f);
-	
-		//  스킬브라우저 UI Remove
-		if (SkillBrowser)
-			SkillBrowser->SetVisibility(ESlateVisibility::Hidden);
-
-		// 기존 HUD Add
-		if (HUD)
-			HUD->SetVisibility(ESlateVisibility::Visible);
-
-		DpGetPlayer()->CanCameraControl = true;
-		
-		OnSkillBrowser = false;
-	}
-}
-
-/*void APlayerControllerBase::SetOffSkillBrowser()
-{
-	if(OnSkillBrowser)
-	{
-		// 시간 재게
-		GetWorldSettings()->SetTimeDilation(1.f);
-	
-		//  스킬브라우저 UI Remove
-		if (SkillBrowser)
-			SkillBrowser->SetVisibility(ESlateVisibility::Hidden);
-
-		// 기존 HUD Add
-		if (HUD)
-			HUD->SetVisibility(ESlateVisibility::Visible);
-	}
-}*/
-
+// =============================================================
+// 스킬 업그레이드 UI를 화면에 띄운다
+// =============================================================
 void APlayerControllerBase::SkillUpgradeEventStart()
 {
+	ACharacterPC *character = Cast<ACharacterPC>(GetCharacter());
+	if (character == nullptr)
+		return;
+	
 	// 시간 정지
 	GetWorldSettings()->SetTimeDilation(0.f);
 	
@@ -342,11 +341,18 @@ void APlayerControllerBase::SkillUpgradeEventStart()
 	GetViewportSize(ScreenWidth, ScreenHeight);
 	SetMouseLocation(ScreenWidth * 0.5f, ScreenHeight * 0.5f);
 	bShowMouseCursor = true;
-	DpGetPlayer()->CanCameraControl = false;
+	character->CanCameraControl = false;
 }
 
+// =============================================================
+// 스킬 업그레이드 UI를 화면에서 제거한다.
+// =============================================================
 void APlayerControllerBase::SkillUpgradeEventEnd()
 {
+	ACharacterPC *character = Cast<ACharacterPC>(GetCharacter());
+	if (character == nullptr)
+		return;
+	
 	// 시간 재게
 	GetWorldSettings()->SetTimeDilation(1.f);
 	
@@ -360,17 +366,15 @@ void APlayerControllerBase::SkillUpgradeEventEnd()
 	
 	// 마우스 커서 off //키보드 입력 on
 	bShowMouseCursor = false;
-	DpGetPlayer()->CanCameraControl = true;
+	character->CanCameraControl = true;
 }
 
-void APlayerControllerBase::ThisPause()
-{
-	
-}
-
+// =============================================================
+// (임시) 블루프린트에서 활용할 UI컨트롤을 위한 시간, 컨트롤 제어
+// =============================================================
 void APlayerControllerBase::SetUIControlOnForStartMenu()
 {	
-// 시간 정지
+	// 시간 정지
  	GetWorldSettings()->SetTimeDilation(0.f);
  	
  	// 마우스 위치 세팅 // 마우스 커서 on //키보드 입력 off
@@ -381,8 +385,15 @@ void APlayerControllerBase::SetUIControlOnForStartMenu()
  	bShowMouseCursor = true;
 }
 
+// =============================================================
+// (임시) 블루프린트에서 활용할 UI컨트롤을 위한 시간, 컨트롤 제어
+// =============================================================
 void APlayerControllerBase::SetUIControlOn()
 {
+	ACharacterPC *character = Cast<ACharacterPC>(GetCharacter());
+	if (character == nullptr)
+		return;
+	
 	// 시간 정지
 	GetWorldSettings()->SetTimeDilation(0.f);
 	
@@ -392,19 +403,29 @@ void APlayerControllerBase::SetUIControlOn()
 	GetViewportSize(ScreenWidth, ScreenHeight);
 	SetMouseLocation(ScreenWidth * 0.5f, ScreenHeight * 0.5f);
 	bShowMouseCursor = true;
-	DpGetPlayer()->CanCameraControl = false;
+	character->CanCameraControl = false;
 }
 
+// =============================================================
+// (임시) 블루프린트에서 활용할 UI컨트롤을 위한 시간, 컨트롤 제어
+// =============================================================
 void APlayerControllerBase::SetUIControlOff()
 {
+	ACharacterPC *character = Cast<ACharacterPC>(GetCharacter());
+	if (character == nullptr)
+		return;
+	
 	// 시간 재게
 	GetWorldSettings()->SetTimeDilation(1.f);
 
 	// 마우스 커서 off //키보드 입력 on
 	bShowMouseCursor = false;
-	DpGetPlayer()->CanCameraControl = true;
+	character->CanCameraControl = true;
 }
 
+// =============================================================
+// (임시) 게임이 종료되었을 때 띄울 UI 작업 전개
+// =============================================================
 void APlayerControllerBase::SetEndUI()
 {
 	if(EndUIClass)

@@ -33,7 +33,7 @@ void USkillSoldierQ::SkillTriggered()
 	// 쿨타임!!!!!!!!!!!!!!!!!! && 스킬플레이타임
 	CoolTimeHandler->SetCoolTime(CoolTime - CoolDown);
 	ownerPawn->SkillActivating[EAbilityType::SkillQ] = true;
-	DpGetWorld()->GetTimerManager().SetTimer(
+	GetWorld()->GetTimerManager().SetTimer(
 	PlaySkillTHandle, [this]()
 	{ Cast<ACharacterPC>(GetOwner())->SkillActivating[EAbilityType::SkillQ] = false; },
 	SkillPlayTime, false);
@@ -77,7 +77,7 @@ void USkillSoldierQ::Shot()
 		case 0 :
 			// 투사체1
 			SpawnTransform = FTransform( FRotator(spawnPitch.Pitch, shotRotation.Yaw, 0), shotLocation);
-			Projectile1 = DpGetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
+			Projectile1 = GetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
 
 			Projectile1->Damage += 10 * ownerPawn->PCSkillManager.SoldierSkillQUpgradeType[ESoldierSkillQUpgradeType::DamageUp];
 
@@ -87,7 +87,7 @@ void USkillSoldierQ::Shot()
 		case 1 :
 			// 투사체1
 			SpawnTransform = FTransform( FRotator(spawnPitch.Pitch, shotRotation.Yaw - 10, 0), shotLocation);
-			Projectile1 = DpGetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
+			Projectile1 = GetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
 
 			Projectile1->Damage += 10 * ownerPawn->PCSkillManager.SoldierSkillQUpgradeType[ESoldierSkillQUpgradeType::DamageUp];
 
@@ -96,7 +96,7 @@ void USkillSoldierQ::Shot()
 
 			// 투사체2
 			SpawnTransform = FTransform( FRotator(spawnPitch.Pitch, shotRotation.Yaw + 10, 0), shotLocation);
-			Projectile2 = DpGetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
+			Projectile2 = GetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
 
 			Projectile2->Damage += 10 * ownerPawn->PCSkillManager.SoldierSkillQUpgradeType[ESoldierSkillQUpgradeType::DamageUp];
 
@@ -106,7 +106,7 @@ void USkillSoldierQ::Shot()
 		case 2 :
 			// 투사체1
 			SpawnTransform = FTransform( FRotator(spawnPitch.Pitch, shotRotation.Yaw, 0), shotLocation);
-			Projectile1 = DpGetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
+			Projectile1 = GetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
 
 			Projectile1->Damage += 10 * ownerPawn->PCSkillManager.SoldierSkillQUpgradeType[ESoldierSkillQUpgradeType::DamageUp];
 
@@ -115,7 +115,7 @@ void USkillSoldierQ::Shot()
 
 			// 투사체2
 			SpawnTransform = FTransform( FRotator(spawnPitch.Pitch, shotRotation.Yaw - 20, 0), shotLocation);
-			Projectile2 = DpGetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
+			Projectile2 = GetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
 
 			Projectile2->Damage += 10 * ownerPawn->PCSkillManager.SoldierSkillQUpgradeType[ESoldierSkillQUpgradeType::DamageUp];
 
@@ -124,7 +124,7 @@ void USkillSoldierQ::Shot()
 
 			// 투사체3
 			SpawnTransform = FTransform( FRotator(spawnPitch.Pitch, shotRotation.Yaw + 20, 0), shotLocation);
-			Projectile3 = DpGetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
+			Projectile3 = GetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
 
 			Projectile3->Damage += 10 * ownerPawn->PCSkillManager.SoldierSkillQUpgradeType[ESoldierSkillQUpgradeType::DamageUp];
 
@@ -134,7 +134,7 @@ void USkillSoldierQ::Shot()
 		default :
 			// 투사체1
 			SpawnTransform = FTransform( FRotator(spawnPitch.Pitch, shotRotation.Yaw, 0), shotLocation);
-			Projectile1 = DpGetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
+			Projectile1 = GetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
 
 			Projectile1->Damage += 10 * ownerPawn->PCSkillManager.SoldierSkillQUpgradeType[ESoldierSkillQUpgradeType::DamageUp];
 
@@ -143,7 +143,7 @@ void USkillSoldierQ::Shot()
 
 			// 투사체2
 			SpawnTransform = FTransform( FRotator(spawnPitch.Pitch, shotRotation.Yaw - 20, 0), shotLocation);
-			Projectile2 = DpGetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
+			Projectile2 = GetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
 
 			Projectile2->Damage += 10 * ownerPawn->PCSkillManager.SoldierSkillQUpgradeType[ESoldierSkillQUpgradeType::DamageUp];
 
@@ -152,7 +152,7 @@ void USkillSoldierQ::Shot()
 
 			// 투사체3
 			SpawnTransform = FTransform( FRotator(spawnPitch.Pitch, shotRotation.Yaw + 20, 0), shotLocation);
-			Projectile3 = DpGetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
+			Projectile3 = GetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
 
 			Projectile3->Damage += 10 * ownerPawn->PCSkillManager.SoldierSkillQUpgradeType[ESoldierSkillQUpgradeType::DamageUp];
 
@@ -161,7 +161,7 @@ void USkillSoldierQ::Shot()
 
 			// 투사체4
 			SpawnTransform = FTransform( FRotator(spawnPitch.Pitch + 15, shotRotation.Yaw, 0), shotLocation);
-			Projectile4 = DpGetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
+			Projectile4 = GetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
 
 			Projectile4->Damage += 10 * ownerPawn->PCSkillManager.SoldierSkillQUpgradeType[ESoldierSkillQUpgradeType::DamageUp];
 

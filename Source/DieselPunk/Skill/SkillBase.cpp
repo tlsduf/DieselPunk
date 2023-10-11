@@ -22,7 +22,9 @@ void USkillBase::BeginPlay()
 
 void USkillBase::BeginDestroy()
 {
-	DpDelete(CoolTimeHandler);
+	if(CoolTimeHandler)
+		delete CoolTimeHandler;
+	CoolTimeHandler = nullptr;
 	
 	Super::BeginDestroy();
 }

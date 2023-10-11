@@ -116,8 +116,6 @@ private:
 	UPROPERTY()
 	UUserWidget* HUD;
 	UPROPERTY()
-	UUserWidget* SkillBrowser;
-	UPROPERTY()
 	UUserWidget* SkillUpgradeUI;
 	UPROPERTY()
     UUserWidget* EndUI;
@@ -127,22 +125,23 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> HUDClass;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> SkillUpgradeUIClass;
 	
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> EndUIClass;
 
 public:
-	//임시 스킬정보창
-	bool OnSkillBrowser = false;
-	void SetOnSkillBrowser();
-	//void SetOffSkillBrowser();
-	
+	// 스킬 업그레이드를 하기 위한 위젯 표시/비표시 함수 (임시로 작성된 것이며 추후 재작업 예정)
+
+	// 스킬 업그레이드 UI를 화면에 띄운다
 	void SkillUpgradeEventStart();
+	// 스킬 업그레이드 UI를 화면에서 제거한다.
 	void SkillUpgradeEventEnd();
 
-	UFUNCTION(BlueprintCallable)
-	void ThisPause();
-
+	
+	// (임시) 블루프린트에서 활용할 UI컨트롤을 위한 시간, 컨트롤 제어
 	UFUNCTION(BlueprintCallable)
 	void SetUIControlOnForStartMenu();
 	
@@ -152,5 +151,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetUIControlOff();
 
+	// (임시) 게임이 종료되었을 때 띄울 UI 작업 전개
 	void SetEndUI();
 };

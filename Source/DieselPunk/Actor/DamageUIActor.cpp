@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "DamageUIActor.h"
-#include "../Manager/UIManager.h"
 #include "../UI/HUD/DamageUI.h"
 
 #include <Components/WidgetComponent.h>
@@ -31,7 +30,31 @@ void ADamageUIActor::CreateDamageUI()
 	if( DamageUI.IsValid() )
 		return;
 
-	DamageUI = GetUIManager().CreateUnmanagedUI< UDamageUI >( TEXT( "HUD/DamageUI" ) );
+	FString inPath = TEXT( "/Script/UMGEditor.WidgetBlueprint'/Game/GuardiansW/UI/Widgets/%HUD/%DamageUI.%DamageUI'" );
+	UClass* widgetClass = ConstructorHelpersInternal::FindOrLoadClass( inPath, UUserWidget::StaticClass() );
+	if(!widgetClass)
+		return;
+
+	// 월드 get
+	FWorldContext* world = GEngine->GetWorldContextFromGameViewport( GEngine->GameViewport );
+	if ( !world )
+		return ;
+	
+	UUserWidget* userWidget = CreateWidget<UUserWidget>( world->World(), widgetClass );
+	if ( userWidget != nullptr )
+	{
+		userWidget->AddToRoot();
+
+		UUserWidgetBase* userWidgetBase = Cast<UUserWidgetBase>( userWidget );
+		if ( userWidgetBase )
+			userWidgetBase->OnCreated();
+	}
+	UDamageUI* myWidget = Cast<UDamageUI>(userWidget);
+    if(myWidget)
+    	myWidget->RemoveFromRoot();
+    		
+    DamageUI = myWidget;
+	
 	if ( !WidgetComp || !DamageUI.IsValid() )
 		return;
 
@@ -55,17 +78,13 @@ void ADamageUIActor::BeginPlay()
 	CreateDamageUI();
 	XVelocity = GetRandomNumber(-100, 100);
 	YVelocity = GetRandomNumber(-100, 100);
-	StartAnimator();
 	GetWorldTimerManager().SetTimer(DestroyTHandle, this, &ADamageUIActor::SelfDestroy, LifeTime, false);
 }
 
 void ADamageUIActor::Tick(float InDeltaTime)
 {
 	Super::Tick(InDeltaTime);
-
-	// AccelAnimator 업데이트
-	XYAccelAnimator.Update(InDeltaTime);
-	ZAccelAnimator.Update(InDeltaTime);
+	
 
 	// 위치 업데이트
 	FVector currentLocation = GetActorLocation();
@@ -75,41 +94,7 @@ void ADamageUIActor::Tick(float InDeltaTime)
 	SetActorLocation(currentLocation);
 }
 
-// AccelAnimator 애니메이터
-void ADamageUIActor::StartAnimator()
-{
-	// XY 애니메이터
-	AnimatorParam XYparam;
-	XYparam.AnimType = EAnimType::CubicEaseIn;
-	XYparam.StartValue = 1.f;
-	XYparam.EndValue = 0.f;
-	XYparam.DurationTime = LifeTime;
 
-	TWeakObjectPtr<ADamageUIActor> thisPtr = this;
-	XYparam.DurationFunc = [thisPtr](float InCurValue)
-	{
-		if(thisPtr.IsValid())
-			thisPtr->XYAccel = InCurValue;
-	};
-
-	XYAccelAnimator.Start(XYparam);
-
-	// Z 애니메이터
-	AnimatorParam Zparam;
-	Zparam.AnimType = EAnimType::QuadraticEaseOut;
-	Zparam.StartValue = 1.f;
-	Zparam.EndValue = 0.f;
-	Zparam.DurationTime = LifeTime;
-
-	TWeakObjectPtr<ADamageUIActor> thisPtr2 = this;
-	Zparam.DurationFunc = [thisPtr2](float InCurValue)
-	{
-		if(thisPtr2.IsValid())
-			thisPtr2->ZAccel = InCurValue;
-	};
-
-	ZAccelAnimator.Start(Zparam);
-}
 
 // LifeTime 후 파괴됩니다.
 void ADamageUIActor::SelfDestroy()

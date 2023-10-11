@@ -2,8 +2,6 @@
 
 #include "ProjectileBase.h"
 #include "../Util/UtilCollision.h"
-#include "DieselPunk/Util/UtilEffect.h"
-#include "../Manager/ObjectManager.h"
 #include "ProjectilePathingSpline.h"
 
 #include <NiagaraFunctionLibrary.h>
@@ -46,9 +44,9 @@ void AProjectileBase::BeginPlay()
 	// 콜리전 반응 설정
 	SetCapsuleCollisionResponses();
 
-	// 사운드, 이펙트 재생
-	if (ShotEffect)
-		UtilEffect::SpawnParticleComponent(ShotEffect, GetActorLocation(), GetActorRotation(), ShotEffectScale);
+	// [TODO]사운드, 이펙트 재생
+	//if (ShotEffect)
+		
 	if (ShotSound)
 		UGameplayStatics::PlaySoundAtLocation(this, ShotSound, GetActorLocation());
 
@@ -75,8 +73,6 @@ void AProjectileBase::BeginPlay()
 	{
 		ProjectilePathingSpline = GetWorld()->SpawnActor<AProjectilePathingSpline>(ProjectilePathingSplineClass, GetActorLocation(), GetActorRotation());
 		SplineLength = ProjectilePathingSpline->_GetSplineLength();
-		// ProjectilePathingSpline 애니메이터
-		StartAnimator();
 	}
 }
 
@@ -93,9 +89,6 @@ void AProjectileBase::Tick(float DeltaTime)
 
 	if(bPathingSpline && ProjectilePathingSplineClass)
 	{
-		// ProjectilePathingSpline 애니메이터
-		AlphaAnimator.Update(DeltaTime);
-
 		// 투사체의 위치와 방향을 애니메이팅된 알파로 세팅합니다.
 		SetActorLocation(ProjectilePathingSpline->_GetLocationAtDistanceAlongSpline(Alpha * SplineLength, ESplineCoordinateSpace::Type::World));
 		SetActorRotation(ProjectilePathingSpline->_GetRotationAtDistanceAlongSpline(Alpha * SplineLength, ESplineCoordinateSpace::Type::World));
@@ -182,8 +175,9 @@ void AProjectileBase::OneTickTask()
 	if(ownerController == nullptr)
 		return;
 	
-	if (HitEffect)
-		UtilEffect::SpawnParticleComponent(HitEffect, GetActorLocation(), GetActorRotation(), HitEffectScale);
+	// [TODO]사운드, 이펙트 재생
+	//if (HitEffect)
+
 	
 	TArray<FHitResult> sweepResults;
 	FVector startLocation = GetActorLocation() + GetActorForwardVector() * AttackStartPoint;
@@ -216,9 +210,9 @@ void AProjectileBase::_OnHit(UPrimitiveComponent* InHitComp, AActor* InOtherActo
 	if(ownerController == nullptr)
 		return;
 
-	// 이펙트
-	if (HitEffect)
-		UtilEffect::SpawnParticleComponent(HitEffect, GetActorLocation(), GetActorRotation(), HitEffectScale);
+	// [TODO]사운드, 이펙트 재생
+	//if (HitEffect)
+
 	if (HitSound)
 		UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetActorLocation());
 
@@ -278,9 +272,9 @@ void AProjectileBase::_BeginOverlapEvent(UPrimitiveComponent* InOverlappedCompon
 	if(ownerController == nullptr)
 		return;
 
-	// 이펙트
-	if (HitEffect)
-		UtilEffect::SpawnParticleComponent(HitEffect, GetActorLocation(), GetActorRotation(), HitEffectScale);
+	// [TODO]사운드, 이펙트 재생
+	//if (HitEffect)
+	
 	if (HitSound)
 		UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetActorLocation());
 
@@ -326,11 +320,11 @@ void AProjectileBase::SetDamage(float inDamage)
 // 가장 가까운 액터가 HomingRange 보다 가까울 경우, 그 액터를 HomingTargetComponent로 지정한다.
 void AProjectileBase::SetHomingTargetActor()
 {
-	// 가장 가까운 액터를 반환한다.
-	AActor* homingActor = GetObjectManager().GetNearestActor(this);
+	/*// [TODO]가장 가까운 액터를 반환한다.
+	AActor* homingActor;
 	
 	// if 액터가 HominRange 보다 가까이 있을 경우, 그 액터를 HomingTargetComponent로 지정한다. else 해제, 속도초기화
-	if(GetDistanceTo(homingActor) < HomingRange && homingActor != Cast<AActor>(DpGetPlayerController()->GetPawn()))
+	if(GetDistanceTo(homingActor) < HomingRange && homingActor != Cast<AActor>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn()))
 	{
 		ProjectileMovementComponent->HomingTargetComponent = homingActor->GetRootComponent();
 	}
@@ -338,27 +332,9 @@ void AProjectileBase::SetHomingTargetActor()
 	{
 		ProjectileMovementComponent->InitialSpeed = ProjectileMovementComponent->MaxSpeed;
 		ProjectileMovementComponent->HomingTargetComponent = nullptr;
-	}
+	}*/
 }
 
-// ProjectilePathingSpline 애니메이터
-void AProjectileBase::StartAnimator()
-{
-	AnimatorParam param;
-	param.AnimType = EAnimType::Linear;
-	param.StartValue = 0.f;
-	param.EndValue = 1.f;
-	param.DurationTime = Duration;
-
-	TWeakObjectPtr<AProjectileBase> thisPtr = this;
-	param.DurationFunc = [thisPtr](float InCurValue)
-	{
-		if(thisPtr.IsValid())
-			thisPtr->Alpha = InCurValue;
-	};
-
-	AlphaAnimator.Start(param);
-}
 
 void AProjectileBase::SetUpdateRotation(const FRotator& inRotate)
 {

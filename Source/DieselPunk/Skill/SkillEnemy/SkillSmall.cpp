@@ -38,7 +38,7 @@ void USkillSmall::SkillTriggered()
 	{
 		ShotLocation = ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket");
 		FTransform SpawnTransform = FTransform( ShotRotation, ShotLocation);
-		ProjectileBase1 = DpGetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileBaseClass, SpawnTransform, GetOwner());
+		ProjectileBase1 = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileBaseClass, SpawnTransform, GetOwner());
 		ProjectileBase1->FinishSpawning(SpawnTransform);
 
 		ShotLocation = ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket2");
@@ -49,7 +49,7 @@ void USkillSmall::SkillTriggered()
 			if(thisPtr.IsValid())
 			{
 				FTransform SpawnTransform = FTransform( thisPtr->ShotRotation, thisPtr->ShotLocation);
-				thisPtr->ProjectileBase2 = DpGetWorld()->SpawnActorDeferred<AProjectileBase>(thisPtr->ProjectileBaseClass, SpawnTransform, thisPtr->GetOwner());
+				thisPtr->ProjectileBase2 = thisPtr->GetWorld()->SpawnActorDeferred<AProjectileBase>(thisPtr->ProjectileBaseClass, SpawnTransform, thisPtr->GetOwner());
 				thisPtr->ProjectileBase2->FinishSpawning(SpawnTransform);
 			}
 		},
@@ -63,7 +63,7 @@ void USkillSmall::SkillTriggered()
 			if(thisPtr.IsValid())
 			{
 				FTransform SpawnTransform = FTransform( thisPtr->ShotRotation, thisPtr->ShotLocation);
-				thisPtr->ProjectileBase2 = DpGetWorld()->SpawnActorDeferred<AProjectileBase>(thisPtr->ProjectileBaseClass, SpawnTransform, thisPtr->GetOwner());
+				thisPtr->ProjectileBase2 = thisPtr->GetWorld()->SpawnActorDeferred<AProjectileBase>(thisPtr->ProjectileBaseClass, SpawnTransform, thisPtr->GetOwner());
 				thisPtr->ProjectileBase2->FinishSpawning(SpawnTransform);
 			}
 		},
@@ -77,7 +77,7 @@ void USkillSmall::SkillTriggered()
 			if(thisPtr.IsValid())
 			{
 				FTransform SpawnTransform = FTransform( thisPtr->ShotRotation, thisPtr->ShotLocation);
-				thisPtr->ProjectileBase2 = DpGetWorld()->SpawnActorDeferred<AProjectileBase>(thisPtr->ProjectileBaseClass, SpawnTransform, thisPtr->GetOwner());
+				thisPtr->ProjectileBase2 = thisPtr->GetWorld()->SpawnActorDeferred<AProjectileBase>(thisPtr->ProjectileBaseClass, SpawnTransform, thisPtr->GetOwner());
 				thisPtr->ProjectileBase2->FinishSpawning(SpawnTransform);
 			}
 		},

@@ -150,7 +150,7 @@ void USkillSoldierR::AfterLogic()
 		if(ProjectileClass)
 		{
 			FTransform SpawnTransform( FRotator(0,0, 0), HitResult.Location);
-			Projectile = DpGetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
+			Projectile = GetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
 
 			Projectile->Damage += 10 * ownerPawn->PCSkillManager.SoldierSkillRUpgradeType[ESoldierSkillRUpgradeType::CoolDown];
 			Projectile->Stack = 15;

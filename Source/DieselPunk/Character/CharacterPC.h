@@ -25,10 +25,6 @@ class ACharacterPC : public ACharacterBase
 
 
 public:
-	//TODO"현재 레벨에 미리 배치되어있는 액터는 데이터테이블 정보를 알지 못해서 일단 임시 처리 추후 관리방법 논의 필요"
-	UPROPERTY( EditAnywhere, Category = "Test" )
-	int32 TestInfoId;
-	
 	// 스킬을 할당받기 위한 배열입니다. (BP에서도 받을 수 있도록 TSubClassOf로 하였습니다)
 	UPROPERTY(EditAnywhere, Category = Skill)
 	TMap<EAbilityType, TSubclassOf<USkillBase>> SkillInfos;
@@ -47,9 +43,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent) override;
-
-	// 상태 UI 위젯을 생성한다.
-	virtual void CreateStatusUI() override;
 	
 	// 런타임에 스킬들을 인스턴스화 시킵니다. PlayerController에서 Pose시 호출합니다.
 	void InitSkills();
@@ -125,9 +118,9 @@ public:
 	
 	// 체력 퍼센테이지 반환 애니메이팅
 	void _UpdateHp(int InCurHp, int InMaxHp);
-	Animator AnimatorHealthPercent;
+	//Animator AnimatorHealthPercent;
 	float TempPercent;
-	Animator AnimatorHealthPercentAfterImage;
+	//Animator AnimatorHealthPercentAfterImage;
 	float TempPercentAfterImage;
 
 	UFUNCTION(BlueprintPure)

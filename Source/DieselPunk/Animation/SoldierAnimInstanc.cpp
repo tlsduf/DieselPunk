@@ -3,7 +3,6 @@
 
 #include "SoldierAnimInstance.h"
 
-#include "../Util/UtilEnum.h"
 #include "../Skill/SkillSoldier/SkillSoldierQ.h"
 #include "../Character/CharacterPC.h"
 
@@ -11,7 +10,7 @@
 
 
 USoldierAnimInstance::USoldierAnimInstance()
-	:ShiftMontage(nullptr), SkillQMontage(nullptr), SkillEMontage(nullptr), SkillRMontage(nullptr), GunRecoilAlpha(0.f)
+	:ShiftMontage(nullptr), SkillQMontage(nullptr), SkillEMontage(nullptr), SkillRMontage(nullptr)
 {
 }
 // 틱마다 호출되는 함수
@@ -19,7 +18,6 @@ void USoldierAnimInstance::NativeUpdateAnimation(float InDeltaSeconds)
 {
 	Super::NativeUpdateAnimation(InDeltaSeconds);
 
-	AlphaAnimatorGunRecoil.Update(InDeltaSeconds);
 }
 
 // AbilityType에 따른 몽타주를 반환합니다. None입력시 기본 몽타주 반환
@@ -29,10 +27,34 @@ UAnimMontage* USoldierAnimInstance::GetMontageByAbilityType(EAbilityType InAbili
 	{
 		case EAbilityType::MouseLM:			return nullptr;
 		case EAbilityType::MouseRM:			return nullptr;
-		case EAbilityType::Shift:			return LoadSoftObject<UAnimMontage>(ShiftMontage);
-		case EAbilityType::SkillQ:			return LoadSoftObject<UAnimMontage>(SkillQMontage);
-		case EAbilityType::SkillE:			return LoadSoftObject<UAnimMontage>(SkillEMontage);
-		case EAbilityType::SkillR:			return LoadSoftObject<UAnimMontage>(SkillRMontage);
+		case EAbilityType::Shift:
+			{
+				FSoftObjectPath path = ShiftMontage.ToSoftObjectPath();
+				if(!path.IsValid())
+					return nullptr;
+				return LoadObject<UAnimMontage>(nullptr, *path.ToString());
+			}
+		case EAbilityType::SkillQ:			
+			{
+				FSoftObjectPath path = SkillQMontage.ToSoftObjectPath();
+				if(!path.IsValid())
+					return nullptr;
+				return LoadObject<UAnimMontage>(nullptr, *path.ToString());
+			}
+		case EAbilityType::SkillE:			
+			{
+				FSoftObjectPath path = SkillEMontage.ToSoftObjectPath();
+				if(!path.IsValid())
+					return nullptr;
+				return LoadObject<UAnimMontage>(nullptr, *path.ToString());
+			}
+		case EAbilityType::SkillR:			
+			{
+				FSoftObjectPath path = SkillRMontage.ToSoftObjectPath();
+				if(!path.IsValid())
+					return nullptr;
+				return LoadObject<UAnimMontage>(nullptr, *path.ToString());
+			}
 		case EAbilityType::None:			return nullptr;
 	}
 
@@ -47,7 +69,7 @@ float USoldierAnimInstance::PlayMontage(EAbilityType InAbilityType, ESoldierSkil
 		return 0.f;
 
 	//TODO InSectionType 고쳐야됨 근데 Default로 읽어지긴하는듯?
-	FName sectionName = *ENUM_TO_STRING( ESoldierSkillMontageType, InSectionType );
+	FName sectionName = "Default";
 	Montage_Play(animMontage, InPlayRate);
 	Montage_JumpToSection(sectionName, animMontage);
 	
@@ -79,35 +101,6 @@ void USoldierAnimInstance::ResumeMontage(EAbilityType InAbilityType)
 	if(!animMontage)
 		return;
 	Montage_Resume(animMontage);
-}
-
-void USoldierAnimInstance::RotateGunRecoil()
-{
-	AnimatorParam param;
-	param.AnimType = EAnimType::QuadraticEaseInOut;
-	param.StartValue = 1.f;
-	param.EndValue = 0.f;
-	param.DurationTime = 0.3f;
-
-	TWeakObjectPtr<USoldierAnimInstance> thisPtr = this;
-	param.DurationFunc = [thisPtr](float InCurValue)
-	{
-		if(thisPtr.IsValid())
-			thisPtr->GunRecoilAlpha = InCurValue;
-	};
-	
-	AlphaAnimatorGunRecoil.Start(param);
-}
-
-void USoldierAnimInstance::GunRecoil()
-{
-	GunRecoilBool = 1;
-	TWeakObjectPtr<USoldierAnimInstance> thisPtr = this;
-	GetWorld()->GetTimerManager().SetTimerForNextTick([thisPtr]()
-	{
-		if(thisPtr.IsValid())
-			thisPtr->GunRecoilBool = 0;
-	});
 }
 
 void USoldierAnimInstance::AnimNotify_NotifySkillQ() const

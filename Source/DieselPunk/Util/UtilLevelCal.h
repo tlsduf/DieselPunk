@@ -4,6 +4,8 @@
 #pragma once
 
 
+// (임시) 레벨 간단하게 구현하기 위한 정보입니다. 레벨당 경험치, 레벨당 체력 등
+
 namespace UtilLevelCal
 {
 	FORCEINLINE int LevelCal(int inExp)

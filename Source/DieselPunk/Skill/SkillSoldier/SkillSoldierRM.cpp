@@ -35,7 +35,7 @@ void USkillSoldierRM::SkillTriggered()
 	// 쿨타임!!!!!!!!!!!!!!!!!!
 	CoolTimeHandler->SetCoolTime(CoolTime - CoolDown);
 	ownerPawn->SkillActivating[EAbilityType::MouseRM] = true;
-	DpGetWorld()->GetTimerManager().SetTimer(
+	GetWorld()->GetTimerManager().SetTimer(
 	PlaySkillTHandle, [this]()
 	{ Cast<ACharacterPC>(GetOwner())->SkillActivating[EAbilityType::MouseRM] = false; },
 	SkillPlayTime, false);
@@ -51,7 +51,7 @@ void USkillSoldierRM::SkillTriggered()
 	if(ProjectileClass)
 	{
 		FTransform SpawnTransform( shotRotation, shotLocation);
-		Projectile = DpGetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
+		Projectile = GetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
 		Projectile->SetUpdateRotation(FRotator(0,0,10));
 		Projectile->IsStackBoom = true;
 		

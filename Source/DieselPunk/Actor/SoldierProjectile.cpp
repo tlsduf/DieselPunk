@@ -15,7 +15,7 @@ void ASoldierProjectile::OneTickTask()
 {
 	Super::OneTickTask();
 
-	auto ownerPawn = Cast<APawn>(DpGetPlayer());
+	auto ownerPawn = Cast<APawn>(GetOwner());
 	if(ownerPawn == nullptr)
 		return;
 	
@@ -40,7 +40,7 @@ void ASoldierProjectile::_OnHit(UPrimitiveComponent* InHitComp, AActor* InOtherA
 	Super::_OnHit(InHitComp, InOtherActor, InOtherComp, InNormalImpulse, InHitResult);
 
 	
-	auto ownerPawn = Cast<APawn>(DpGetPlayer());
+	auto ownerPawn = Cast<APawn>(GetOwner());
 	if(ownerPawn == nullptr)
 		return;
 	auto ownerController = ownerPawn->GetController();
@@ -88,7 +88,7 @@ void ASoldierProjectile::_BeginOverlapEvent(UPrimitiveComponent* InHitComp, AAct
 {
 	Super::_BeginOverlapEvent(InHitComp, InOtherActor, InOtherComp, InOtherBodyIndex, InbFromSweep, InSweepResult);
 	
-	auto ownerPawn = Cast<APawn>(DpGetPlayer());
+	auto ownerPawn = Cast<APawn>(GetOwner());
 	if(ownerPawn == nullptr)
 		return;
 	

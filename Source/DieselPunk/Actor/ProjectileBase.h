@@ -104,7 +104,6 @@ public:
 
 	float SplineLength;						// 스플라인의 길이
 	float Alpha;							// 투사체 스플라인 위치 알파
-	Animator AlphaAnimator;					// 투사체의 스플라인 위치를 애니메이팅 합니다.
 
 	// =================================================================================================
 	// 유틸 및 이펙트
@@ -177,9 +176,6 @@ public:
 
 	// 가장 가까운 액터가 HomingRange 보다 가까울 경우, 그 액터를 HomingTargetComponent로 지정한다.
 	void SetHomingTargetActor();
-	
-	// ProjectilePathingSpline 애니메이터
-	void StartAnimator();
 
 	// 투사체의 업데이트 로테이션을 셋합니다. 틱에서 세팅된 로테이션값 만큼 업데이트합니다.
 	void SetUpdateRotation(const FRotator& inRotate);

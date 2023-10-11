@@ -13,7 +13,6 @@ AProjectilePathingSpline::AProjectilePathingSpline()
 	SplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
 	if(!SplineComponent)
 	{
-		LOG_SCREEN_COLOR(FColor::Red, TEXT("SplineComponent가 없습니다."))
 		return;
 	}
 	SplineComponent->SetupAttachment(RootComponent);

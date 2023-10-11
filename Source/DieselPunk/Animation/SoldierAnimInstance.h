@@ -28,18 +28,6 @@ private:
 	// 캐릭터가 사용할 애님 몽타주 SkillR
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 	TSoftObjectPtr<UAnimMontage> SkillRMontage;
-	
-	// HandL 본 회전 블렌딩 알파
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
-	float GunRecoilAlpha;
-
-	// HandL 알파 값을 애니메이팅 합니다.
-	Animator AlphaAnimatorGunRecoil;
-	
-	// HandL 본 회전 블렌딩 알파
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
-	bool GunRecoilBool = 0;
-	
 
 public:
 	// 생성자
@@ -56,11 +44,8 @@ public:
 	void PauseMontage(EAbilityType InAbilityType);
 	// 몽타주를 다시 재생합니다.
 	void ResumeMontage(EAbilityType InAbilityType);
-	// 왼쪽 손목 반동재생
-	void RotateGunRecoil();
-	// 임시 반동 애니메이션
-	void GunRecoil();
 
+	
 private:
 	// SkillQ 전용 애님노티파이 입니다. 
 	UFUNCTION()

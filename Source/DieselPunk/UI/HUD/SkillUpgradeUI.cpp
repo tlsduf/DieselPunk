@@ -2,7 +2,6 @@
 
 
 #include "SkillUpgradeUI.h"
-#include "../../Manager/UIManager.h"
 #include "../../Skill/SkillManager.h"
 #include "../../Logic/PlayerControllerBase.h"
 #include "../../Character/CharacterPC.h"
@@ -15,14 +14,6 @@
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(SkillUpgradeUI)
 
-
-// =============================================================
-// UI를 생성한다.
-// =============================================================
-USkillUpgradeUI* USkillUpgradeUI::CreateUI()
-{
-	return GetUIManager().CreateUnmanagedUI< USkillUpgradeUI >( TEXT( "HUD/WBP_SkillUpgradeUI" ) );
-}
 
 // =============================================================
 // 난수값에 따라 위젯을 세팅합니다.
@@ -47,31 +38,7 @@ void USkillUpgradeUI::OnCreated()
 {
 	Super::OnCreated();
 
-	_InitControls();
-}
-
-// =============================================================
-// 소멸자
-// =============================================================
-void USkillUpgradeUI::BeginDestroy()
-{
-	Super::BeginDestroy();
-}
-
-// =============================================================
-// 화면에 보이는 시점에 호출되는 함수
-// =============================================================
-void USkillUpgradeUI::OnAppeared()
-{
-	Super::OnAppeared();
-}
-
-// =============================================================
-// 화면에서 사라지는 시점에 호출되는 함수
-// =============================================================
-void USkillUpgradeUI::OnDisappeared()
-{
-	Super::OnDisappeared();
+	InitWidget();
 }
 
 // =============================================================
@@ -85,25 +52,40 @@ void USkillUpgradeUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 // =============================================================
 // 위젯을 초기화한다.
 // =============================================================
-void USkillUpgradeUI::_InitControls()
+void USkillUpgradeUI::InitWidget()
 {
-	_InitControl( InButton_Left, TEXT( "Button_Left" ) );
-	_InitControl( InText_Skill_Left, TEXT( "Text_Skill_Left" ) );
-	_InitControl( InText_SkillName_Left, TEXT( "Text_SkillName_Left" ) );
-	_InitControl( InText_SkillUpgradeName_Left, TEXT( "Text_SkillUpgradeName_Left" ) );
-	_InitControl( InText_SkillUpgradeExpl_Left, TEXT( "Text_SkillUpgradeExpl_Left" ) );
+	if(Cast<UButton>( GetWidgetFromName("Button_Left")) != nullptr)
+		InButton_Left = Cast<UButton>( GetWidgetFromName("Button_Left"));
+	if(Cast<UTextBlock>( GetWidgetFromName("Text_Skill_Left")) != nullptr)
+		InText_Skill_Left = Cast<UTextBlock>( GetWidgetFromName("Text_Skill_Left"));
+	if(Cast<UTextBlock>( GetWidgetFromName("Text_SkillName_Left")) != nullptr)
+		InText_SkillName_Left = Cast<UTextBlock>( GetWidgetFromName("Text_SkillName_Left"));
+	if(Cast<UTextBlock>( GetWidgetFromName("Text_SkillUpgradeName_Left")) != nullptr)
+		InText_SkillUpgradeName_Left = Cast<UTextBlock>( GetWidgetFromName("Text_SkillUpgradeName_Left"));
+	if(Cast<UTextBlock>( GetWidgetFromName("Text_SkillUpgradeExpl_Left")) != nullptr)
+		InText_SkillUpgradeExpl_Left = Cast<UTextBlock>( GetWidgetFromName("Text_SkillUpgradeExpl_Left"));
 
-	_InitControl( InButton_Middle, TEXT( "Button_Middle" ) );
-	_InitControl( InText_Skill_Middle, TEXT( "Text_Skill_Middle" ) );
-	_InitControl( InText_SkillName_Middle, TEXT( "Text_SkillName_Middle" ) );
-	_InitControl( InText_SkillUpgradeName_Middle, TEXT( "Text_SkillUpgradeName_Middle" ) );
-	_InitControl( InText_SkillUpgradeExpl_Middle, TEXT( "Text_SkillUpgradeExpl_Middle" ) );
+	if(Cast<UButton>( GetWidgetFromName("Button_Middle")) != nullptr)
+		InButton_Middle = Cast<UButton>( GetWidgetFromName("Button_Middle"));
+	if(Cast<UTextBlock>( GetWidgetFromName("Text_Skill_Middle")) != nullptr)
+		InText_Skill_Middle = Cast<UTextBlock>( GetWidgetFromName("Text_Skill_Middle"));
+	if(Cast<UTextBlock>( GetWidgetFromName("Text_SkillName_Middle")) != nullptr)
+		InText_SkillName_Middle = Cast<UTextBlock>( GetWidgetFromName("Text_SkillName_Middle"));
+	if(Cast<UTextBlock>( GetWidgetFromName("Text_SkillUpgradeName_Middle")) != nullptr)
+		InText_SkillUpgradeName_Middle = Cast<UTextBlock>( GetWidgetFromName("Text_SkillUpgradeName_Middle"));
+	if(Cast<UTextBlock>( GetWidgetFromName("Text_SkillUpgradeExpl_Middle")) != nullptr)
+		InText_SkillUpgradeExpl_Middle = Cast<UTextBlock>( GetWidgetFromName("Text_SkillUpgradeExpl_Middle"));
 
-	_InitControl( InButton_Right, TEXT( "Button_Right" ) );
-	_InitControl( InText_Skill_Right, TEXT( "Text_Skill_Right" ) );
-	_InitControl( InText_SkillName_Right, TEXT( "Text_SkillName_Right" ) );
-	_InitControl( InText_SkillUpgradeName_Right, TEXT( "Text_SkillUpgradeName_Right" ) );
-	_InitControl( InText_SkillUpgradeExpl_Right, TEXT( "Text_SkillUpgradeExpl_Right" ) );
+	if(Cast<UButton>( GetWidgetFromName("Button_Right")) != nullptr)
+		InButton_Right = Cast<UButton>( GetWidgetFromName("Button_Right"));
+	if(Cast<UTextBlock>( GetWidgetFromName("Text_Skill_Right")) != nullptr)
+		InText_Skill_Right = Cast<UTextBlock>( GetWidgetFromName("Text_Skill_Right"));
+	if(Cast<UTextBlock>( GetWidgetFromName("Text_SkillName_Right")) != nullptr)
+		InText_SkillName_Right = Cast<UTextBlock>( GetWidgetFromName("Text_SkillName_Right"));
+	if(Cast<UTextBlock>( GetWidgetFromName("Text_SkillUpgradeName_Right")) != nullptr)
+		InText_SkillUpgradeName_Right = Cast<UTextBlock>( GetWidgetFromName("Text_SkillUpgradeName_Right"));
+	if(Cast<UTextBlock>( GetWidgetFromName("Text_SkillUpgradeExpl_Right")) != nullptr)
+		InText_SkillUpgradeName_Right = Cast<UTextBlock>( GetWidgetFromName("Text_SkillUpgradeExpl_Right"));
 
 	// 바인드된 함수 초기화
 	InButton_Left->OnClicked.Clear();
@@ -225,7 +207,7 @@ void USkillUpgradeUI::AfterClick()
 	InButton_Right->OnClicked.Clear();
 
 	// 플레이어 컨트롤러에서 입력 및 UI컨트롤 함수 호출
-	Cast<APlayerControllerBase>(DpGetPlayerController())->SkillUpgradeEventEnd();
+	Cast<APlayerControllerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0))->SkillUpgradeEventEnd();
 }
 
 // =============================================================

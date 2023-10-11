@@ -6,6 +6,7 @@ public class DieselPunk : ModuleRules
 {
 	public DieselPunk(ReadOnlyTargetRules Target) : base(Target)
 	{
+		PrivateDependencyModuleNames.AddRange(new string[] { "AITestSuite" });
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		PrivatePCHHeaderFile = "DieselPunk.h";
 

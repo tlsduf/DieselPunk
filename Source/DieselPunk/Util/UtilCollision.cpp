@@ -7,6 +7,8 @@
 #include <DrawDebugHelpers.h>
 #include <GameFramework/PlayerController.h>
 
+#include "Kismet/GameplayStatics.h"
+
 
 // =============================================================
 /**
@@ -20,8 +22,13 @@
 // =============================================================
 void UtilCollision::CapsuleSweepMulti(TArray<FHitResult>& OutHitResults, const FVector& InStartLocation, const FVector& InEndLocation, const float& InCapsuleRadius, EProjectileOwnerType inProjectileOwnerType, bool InDebugOnOff)
 {
+	// 월드 get
+	FWorldContext* world = GEngine->GetWorldContextFromGameViewport( GEngine->GameViewport );
+	if ( !world )
+		return ;
+	
 	FCollisionQueryParams params;
-	DpGetWorld()->SweepMultiByChannel(
+	world->World()->SweepMultiByChannel(
 		OutHitResults,
 		InStartLocation,
 		InEndLocation,
@@ -40,7 +47,7 @@ void UtilCollision::CapsuleSweepMulti(TArray<FHitResult>& OutHitResults, const F
 		FColor drawColor = !OutHitResults.IsEmpty() ? FColor::Green : FColor::Red;
 		float debugLifeTime = 5.0f;
 
-		DrawDebugCapsule(DpGetWorld(),
+		DrawDebugCapsule(world->World(),
 						 center,
 						 halfHeight,
 						 InCapsuleRadius,
@@ -60,9 +67,13 @@ FHitResult UtilCollision::LineTraceForward(APawn *OwnerPawn, float InAttackRange
 	AController *OwnerController = OwnerPawn->GetController();
 	FHitResult hit;
 	if (OwnerPawn == nullptr)
-	{
 		return hit;
-	}
+	
+	// 월드 get
+	FWorldContext* world = GEngine->GetWorldContextFromGameViewport( GEngine->GameViewport );
+	if ( !world )
+		return hit;
+	
 
 	FVector location;
 	FRotator rotation;
@@ -72,7 +83,7 @@ FHitResult UtilCollision::LineTraceForward(APawn *OwnerPawn, float InAttackRange
 	FCollisionQueryParams params;
 	params.AddIgnoredActor(OwnerPawn);
 
-	bool hasHit = DpGetWorld()->LineTraceSingleByChannel(
+	bool hasHit = world->World()->LineTraceSingleByChannel(
 		hit,
 		location,
 		end,
@@ -91,7 +102,7 @@ FHitResult UtilCollision::LineTraceForward(APawn *OwnerPawn, float InAttackRange
 		FColor drawColor = (hitActor != nullptr && hitActor != OwnerPawn) ? FColor::Green : FColor::Red;
 		float debugLifeTime = 5.0f;
 
-		DrawDebugCapsule(DpGetWorld(),
+		DrawDebugCapsule(world->World(),
 						 center,
 						 halfHeight,
 						 1,
@@ -109,17 +120,23 @@ FHitResult UtilCollision::LineTraceForward(APawn *OwnerPawn, float InAttackRange
 // =============================================================
 FHitResult UtilCollision::GetUnderCursor()
 {
-	FHitResult HitResult;
-	APlayerController *ownerController = DpGetPlayerController();
+	FHitResult hit;
+
+	// 월드 get
+	FWorldContext* world = GEngine->GetWorldContextFromGameViewport( GEngine->GameViewport );
+	if ( !world )
+		return hit;
+	
+	APlayerController *ownerController = UGameplayStatics::GetPlayerController(world->World(), 0);
 	if (ownerController)
 	{
 		ownerController->GetHitResultUnderCursor(
 			ECollisionChannel::ECC_Visibility,
 			false,
-			HitResult);
-		return HitResult;
+			hit);
+		return hit;
 	}
-	return HitResult;
+	return hit;
 }
 
 // =============================================================
@@ -129,8 +146,13 @@ FHitResult UtilCollision::GetZTrace(FVector inStartLocation, int8 inUpDown)
 {
 	FHitResult hit;
 	FCollisionQueryParams params;
+
+	// 월드 get
+	FWorldContext* world = GEngine->GetWorldContextFromGameViewport( GEngine->GameViewport );
+	if ( !world )
+		return hit;
 	
-	bool hasHit = DpGetWorld()->LineTraceSingleByChannel(
+	bool hasHit = world->World()->LineTraceSingleByChannel(
 	hit,
 	inStartLocation,
 	FVector(inStartLocation.X, inStartLocation.Y,inStartLocation.Z + (1000 * inUpDown)),

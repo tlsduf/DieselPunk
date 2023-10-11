@@ -3,7 +3,6 @@
 
 #include "MonsterAnimInstace.h"
 
-#include "../Util/UtilEnum.h"
 #include "../Skill/MeleeAttack.h"
 #include "../Character/CharacterNPC.h"
 
@@ -22,7 +21,11 @@ void UMonsterAnimInstace::NativeUpdateAnimation(float InDeltaSeconds)
 // AbilityType에 따른 몽타주를 반환합니다. None입력시 기본 몽타주 반환
 UAnimMontage* UMonsterAnimInstace::GetMontageByAbilityType(EAbilityType InAbilityType)
 {
-	return LoadSoftObject<UAnimMontage>(MonsterMontage);
+	FSoftObjectPath path = MonsterMontage.ToSoftObjectPath();
+	if(!path.IsValid())
+		return nullptr;
+	
+	return LoadObject<UAnimMontage>(nullptr, *path.ToString());
 }
 
 // 몽타주를 재생합니다.
@@ -33,7 +36,7 @@ float UMonsterAnimInstace::PlayMontage(EAbilityType InAbilityType, EMonsterSkill
 		return 0.f;
 
 	//TODO InSectionType 고쳐야됨 근데 Default로 읽어지긴하는듯?
-	FName sectionName = *ENUM_TO_STRING( EMonsterSkillMontageType, InSectionType );
+	FName sectionName = "Default";
 	Montage_Play(animMontage, InPlayRate);
 	Montage_JumpToSection(sectionName, animMontage);
 	

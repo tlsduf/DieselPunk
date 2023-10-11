@@ -2,8 +2,6 @@
 
 #include "InteractiveActor.h"
 #include "../Character/CharacterPC.h"
-#include "../Util/UtilEffect.h"
-#include "../Manager/UIManager.h"
 #include "../UI/HUD/ItemGuideUI.h"
 
 #include <NiagaraFunctionLibrary.h>
@@ -55,7 +53,32 @@ void AInteractiveActor::CreateDamageUI()
 	if( GuideUI.IsValid() )
 		return;
 
-	GuideUI = GetUIManager().CreateUnmanagedUI< UItemGuideUI >( TEXT( "HUD/WBP_ItemGuideUI" ) );
+	FString inPath = TEXT( "/Script/UMGEditor.WidgetBlueprint'/Game/GuardiansW/UI/Widgets/%HUD/%WBP_ItemGuideUI.%WBP_ItemGuideUI'" );
+	UClass* widgetClass = ConstructorHelpersInternal::FindOrLoadClass( inPath, UUserWidget::StaticClass() );
+	if(!widgetClass)
+		return;
+
+	// 월드 get
+	FWorldContext* world = GEngine->GetWorldContextFromGameViewport( GEngine->GameViewport );
+	if ( !world )
+		return ;
+	
+	UUserWidget* userWidget = CreateWidget<UUserWidget>( world->World(), widgetClass );
+	if ( userWidget != nullptr )
+	{
+		userWidget->AddToRoot();
+
+		UUserWidgetBase* userWidgetBase = Cast<UUserWidgetBase>( userWidget );
+		if ( userWidgetBase )
+			userWidgetBase->OnCreated();
+	}
+	UItemGuideUI* myWidget = Cast<UItemGuideUI>(userWidget);
+	if(myWidget)
+		myWidget->RemoveFromRoot();
+		
+	GuideUI = myWidget;
+
+	
 	if ( !WidgetComp || !GuideUI.IsValid() )
 		return;
 
@@ -122,7 +145,7 @@ void AInteractiveActor::task()
 {
 	// 이펙트, 사운드 출력
 	if (ActionEffect)
-		UtilEffect::SpawnParticleComponent(ActionEffect, GetActorLocation(), GetActorRotation(), HitEffectScale);
+
 	if (ActionParticle)
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ActionParticle,  GetActorLocation());
 	if (ActionSound)

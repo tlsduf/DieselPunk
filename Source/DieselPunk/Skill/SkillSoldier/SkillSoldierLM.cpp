@@ -69,9 +69,6 @@ void USkillSoldierLM::SkillTriggered()
 		USoldierAnimInstance* animInst = Cast<USoldierAnimInstance>(ownerPawn->GetMesh()->GetAnimInstance());
 		if (!animInst)
 			return;
-	
-		animInst->RotateGunRecoil();
-		animInst->GunRecoil();
 
 		//===========================================
 		// * MainAction 2 // Projectile Spawn
@@ -102,7 +99,7 @@ void USkillSoldierLM::SkillTriggered()
 		if(ProjectileEBuffClass && EBuffOn)
 		{
 			FTransform SpawnTransform( shotRotation, shotLocation);
-			Projectile = DpGetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileEBuffClass, SpawnTransform, GetOwner());
+			Projectile = GetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileEBuffClass, SpawnTransform, GetOwner());
 
 			Projectile->Damage += 10 * ownerPawn->PCSkillManager.SoldierSkillEUpgradeType[ESoldierSkillEUpgradeType::DamageUp];;
 			Projectile->Stack = 3 + ownerPawn->PCSkillManager.SoldierSkillEUpgradeType[ESoldierSkillEUpgradeType::StackUp];;

@@ -66,19 +66,6 @@ ACharacterPC::ACharacterPC()
 
 void ACharacterPC::BeginPlay()
 {
-	//InitSkills();
-	
-	if ( InfoId == G_InvalidInfoId )
-	{
-		InfoId = TestInfoId;
-	}
-
-	if ( ObjId == G_InvalidObjId )
-	{
-		//ObjId = GetObjectManager().GeneratorObjId();
-		//GetObjectManager().RegisterObject( ObjId, this );
-	}
-	
 	Super::BeginPlay();
 
 	// 게임시작시 기본체력초기화
@@ -137,10 +124,6 @@ void ACharacterPC::Tick(float DeltaTime)
 		}
 	}
 
-	// 체력 애니메이팅 [TODO]추후 UI로 
-	AnimatorHealthPercent.Update(DeltaTime);
-	AnimatorHealthPercentAfterImage.Update(DeltaTime);
-
 	if(TempLevel != Level)
 	{
 		Health = MaxHealth;
@@ -148,15 +131,6 @@ void ACharacterPC::Tick(float DeltaTime)
 		LevelUpEvent();
 	}
 }
-
-// =============================================================
-// 상태 UI 위젯을 생성한다.
-// =============================================================
-void ACharacterPC::CreateStatusUI()
-{
-
-}
-
 
 //////////////////////////////////////////////////////////////////////////
 // Input
@@ -455,7 +429,6 @@ float ACharacterPC::TakeDamage(float DamageAmount, struct FDamageEvent const &Da
 		if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Taken Point Damage"));
-			LOG_SCREEN(TEXT("Taken Point Damage"));
 			const FPointDamageEvent *PointDamageEvent = static_cast<const FPointDamageEvent *>(&DamageEvent);
 			if (0 == (PointDamageEvent->HitInfo.BoneName).Compare(FName(TEXT("Head"))))
 			{
@@ -466,7 +439,6 @@ float ACharacterPC::TakeDamage(float DamageAmount, struct FDamageEvent const &Da
 		else if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Taken Radial Damage"));
-			LOG_SCREEN(TEXT("Taken Radial Damage"));
 			const FRadialDamageEvent *RadialDamageEvent = static_cast<const FRadialDamageEvent *>(&DamageEvent);
 		}
 
@@ -589,7 +561,8 @@ bool ACharacterPC::GetCombatState()
 
 void ACharacterPC::LevelUpEvent()
 {
-	Cast<APlayerControllerBase>(DpGetPlayerController())->SkillUpgradeEventStart();
+
+	Cast<APlayerControllerBase>(GetController())->SkillUpgradeEventStart();
 }
 
 int ACharacterPC::GetCharacterLevel()
@@ -642,63 +615,9 @@ bool ACharacterPC::IsDead() const
 
 void ACharacterPC::_UpdateHp(int InCurHp, int InMaxHp)
 {
-	float curPercent = Health / TempMaxHealth;
-	curPercent = FMath::Clamp( curPercent, 0.f, 1.f );
-
-	float destPercent = ( float )InCurHp / ( float )InMaxHp;
-	destPercent = FMath::Clamp( destPercent, 0.f, 1.f );
-
-	float percentAmount = curPercent - destPercent;
-	
-	// 체력바 애니메이터
-	TempPercent = curPercent;
-
-	if( AnimatorHealthPercent.IsRunning() )
-		AnimatorHealthPercent.Stop();
-	
-	AnimatorParam param;
-	param.AnimType = EAnimType::CubicEaseOut;
-	param.StartValue = curPercent;
-	param.EndValue = destPercent;
-	param.DurationTime = 0.6f;
-	TWeakObjectPtr<ACharacterPC> thisPtr = this;
-	param.DurationFunc = [ thisPtr ]( float InValue )
-	{
-		if(thisPtr.IsValid())
-			thisPtr->TempPercent = InValue;
-	};
-	param.CompleteFunc = [ thisPtr ]( float InValue )
-	{
-		if(thisPtr.IsValid())
-			thisPtr->TempPercent = InValue;
-	};
-
-	AnimatorHealthPercent.Start( param );
-	
-	// 체력바잔상 애니메이터
-	TempPercentAfterImage = curPercent;
-
-	if( AnimatorHealthPercentAfterImage.IsRunning() )
-		AnimatorHealthPercentAfterImage.Stop();
-	
-	AnimatorParam paramAfterImage;
-	paramAfterImage.AnimType = EAnimType::CubicEaseIn;
-	paramAfterImage.StartValue = curPercent;
-	paramAfterImage.EndValue = destPercent;
-	paramAfterImage.DurationTime =
-		(0.f <= percentAmount && percentAmount < 0.2f) ? 0.6f
-	: (0.2f <= percentAmount && percentAmount < 0.4f) ? 0.85f
-	:													1.1f;
-	paramAfterImage.DurationFunc = [ thisPtr ] ( float InValue )
-	{
-		thisPtr->TempPercentAfterImage = InValue;
-	};
-	paramAfterImage.CompleteFunc = [ thisPtr ] ( float InValue )
-	{
-		thisPtr->TempPercentAfterImage = InValue;
-	};
-
-	AnimatorHealthPercentAfterImage.Start( paramAfterImage );
+	// 애니메이터가 들어갔던 함수인데 애니메이터 삭제하면서 임시로 구현했습니다.
+	TempPercent = InCurHp / InMaxHp;
+	TempPercentAfterImage = InCurHp / InMaxHp;
 }
 
 float ACharacterPC::GetHealthPercent()

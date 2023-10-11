@@ -9,6 +9,8 @@
 
 #include <Blueprint/UserWidget.h>
 
+#include "Kismet/GameplayStatics.h"
+
 #include UE_INLINE_GENERATED_CPP_BY_NAME(DpGameMode)
 
 ADpGameMode::ADpGameMode()
@@ -43,7 +45,8 @@ void ADpGameMode::BeginPlay()
 
 void ADpGameMode::PawnKilled(APawn *PawnKilled)
 {
-	if(PawnKilled->GetController() != DpGetPlayerController())
+	// [TODO] 플레이어 컨트롤러 Get 하는 방법 수정해야됨.
+	if(PawnKilled->GetController() != UGameplayStatics::GetPlayerController(GetWorld(), 0))
 	{
 		//LOG_SCREEN(TEXT("EnemyDied"))
 		return;
@@ -60,7 +63,7 @@ void ADpGameMode::PawnKilled(APawn *PawnKilled)
 			GameEndTHandle, [thisPtr]()
 			{
 				if(thisPtr.IsValid())
-					Cast<APlayerControllerBase>(DpGetPlayerController())->SetEndUI();
+					Cast<APlayerControllerBase>(UGameplayStatics::GetPlayerController(thisPtr->GetWorld(), 0))->SetEndUI();
 			},
 			1.5f, false);
 		//PlayerController->SetEndUI();

@@ -3,6 +3,8 @@
 
 #include "CoolTimeHandler.h"
 
+#include <Kismet/GameplayStatics.h>
+
 
 // =============================================================
 //  생성자
@@ -17,7 +19,11 @@ FCoolTimeHandler::FCoolTimeHandler(UObject* InOwner) : CoolTimeHandle(FTimerHand
 // =============================================================
 void FCoolTimeHandler::SetCoolTime(const float InCoolTime)
 {
-	if(UGameInstance* gameInstance = DpGetGameInstance())
+	FWorldContext* world = GEngine->GetWorldContextFromGameViewport( GEngine->GameViewport );
+	if ( !world )
+		return ;
+	
+	if(UGameInstance* gameInstance = UGameplayStatics::GetGameInstance( world->World() ))
 	{
 		TWeakObjectPtr<UObject> owner = Owner;
 		
@@ -36,7 +42,11 @@ void FCoolTimeHandler::SetCoolTime(const float InCoolTime)
 // =============================================================
 float FCoolTimeHandler::GetCoolTime() const
 {
-	if(UGameInstance* gameInstance = DpGetGameInstance())
+	FWorldContext* world = GEngine->GetWorldContextFromGameViewport( GEngine->GameViewport );
+	if ( !world )
+		return 0.f;
+	
+	if(UGameInstance* gameInstance = UGameplayStatics::GetGameInstance( world->World() ))
 	{
 		if(gameInstance->GetTimerManager().IsTimerActive(CoolTimeHandle))
 		{
@@ -61,7 +71,11 @@ void FCoolTimeHandler::ReduceCoolTime(const float InReduceTime)
 // =============================================================
 void FCoolTimeHandler::ClearCoolTime()
 {
-	if(UGameInstance* gameInstance = DpGetGameInstance())
+	FWorldContext* world = GEngine->GetWorldContextFromGameViewport( GEngine->GameViewport );
+	if ( !world )
+		return ;
+	
+	if(UGameInstance* gameInstance =UGameplayStatics::GetGameInstance( world->World() ))
 	{
 		if(gameInstance->GetTimerManager().IsTimerActive(CoolTimeHandle))
 		{
