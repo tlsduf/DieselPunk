@@ -74,62 +74,82 @@ protected:
 	void DebugActorRotation();
 
 public:
-	// Zoom
+	// Zoom 줌 관련 함수입니다.
 	void SetZoomInProp();
 	void SetZoomOutProp();
+	// Tick에서 작동합니다. 애니메이션 담당
 	void ZoomInOut(float DeltaTime);
-	
+	// 달릴 때의 카메라 프롭을 설정합니다.
 	void SetRunZoomOutProp();
 
+	// 조건에따라 bool IsJog를 설정합니다. Tick에서 IsJog의 상태에 따라 캐릭터의 이동속도를 설정합니다.
 	void Jog();
+
+	// 캐릭터 이동속도 설정함수
+	void SetThisSpeed(float Speed);
+	void SetThisJogSpeed(float JogSpeed);
+	
+	// 달리기 대쉬가능여부에서 조건을 설정하기 위한 함수. PlayerControllerBase에서 호출합니다.
 	void WPressed();
 	void WReleased();
 	void SPressed();
 	void SReleased();
 	
-	// RotatePawn
+	// Pawn 회전 함수 // 전투상태일 때만 자동회전합니다. Tick에서 구현
 	void RotatePawn(float DeltaTime);
 
-	// Movement
-	void SetThisSpeed(float Speed);
-	void SetThisJogSpeed(float JogSpeed);
-	void CalculateSpeed();
-
-	// TakeDamageHandle
+	// 데미지 받는 함수
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent, class AController *EventInstigator, AActor *DamageCauser) override;
-	
+
+	// 데미지를 받을 때, 데미지 받는 애니메이션 출력을 위한 함수. TakeDamage에서 호출합니다. ABP에서 활용됩니다.
+	// [TODO] 구조상 타이머를 쓰고있는데, 타이머를 쓰지말라는 조언이 있어서 구조변경 요함.
 	void SetTakeDamageAnimFalse();
 	void SetCanTakeDamageAnimTrue();
-	FTimerHandle TakeDamageAnimHandle;
 
-	// CombatState
+	// 데미지 받는 애니메이션 출력을 위한 ABP에서 직접적으로 활용되는 변수입니다.
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool TakeDamageAnim = false;
+
+	bool CanTakeDamageAnim = true;
+	
+	FTimerHandle TakeDamageHandle;
+
+	
+	// 전투상태 핸들링 함수 // 전투상태 돌입 5초 후, 전투상태 자동 해제. // 해제 전 갱신 시, 5초갱신.
 	void HandleCombatState();
 	void SetInCombatFalse();
 
-	//=================================================================================
+	// * 전투state
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool InCombat = false;
 
-	// * 체력바UI
+	FTimerHandle CombatStateTHandle;
+	
+	//=================================================================================
+	// UI 에서 활용될 변수 및 함수
+	//=================================================================================
+	// ABP에서 Die 애니메이션 재생
+	UFUNCTION(BlueprintPure)
+	bool IsDead() const;
+
+	// 체력 퍼센테이지 반환 애니메이팅
+	void _UpdateHp(int InCurHp, int InMaxHp);
+	float TempPercent;
+	float TempPercentAfterImage;
+
+	// 체력 퍼센트를 반환합니다.
 	UFUNCTION(BlueprintPure)
 	float GetHealthPercent();
-	
+
+	// 체력 퍼센트를 반환합니다.
 	UFUNCTION(BlueprintPure)
 	float GetHealthPercentAfterImage();
 
-	
-	// 체력 퍼센테이지 반환 애니메이팅
-	void _UpdateHp(int InCurHp, int InMaxHp);
-	//Animator AnimatorHealthPercent;
-	float TempPercent;
-	//Animator AnimatorHealthPercentAfterImage;
-	float TempPercentAfterImage;
-
+	// 스킬 쿨타임을 반환합니다. 
 	UFUNCTION(BlueprintPure)
 	float GetSkillCoolTimePercent(EAbilityType inType);
-	
 	//=================================================================================
-public:
-	bool GetCombatState();
-	// !------------------------------------------------------------
+
 
 	/** Handler for when a touch input begins. */
 	void TouchStarted(ETouchIndex::Type FingerIndex, FVector Location);
@@ -145,31 +165,33 @@ public:
 
 	// !MyCode------------------------------------------------------
 public:
+	// 레벨을 구현하기위한 변수
 	int Exp;
 	int Level;
 	int TempLevel;
 
+	// Level 이 올라갔을때, 이벤트를 발동시킵니다.
 	void LevelUpEvent();
 
+	// HUD에서 받을 Level
 	UFUNCTION(BlueprintPure)
 	int GetCharacterLevel();
-
+	
+	// HUD에서 받을 Exp 퍼센트
 	UFUNCTION(BlueprintPure)
 	float GetCharacterExpPercent();
 
+	// 각 스킬이 작동중인지 확인하는 티맵. Key(EAbilityType)의 값이 1이면 작동중입니다.
 	TMap<EAbilityType, bool> SkillActivating;
 
+	// 스킬을 실행하려할 때, 다른 스킬이 작동중인지 확인하는 함수. 다른 스킬이 작동중이면 1 반환
 	bool GetOtherSkillActivating(EAbilityType inType);
-	
-	// * 임시 죽는애니메이션 play
-	UFUNCTION(BlueprintPure)
-	bool IsDead() const;
 	
 	// * 디버그on/off
 	UPROPERTY(EditDefaultsOnly, Category = "Debug")
 	bool DebugOnOff = 0;
 
-	// * 줌인아웃 & 카메라조종가능
+	// * 줌인아웃
 	bool IsZoomed = false;
 	bool CanZoom = true;
 	float ZoomInterpTime = 6;
@@ -183,28 +205,19 @@ public:
 	UPROPERTY()
 	FVector MyCameraLocation = FVector(0, 0, 70);
 
+	// 카메라를 조종 가능한지
 	bool CanCameraControl = true;
 
 	// * Pawn Rotate
 	bool IsRotate = false;
 	bool CanRotate = false;
 
-	// * 전투state
-	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	bool InCombat = false;
-
-	FTimerHandle CombatStateTHandle;
-
-	// * 초기속력(default), 현재속력(this) 로 구분.
+	//=================================================================================
+	//	이동관련 변수들
 	// TODO ThisSpeed = DefaultSpeed + DefaultSpeed * 아이템효과
-	UPROPERTY(EditAnywhere, Category = "BaseMovement")
-	float DefaultSpeed = 600.f;
-
+	//=================================================================================
 	UPROPERTY(EditAnywhere, Category = "BaseMovement")
 	float ThisSpeed = 600.f;
-
-	UPROPERTY(EditAnywhere, Category = "BaseMovement")
-	float DefaultJogSpeed = 1200.f;
 
 	UPROPERTY(EditAnywhere, Category = "BaseMovement")
 	float ThisJogSpeed = 1200.f;
@@ -224,28 +237,29 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BaseMovement", meta = (AllowPrivateAccess = "true"))
 	int32 ThisJumpMaxCount = 1;
 
-	// * 체력 및 방어력 및 특수
-	// TODO 방어력 기능 구현
-	float TempMaxHealth;
+
 	
+	//=================================================================================
+	// * 체력 및 방어력 및 특수
+	//=================================================================================
+	// 최대체력
 	UPROPERTY(EditDefaultsOnly, Category = "Defensive")
 	int MaxHealth = 100;
 
+	// 현재체력
 	UPROPERTY(VisibleAnywhere, Category = "Defensive")
 	int Health;
 
+	// 임의체력 (체력 애니메이팅에 활용되었음)
+	float TempMaxHealth;
+
+	// 방어력 변수. 아직 활용X. 기획 기다려야됨
 	UPROPERTY(EditDefaultsOnly, Category = "Defensive")
 	int Armor = 0;
 
+	// DamageImmunity 가 True 면 데미지를 안 입게 했습니다. TakeDamage 함수에서 활용합니다.
 	UPROPERTY(EditAnywhere, Category = "Defensive")
-	bool DamageImmunity = false; // true > 무적
-	// TODO 각종 공격효과 무효 bool
-
-	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	bool TakeDamageAnim = false;
-
-	bool CanTakeDamageAnim = true;
-	FTimerHandle TakeDamageHandle;
+	bool DamageImmunity = false;
 
 	// * 공격관련 변수
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "CombatProp")

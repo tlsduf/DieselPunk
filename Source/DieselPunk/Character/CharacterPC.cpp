@@ -108,22 +108,21 @@ void ACharacterPC::Tick(float DeltaTime)
 	// 전투상태인지 판별하고, 전투상태라면 줌아웃
 	if (InCombat)
 	{
+		//전투상태면 뛰는걸 멈춤
 		IsJog = false;
-		
+
+		//줌아웃
 		if (IsZoomed)
 			SetZoomOutProp();
 		
 		auto Acceleration = GetCharacterMovement()->GetCurrentAcceleration().Length();
 		if(Acceleration == 0)
-		{
 			RotatePawn(DeltaTime);
-		}
 		else
-		{
 			SetActorRotation(FRotator(0, GetController()->GetControlRotation().Yaw, 0));
-		}
 	}
 
+	// 레벨이 올랐음을 감지하는 구문.
 	if(TempLevel != Level)
 	{
 		Health = MaxHealth;
@@ -280,7 +279,7 @@ void ACharacterPC::DebugActorRotation()
 }
 
 //================================================================
-// 줌인아웃 함수 // 변수값은 protected 이므로 에이밍, 특수스킬 뷰 변경 등에 활용가능하다.
+// 줌인아웃 프로퍼티의 값을 설정합니다.
 //================================================================
 void ACharacterPC::SetZoomInProp()
 {
@@ -308,6 +307,9 @@ void ACharacterPC::SetZoomOutProp()
 		CanZoom = true;
 	}
 }
+//================================================================
+// Tick에서 작동합니다. 애니메이션 담당
+//================================================================
 void ACharacterPC::ZoomInOut(float DeltaTime)
 {
 	CameraBoom->TargetArmLength = FMath::FInterpTo(
@@ -326,11 +328,13 @@ void ACharacterPC::ZoomInOut(float DeltaTime)
 		DeltaTime,
 		ZoomInterpTime));
 	if (CameraBoom->TargetArmLength == MyTargetArmLength)
-	{
 		CanZoom = false; // 줌인아웃이 완료되면 함수실행중지
-	}
+	
 }
 
+//================================================================
+// 달릴 때의 카메라 프롭을 설정합니다.
+//================================================================
 void ACharacterPC::SetRunZoomOutProp()
 {
 	MyTargetArmLength = 600.0f;
@@ -340,6 +344,56 @@ void ACharacterPC::SetRunZoomOutProp()
 	IsZoomed = true;
 	ZoomInterpTime = 6;
 	CanZoom = true;
+}
+
+
+//================================================================
+// Jog //W가 눌린 상태일때만 뛸 수 있음 //W 때면 jog중지
+//================================================================
+void ACharacterPC::Jog()
+{
+	if (!IsJog && IsWPressed && CanJog)
+	{
+		IsJog = true;
+		SetZoomOutProp();
+		SetInCombatFalse();
+	}
+	else if (IsJog)
+	{
+		IsJog = false;
+	}
+}
+
+//================================================================
+// 캐릭터 이동속도 설정함수
+//================================================================
+void ACharacterPC::SetThisSpeed(float Speed)
+{
+	ThisSpeed = Speed;
+}
+void ACharacterPC::SetThisJogSpeed(float JogSpeed)
+{
+	ThisJogSpeed = JogSpeed;
+}
+
+//================================================================
+// 달리기 대쉬가능여부에서 조건을 설정하기 위한 함수. PlayerControllerBase에서 호출합니다.
+//================================================================
+void ACharacterPC::WPressed()
+{
+	IsWPressed = true;
+}
+void ACharacterPC::WReleased()
+{
+	IsWPressed = false;
+}
+void ACharacterPC::SPressed()
+{
+	IsSPressed = true;
+}
+void ACharacterPC::SReleased()
+{
+	IsSPressed = false;
 }
 
 //================================================================
@@ -361,55 +415,6 @@ void ACharacterPC::RotatePawn(float DeltaTime)
 		10));
 }
 
-// Base Movement
-// TODO 속도함수 맹글기
-void ACharacterPC::SetThisSpeed(float Speed)
-{
-	ThisSpeed = Speed;
-}
-void ACharacterPC::SetThisJogSpeed(float JogSpeed)
-{
-	ThisJogSpeed = JogSpeed;
-}
-void ACharacterPC::CalculateSpeed()
-{
-	// ThisSpeed = DefaultSpeed + DefaultSpeed * (ItemVar * ItemCoff + OtherItemVar * OtherItemCoff);
-}
-
-//================================================================
-// Jog //W가 눌린 상태일때만 뛸 수 있음 //W 때면 jog중지
-//================================================================
-void ACharacterPC::Jog()
-{
-	if (!IsJog && IsWPressed && CanJog)
-	{
-		IsJog = true;
-		SetZoomOutProp();
-		SetInCombatFalse();
-	}
-	else if (IsJog)
-	{
-		IsJog = false;
-	}
-}
-void ACharacterPC::WPressed()
-{
-	IsWPressed = true;
-}
-void ACharacterPC::WReleased()
-{
-	IsWPressed = false;
-}
-
-void ACharacterPC::SPressed()
-{
-	IsSPressed = true;
-}
-
-void ACharacterPC::SReleased()
-{
-	IsSPressed = false;
-}
 
 //================================================================
 // 데미지 받는 함수
@@ -520,6 +525,9 @@ float ACharacterPC::TakeDamage(float DamageAmount, struct FDamageEvent const &Da
 		return Damage;
 	}
 }
+//================================================================
+// 데미지를 받을 때, 데미지 받는 애니메이션 출력을 위한 함수. TakeDamage에서 호출합니다. ABP에서 활용됩니다.
+//================================================================
 void ACharacterPC::SetTakeDamageAnimFalse()
 {
 	TakeDamageAnim = false;
@@ -554,22 +562,25 @@ void ACharacterPC::SetInCombatFalse()
 	InCombat = false;
 }
 
-bool ACharacterPC::GetCombatState()
-{
-	return InCombat;
-}
-
+//================================================================
+// Level 이 올라갔을때, 이벤트를 발동시킵니다.
+//================================================================
 void ACharacterPC::LevelUpEvent()
 {
-
 	Cast<APlayerControllerBase>(GetController())->SkillUpgradeEventStart();
 }
 
+//================================================================
+// HUD에서 받을 Level
+//================================================================
 int ACharacterPC::GetCharacterLevel()
 {
 	return Level;
 }
 
+//================================================================
+// HUD에서 받을 Exp 퍼센트
+//================================================================
 float ACharacterPC::GetCharacterExpPercent()
 {
 	if(Level == 1)
@@ -578,6 +589,9 @@ float ACharacterPC::GetCharacterExpPercent()
 	return ((float)Exp - (float)UtilLevelCal::MaxExpCal(Level - 1)) / ((float)UtilLevelCal::MaxExpCal(Level) - (float)UtilLevelCal::MaxExpCal(Level - 1));
 }
 
+//================================================================
+// 스킬을 실행하려할 때, 다른 스킬이 작동중인지 확인하는 함수. 다른 스킬이 작동중이면 1 반환
+//================================================================
 bool ACharacterPC::GetOtherSkillActivating(EAbilityType inType)
 {
 	switch(inType)
@@ -607,12 +621,17 @@ bool ACharacterPC::GetOtherSkillActivating(EAbilityType inType)
 	}
 }
 
-// ufunction 으로 임시 anim 재생
+//================================================================
+// ABP에서 Die 애니메이션 재생
+//================================================================
 bool ACharacterPC::IsDead() const
 {
 	return Health <= 0;
 }
 
+//================================================================
+// 체력 변화를 애니메이팅합니다.
+//================================================================
 void ACharacterPC::_UpdateHp(int InCurHp, int InMaxHp)
 {
 	// 애니메이터가 들어갔던 함수인데 애니메이터 삭제하면서 임시로 구현했습니다.
@@ -620,6 +639,9 @@ void ACharacterPC::_UpdateHp(int InCurHp, int InMaxHp)
 	TempPercentAfterImage = InCurHp / InMaxHp;
 }
 
+//================================================================
+// 체력 퍼센트를 반환합니다.
+//================================================================
 float ACharacterPC::GetHealthPercent()
 {
 	return TempPercent;
@@ -629,6 +651,9 @@ float ACharacterPC::GetHealthPercentAfterImage()
 	return TempPercentAfterImage;
 }
 
+//================================================================
+// 스킬 쿨타임을 반환합니다.
+//================================================================
 float ACharacterPC::GetSkillCoolTimePercent(EAbilityType inType)
 {
 	return Skills[inType]->GetCoolTimePercent();
