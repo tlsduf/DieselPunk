@@ -39,12 +39,6 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction *InputC;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction *InputW;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction *InputS;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction *MouseWheelUp;
@@ -83,10 +77,6 @@ private:
 	void StopJumping();
 
 	void ToggleJog();
-	void WPressed();
-	void WReleased();
-	void SPressed();
-	void SReleased();
 
 	void SetZoomInProp();
 	void SetZoomOutProp();

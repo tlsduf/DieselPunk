@@ -89,12 +89,6 @@ public:
 	void SetThisSpeed(float Speed);
 	void SetThisJogSpeed(float JogSpeed);
 	
-	// 달리기 대쉬가능여부에서 조건을 설정하기 위한 함수. PlayerControllerBase에서 호출합니다.
-	void WPressed();
-	void WReleased();
-	void SPressed();
-	void SReleased();
-	
 	// Pawn 회전 함수 // 전투상태일 때만 자동회전합니다. Tick에서 구현
 	void RotatePawn(float DeltaTime);
 

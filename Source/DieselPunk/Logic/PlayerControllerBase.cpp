@@ -63,10 +63,6 @@ void APlayerControllerBase::SetupInputComponent()
         EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &APlayerControllerBase::StopJumping);
 
         EnhancedInputComponent->BindAction(InputC, ETriggerEvent::Started, this, &APlayerControllerBase::ToggleJog);
-        EnhancedInputComponent->BindAction(InputW, ETriggerEvent::Started, this, &APlayerControllerBase::WPressed);
-        EnhancedInputComponent->BindAction(InputW, ETriggerEvent::Completed, this, &APlayerControllerBase::WReleased);
-    	EnhancedInputComponent->BindAction(InputS, ETriggerEvent::Started, this, &APlayerControllerBase::SPressed);
-    	EnhancedInputComponent->BindAction(InputS, ETriggerEvent::Completed, this, &APlayerControllerBase::SReleased);
 
         EnhancedInputComponent->BindAction(MouseWheelUp, ETriggerEvent::Started, this, &APlayerControllerBase::SetZoomInProp);
         EnhancedInputComponent->BindAction(MouseWheelDown, ETriggerEvent::Started, this, &APlayerControllerBase::SetZoomOutProp);
@@ -230,38 +226,6 @@ void APlayerControllerBase::ToggleJog()
 	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
 	{
 		character->Jog();
-	}
-}
-
-void APlayerControllerBase::WPressed()
-{
-	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-	{
-		character->WPressed();
-	}
-}
-
-void APlayerControllerBase::WReleased()
-{
-	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-	{
-		character->WReleased();
-	}
-}
-
-void APlayerControllerBase::SPressed()
-{
-	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-	{
-		character->SPressed();
-	}
-}
-
-void APlayerControllerBase::SReleased()
-{
-	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-	{
-		character->SReleased();
 	}
 }
 

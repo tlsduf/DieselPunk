@@ -32,8 +32,21 @@ void USkillSoldierShift::SkillTriggered()
 	if(ownerController == nullptr)
 		return;
 
+	//Player의 이동방향
+	FVector playerMovementDirection = ownerPawn->GetMovementComponent()->Velocity;
+	playerMovementDirection.Z = 0;
+	playerMovementDirection.Normalize();
+
+	//Controller 방향
+	FVector controllerDirection = ownerPawn->GetController()->GetControlRotation().Vector();
+	controllerDirection.Z = 0;
+	controllerDirection.Normalize();
+
+	//내적을 통해 사잇각 확인
+	double dotResult = FVector::DotProduct(playerMovementDirection, controllerDirection);
+
 	// 뒤로가는 키(s) 가 눌려있을 때 즉, 뒤로가는 중이면 리턴
-	if(ownerPawn->IsSPressed)
+	if(dotResult < -0.01)
 		return;
 
 	// 쿨타임 감소

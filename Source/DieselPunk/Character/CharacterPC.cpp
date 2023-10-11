@@ -352,7 +352,20 @@ void ACharacterPC::SetRunZoomOutProp()
 //================================================================
 void ACharacterPC::Jog()
 {
-	if (!IsJog && IsWPressed && CanJog)
+	//Player의 이동방향
+	FVector playerMovementDirection = GetMovementComponent()->Velocity;
+	playerMovementDirection.Z = 0;
+	playerMovementDirection.Normalize();
+
+	//Controller 방향
+	FVector controllerDirection = Controller->GetControlRotation().Vector();
+	controllerDirection.Z = 0;
+	controllerDirection.Normalize();
+
+	//내적을 통해 사잇각 확인
+	double dotResult = FVector::DotProduct(playerMovementDirection, controllerDirection);
+	
+	if (!IsJog && CanJog && (dotResult > 0.01))
 	{
 		IsJog = true;
 		SetZoomOutProp();
@@ -374,26 +387,6 @@ void ACharacterPC::SetThisSpeed(float Speed)
 void ACharacterPC::SetThisJogSpeed(float JogSpeed)
 {
 	ThisJogSpeed = JogSpeed;
-}
-
-//================================================================
-// 달리기 대쉬가능여부에서 조건을 설정하기 위한 함수. PlayerControllerBase에서 호출합니다.
-//================================================================
-void ACharacterPC::WPressed()
-{
-	IsWPressed = true;
-}
-void ACharacterPC::WReleased()
-{
-	IsWPressed = false;
-}
-void ACharacterPC::SPressed()
-{
-	IsSPressed = true;
-}
-void ACharacterPC::SReleased()
-{
-	IsSPressed = false;
 }
 
 //================================================================
