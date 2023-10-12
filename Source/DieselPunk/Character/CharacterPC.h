@@ -83,7 +83,18 @@ public:
 	void SetRunZoomOutProp();
 
 	// 조건에따라 bool IsJog를 설정합니다. Tick에서 IsJog의 상태에 따라 캐릭터의 이동속도를 설정합니다.
-	void Jog();
+	void StartJog();
+	void StopJog();
+
+	/** 
+	* Make the character jump on the next update.	 
+	* If you want your character to jump according to the time that the jump key is held,
+	* then you can set JumpMaxHoldTime to some non-zero value. Make sure in this case to
+	* call StopJumping() when you want the jump's z-velocity to stop being applied (such 
+	* as on a button up event), otherwise the character will carry on receiving the 
+	* velocity until JumpKeyHoldTime reaches JumpMaxHoldTime.
+	*/
+	virtual void Jump() override;
 
 	// 캐릭터 이동속도 설정함수
 	void SetThisSpeed(float Speed);
@@ -221,17 +232,6 @@ public:
 	bool IsJog = false;
 
 	bool CanJog = true;
-
-	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	bool IsWPressed = false;
-
-	bool IsSPressed = false;
-
-	// * 연속점프횟수 bp에서 간접적으로 건드리기
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BaseMovement", meta = (AllowPrivateAccess = "true"))
-	int32 ThisJumpMaxCount = 1;
-
-
 	
 	//=================================================================================
 	// * 체력 및 방어력 및 특수

@@ -72,7 +72,6 @@ void ACharacterPC::BeginPlay()
 	Health = MaxHealth;
 	TempPercent = Health / MaxHealth;
 	TempPercentAfterImage = Health / MaxHealth;
-	JumpMaxCount = ThisJumpMaxCount;
 
 	PCSkillManager.ResetSkill();
 }
@@ -89,7 +88,7 @@ void ACharacterPC::Tick(float DeltaTime)
 	}
 	
 	// 뛰는 상태인지 판별하여 MaxWalkSpeed 초기화.
-	if (IsJog && IsWPressed)
+	if (IsJog)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = ThisJogSpeed;
 		SetRunZoomOutProp();
@@ -350,7 +349,7 @@ void ACharacterPC::SetRunZoomOutProp()
 //================================================================
 // Jog //W가 눌린 상태일때만 뛸 수 있음 //W 때면 jog중지
 //================================================================
-void ACharacterPC::Jog()
+void ACharacterPC::StartJog()
 {
 	//Player의 이동방향
 	FVector playerMovementDirection = GetMovementComponent()->Velocity;
@@ -365,16 +364,26 @@ void ACharacterPC::Jog()
 	//내적을 통해 사잇각 확인
 	double dotResult = FVector::DotProduct(playerMovementDirection, controllerDirection);
 	
-	if (!IsJog && CanJog && (dotResult > 0.01))
+	if (dotResult > 0.01)
 	{
+		GetCharacterMovement()->MaxWalkSpeed = ThisJogSpeed;
 		IsJog = true;
-		SetZoomOutProp();
+		SetRunZoomOutProp();
 		SetInCombatFalse();
 	}
-	else if (IsJog)
-	{
-		IsJog = false;
-	}
+}
+
+void ACharacterPC::StopJog()
+{
+	GetCharacterMovement()->MaxWalkSpeed = ThisSpeed;
+	IsJog = false;
+	SetZoomOutProp();
+}
+
+void ACharacterPC::Jump()
+{
+	if(GetMovementComponent()->IsMovingOnGround() || (GetMovementComponent()->IsFalling() && GetMovementComponent()->Velocity.Z < 0))
+		Super::Jump();
 }
 
 //================================================================

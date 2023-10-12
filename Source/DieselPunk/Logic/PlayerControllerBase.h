@@ -76,7 +76,8 @@ private:
 	void Jump();
 	void StopJumping();
 
-	void ToggleJog();
+	void StartJog();
+	void StopJog();
 
 	void SetZoomInProp();
 	void SetZoomOutProp();
