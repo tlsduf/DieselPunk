@@ -17,6 +17,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "skills", meta = (AllowPrivateAccess = "true"))
 	UPlayerSkill *MeleeAttack;
 
+	// [TODO] 범용 스킬 클래스를 자손으로 만들어서 예외처리?
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "skills", meta = (AllowPrivateAccess = "true"))
 	UPlayerSkill *ProjectileAttack;
 

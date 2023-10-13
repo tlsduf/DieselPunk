@@ -45,18 +45,13 @@ void ACharacterNPC::CreateStatusUI()
 	if( EnemyStatusUI.IsValid() )
 		return;
 
-	FString inPath = TEXT( "/Script/UMGEditor.WidgetBlueprint'/Game/GuardiansW/UI/Widgets/%HUD/%NPC_HpBar.%NPC_HpBar'" );
+	FString inPath =  FString::Printf(TEXT( "/Script/UMGEditor.WidgetBlueprint'/Game/DieselPunk/UI/Widgets/HUD/NPC_HpBar.NPC_HpBar_C'" ));
 	UClass* widgetClass = ConstructorHelpersInternal::FindOrLoadClass( inPath, UUserWidget::StaticClass() );
 	if(!widgetClass)
 		return;
-
-	// 월드 get
-	FWorldContext* world = GEngine->GetWorldContextFromGameViewport( GEngine->GameViewport );
-	if ( !world )
-		return ;
-
-	UUserWidget* userWidget = CreateWidget<UUserWidget>( world->World(), widgetClass );
-	if ( userWidget != nullptr )
+	
+	UUserWidget* userWidget = CreateWidget<UUserWidget>( GetWorld(), widgetClass );
+	if ( userWidget )
 	{
 		userWidget->AddToRoot();
 
@@ -126,6 +121,7 @@ void ACharacterNPC::TempDoMeleeAttack()
 
 void ACharacterNPC::DoProjectileAttack()
 {
+	// TODO 예외처리해야됨 어떻게?
 	ProjectileAttack->SkillTriggered();
 
 	FVector Location = GetMesh()->GetSocketLocation("Granade_socket");

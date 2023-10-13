@@ -70,17 +70,6 @@ void ADpGameMode::PawnKilled(APawn *PawnKilled)
 		
 		EndGame();
 	}
-
- 	/*for (ABaseEnemyAIController *Controller : TActorRange<ABaseEnemyAIController>(GetWorld()))
-	{
-		if (!Controller->IsDead())
-		{
-			return;
-		}
-	} 
-
-	EndGame(true);*/
-	
 }
 
 void ADpGameMode::HandleGameStart()

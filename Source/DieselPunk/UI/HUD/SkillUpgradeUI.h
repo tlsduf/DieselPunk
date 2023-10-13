@@ -22,10 +22,8 @@ private:																			\
 	UFUNCTION()																		\
 	void Plus##SkillType##UpgradeTypeName()											\
 	{																										\
-		FWorldContext* world = GEngine->GetWorldContextFromGameViewport( GEngine->GameViewport );			\
-		if ( !world )																						\
 			return ;																						\
-		auto *character = Cast<ACharacterPC>(UGameplayStatics::GetPlayerCharacter(world->World(), 0));		\
+		auto *character = Cast<ACharacterPC>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));		\
 		++character->PCSkillManager.SkillType[E##SkillType::UpgradeTypeName];		\
 		AfterClick();																\
 	}																				\

@@ -47,24 +47,21 @@ AInteractiveActor::AInteractiveActor()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-// 데미지UI 위젯을 생성한다.
-void AInteractiveActor::CreateDamageUI()
+// =============================================================
+// 데미지UI 위젯을 생성한다. TODO 받을 위젯을 변경 가능하도록 변경
+// =============================================================
+void AInteractiveActor::CreateUI()
 {
 	if( GuideUI.IsValid() )
 		return;
 
-	FString inPath = TEXT( "/Script/UMGEditor.WidgetBlueprint'/Game/GuardiansW/UI/Widgets/%HUD/%WBP_ItemGuideUI.%WBP_ItemGuideUI'" );
+	FString inPath = FString::Printf(TEXT( "/Script/UMGEditor.WidgetBlueprint'/Game/DieselPunk/UI/Widgets/HUD/WBP_ItemGuideUI.WBP_ItemGuideUI_C'" ));
 	UClass* widgetClass = ConstructorHelpersInternal::FindOrLoadClass( inPath, UUserWidget::StaticClass() );
 	if(!widgetClass)
 		return;
-
-	// 월드 get
-	FWorldContext* world = GEngine->GetWorldContextFromGameViewport( GEngine->GameViewport );
-	if ( !world )
-		return ;
 	
-	UUserWidget* userWidget = CreateWidget<UUserWidget>( world->World(), widgetClass );
-	if ( userWidget != nullptr )
+	UUserWidget* userWidget = CreateWidget<UUserWidget>( GetWorld(), widgetClass );
+	if ( userWidget )
 	{
 		userWidget->AddToRoot();
 
@@ -93,13 +90,12 @@ void AInteractiveActor::CreateDamageUI()
 void AInteractiveActor::BeginPlay()
 {
 	Super::BeginPlay();
-
 	
 	// 오버랩 이벤트 바인딩
 	CapsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &AInteractiveActor::BindingDelegate);
 	CapsuleComponent->OnComponentEndOverlap.AddDynamic(this, &AInteractiveActor::RemoveDelegate);
 
-	CreateDamageUI();
+	CreateUI();
 }
 
 // =============================================================
@@ -122,7 +118,8 @@ void AInteractiveActor::BindingDelegate(UPrimitiveComponent* InOverlappedCompone
 	Cast<ACharacterPC>(InOtherActor)->DelegateInteractTask.BindDynamic(this, &AInteractiveActor::task);
 
 	// UI 생성
-	GuideUI->SetVisibility(ESlateVisibility::Visible);
+	if ( WidgetComp && GuideUI.IsValid() )
+		GuideUI->SetVisibility(ESlateVisibility::Visible);
 }
 
 // =============================================================
@@ -135,7 +132,8 @@ void AInteractiveActor::RemoveDelegate(UPrimitiveComponent* OverlappedComponent,
 		Cast<ACharacterPC>(InOtherActor)->DelegateInteractTask.Unbind();
 
 	// UI 제거
-	GuideUI->SetVisibility(ESlateVisibility::Hidden);
+	if ( WidgetComp && GuideUI.IsValid() )
+		GuideUI->SetVisibility(ESlateVisibility::Hidden);
 }
 
 // =============================================================
@@ -144,7 +142,7 @@ void AInteractiveActor::RemoveDelegate(UPrimitiveComponent* OverlappedComponent,
 void AInteractiveActor::task()
 {
 	// 이펙트, 사운드 출력
-	if (ActionEffect)
+	//if (ActionEffect)
 
 	if (ActionParticle)
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ActionParticle,  GetActorLocation());
@@ -152,7 +150,8 @@ void AInteractiveActor::task()
 		UGameplayStatics::PlaySoundAtLocation(this, ActionSound, GetActorLocation());
 	
 	// UI 제거
-	GuideUI->SetVisibility(ESlateVisibility::Hidden);
+	if ( WidgetComp && GuideUI.IsValid() )
+		GuideUI->SetVisibility(ESlateVisibility::Hidden);
 	
 	// 액터 파괴
 	Destroy();

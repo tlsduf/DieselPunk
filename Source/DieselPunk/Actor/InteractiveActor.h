@@ -48,8 +48,8 @@ public:
 	// Sets default values for this actor's properties
 	AInteractiveActor();
 
-	// 데미지UI 위젯을 생성한다.
-	void CreateDamageUI();
+	// UI 위젯을 생성한다.
+	void CreateUI();
 	
 protected:
 	/** Overridable native event for when play begins for this actor. */
@@ -67,7 +67,10 @@ protected:
 	UFUNCTION()
 	void RemoveDelegate(UPrimitiveComponent* OverlappedComponent, AActor* InOtherActor, UPrimitiveComponent* InOtherComp, int32 InOtherBodyIndex);
 
-	// DelegateInteractTask에 바인딩되는 함수
+	//================================================================
+	// DelegateInteractTask에 바인딩되는 예시함수 ( 새로운 기능이 필요한 경우 함수를 만들어서 바인딩 )
+
+	// ChracterPC의 DelegateInteractTask에 바인딩되는 함수 // 각종 효과 실행
 	UFUNCTION()
 	virtual void task();
 };

@@ -30,18 +30,13 @@ void ADamageUIActor::CreateDamageUI()
 	if( DamageUI.IsValid() )
 		return;
 
-	FString inPath = TEXT( "/Script/UMGEditor.WidgetBlueprint'/Game/GuardiansW/UI/Widgets/%HUD/%DamageUI.%DamageUI'" );
+	FString inPath =  FString::Printf(TEXT( "/Script/UMGEditor.WidgetBlueprint'/Game/DieselPunk/UI/Widgets/HUD/DamageUI.DamageUI_C'" ));
 	UClass* widgetClass = ConstructorHelpersInternal::FindOrLoadClass( inPath, UUserWidget::StaticClass() );
 	if(!widgetClass)
 		return;
-
-	// 월드 get
-	FWorldContext* world = GEngine->GetWorldContextFromGameViewport( GEngine->GameViewport );
-	if ( !world )
-		return ;
 	
-	UUserWidget* userWidget = CreateWidget<UUserWidget>( world->World(), widgetClass );
-	if ( userWidget != nullptr )
+	UUserWidget* userWidget = CreateWidget<UUserWidget>( GetWorld(), widgetClass );
+	if ( userWidget )
 	{
 		userWidget->AddToRoot();
 
