@@ -41,7 +41,10 @@ void UDamageUI::OnCreated()
 	Super::OnCreated();
 
 	InitWidget();
-	AlphaAnimator.SetParam()
+	
+	// 애니메이터 세팅
+	AlphaAnimator.SetParam(1.f, 0.f, 1.5f, ECurveEaseFunction::CubicIn);
+	// 애니메이터 시작
 	AlphaAnimator.Start();
 }
 

@@ -71,16 +71,32 @@ void ADamageUIActor::BeginPlay()
 	Super::BeginPlay();
 
 	CreateDamageUI();
+
+	// 랜덤 목표위치 set
 	XVelocity = GetRandomNumber(-100, 100);
 	YVelocity = GetRandomNumber(-100, 100);
+
+	// 애니메이터 세팅
+	XYAccelAnimator.SetParam(1.f, 0.f, LifeTime, ECurveEaseFunction::CubicIn);
+	ZAccelAnimator.SetParam(1.f, 0.f, LifeTime, ECurveEaseFunction::QuadOut);
+	// 애니메이터 시작
+	XYAccelAnimator.Start();
+	ZAccelAnimator.Start();
+
+	// LifeTime = 1.5f 후에 파괴
 	GetWorldTimerManager().SetTimer(DestroyTHandle, this, &ADamageUIActor::SelfDestroy, LifeTime, false);
 }
 
 void ADamageUIActor::Tick(float InDeltaTime)
 {
 	Super::Tick(InDeltaTime);
-	
 
+	// AccelAnimator 업데이트
+	XYAccelAnimator.Update(InDeltaTime);
+	XYAccel = XYAccelAnimator.GetCurValue();
+	ZAccelAnimator.Update(InDeltaTime);
+	ZAccel = ZAccelAnimator.GetCurValue();
+	
 	// 위치 업데이트
 	FVector currentLocation = GetActorLocation();
 	FVector XYVector = FVector(XVelocity,YVelocity,0);
@@ -88,8 +104,6 @@ void ADamageUIActor::Tick(float InDeltaTime)
 	currentLocation += (XYAccel * XYVector * InDeltaTime) + (ZAccel * ZVector * InDeltaTime);
 	SetActorLocation(currentLocation);
 }
-
-
 
 // LifeTime 후 파괴됩니다.
 void ADamageUIActor::SelfDestroy()
