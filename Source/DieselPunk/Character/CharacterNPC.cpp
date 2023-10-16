@@ -109,19 +109,21 @@ void ACharacterNPC::EnemyStatusUISetHiddenInGame()
 
 float ACharacterNPC::DoMeleeAttack()
 {
+	// TODO 예외처리해야됨 어떻게? // 블루프린트상 스킬이 할당되어있지 않으면 크래쉬
 	auto _MeleeAttack = Cast<UMeleeAttack>(MeleeAttack);
 	return _MeleeAttack->Attack();
 }
 
 void ACharacterNPC::TempDoMeleeAttack()
 {
+	// TODO 예외처리해야됨 어떻게? // 블루프린트상 스킬이 할당되어있지 않으면 크래쉬
 	auto _MeleeAttack = Cast<UMeleeAttack>(MeleeAttack);
 	_MeleeAttack->_Attack();
 }
 
 void ACharacterNPC::DoProjectileAttack()
 {
-	// TODO 예외처리해야됨 어떻게?
+	// TODO 예외처리해야됨 어떻게? // 블루프린트상 스킬이 할당되어있지 않으면 크래쉬
 	ProjectileAttack->SkillTriggered();
 
 	FVector Location = GetMesh()->GetSocketLocation("Granade_socket");

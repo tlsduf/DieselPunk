@@ -36,4 +36,5 @@ public:
 
 private:
 	bool IsZoom = false;
+
 };

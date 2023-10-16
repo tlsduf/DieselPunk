@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "Animation/AnimBoneCompressionCodec.h"
+
 #include UE_INLINE_GENERATED_CPP_BY_NAME(DamageUI)
 
 
@@ -39,6 +41,8 @@ void UDamageUI::OnCreated()
 	Super::OnCreated();
 
 	InitWidget();
+	AlphaAnimator.SetParam()
+	AlphaAnimator.Start();
 }
 
 void UDamageUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -46,8 +50,10 @@ void UDamageUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
 	// 데미지 텍스트 알파값 애니메이팅
-	//FLinearColor linearColor = FLinearColor(GetColorAndOpacity().R, GetColorAndOpacity().G, GetColorAndOpacity().B, Alpha);
-	//SetColorAndOpacity(linearColor);
+	AlphaAnimator.Update(InDeltaTime);
+	Alpha = AlphaAnimator.GetCurValue();
+	FLinearColor linearColor = FLinearColor(GetColorAndOpacity().R, GetColorAndOpacity().G, GetColorAndOpacity().B, Alpha);
+	SetColorAndOpacity(linearColor);
 }
 
 // =============================================================

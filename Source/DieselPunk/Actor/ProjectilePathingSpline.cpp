@@ -12,9 +12,8 @@ AProjectilePathingSpline::AProjectilePathingSpline()
 	PrimaryActorTick.bCanEverTick = false;
 	SplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
 	if(!SplineComponent)
-	{
 		return;
-	}
+	
 	SplineComponent->SetupAttachment(RootComponent);
 	SplineComponent->PrimaryComponentTick.bCanEverTick = false;
 }

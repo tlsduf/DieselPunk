@@ -31,9 +31,6 @@ ADpGameMode::ADpGameMode()
 	{
 		PlayerControllerClass = PlayerControllerBPClass.Class;
 	}
-
-	
-	
 }
 
 void ADpGameMode::BeginPlay()
