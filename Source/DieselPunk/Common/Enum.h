@@ -54,3 +54,10 @@ enum class EEnemyType : uint8
 	Elite		UMETA( ToolTip = "엘리트" ),
 	Boss		UMETA( ToolTip = "보스" )
 };
+
+// 데이터 테이블 종류
+UENUM( BlueprintType )
+enum class EDataTableType : uint8
+{
+	Stat		UMETA( ToolTip = "스탯" ),
+};

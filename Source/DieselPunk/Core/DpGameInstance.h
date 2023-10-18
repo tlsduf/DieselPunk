@@ -21,4 +21,7 @@ public:
 	// 소멸자
 	virtual ~UDpGameInstance();
 
+private:
+	void LoadSingletons();
+
 };

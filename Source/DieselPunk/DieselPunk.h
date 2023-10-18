@@ -16,6 +16,7 @@
 #include <Engine/Engine.h>
 #include <Engine/GameInstance.h>
 #include <UObject/ObjectMacros.h>
+#include <UObject/UObjectGlobals.h>
 #include <UObject/ConstructorHelpers.h>
 #include <Misc/Build.h>
 #include <Templates/SubclassOf.h>
@@ -33,7 +34,9 @@
 // 개인 Header
 // =============================================================
 #include "Common/Enum.h"
+#include "Common/Macro.h"
 #include "Util/UtilFunctor.h"
 #include "Util/UtilLevelCal.h"
 #include "Util/UtilCollision.h"
 #include "Util/Animator.h"
+#include "Util/UtilPath.h"

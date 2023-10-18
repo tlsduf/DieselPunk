@@ -6,12 +6,14 @@
 #include <Modules/ModuleManager.h>
 //#include <PropertyEditorModule.h>
 
+#include "../Manager/DatatableManager.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(DpGameInstance)
 
 
 UDpGameInstance::UDpGameInstance()
 {
+    LoadSingletons();
     /*static const FName PropertyEditor("PropertyEditor");
     FPropertyEditorModule &PropertyModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>(PropertyEditor);
 
@@ -49,4 +51,10 @@ UDpGameInstance::UDpGameInstance()
 
 UDpGameInstance::~UDpGameInstance()
 {
+    FDataTableManager::GetInstance()->DestroyInstance();
+}
+
+void UDpGameInstance::LoadSingletons()
+{
+    FDataTableManager::GetInstance();
 }
