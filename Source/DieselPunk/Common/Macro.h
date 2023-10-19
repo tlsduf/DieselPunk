@@ -2,6 +2,8 @@
 
 #pragma once
 
+
+
 //싱글톤 선언입니다. 싱글톤으로 제작하려는 클래스 .h의 멤버에 선언합니다. 
 #define Singleton_Declare(ClassName)						\
 	private:												\

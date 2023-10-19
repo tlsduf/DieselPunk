@@ -61,3 +61,23 @@ enum class EDataTableType : uint8
 {
 	Stat		UMETA( ToolTip = "스탯" ),
 };
+
+// 스탯 타입
+UENUM( BlueprintType )
+enum class ECharacterStatType : uint8
+{
+	Level				UMETA( ToolTip = "레벨" ),
+	Exp					UMETA( ToolTip = "경험치" ),
+	Hp					UMETA( ToolTip = "체력" ),
+	HpRecoverySpeed		UMETA( ToolTip = "체력 회복 속도" ),
+	Atk					UMETA( ToolTip = "공격력" ),
+	AtkSpeed			UMETA( ToolTip = "공격속도" ),
+	Def					UMETA( ToolTip = "방어력" ),
+	ArmorPen			UMETA( ToolTip = "방어 관통력" ),
+	CriticalPer			UMETA( ToolTip = "치명타 확률" ),
+	CriticalAtk			UMETA( ToolTip = "치명타 공격력" ),
+	MoveSpeed			UMETA( ToolTip = "이동속도" ),
+	JumpCount			UMETA( ToolTip = "점프 횟수" ),
+	Luck				UMETA( ToolTip = "행운" ),
+	CoolDown			UMETA( ToolTip = "스킬 쿨타임 감소" ),
+};
