@@ -103,6 +103,17 @@ void USoldierAnimInstance::ResumeMontage(EAbilityType InAbilityType)
 	Montage_Resume(animMontage);
 }
 
+void USoldierAnimInstance::GunRecoil()
+{
+	GunRecoilBool = 1;
+	TWeakObjectPtr<USoldierAnimInstance> thisPtr = this;
+	GetWorld()->GetTimerManager().SetTimerForNextTick([thisPtr]()
+	{
+		if(thisPtr.IsValid())
+			thisPtr->GunRecoilBool = 0;
+	});
+}
+
 void USoldierAnimInstance::AnimNotify_NotifySkillQ() const
 {
 	auto ownerPawn = Cast<ACharacterPC>(GetOwningActor());

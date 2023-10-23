@@ -27,7 +27,7 @@
 
 ACharacterPC::ACharacterPC()
 	:
-	Exp(0), Level(1), TempLevel(Level), TempMaxHealth(MaxHealth)
+	Exp(0), Level(1), TempLevel(Level)
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -70,8 +70,10 @@ void ACharacterPC::BeginPlay()
 
 	// 게임시작시 기본체력초기화
 	Health = MaxHealth;
-	TempPercent = Health / MaxHealth;
-	TempPercentAfterImage = Health / MaxHealth;
+	HpPercent = Health / MaxHealth;
+	HpPercentAfterImage = Health / MaxHealth;
+	MemoryHpPercent = HpPercent;
+	MemoryHpPercentAfterImage = HpPercentAfterImage;
 
 	PCSkillManager.ResetSkill();
 }
@@ -80,12 +82,6 @@ void ACharacterPC::BeginPlay()
 void ACharacterPC::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if(TempMaxHealth != MaxHealth)
-	{
-		_UpdateHp(Health, MaxHealth);
-		TempMaxHealth = MaxHealth;
-	}
 	
 	// 뛰는 상태인지 판별하여 MaxWalkSpeed 초기화.
 	if (IsJog)
@@ -128,6 +124,13 @@ void ACharacterPC::Tick(float DeltaTime)
 		TempLevel = Level;
 		LevelUpEvent();
 	}
+
+	// 체력바 애니메이션 업데이트
+	HpBarAnimator.Update(DeltaTime);
+	HpBarAfterImageAnimator.Update(DeltaTime);
+	
+	HpPercent = HpBarAnimator.GetCurValue();
+	HpPercentAfterImage = HpBarAfterImageAnimator.GetCurValue();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -636,21 +639,26 @@ bool ACharacterPC::IsDead() const
 //================================================================
 void ACharacterPC::_UpdateHp(int InCurHp, int InMaxHp)
 {
-	// 애니메이터가 들어갔던 함수인데 애니메이터 삭제하면서 임시로 구현했습니다.
-	TempPercent = InCurHp / InMaxHp;
-	TempPercentAfterImage = InCurHp / InMaxHp;
-}
+	// 현재 체력 퍼센트
+	float curPercent = ( float )Health / ( float )MaxHealth;
+	curPercent = FMath::Clamp( curPercent, 0.f, 1.f );
 
-//================================================================
-// 체력 퍼센트를 반환합니다.
-//================================================================
-float ACharacterPC::GetHealthPercent()
-{
-	return TempPercent;
-}
-float ACharacterPC::GetHealthPercentAfterImage()
-{
-	return TempPercentAfterImage;
+	// 목표 체력 퍼센트
+	float destPercent = ( float )InCurHp / ( float )InMaxHp;
+	destPercent = FMath::Clamp( destPercent, 0.f, 1.f );
+
+	// 퍼센트차이
+	float percentAmount = curPercent - destPercent;
+
+	HpBarAnimator.SetParam(curPercent, destPercent, 0.6f, EAnimType::CubicOut);
+	HpBarAnimator.Start();
+
+	HpBarAfterImageAnimator.SetParam(curPercent, destPercent,
+		(0.f <= percentAmount && percentAmount < 0.2f) ? 0.6f
+				: (0.2f <= percentAmount && percentAmount < 0.4f) ? 0.85f
+				:													1.1f,
+	EAnimType::CubicIn);
+	HpBarAfterImageAnimator.Start();
 }
 
 //================================================================

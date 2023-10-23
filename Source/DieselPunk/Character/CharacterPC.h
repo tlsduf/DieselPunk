@@ -139,16 +139,20 @@ public:
 
 	// 체력 퍼센테이지 반환 애니메이팅
 	void _UpdateHp(int InCurHp, int InMaxHp);
-	float TempPercent;
-	float TempPercentAfterImage;
+	Animator HpBarAnimator;
+	Animator HpBarAfterImageAnimator;
+	float HpPercent = 1;
+	float HpPercentAfterImage = 1;
+	float MemoryHpPercent = 1;
+	float MemoryHpPercentAfterImage = 1;
 
 	// 체력 퍼센트를 반환합니다.
 	UFUNCTION(BlueprintPure)
-	float GetHealthPercent();
+	float GetHealthPercent(){return HpPercent;}
 
 	// 체력 퍼센트를 반환합니다.
 	UFUNCTION(BlueprintPure)
-	float GetHealthPercentAfterImage();
+	float GetHealthPercentAfterImage(){return HpPercentAfterImage;}
 
 	// 스킬 쿨타임을 반환합니다. 
 	UFUNCTION(BlueprintPure)
@@ -244,9 +248,6 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Defensive")
 	int Health;
 
-	// 임의체력 (체력 애니메이팅에 활용되었음)
-	float TempMaxHealth;
-
 	// 방어력 변수. 아직 활용X. 기획 기다려야됨
 	UPROPERTY(EditDefaultsOnly, Category = "Defensive")
 	int Armor = 0;
@@ -254,11 +255,6 @@ public:
 	// DamageImmunity 가 True 면 데미지를 안 입게 했습니다. TakeDamage 함수에서 활용합니다.
 	UPROPERTY(EditAnywhere, Category = "Defensive")
 	bool DamageImmunity = false;
-
-	// * 공격관련 변수
-	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "CombatProp")
-	float FireRate = 0.25f;
-	// !------------------------------------------------------------
 
 private:
 	// 레일 타는 거 임시구현!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

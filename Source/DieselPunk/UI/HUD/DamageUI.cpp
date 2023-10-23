@@ -43,7 +43,7 @@ void UDamageUI::OnCreated()
 	InitWidget();
 	
 	// 애니메이터 세팅
-	AlphaAnimator.SetParam(1.f, 0.f, 1.5f, ECurveEaseFunction::CubicIn);
+	AlphaAnimator.SetParam(1.f, 0.f, 1.5f, EAnimType::CubicIn);
 	// 애니메이터 시작
 	AlphaAnimator.Start();
 }

@@ -29,6 +29,10 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 	TSoftObjectPtr<UAnimMontage> SkillRMontage;
 
+	// HandL 본 회전 블렌딩 알파
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+	bool GunRecoilBool = 0;
+
 public:
 	// 생성자
 	USoldierAnimInstance();
@@ -44,7 +48,8 @@ public:
 	void PauseMontage(EAbilityType InAbilityType);
 	// 몽타주를 다시 재생합니다.
 	void ResumeMontage(EAbilityType InAbilityType);
-
+	// 임시 반동 애니메이션
+	void GunRecoil();
 	
 private:
 	// SkillQ 전용 애님노티파이 입니다. 

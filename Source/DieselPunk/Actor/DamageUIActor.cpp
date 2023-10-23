@@ -77,8 +77,8 @@ void ADamageUIActor::BeginPlay()
 	YVelocity = GetRandomNumber(-100, 100);
 
 	// 애니메이터 세팅
-	XYAccelAnimator.SetParam(1.f, 0.f, LifeTime, ECurveEaseFunction::CubicIn);
-	ZAccelAnimator.SetParam(1.f, 0.f, LifeTime, ECurveEaseFunction::QuadOut);
+	XYAccelAnimator.SetParam(1.f, 0.f, LifeTime, EAnimType::CubicIn);
+	ZAccelAnimator.SetParam(1.f, 0.f, LifeTime, EAnimType::QuadOut);
 	// 애니메이터 시작
 	XYAccelAnimator.Start();
 	ZAccelAnimator.Start();

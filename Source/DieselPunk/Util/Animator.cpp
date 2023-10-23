@@ -5,10 +5,10 @@
 
 
 // =============================================================
-// 디폴트 생성자
+// 생성자
 // =============================================================
 Animator::Animator()
-	: AnimType( ECurveEaseFunction::Linear )
+	: AnimType( EAnimType::Linear )
 	, StartValue( 0.f )
 	, CurValue( 0.f )
 	, EndValue( 0.f )
@@ -19,23 +19,9 @@ Animator::Animator()
 }
 
 // =============================================================
-// 생성자
-// =============================================================
-Animator::Animator(const float inStartValue, const float inEndValue, const float inDurationTime, ECurveEaseFunction inAnimType)
-	: AnimType( inAnimType )
-	, StartValue( inStartValue )
-	, CurValue( 0.f )
-	, EndValue( inEndValue )
-	, AccTime( inDurationTime )
-	, DurationTime( inDurationTime )
-{
-
-}
-
-// =============================================================
 // 파라미터 Setter [TODO] 애니메이션이 실행중일때 호출되면 어떻게 되는지? 예외처리를 해야하는지?
 // =============================================================
-void Animator::SetParam(const float inStartValue, const float inEndValue, const float inDurationTime, ECurveEaseFunction inAnimType)
+void Animator::SetParam(const float inStartValue, const float inEndValue, const float inDurationTime, EAnimType inAnimType)
 {
 	AnimType = inAnimType;
 	StartValue = inStartValue;
@@ -66,7 +52,7 @@ void Animator::Update(float InDeltaTime)
 // =============================================================
 void Animator::CalCurValue(float inTime)
 {
-	CurValue = StartValue + ((EndValue - StartValue) * AnimCurve.ApplyEasing(inTime, AnimType));
+	CurValue = StartValue + ((EndValue - StartValue) * ApplyEasing(inTime, AnimType));
 }
 
 // =============================================================
@@ -83,4 +69,81 @@ void Animator::Start()
 float Animator::GetCurValue()
 {
 	return CurValue;
+}
+
+
+// =============================================================
+// 시간, 애니메이션 타입에 따라 애니메이팅
+// =============================================================
+float Animator::ApplyEasing( float Time, EAnimType EaseFunction )
+{
+	// Currently we always use normalized distances
+	const float Distance = 1.0f;
+
+	// Currently we don't support custom start offsets;
+	const float Start = 0.0f;
+	float CurveValue = 0.0f;
+
+	switch( EaseFunction )
+	{
+	case EAnimType::Linear:
+		CurveValue = Start + Distance * Time;
+		break;
+
+	case EAnimType::QuadIn:
+		CurveValue = Start + Distance * Time * Time;
+		break;
+
+	case EAnimType::QuadOut:
+		CurveValue = Start + -Distance * Time * (Time - 2.0f);
+		break;
+
+	case EAnimType::QuadInOut:
+		{
+			if( Time < 0.5f )
+			{
+				const float Scaled = Time * 2.0f;
+				CurveValue = Start + Distance * 0.5f * Scaled * Scaled;
+			}
+			else
+			{
+				const float Scaled = (Time - 0.5f) * 2.0f;
+				CurveValue = Start + -Distance * 0.5f * (Scaled * (Scaled - 2.0f) - 1.0f);
+			}
+		}
+		break;
+
+	case EAnimType::CubicIn:
+		CurveValue = Start + Distance * Time * Time * Time;
+		break;
+
+	case EAnimType::CubicOut:
+		{
+			const float Offset = Time - 1.0f;
+			CurveValue = Start + Distance * (Offset * Offset * Offset + 1.0f);
+		}
+		break;
+
+	case EAnimType::CubicInOut:
+		{
+			float Scaled = Time * 2.0f;
+			if (Scaled < 1.0f)
+			{
+				CurveValue = Start + Distance / 2.0f * Scaled * Scaled * Scaled;
+			}
+			else
+			{
+				Scaled -= 2.0f;
+				CurveValue = Start + Distance / 2.0f * (Scaled * Scaled * Scaled + 2.0f);
+			}
+		}
+		break;
+
+	default:
+		// Unrecognized curve easing function type
+		// checkf(0, TEXT("Unrecognized curve easing function type [%i] for FCurveHandle"), (int)EaseFunction);
+		break;
+	}
+
+	return CurveValue;
 }

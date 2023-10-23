@@ -75,7 +75,7 @@ void ACharacterBase::DisplayDamage(float inDamage)
 	
 	if(DamageUIActor)
 	{
-		DamageUIActor->AttachToComponent( GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
+		// DamageUIActor->AttachToComponent( GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
 		DamageUIActor->SetDamage(inDamage);
 		DamageUIActor->FinishSpawning(SpawnTransform);
 	}

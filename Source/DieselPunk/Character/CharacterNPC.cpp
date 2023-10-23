@@ -28,8 +28,8 @@ void ACharacterNPC::Tick(float DeltaTime)
 
 	if( EnemyStatusUI != nullptr )
 	{
-		EnemyStatusUI->SetHPPercent(TempPercent);
-		EnemyStatusUI->SetHPPercentAfterImage(TempPercentAfterImage);
+		EnemyStatusUI->SetHPPercent(HpPercent);
+		EnemyStatusUI->SetHPPercentAfterImage(HpPercentAfterImage);
 		EnemyStatusUI->SetTextStack(SoldierStack);
 	}
 	if(IsDead())
@@ -45,7 +45,7 @@ void ACharacterNPC::CreateStatusUI()
 	if( EnemyStatusUI.IsValid() )
 		return;
 
-	FString inPath =  FString::Printf(TEXT( "/Script/UMGEditor.WidgetBlueprint'/Game/DieselPunk/UI/Widgets/HUD/NPC_HpBar.NPC_HpBar_C'" ));
+	FString inPath = FString::Printf(TEXT( "/Script/UMGEditor.WidgetBlueprint'/Game/DieselPunk/UI/Widgets/HUD/NPC_HpBar.NPC_HpBar_C'" ));
 	UClass* widgetClass = ConstructorHelpersInternal::FindOrLoadClass( inPath, UUserWidget::StaticClass() );
 	if(!widgetClass)
 		return;
@@ -73,8 +73,8 @@ void ACharacterNPC::CreateStatusUI()
 	WidgetComp->SetDrawSize( FVector2D( 250.0f, 80.0f ) );
 	WidgetComp->bHiddenInGame = 1;
 	
-	EnemyStatusUI->SetHPPercent(TempPercent);
-	EnemyStatusUI->SetHPPercentAfterImage(TempPercentAfterImage);
+	EnemyStatusUI->SetHPPercent(HpPercent);
+	EnemyStatusUI->SetHPPercentAfterImage(HpPercentAfterImage);
 }
 
 void ACharacterNPC::SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent)

@@ -24,7 +24,7 @@ protected:
 
 	float XVelocity = 100;				// x 상수
 	float YVelocity = 100;				// y 상수
-	float ZVelocity = 300;				// z 상수
+	float ZVelocity = 200;				// z 상수
 
 	float XYAccel;						// DamageUIActor XY 가속도 변수
 	Animator XYAccelAnimator;			// DamageUIActor XY 가속도 변수를 애니메이팅 합니다.

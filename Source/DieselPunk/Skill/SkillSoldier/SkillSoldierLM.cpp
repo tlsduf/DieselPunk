@@ -70,6 +70,8 @@ void USkillSoldierLM::SkillTriggered()
 		if (!animInst)
 			return;
 
+		animInst->GunRecoil();
+		
 		//===========================================
 		// * MainAction 2 // Projectile Spawn
 		if(ProjectileClass && !EBuffOn)
