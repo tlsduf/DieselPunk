@@ -135,10 +135,3 @@ void USkillSoldierLM::SkillTriggered()
 
 
 }
-
-void USkillSoldierLM::InitSkill()
-{
-	Super::InitSkill();
-
-	
-}

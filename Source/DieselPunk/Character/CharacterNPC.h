@@ -13,6 +13,12 @@ class DIESELPUNK_API ACharacterNPC : public ACharacterPC
 {
 	GENERATED_BODY()
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* TurretMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* TurretTopMesh;
+	
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "skills", meta = (AllowPrivateAccess = "true"))
 	UPlayerSkill *MeleeAttack;
@@ -30,6 +36,10 @@ public:
 	TWeakObjectPtr< UEnemyStatusUI > EnemyStatusUI; // 상태 UI 포인터
 
 	FTimerHandle EnemyStatusUISetHiddenInGameTHandle;
+
+	// NPC 타입
+	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
+	ENPCType NPCType = ENPCType::Enemy;
 	
 	ACharacterNPC();
 

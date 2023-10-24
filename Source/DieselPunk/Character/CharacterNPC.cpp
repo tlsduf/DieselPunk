@@ -5,6 +5,7 @@
 #include "../Skill/MeleeAttack.h"
 #include "../UI/HUD/EnemyStatusUI.h"
 
+#include <Components/StaticMeshComponent.h>
 #include <Kismet/GameplayStatics.h>
 #include <Particles/ParticleSystemComponent.h>
 #include <Components/SkeletalMeshComponent.h>
@@ -13,6 +14,25 @@
 
 ACharacterNPC::ACharacterNPC()
 {
+	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Turret Mesh"));
+	if ( TurretMesh )
+	{
+		TurretMesh->SetupAttachment( GetRootComponent() );
+		TurretMesh->SetCollisionEnabled( ECollisionEnabled::Type::NoCollision );
+		TurretMesh->SetGenerateOverlapEvents( false );
+		TurretMesh->SetSimulatePhysics( false );
+	}
+
+	TurretTopMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Turret Top Mesh"));
+	if ( TurretTopMesh )
+	{
+		TurretTopMesh->SetupAttachment(TurretMesh);
+		TurretTopMesh->SetCollisionEnabled( ECollisionEnabled::Type::NoCollision );
+		TurretTopMesh->SetGenerateOverlapEvents( false );
+		TurretTopMesh->SetSimulatePhysics( false );
+	}
+	
+	
 	MeleeAttack = CreateDefaultSubobject<UPlayerSkill>(TEXT("MeleeAttack"));
 	ProjectileAttack = CreateDefaultSubobject<UPlayerSkill>(TEXT("ProjectileAttack"));
 }
@@ -34,7 +54,11 @@ void ACharacterNPC::Tick(float DeltaTime)
 	}
 	if(IsDead())
 		WidgetComp->bHiddenInGame = 1;
-	
+
+	if(NPCType == ENPCType::Alliance)
+	{
+		//TurretTopMesh->SetWolrdRotation();
+	}
 }
 
 // =============================================================

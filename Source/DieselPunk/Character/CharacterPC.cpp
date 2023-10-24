@@ -72,8 +72,6 @@ void ACharacterPC::BeginPlay()
 	Health = MaxHealth;
 	HpPercent = Health / MaxHealth;
 	HpPercentAfterImage = Health / MaxHealth;
-	MemoryHpPercent = HpPercent;
-	MemoryHpPercentAfterImage = HpPercentAfterImage;
 
 	PCSkillManager.ResetSkill();
 }

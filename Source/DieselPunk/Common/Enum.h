@@ -55,6 +55,14 @@ enum class EEnemyType : uint8
 	Boss		UMETA( ToolTip = "보스" )
 };
 
+// 아군NPC 적군NPC
+UENUM( BlueprintType )
+enum class ENPCType : uint8
+{
+	Enemy		UMETA( ToolTip = "적군" ),
+	Alliance	UMETA( ToolTip = "아군" )
+};
+
 // 데이터 테이블 종류
 UENUM( BlueprintType )
 enum class EDataTableType : uint8

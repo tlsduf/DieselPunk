@@ -42,8 +42,6 @@ public:
 
 	// 스킬이 어떠한 이유로 인해 캔슬될 때 호출됩니다.
 	virtual void CancelSkill() override;
-	
-	virtual void InitSkill() {};
 };
 
 
