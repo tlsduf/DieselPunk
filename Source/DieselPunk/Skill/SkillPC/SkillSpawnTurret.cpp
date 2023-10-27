@@ -2,6 +2,7 @@
 
 #include "SkillSpawnTurret.h"
 #include "../../Character/CharacterNPC.h"
+#include "../../Logic/EnemyAIController.h"
 
 #include <DrawDebugHelpers.h>
 
@@ -36,6 +37,7 @@ void USkillSpawnTurret::SkillStarted()
 		if(TurretClass)
 		{
 			ACharacterNPC* newActor = GetWorld()->SpawnActorDeferred<ACharacterNPC>(TurretClass, spawnTransform, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn );
+			newActor->AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 			newActor->FinishSpawning(spawnTransform);
 		}
 		

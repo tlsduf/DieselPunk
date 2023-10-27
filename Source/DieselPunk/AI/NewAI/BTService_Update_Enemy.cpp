@@ -14,6 +14,7 @@
 UBTService_Update_Enemy::UBTService_Update_Enemy()
 {
     NodeName = "UpdateEnemy";
+    bCreateNodeInstance = true;
 }
 
 void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 *NodeMemory, float DeltaSeconds)
@@ -56,7 +57,9 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
         if(CurTarget == nullptr)
         {
             // 가장 가까운 적 탐색 후, 거리 계산
-            float distance = FVector::Dist(SearchNearestEnemy(AICharacter)->GetActorLocation(), AICharacter->GetActorLocation());
+            float distance = FLT_MAX;
+            if(SearchNearestEnemy(AICharacter) != nullptr)
+                distance = FVector::Dist(SearchNearestEnemy(AICharacter)->GetActorLocation(), AICharacter->GetActorLocation());
             // 거리가 유효하면 타겟설정
             if(distance < attackRange)
             {

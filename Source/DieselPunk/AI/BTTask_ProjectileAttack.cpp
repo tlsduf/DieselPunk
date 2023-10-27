@@ -10,6 +10,7 @@
 UBTTask_ProjectileAttack::UBTTask_ProjectileAttack()
 {
     NodeName = "ProjectileAttack";
+    bCreateNodeInstance = true;
 }
 
 EBTNodeResult::Type UBTTask_ProjectileAttack::ExecuteTask(UBehaviorTreeComponent &OwnerComp, uint8 *NodeMemory)
