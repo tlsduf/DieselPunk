@@ -9,6 +9,8 @@
  *
  */
 
+class ACharacterNPC;
+
 UCLASS()
 class DIESELPUNK_API USkillSpawnTurret : public UPlayerSkill
 {

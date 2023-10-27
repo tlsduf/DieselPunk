@@ -1,8 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SkillSpawnTurret.h"
+#include "../../Character/CharacterNPC.h"
 
-#include "DrawDebugHelpers.h"
+#include <DrawDebugHelpers.h>
 
 
 USkillSpawnTurret::USkillSpawnTurret() : Super()
@@ -25,17 +26,19 @@ void USkillSpawnTurret::SkillStarted()
 	// 로직은 추후 쉽게 변경가능하므로 일단 이렇게 해놓겠습니다.
 	if(bTaskOn == false)
 	{
-		FHitResult HitResult = UtilCollision::GetUnderCursor();
-		
-
-
 		bDrawSupport = true;
 		bTaskOn = true;
 	}
 	else
 	{
+		UClass* TurretClass = LoadClass<ACharacterNPC>( NULL, TEXT( "/Script/Engine.Blueprint'/Game/DieselPunk/Blueprints/Characters/BP_Turret.BP_Turret_C'" ));
+		FTransform spawnTransform( FRotator::ZeroRotator, UtilCollision::GetUnderCursor().Location);
+		if(TurretClass)
+		{
+			ACharacterNPC* newActor = GetWorld()->SpawnActorDeferred<ACharacterNPC>(TurretClass, spawnTransform, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn );
+			newActor->FinishSpawning(spawnTransform);
+		}
 		
-
 		bDrawSupport = false;
 		bTaskOn = false;
 	}
