@@ -1,10 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PlayerControllerBase.h"
-#include "..\Character\CharacterPC.h"
+#include "../Character/CharacterPC.h"
 #include "../Skill/SkillBase.h"
 #include "../Skill/PlayerSkill.h"
 #include "../UI/HUD/SkillUpgradeUI.h"
+#include "../Core/DpCheatManager.h"
 
 
 #include <Blueprint/UserWidget.h>
@@ -13,6 +14,7 @@
 #include <InputMappingContext.h>
 
 #include <GameFramework/WorldSettings.h>
+
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PlayerControllerBase)
 
@@ -24,7 +26,7 @@ APlayerControllerBase::APlayerControllerBase()
 	bShowMouseCursor = false;
 	DefaultMouseCursor = EMouseCursor::Default;
 	
-	//CheatClass = UDpCheatManager::StaticClass();
+	CheatClass = UDpCheatManager::StaticClass();
 }
 
 void APlayerControllerBase::BeginPlay()

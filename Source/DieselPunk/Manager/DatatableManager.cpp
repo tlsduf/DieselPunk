@@ -5,6 +5,18 @@
 
 Singleton_Defintion(FDataTableManager)
 
+FDataTableManager::FDataTableManager()
+{
+	
+}
+
+FDataTableManager::~FDataTableManager()
+{
+	
+}
+
+
+
 void FDataTableManager::Initialize()
 {
 	LoadDataTables();

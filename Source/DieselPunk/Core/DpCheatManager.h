@@ -1,0 +1,24 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "GameFramework/CheatManager.h"
+#include "DpCheatManager.generated.h"
+
+/**
+ * 개발 편리를 위한 치트매니저 입니다.
+ */
+UCLASS()
+class DIESELPUNK_API UDpCheatManager : public UCheatManager
+{
+	GENERATED_BODY()
+
+	//몬스터를 플레이어 앞에 스폰합니다.
+	UFUNCTION(exec)
+	void SpawnMonster();
+
+	//오브젝트 ID의 액터를 삭제합니다.
+	UFUNCTION(exec)
+	void DestroyActor(int32 InObjectId);
+};
+
