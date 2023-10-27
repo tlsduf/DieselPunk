@@ -87,14 +87,14 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
         FVector VRange = AIPawn->GetActorLocation() - PlayerPawn->GetActorLocation();
         float FRange = VRange.Size();
 
-        // 몬스터와 플레이어의 거리에 따른 조건 설정 // 이딴식으로 하는게 맞는것인가?
-        if (1700 < FRange)
+        // 몬스터와 플레이어의 거리에 따른 조건 설정
+        if (1300 < FRange)
         {
             OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("OutRange"), true);
             OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InRange"), false);
             OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InMeleeRange"), false);
         }
-        else if (MeleeRange < FRange && FRange < 1700)
+        else if (MeleeRange < FRange && FRange < 1300)
         {
             OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("OutRange"), false);
             OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InRange"), true);
@@ -109,7 +109,7 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
     }
 
 
-    // 스폰 시, 죽음 시 블랙보드를 멈추기위해서 임시로 구현함 // 이딴식으로 하는 게 맞는 것인가?
+    // 스폰 시, 죽음 시 블랙보드를 멈추기위해서 임시로 구현함
     AEnemyAIController * Controller = Cast<AEnemyAIController>(OwnerComp.GetAIOwner());
     
     if (Controller->IsDead())
@@ -134,7 +134,7 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
 }
 
 // =============================================================
-// 현재 캐릭터로부터 가장 가까운 적을 반환한다.
+// 현재 캐릭터로부터 가장 가까운 적을 반환한다. // TODO ObjectManager
 // =============================================================
 ACharacterNPC* UBTService_Update_Enemy::SearchNearestEnemy(ACharacterNPC* inThisCharacter)
 {
