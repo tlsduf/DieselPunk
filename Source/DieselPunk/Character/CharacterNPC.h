@@ -5,6 +5,7 @@
 #include "CharacterPC.h"
 #include "CharacterNPC.generated.h"
 
+class UHousingActorComponent;
 class UPlayerSkill;
 class UEnemyStatusUI;
 
@@ -18,6 +19,9 @@ class DIESELPUNK_API ACharacterNPC : public ACharacterPC
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* TurretTopMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UHousingActorComponent* HousingActorComponent;
 	
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "skills", meta = (AllowPrivateAccess = "true"))
