@@ -79,6 +79,13 @@ void FObjectManager::SetPlayer(ACharacterPC* InPlayer)
 	Player = InPlayer;
 }
 
+void FObjectManager::SetObjectIdAtCharacterBase(AActor* InActor, int32 InObjectId)
+{
+	ACharacterBase* charBase = Cast<ACharacterBase>(InActor);
+	if(charBase)
+		charBase->SetObjectId(InObjectId);
+}
+
 //컨트롤 중인 플레이어를 가져옵니다.
 ACharacterPC* FObjectManager::GetPlayer()
 {

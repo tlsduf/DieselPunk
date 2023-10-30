@@ -45,8 +45,6 @@ private:
 	void Initialize();
 	void Release();
 public:
-	void LateInitialize();
-public:
 	//액터를 생성합니다.
 	template<typename T>
 	int32	CreateActor(UClass* InClass, const FSpawnParam& InSpawnParam);
@@ -59,6 +57,8 @@ public:
 
 	//플레이어를 세팅합니다.
 	void	SetPlayer(ACharacterPC* InPlayer);
+private:
+	void	SetObjectIdAtCharacterBase(AActor* InActor, int32 InObjectId);
 
 public:
 	//컨트롤 중인 플레이어를 가져옵니다.
@@ -80,20 +80,30 @@ int32 FObjectManager::CreateActor(UClass* InClass, const FSpawnParam& InSpawnPar
 	if(!InClass)
 		return INVALID_UCLASS;
 
+	//현재 월드 업데이트
+	FWorldContext* world = GEngine->GetWorldContextFromGameViewport(GEngine->GameViewport);
+	World = world->World();
 
+	//트랜스폼 생성
 	FTransform spawnTransform(InSpawnParam.Rotation, InSpawnParam.Location);
+
+	//액터 생성
 	AActor* actor = World->SpawnActorDeferred<T>(InClass, spawnTransform, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 
 	if(!actor)
 		return OBJECT_SPAWN_FAILED;
-	
+
+	//콜백함수 호출
 	if(InSpawnParam.CallBackSpawn)
 		InSpawnParam.CallBackSpawn(actor);
 
-	actor->FinishSpawning(spawnTransform);
-
+	//오브젝트ID 등록
 	int32 objId = FObjectIdGenerator::GenerateID();
+	SetObjectIdAtCharacterBase(actor, objId);
 
+	//스폰 마무리
+	actor->FinishSpawning(spawnTransform);
+	
 	Objects.Add(objId, actor);
 
 	return objId;

@@ -2,7 +2,7 @@
 
 #include "SkillSpawnTurret.h"
 #include "../../Character/CharacterNPC.h"
-#include "../../Logic/EnemyAIController.h"
+#include "../../Manager/ObjectManager.h"
 
 #include <DrawDebugHelpers.h>
 
@@ -32,13 +32,16 @@ void USkillSpawnTurret::SkillStarted()
 	}
 	else
 	{
+		
 		UClass* TurretClass = LoadClass<ACharacterNPC>( NULL, TEXT( "/Script/Engine.Blueprint'/Game/DieselPunk/Blueprints/Characters/BP_Turret.BP_Turret_C'" ));
-		FTransform spawnTransform( FRotator::ZeroRotator, UtilCollision::GetUnderCursor().Location);
 		if(TurretClass)
 		{
-			ACharacterNPC* newActor = GetWorld()->SpawnActorDeferred<ACharacterNPC>(TurretClass, spawnTransform, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn );
-			newActor->AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
-			newActor->FinishSpawning(spawnTransform);
+			FSpawnParam spawnParam;
+			spawnParam.Rotation = FRotator::ZeroRotator;
+			spawnParam.Location = UtilCollision::GetUnderCursor().Location;
+			spawnParam.CallBackSpawn = nullptr;
+			
+			ControlTurretId = FObjectManager::GetInstance()->CreateActor<ACharacterNPC>(TurretClass, spawnParam);
 		}
 		
 		bDrawSupport = false;

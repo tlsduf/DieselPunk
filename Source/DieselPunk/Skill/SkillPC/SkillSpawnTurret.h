@@ -20,6 +20,8 @@ private:
 	bool bTaskOn = false;
 
 	bool bDrawSupport = false;
+
+	int32 ControlTurretId = -1;
 	
 protected:
 	// 생성자

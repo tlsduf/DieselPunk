@@ -13,6 +13,9 @@ class DIESELPUNK_API ACharacterBase : public ACharacter
 {
 	GENERATED_BODY()
 
+protected:
+	int32 ObjectId = -1;
+
 public:
 	// 데미지 UI 액터
 	UPROPERTY()
@@ -43,6 +46,9 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* InPlayerInputComponent) override;
-	
+
+	const int32 GetObjectId() const { return ObjectId; }
+
+	void SetObjectId(int32 InObjectId) { ObjectId = InObjectId; }
 	
 };
