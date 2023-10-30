@@ -41,6 +41,7 @@ private:
 public:
 	constexpr static int32 INVALID_UCLASS = -9999;			//생성 시 UCLASS의 오류
 	constexpr static int32 OBJECT_SPAWN_FAILED = -9998;		//오브젝트 생성 실패
+	constexpr static int32 INVALID_OBJECTID = -9997;		//잘못된 오브젝트 ID
 private:
 	void Initialize();
 	void Release();
@@ -65,13 +66,16 @@ public:
 	ACharacterPC* GetPlayer();
 	
 	//오브젝트ID를 받아 액터를 찾습니다.
-	AActor* FindActor(int64 InObjectId) { return Objects.Find(InObjectId)->Get(); }
+	AActor* FindActor(int64 InObjectId);
 
-	//액터를 찾는 함수포인터를 받아 액터를 찾습니다.
-	AActor* FindActorByPredicate(const std::function<bool(AActor*)>& InPredicate);
+	//액터를 찾는 함수포인터를 받아 액터의 Id를 찾습니다.
+	int32	FindActorByPredicate(const std::function<bool(AActor*)>& InPredicate);
 
-	//액터를 찾는 함수포인터를 받아 해당하는 액터의 어레이를 반환합니다.
-	void	FindActorArrayByPredicate(TArray<TWeakObjectPtr<AActor>>& OutActors, const std::function<bool(AActor*)>& InPredicate);
+	//액터를 찾는 함수포인터를 받아 해당하는 액터의 Id어레이를 반환합니다.
+	void	FindActorArrayByPredicate(TArray<int>& OutActors, const std::function<bool(AActor*)>& InPredicate);
+
+	//로케이션과 액터의 Id어레이를 받아 가장 InLocation에 가까운 액터의 Id를 반환합니다.
+	int32	GetNearestACtorByRangeAndIds(FVector InLocation, const TArray<int32>& InActorIds);
 };
 
 template <typename T>

@@ -22,10 +22,20 @@ FObjectManager::~FObjectManager()
 
 void FObjectManager::Initialize()
 {
+	Objects.Empty();
 }
 
 void FObjectManager::Release()
 {
+	for(TPair<int32, TWeakObjectPtr<AActor>>& pair : Objects)
+	{
+		if(pair.Value.IsValid())
+		{
+			pair.Value->SetActorHiddenInGame(true);
+			pair.Value->Destroy();
+		}
+	}
+	Objects.Empty();
 }
 
 //액터 포인터를 받아 액터를 파괴합니다.
@@ -113,26 +123,58 @@ ACharacterPC* FObjectManager::GetPlayer()
 	return Player.Get();
 }
 
+AActor* FObjectManager::FindActor(int64 InObjectId)
+{
+	TWeakObjectPtr<AActor>* findActor = Objects.Find(InObjectId);
+	
+	if(findActor)
+		return findActor->Get();
+	
+	return nullptr;
+}
+
 //액터를 찾는 함수포인터를 받아 액터를 찾습니다.
-AActor* FObjectManager::FindActorByPredicate(const std::function<bool(AActor*)>& InPredicate)
+int32 FObjectManager::FindActorByPredicate(const std::function<bool(AActor*)>& InPredicate)
 {
 	for(const TPair<int32, TWeakObjectPtr<AActor>>& pair : Objects)
 	{
 		if(InPredicate(pair.Value.Get()))
-			return pair.Value.Get();
+			return pair.Key;
 	}
 
-	return nullptr;
+	return INVALID_OBJECTID;
 }
 
 //액터를 찾는 함수포인터를 받아 해당하는 액터의 어레이를 반환합니다.
-void FObjectManager::FindActorArrayByPredicate(TArray<TWeakObjectPtr<AActor>>& OutActors,
+void FObjectManager::FindActorArrayByPredicate(TArray<int32>& OutActors,
 	const std::function<bool(AActor*)>& InPredicate)
 {
 	for(const TPair<int32, TWeakObjectPtr<AActor>>& pair : Objects)
 	{
 		if(InPredicate(pair.Value.Get()))
-			OutActors.Add(pair.Value);
+			OutActors.Add(pair.Key);
 	}
+}
+
+int32 FObjectManager::GetNearestACtorByRangeAndIds(FVector InLocation, const TArray<int32>& InActorIds)
+{
+	double dist = MAX_dbl;
+	int32 returnId = -1;
+	
+	for(int32 id : InActorIds)
+	{
+		AActor* actor = FindActor(id);
+		if(!actor)
+			continue;
+
+		double curDist = FVector::Distance(actor->GetActorLocation(), InLocation);
+		if(curDist < dist)
+		{
+			dist = curDist;
+			returnId = id;
+		}
+	}
+
+	return returnId;
 }
 
