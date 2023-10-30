@@ -26,6 +26,9 @@ private:
 	ACharacterNPC* SearchNearestEnemy(ACharacterNPC* inThisCharacter);
 
 	UPROPERTY()
-	ACharacterNPC* CurTarget = nullptr;
+	TWeakObjectPtr<ACharacterNPC> CurTarget = nullptr;
+
+	// 넥서스의 위치를 반환한다.
+	FVector GetNexusLocation();
 	
 };

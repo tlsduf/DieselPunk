@@ -38,24 +38,21 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
     OwnerComp.GetBlackboardComponent()->SetValueAsVector(TEXT("PlayerLocation"), PlayerPawn->GetActorLocation());
 
     // 넥서스 위치 SET // Tick에 있어야 하는가?
-    OwnerComp.GetBlackboardComponent()->SetValueAsVector(TEXT("Nexus"), PlayerPawn->GetActorLocation());
+    OwnerComp.GetBlackboardComponent()->SetValueAsVector(TEXT("Nexus"), GetNexusLocation());
 
-    // 아군 캐릭터일때, 유효한 목표의 위치 업데이트
-    if(CurTarget != nullptr)
-        OwnerComp.GetBlackboardComponent()->SetValueAsVector(TEXT("NearestEnemyLocation"), CurTarget->GetActorLocation());
-    
     
     // 캐릭터가 아군일 때
     if(AICharacter->NPCType == ENPCType::Alliance)
     {
-        // * 터렛은 현재 목표가 없으면 탐색을 하여, 사거리가 유요한 가장 가까운 적을 목표로 삼는다.
+        // * 터렛은 현재 목표가 없으면 탐색을 하여, 사거리가 유효한 가장 가까운 적을 목표로 삼는다.
         // * 목표가 사거리에서 벗어나면 목표를 재탐색한다.
         
         // TODO 사거리 정보 받아오기
         float attackRange = AICharacter->GetCapsuleComponent()->GetScaledCapsuleRadius() + 1000;
         
-        if(CurTarget == nullptr)
+        if(!CurTarget.IsValid())
         {
+            OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InRange"), false);
             // 가장 가까운 적 탐색 후, 거리 계산
             float distance = FLT_MAX;
             if(SearchNearestEnemy(AICharacter) != nullptr)
@@ -65,7 +62,7 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
             {
                 CurTarget = SearchNearestEnemy(AICharacter);
                 OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InRange"), true);
-                OwnerComp.GetBlackboardComponent()->SetValueAsObject(TEXT("NearestActor"), CurTarget);
+                OwnerComp.GetBlackboardComponent()->SetValueAsObject(TEXT("NearestActor"), CurTarget.Get());
             }
         }
         else
@@ -150,6 +147,9 @@ ACharacterNPC* UBTService_Update_Enemy::SearchNearestEnemy(ACharacterNPC* inThis
     {
         if(Cast<ACharacterNPC>(a)->NPCType == ENPCType::Alliance)
             continue;
+
+        if(Cast<ACharacterNPC>(a)->NPCType == ENPCType::Nexus)
+            continue;
         
         float distance = FVector::Dist(Cast<ACharacterNPC>(a)->GetActorLocation(), inThisCharacter->GetActorLocation());
         if ( minDistance < distance )
@@ -160,4 +160,27 @@ ACharacterNPC* UBTService_Update_Enemy::SearchNearestEnemy(ACharacterNPC* inThis
     }
     
     return nearestActor;
+}
+
+// =============================================================
+// 넥서스의 위치를 반환한다.
+// =============================================================
+FVector UBTService_Update_Enemy::GetNexusLocation()
+{
+    FVector returnVector = FVector::ZeroVector;
+
+    TArray<AActor*> OutActors;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacterNPC::StaticClass(), OutActors);
+    for (AActor* a : OutActors)
+    {
+        if(Cast<ACharacterNPC>(a)->NPCType == ENPCType::Alliance)
+            continue;
+
+        if(Cast<ACharacterNPC>(a)->NPCType == ENPCType::Enemy)
+            continue;
+
+        returnVector = Cast<ACharacterNPC>(a)->GetActorLocation();
+    }
+
+    return returnVector;
 }

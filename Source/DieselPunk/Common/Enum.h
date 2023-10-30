@@ -60,7 +60,8 @@ UENUM( BlueprintType )
 enum class ENPCType : uint8
 {
 	Enemy		UMETA( ToolTip = "적군" ),
-	Alliance	UMETA( ToolTip = "아군" )
+	Alliance	UMETA( ToolTip = "아군" ),
+	Nexus		UMETA( ToolTip = "넥서스" )
 };
 
 // 데이터 테이블 종류

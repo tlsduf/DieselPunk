@@ -152,7 +152,7 @@ FHitResult UtilCollision::GetZTrace(FVector inStartLocation, int8 inUpDown)
 	if ( !world )
 		return hit;
 	
-	bool hasHit = world->World()->LineTraceSingleByChannel(
+	world->World()->LineTraceSingleByChannel(
 	hit,
 	inStartLocation,
 	FVector(inStartLocation.X, inStartLocation.Y,inStartLocation.Z + (1000 * inUpDown)),

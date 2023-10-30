@@ -485,7 +485,8 @@ float ACharacterPC::TakeDamage(float DamageAmount, struct FDamageEvent const &Da
 			{
 				GameMode->PawnKilled(this);
 			}
-
+			
+			/*
 			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision); // 캡슐콜리전 무효
 			// 20초 뒤 액터 destroy
 			TWeakObjectPtr<ACharacterPC> thisPtr = this;
@@ -496,6 +497,7 @@ float ACharacterPC::TakeDamage(float DamageAmount, struct FDamageEvent const &Da
 						thisPtr->Destroy();
 				},
 				20.0f, false);
+			*/
 
 			auto DamageCauserPlayer = Cast<ACharacterPC>(DamageCauser);
 			// 플레이어의 경험치를 1 올림 //TODO NPC와 구분지어서 레벨디자인 할 수 있게끔
@@ -504,7 +506,8 @@ float ACharacterPC::TakeDamage(float DamageAmount, struct FDamageEvent const &Da
 				DamageCauserPlayer->Level = UtilLevelCal::LevelCal(DamageCauserPlayer->Exp);
 			if(DamageCauserPlayer->MaxHealth != UtilLevelCal::MaxHealthCal(DamageCauserPlayer->Level))
 				DamageCauserPlayer->MaxHealth = UtilLevelCal::MaxHealthCal(DamageCauserPlayer->Level);
-			//LOG_SCREEN(TEXT("MAxHealth : %d Exp : %d Level : %d"), DamageCauserPlayer->MaxHealth , DamageCauserPlayer->Exp, DamageCauserPlayer->Level);
+			
+			Destroy();
 		}
 
 		//LOG_SCREEN(TEXT("Now Health : %f"), Health);

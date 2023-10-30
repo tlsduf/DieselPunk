@@ -31,7 +31,9 @@ ACharacterNPC::ACharacterNPC()
 		TurretTopMesh->SetGenerateOverlapEvents( false );
 		TurretTopMesh->SetSimulatePhysics( false );
 	}
-	
+
+	// AI possess
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	
 	MeleeAttack = CreateDefaultSubobject<UPlayerSkill>(TEXT("MeleeAttack"));
 	ProjectileAttack = CreateDefaultSubobject<UPlayerSkill>(TEXT("ProjectileAttack"));
