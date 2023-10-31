@@ -5,10 +5,8 @@
 
 #include "../Actor/DamageUIActor.h"
 
-#include <Components/DecalComponent.h>
 #include <Components/WidgetComponent.h>
-
-#include "Components/StaticMeshComponent.h"
+#include <Components/StaticMeshComponent.h>
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(CharacterBase)
@@ -42,6 +40,9 @@ void ACharacterBase::BeginPlay()
 	Super::BeginPlay();
 
 	CreateStatusUI();
+
+	//스탯 초기화
+	Stat.Initialize(this, CharacterName);
 }
 
 // =============================================================
@@ -49,6 +50,8 @@ void ACharacterBase::BeginPlay()
 // =============================================================
 void ACharacterBase::BeginDestroy()
 {
+	Stat.Release();
+	
 	Super::BeginDestroy();
 }
 

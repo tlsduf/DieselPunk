@@ -4,19 +4,26 @@
 
 #include "Stat.h"
 #include "../../Manager/DatatableManager.h"
-#include "DieselPunk/Data/StatDataTable.h"
-#include "Engine/DataTable.h"
+#include "../../Data/StatDataTable.h"
+#include "../CharacterBase.h"
 
 //스탯을 초기화합니다.
-void FStat::Initialize(const FString& InCharacterName)
+void FStat::Initialize(ACharacterBase* InOwner, const FString& InCharacterName)
 {
-	UDataTable* table = FDataTableManager::GetInstance()->GetData(EDataTableType::Stat);
-	if(!table)
+	if(InOwner == nullptr)
+	{
+		LOG_SCREEN(FColor::Red, TEXT("스탯의 Owner가 nullptr입니다."))
 		return;
-	
-	FStatDataTable* data = table->FindRow<FStatDataTable>(FName(*InCharacterName), TEXT("FStat::Initialize"));
-	if(!data)
+	}
+	Owner = InOwner;
+
+	//데이터 테이블에서 스탯 정보 획득
+	const FStatDataTable* data = FDataTableManager::GetInstance()->GetData<FStatDataTable>(EDataTableType::Stat, *InCharacterName);
+	if(data == nullptr)
+	{
+		LOG_SCREEN(FColor::Red, TEXT("캐릭터: %s의 변수 CharacterName: %s에 해당하는 데이터가 없습니다. CharacterName을 데이터 테이블에 맞게 설정해주세요"), *Owner->GetName(), *InCharacterName)
 		return;
+	}
 
 	CharacterStat.FindOrAdd(ECharacterStatType::Level) = 1;
 	CharacterStat.FindOrAdd(ECharacterStatType::Exp) = 0;
@@ -33,8 +40,14 @@ void FStat::Initialize(const FString& InCharacterName)
 	CharacterStat.FindOrAdd(ECharacterStatType::JumpCount)			= data->JumpCount;
 	CharacterStat.FindOrAdd(ECharacterStatType::Luck)				= data->Luck;
 	CharacterStat.FindOrAdd(ECharacterStatType::CoolDown)			= data->CoolDown;
-	
-	
+}
+
+//스탯 클래스를 비웁니다.
+void FStat::Release()
+{
+	Owner = nullptr;
+	CharacterStat.Empty();
+	ChangeStatDelegate.Clear();
 }
 
 //스탯을 변화합니다. 인게임에서 진행도중 스탯을 변경하려면 이 함수를 사용하세요. Stat[InStatType] = Stat[InStatType] + InValue; 로 적용됩니다.
@@ -51,7 +64,7 @@ void FStat::ChangeStat(ECharacterStatType InStatType, int32 InValue)
 }
 
 //스탯을 반환합니다.
-int32 FStat::GetStat(ECharacterStatType InStatType)
+const int32& FStat::GetStat(ECharacterStatType InStatType)
 {
 	int32* stat = CharacterStat.Find(InStatType);
 	if(!stat)

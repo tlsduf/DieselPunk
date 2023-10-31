@@ -68,7 +68,9 @@ enum class ENPCType : uint8
 UENUM( BlueprintType )
 enum class EDataTableType : uint8
 {
-	Stat		UMETA( ToolTip = "스탯" ),
+	Stat			UMETA( ToolTip = "스탯 정보" ),
+	Character		UMETA( ToolTip = "캐릭터 정보" ),
+	MonsterSpawner	UMETA( ToolTip = "몬스터 스포너 정보" )
 };
 
 // 스탯 타입

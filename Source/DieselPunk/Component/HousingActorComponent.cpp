@@ -94,9 +94,10 @@ void UHousingActorComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		int x,y,z;
 		x = static_cast<int>(hit.Location.X) / GridSize;
 		y = static_cast<int>(hit.Location.Y) / GridSize;
-		z = static_cast<int>(hit.Location.Z) / GridSize;
+		z = 0;
 		FVector newLocation(x,y,z);
 		newLocation *= GridSize;
+		newLocation.Z = hit.Location.Z;
 
 		FHitResult NewLocationHitResult;
 		//그리드에 맞춰 액터 위치 설정

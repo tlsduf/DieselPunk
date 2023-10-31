@@ -3,6 +3,7 @@
 #include "ObjectManager.h"
 
 #include "../Character/CharacterPc.h"
+
 #include <GameFramework/PlayerController.h>
 
 Singleton_Defintion(FObjectManager)
@@ -76,6 +77,7 @@ void FObjectManager::DestroyActor(int64 InObjectId)
 	Objects.Remove(InObjectId);
 }
 
+//플레이어를 세팅합니다.
 void FObjectManager::SetPlayer(ACharacterPC* InPlayer)
 {
 	if(!InPlayer)
@@ -87,6 +89,15 @@ void FObjectManager::SetPlayer(ACharacterPC* InPlayer)
 	World = InPlayer->GetWorld();
 	Controller = Cast<APlayerController>(InPlayer->GetController());
 	Player = InPlayer;
+}
+
+//반환받은 Id값이 정상인지 확인합니다.
+bool FObjectManager::IdIsValid(int32 InId)
+{
+	if((InId == INVALID_UCLASS) || (InId == INVALID_UCLASS) || (InId == OBJECT_SPAWN_FAILED))
+		return false;
+
+	return true;
 }
 
 void FObjectManager::SetObjectIdAtCharacterBase(AActor* InActor, int32 InObjectId)
@@ -123,6 +134,7 @@ ACharacterPC* FObjectManager::GetPlayer()
 	return Player.Get();
 }
 
+//오브젝트ID를 받아 액터를 찾습니다.
 AActor* FObjectManager::FindActor(int64 InObjectId)
 {
 	TWeakObjectPtr<AActor>* findActor = Objects.Find(InObjectId);
@@ -156,6 +168,7 @@ void FObjectManager::FindActorArrayByPredicate(TArray<int32>& OutActors,
 	}
 }
 
+//로케이션과 액터의 Id어레이를 받아 가장 InLocation에 가까운 액터의 Id를 반환합니다.
 int32 FObjectManager::GetNearestACtorByRangeAndIds(FVector InLocation, const TArray<int32>& InActorIds)
 {
 	double dist = MAX_dbl;

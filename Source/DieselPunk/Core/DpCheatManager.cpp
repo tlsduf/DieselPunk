@@ -3,13 +3,22 @@
 
 #include "DpCheatManager.h"
 #include "../Manager/ObjectManager.h"
+#include "../Manager/DatatableManager.h"
+#include "../Data/CharacterDataTable.h"
 #include "../Character/CharacterNPC.h"
 
-//몬스터를 플레이어 앞에 스폰합니다.
-void UDpCheatManager::SpawnMonster()
+//액터를 플레이어 앞에 스폰합니다.
+void UDpCheatManager::SpawnActor(const FString& InCharacterName)
 {
-	FString resourcePath = TEXT("/Script/Engine.Blueprint'/Game/DieselPunk/Blueprints/Characters/BP_CharacterNPC_Small.BP_CharacterNPC_Small_C'");
-	UClass* classInfo = LoadClass<ACharacterNPC>(NULL, *resourcePath);
+	const FCharacterDataTable* dataTable = FDataTableManager::GetInstance()->GetData<FCharacterDataTable>(EDataTableType::Character, InCharacterName);
+
+	if(!dataTable)
+	{
+		LOG_SCREEN(FColor::Red, TEXT("void UDpCheatManager::SpawnActor(const FString& InCharacterName)의 인자 InCharacterName: %s에 해당하는 데이터를 찾을 수 없습니다."), *InCharacterName)
+		return;
+	}
+	
+	UClass* classInfo = LoadClass<ACharacterNPC>(NULL, *UtilPath::GetCharacterBlueprintPath(*dataTable->BluePrintPath));
 
 	if(!classInfo)
 		return;

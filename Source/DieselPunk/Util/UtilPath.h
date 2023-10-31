@@ -29,4 +29,12 @@ namespace UtilPath
 	{
 		return FString::Printf(TEXT("/Script/Engine.DataTable'/Game/DieselPunk/Data/DataTable/DT_%s.DT_%s'"), InTableName, InTableName);
 	}
+
+	//캐릭터의 블루프린트 Path를 생성합니다.
+	inline FString GetCharacterBlueprintPath(const TCHAR* InCharacterBlueprintName)
+	{
+		return FString::Printf(TEXT("/Script/Engine.Blueprint'/Game/DieselPunk/Blueprints/Characters/%s.%s_C'"), InCharacterBlueprintName, InCharacterBlueprintName);
+	}
+
+	
 }

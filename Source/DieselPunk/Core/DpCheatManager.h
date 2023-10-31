@@ -13,9 +13,9 @@ class DIESELPUNK_API UDpCheatManager : public UCheatManager
 {
 	GENERATED_BODY()
 
-	//몬스터를 플레이어 앞에 스폰합니다.
+	//액터를 플레이어 앞에 스폰합니다.
 	UFUNCTION(exec)
-	void SpawnMonster();
+	void SpawnActor(const FString& InCharacterName);
 
 	//오브젝트 ID의 액터를 삭제합니다.
 	UFUNCTION(exec)

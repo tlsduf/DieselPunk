@@ -3,6 +3,7 @@
 #pragma once
 
 #include "GameFramework/Character.h"
+#include "Stat/Stat.h"
 #include "CharacterBase.generated.h"
 
 class UWidgetComponent;
@@ -14,7 +15,15 @@ class DIESELPUNK_API ACharacterBase : public ACharacter
 	GENERATED_BODY()
 
 protected:
+	//오브젝트 ID
 	int32 ObjectId = -1;
+
+	//스탯
+	FStat Stat;
+
+	//캐릭터 정보를 가져오기 위한 이름
+	UPROPERTY(EditDefaultsOnly)
+	FString CharacterName = "";
 
 public:
 	// 데미지 UI 액터
@@ -29,6 +38,13 @@ public:
 	void DisplayDamage(float inDamage);
 
 	ACharacterBase();
+
+public:
+	//스탯을 가져옵니다.
+	const FStat& GetStat() const { return Stat; }
+
+	//스탯을 변화합니다. 인게임에서 진행도중 스탯을 변경하려면 이 함수를 사용하세요. Stat[InStatType] = Stat[InStatType] + InValue; 로 적용됩니다.
+	void ChangeStat(ECharacterStatType InStatType, int32 InValue);
 	
 protected:
 	// Called when the game starts or when spawned

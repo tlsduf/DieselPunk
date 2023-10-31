@@ -58,7 +58,12 @@ public:
 
 	//플레이어를 세팅합니다.
 	void	SetPlayer(ACharacterPC* InPlayer);
+
+	//반환받은 Id값이 정상인지 확인합니다.
+	static bool	IdIsValid(int32 InId);
+	
 private:
+	//캐릭터 베이스의 오브젝트 ID를 설정합니다.
 	void	SetObjectIdAtCharacterBase(AActor* InActor, int32 InObjectId);
 
 public:
