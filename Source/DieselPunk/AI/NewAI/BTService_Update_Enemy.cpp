@@ -80,11 +80,11 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
     }
 
     
-    // 캐릭터가 적군일 때
+    // 캐릭터가 적군일 때 // TODO 현재는 목표가 넥서스지만, 목표를 바꿀 수 있게
     if(AICharacter->NPCType == ENPCType::Enemy)
     {
         float MeleeRange = AICharacter->GetCapsuleComponent()->GetScaledCapsuleRadius() + 400;
-        FVector VRange = AIPawn->GetActorLocation() - PlayerPawn->GetActorLocation();
+        FVector VRange = AIPawn->GetActorLocation() - GetNexusLocation();
         float FRange = VRange.Size();
 
         // 몬스터와 플레이어의 거리에 따른 조건 설정

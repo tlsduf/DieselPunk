@@ -8,6 +8,8 @@
 #include <Math/Vector.h>
 #include <Navigation/PathFollowingComponent.h>
 
+#include "DrawDebugHelpers.h"
+
 const FName AEnemyAIController::TargetKey(TEXT("Target"));
 
 void AEnemyAIController::BeginPlay()
@@ -15,14 +17,22 @@ void AEnemyAIController::BeginPlay()
     Super::BeginPlay();
 
     
-   // GetPathFollowingComponent()->IsBlocked();
+   
 }
 
 void AEnemyAIController::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    //UE_VLOG(GetOwner(), LogPathFollowing, Log, TEXT("OnPathFinished: %s"), *Result.ToString());
+    // PathPoint 받아서 표시
+    if(GetPathFollowingComponent()->GetPath().IsValid())
+    {
+        TArray<FNavPathPoint> pathPoints = GetPathFollowingComponent()->GetPath()->GetPathPoints();
+        for(FNavPathPoint i:pathPoints)
+        {
+            DrawDebugPoint(GetWorld(), i.Location, 10, FColor::Red, false, -1);
+        }
+    }
 
 }
 
