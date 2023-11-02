@@ -6,6 +6,8 @@
 
 #include <GameFramework/PlayerController.h>
 
+#include "Components/CapsuleComponent.h"
+
 Singleton_Defintion(FObjectManager)
 
 //생성자
@@ -100,11 +102,24 @@ bool FObjectManager::IdIsValid(int32 InId)
 	return true;
 }
 
+//캐릭터 베이스의 오브젝트 ID를 설정합니다.
 void FObjectManager::SetObjectIdAtCharacterBase(AActor* InActor, int32 InObjectId)
 {
 	ACharacterBase* charBase = Cast<ACharacterBase>(InActor);
 	if(charBase)
 		charBase->SetObjectId(InObjectId);
+}
+
+//캐릭터일 경우에 캡슐컴포넌트의 Half Height만큼 위로 올린 값을 반환합니다.
+FVector FObjectManager::GetLocationByPawn(AActor* InActor, const FVector& InLocation)
+{
+	ACharacter* character = Cast<ACharacter>(InActor);
+
+	FVector outLocation = InLocation;
+	if(character)
+		outLocation.Z += character->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+
+	return outLocation;
 }
 
 //컨트롤 중인 플레이어를 가져옵니다.

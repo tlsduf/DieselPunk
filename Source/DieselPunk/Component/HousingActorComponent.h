@@ -12,7 +12,10 @@ class DIESELPUNK_API UHousingActorComponent : public UActorComponent
 {
 	GENERATED_BODY()
 private:
+	//피킹 사거리
 	int32 Range;
+
+	//그리드 사이즈
 	int32 GridSize;
 
 public:	
@@ -31,5 +34,5 @@ private:
 	bool IsArrangeTurret();
 	
 public:
-	void CompleteHousingTurret();
+	bool CompleteHousingTurret();
 };

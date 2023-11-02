@@ -66,6 +66,9 @@ private:
 	//캐릭터 베이스의 오브젝트 ID를 설정합니다.
 	void	SetObjectIdAtCharacterBase(AActor* InActor, int32 InObjectId);
 
+	//캐릭터일 경우에 캡슐컴포넌트의 Half Height만큼 위로 올린 값을 반환합니다.
+	FVector GetLocationByPawn(AActor* InActor, const FVector& InLocation);
+
 public:
 	//컨트롤 중인 플레이어를 가져옵니다.
 	ACharacterPC* GetPlayer();
@@ -93,6 +96,7 @@ int32 FObjectManager::CreateActor(UClass* InClass, const FSpawnParam& InSpawnPar
 	FWorldContext* world = GEngine->GetWorldContextFromGameViewport(GEngine->GameViewport);
 	World = world->World();
 
+
 	//트랜스폼 생성
 	FTransform spawnTransform(InSpawnParam.Rotation, InSpawnParam.Location);
 
@@ -101,6 +105,10 @@ int32 FObjectManager::CreateActor(UClass* InClass, const FSpawnParam& InSpawnPar
 
 	if(!actor)
 		return OBJECT_SPAWN_FAILED;
+	
+	//캐릭터일 경우에 캡슐 절반높이만큼 위로 올려스폰
+	FVector location = GetLocationByPawn(actor, InSpawnParam.Location);
+	spawnTransform = FTransform(InSpawnParam.Rotation, location);
 
 	//콜백함수 호출
 	if(InSpawnParam.CallBackSpawn)

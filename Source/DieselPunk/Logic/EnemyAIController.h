@@ -36,5 +36,8 @@ public:
 	bool IsDead() const;
 	bool PlaySpawnAnim();
 	void SetTruePlaySpawnAnim();
+
+	//Ai를 실행합니다.
+	void RunAi(APawn* InPawn, bool InForced = false);
 	
 };

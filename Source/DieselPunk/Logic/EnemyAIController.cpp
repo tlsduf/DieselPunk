@@ -1,7 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "EnemyAIController.h"
-#include "..\Character\CharacterPC.h"
+#include "../Character/CharacterPC.h"
+#include "../Character/CharacterTurret.h"
 
 #include <Kismet/GameplayStatics.h>
 #include <BehaviorTree/BlackboardComponent.h>
@@ -15,16 +16,11 @@ const FName AEnemyAIController::TargetKey(TEXT("Target"));
 void AEnemyAIController::BeginPlay()
 {
     Super::BeginPlay();
-
-    
-   
 }
 
 void AEnemyAIController::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-
-
     
     // PathPoint 받아서 표시
     if(!GetPathFollowingComponent()->GetPath().IsValid())
@@ -55,12 +51,9 @@ bool AEnemyAIController::IsDead() const
 void AEnemyAIController::OnPossess(APawn* InPawn)
 {
     Super::OnPossess(InPawn);
-    if (AIBehavior != nullptr)
-    {
-        RunBehaviorTree(AIBehavior);
-        
-        GetBlackboardComponent()->SetValueAsVector(TEXT("SpawnLocation"), GetPawn()->GetActorLocation());
-    }
+
+    RunAi(InPawn, false);
+
     GetWorldTimerManager().SetTimer(SpawnAnimTHandle, this, &AEnemyAIController::SetTruePlaySpawnAnim, SpawnTime, false);
 }
 
@@ -76,4 +69,21 @@ bool AEnemyAIController::PlaySpawnAnim()
 void AEnemyAIController::SetTruePlaySpawnAnim()
 {
     GPlaySpawnAnim = true;
+}
+
+//Ai를 실행합니다.
+void AEnemyAIController::RunAi(APawn* InPawn, bool InForced)
+{
+    if(InPawn == nullptr)
+        return;
+
+    //포탑의 경우에는 배치 후에 Ai가 진행되어야 합니다.
+    if(InForced == false && Cast<ACharacterTurret>(InPawn) != nullptr)
+        return;
+    
+    if(AIBehavior != nullptr)
+    {
+        RunBehaviorTree(AIBehavior);
+        GetBlackboardComponent()->SetValueAsVector(TEXT("SpawnLocation"), GetPawn()->GetActorLocation());
+    }
 }

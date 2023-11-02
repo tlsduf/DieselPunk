@@ -13,15 +13,13 @@ UCLASS()
 class DIESELPUNK_API ACharacterNPC : public ACharacterPC
 {
 	GENERATED_BODY()
-
+	
+protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* TurretMesh;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* TurretTopMesh;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	UHousingActorComponent* HousingActorComponent;
 	
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "skills", meta = (AllowPrivateAccess = "true"))

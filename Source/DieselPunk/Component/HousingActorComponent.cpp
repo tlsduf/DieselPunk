@@ -4,14 +4,12 @@
 #include "HousingActorComponent.h"
 
 #include "../Character/CharacterPc.h"
+#include "../Character/CharacterTurret.h"
 #include "../Manager/ObjectManager.h"
 
-#include <Camera/CameraComponent.h>
 #include <DrawDebugHelpers.h>
 #include <GameFramework/PlayerController.h>
-
-#include "Components/PrimitiveComponent.h"
-
+#include <Components/CapsuleComponent.h>
 
 // Sets default values for this component's properties
 UHousingActorComponent::UHousingActorComponent()
@@ -97,7 +95,7 @@ void UHousingActorComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		z = 0;
 		FVector newLocation(x,y,z);
 		newLocation *= GridSize;
-		newLocation.Z = hit.Location.Z;
+		newLocation.Z = hit.Location.Z + Cast<ACharacter>(GetOwner())->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 
 		FHitResult NewLocationHitResult;
 		//그리드에 맞춰 액터 위치 설정
@@ -107,9 +105,12 @@ void UHousingActorComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		FVector boxLocation = GetOwner()->GetActorLocation();
 		FVector boxGridSize = {1,1,1};//GetOwner()->GetGridSize();
 		FVector boxExtend = (boxGridSize * GridSize / 2);
+		boxExtend.Z = Cast<ACharacter>(GetOwner())->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 		boxLocation.Z += boxExtend.Z;
 
-		DrawDebugBox(GetWorld(), boxLocation, boxExtend, (IsArrangeTurret() ? FColor::Cyan : FColor::Red), false, -1.f);
+		//설치가 가능하면 시안 색으로 머터리얼 변경
+		ACharacterTurret* owner = Cast<ACharacterTurret>(GetOwner());
+		owner->ChangeHousingMaterialParameterChange(IsArrangeTurret());
 	}
 }
 
@@ -120,13 +121,26 @@ bool UHousingActorComponent::IsArrangeTurret()
 	FVector gridSize = {3,3,3};//GetOwner()->GetGridSize();
 	FVector boxHalfExtend = (gridSize * GridSize / 2) - 0.25;
 	location.Z += boxHalfExtend.Z;
+
+	//플레이어 충돌범위 제외
+	FCollisionQueryParams params;
+	params.AddIgnoredActor(GetOwner());
 	
-	return !GetOwner()->GetWorld()->OverlapMultiByChannel(hitResult, location, FQuat::Identity, ECC_WorldStatic,FCollisionShape::MakeBox(boxHalfExtend));
+	return !GetOwner()->GetWorld()->OverlapMultiByChannel(hitResult, location, FQuat::Identity, ECC_WorldStatic,FCollisionShape::MakeBox(boxHalfExtend), params);
 }
 
-void UHousingActorComponent::CompleteHousingTurret()
+bool UHousingActorComponent::CompleteHousingTurret()
 {
 	if(IsArrangeTurret())
+	{
+		ACharacterTurret* owner = Cast<ACharacterTurret>(GetOwner());
+		if(owner == nullptr)
+			return false;
+		
 		SetComponentTickEnabled(false);
+		return true;
+	}
+
+	return false;
 }
 

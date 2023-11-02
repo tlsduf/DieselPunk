@@ -19,8 +19,7 @@ class DIESELPUNK_API USkillSpawnTurret : public UPlayerSkill
 private:
 	bool bTaskOn = false;
 
-	bool bDrawSupport = false;
-
+	//컨트롤하는 터렛 Id
 	int32 ControlTurretId = -1;
 	
 protected:
@@ -30,9 +29,4 @@ protected:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
 	
 	virtual void SkillStarted() override;
-
-private:
-	// 스폰 위치를 시각적으로 보여줍니다. // 현재는 DrawDebug로 했습니다.
-	// 나중에 이펙트로 치환하거나, 스폰할 액터의 메쉬정보를 받아와서 활용하면 될 것 같습니다.
-	void DrawSupport();
 };
