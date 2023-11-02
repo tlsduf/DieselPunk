@@ -24,16 +24,22 @@ void AEnemyAIController::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    // PathPoint 받아서 표시
-    if(GetPathFollowingComponent()->GetPath().IsValid())
-    {
-        TArray<FNavPathPoint> pathPoints = GetPathFollowingComponent()->GetPath()->GetPathPoints();
-        for(FNavPathPoint i:pathPoints)
-        {
-            DrawDebugPoint(GetWorld(), i.Location, 10, FColor::Red, false, -1);
-        }
-    }
 
+    
+    // PathPoint 받아서 표시
+    if(!GetPathFollowingComponent()->GetPath().IsValid())
+        return;
+    if(GetPawn() == nullptr)
+        return;
+    TArray<FNavPathPoint> pathPoints = GetPathFollowingComponent()->GetPath()->GetPathPoints();
+    FVector beforePoint = pathPoints[0].Location;
+    for(FNavPathPoint i:pathPoints)
+    {
+        DrawDebugLine(GetWorld(),beforePoint, i.Location, FColor::Red);
+        DrawDebugPoint(GetWorld(), i.Location, 10, FColor::Red, false, -1);
+        beforePoint = i.Location;
+    }
+    DrawDebugPoint(GetWorld(), pathPoints[pathPoints.Num()-1].Location, 25, FColor::Blue, false, -1);
 }
 
 bool AEnemyAIController::IsDead() const

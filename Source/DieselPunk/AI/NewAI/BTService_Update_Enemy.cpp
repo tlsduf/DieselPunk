@@ -9,6 +9,7 @@
 #include <Kismet/GameplayStatics.h>
 #include <GameFramework/Pawn.h>
 #include <AIController.h>
+#include <Navigation/PathFollowingComponent.h>
 
 
 UBTService_Update_Enemy::UBTService_Update_Enemy()
@@ -25,13 +26,15 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
     APawn *PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
     if (PlayerPawn == nullptr)
         return;
-
-    // self
-    APawn *AIPawn = OwnerComp.GetAIOwner()->GetPawn();
-    if (OwnerComp.GetAIOwner() == nullptr)
+    
+    if(OwnerComp.GetAIOwner() == nullptr)
         return;
-    auto AICharacter = Cast<ACharacterNPC>(AIPawn);
 
+    // AIController , self
+    AAIController *AIController = OwnerComp.GetAIOwner();
+    APawn *AIPawn = AIController->GetPawn();
+    auto AICharacter = Cast<ACharacterNPC>(AIPawn);
+    
     
 
     // 플레이어 위치 업데이트
@@ -40,7 +43,29 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
     // 넥서스 위치 SET // Tick에 있어야 하는가?
     OwnerComp.GetBlackboardComponent()->SetValueAsVector(TEXT("Nexus"), GetNexusLocation());
 
-    
+    // 넥서스에 도달 할 수 있는가?
+    // lastPathPoint : 마지막 도달가능 위치 // 길이 막혀있거나 못갈 경우 목표에 도달할 수 있는 가장 가까운 PathPoint 위치
+    if(AICharacter->NPCType == ENPCType::Enemy)
+    {
+        FVector lastPathPoint = FVector::ZeroVector;
+        if(AIController->GetPathFollowingComponent()->GetPath().IsValid())
+            lastPathPoint = AIController->GetPathFollowingComponent()->GetPath()->GetGoalLocation();
+        if((GetNexusLocation().X == lastPathPoint.X) && (GetNexusLocation().Y == lastPathPoint.Y))
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT("canG%f"), 0.0f));
+            GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::White, FString::Printf(TEXT("Nexus %s"), *GetNexusLocation().ToString()));
+            GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::White, FString::Printf(TEXT("lastLoc %s"), *lastPathPoint.ToString()));
+            OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("bCanReach"), true);
+        }
+        else
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT("N%f"), 0.0f));
+            GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::White, FString::Printf(TEXT("Nexus %s"), *GetNexusLocation().ToString()));
+            GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::White, FString::Printf(TEXT("lastLoc %s"), *lastPathPoint.ToString()));
+            OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("bCanReach"), false);
+        }
+    }
+
     // 캐릭터가 아군일 때
     if(AICharacter->NPCType == ENPCType::Alliance)
     {
