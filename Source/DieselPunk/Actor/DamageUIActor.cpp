@@ -19,6 +19,8 @@ ADamageUIActor::ADamageUIActor()
 		WidgetComp->SetSimulatePhysics( false );
 		WidgetComp->SetWidgetSpace( EWidgetSpace::Screen );
 	}
+
+	SetRootComponent(WidgetComp);
 	
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
