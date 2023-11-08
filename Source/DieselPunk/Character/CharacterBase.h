@@ -34,17 +34,18 @@ public:
 	UPROPERTY( EditAnywhere )
 	UWidgetComponent* WidgetComp;
 	
-	//데미지를 입으면 데미지ui액터를 생성합니다.
+	// 데미지를 입으면 데미지ui액터를 생성합니다.
 	void DisplayDamage(float inDamage);
 
-	ACharacterBase();
-
-public:
 	//스탯을 가져옵니다.
 	const FStat& GetStat() const { return Stat; }
 
 	//스탯을 변화합니다. 인게임에서 진행도중 스탯을 변경하려면 이 함수를 사용하세요. Stat[InStatType] = Stat[InStatType] + InValue; 로 적용됩니다.
 	void ChangeStat(ECharacterStatType InStatType, int32 InValue);
+
+public:
+	//생성자
+	ACharacterBase();
 	
 protected:
 	// Called when the game starts or when spawned
@@ -52,10 +53,8 @@ protected:
 
 	// Called before destroying the object.
 	virtual void BeginDestroy() override;
-
-	// 상태 UI 위젯을 생성한다.
+	
 	virtual void CreateStatusUI() {};
-
 public:	
 	// Called every frame
 	virtual void Tick(float InDeltaTime) override;

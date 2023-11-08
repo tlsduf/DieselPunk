@@ -235,7 +235,6 @@ void ACharacterPC::SkillOngoing(const EAbilityType InAbilityType)
 }
 void ACharacterPC::SkillTriggered(const EAbilityType InAbilityType)
 {
-	//LOG_SCREEN(TEXT("%s || GetCoolTime : %f"), *Skills[InAbilityType]->GetName(), Skills[InAbilityType]->GetCoolTime());
 	if (Skills[InAbilityType]->CanActivateAbility() && !GetOtherSkillActivating(InAbilityType))
 	{
 		HandleCombatState();

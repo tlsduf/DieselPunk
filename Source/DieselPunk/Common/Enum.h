@@ -21,15 +21,6 @@ enum class EAbilityType : uint8
 };
 ENUM_RANGE_BY_COUNT( EAbilityType, EAbilityType::None );
 
-//콜리전 타입에 대한 enum 입니다.
-UENUM(BlueprintType)
-enum class EActorCollisionShape : uint8
-{
-	Box			UMETA(ToolTip = "육면체 형태"),
-	Sphere		UMETA(ToolTip = "구 형태"),
-	Capsule		UMETA(ToolTip = "캡슐 형태")
-};
-
 // 콜리전 충돌 타입
 UENUM( BlueprintType )
 enum class ECollisionResponsesType : uint8

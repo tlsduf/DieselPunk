@@ -40,7 +40,7 @@ void ACharacterBase::BeginPlay()
 	Super::BeginPlay();
 
 	CreateStatusUI();
-
+	
 	//스탯 초기화
 	Stat.Initialize(this, CharacterName);
 }
@@ -71,6 +71,9 @@ void ACharacterBase::SetupPlayerInputComponent(UInputComponent* InPlayerInputCom
 	Super::SetupPlayerInputComponent(InPlayerInputComponent);
 }
 
+// =============================================================
+// 데미지를 입으면 데미지UI액터를 생성합니다.
+// =============================================================
 void ACharacterBase::DisplayDamage(float inDamage)
 {
 	FTransform SpawnTransform( FRotator::ZeroRotator, GetActorLocation());

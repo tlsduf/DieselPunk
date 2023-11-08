@@ -23,6 +23,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = Skill)
 	float CoolTime = 5;
 
+	// 스킬 발동 시간입니다. 해당 시간동안 SkillActivating이 On 됩니다.
 	UPROPERTY(EditAnywhere, Category = Skill)
 	float SkillPlayTime = 1;
 public:
