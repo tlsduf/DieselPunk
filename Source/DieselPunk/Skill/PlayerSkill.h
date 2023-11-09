@@ -26,7 +26,7 @@ protected:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
 private:
 	// 해당 스킬이 어떤 입력 방식을 가지는지 설정합니다.
-	UPROPERTY(EditAnywhere, Instanced, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputTrigger> TriggerType;
 	
 public:

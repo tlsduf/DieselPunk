@@ -29,3 +29,5 @@ Binaries/Win64/tbb12.dll
 Binaries/Win64/D3D12/D3D12Core.dll
 Binaries/Win64/D3D12/d3d12SDKLayers.dll
 Binaries/Win64/*.patch*
+Binaries/Win64/DieselPunk.exe
+Binaries/Win64/DieselPunk.pdb
