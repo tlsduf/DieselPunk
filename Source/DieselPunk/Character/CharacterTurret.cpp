@@ -13,7 +13,9 @@ ACharacterTurret::ACharacterTurret()
 {
 	HousingActorComponent = CreateDefaultSubobject<UHousingActorComponent>(TEXT("Housing Actor Component"));
 
-	HousingMaterial = LoadObject<UMaterialInterface>(this, TEXT("/Script/Engine.Material'/Game/DieselPunk/Material/M_Housing.M_Housing'"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> material(TEXT("/Script/Engine.Material'/Game/DieselPunk/Material/M_Housing.M_Housing'"));
+	if(material.Succeeded())
+		HousingMaterial = material.Object;
 }
 
 void ACharacterTurret::BeginPlay()
