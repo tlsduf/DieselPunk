@@ -36,5 +36,9 @@ namespace UtilPath
 		return FString::Printf(TEXT("/Script/Engine.Blueprint'/Game/DieselPunk/Blueprints/Characters/%s.%s_C'"), InCharacterBlueprintName, InCharacterBlueprintName);
 	}
 
-	
+	//UI Path를 생성합니다.
+	inline FString GetUIPath(const TCHAR* InUIName)
+	{
+		return FString::Printf(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/DieselPunk/UI/Widgets/%s.%s_C'"), InUIName, InUIName);
+	}
 }

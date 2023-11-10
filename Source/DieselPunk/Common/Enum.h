@@ -70,7 +70,8 @@ enum class ECharacterStatType : uint8
 {
 	Level				UMETA( ToolTip = "레벨" ),
 	Exp					UMETA( ToolTip = "경험치" ),
-	Hp					UMETA( ToolTip = "체력" ),
+	MaxHp				UMETA( ToolTip = "최대체력" ),
+	Hp					UMETA( ToolTip = "현재체력" ),
 	HpRecoverySpeed		UMETA( ToolTip = "체력 회복 속도" ),
 	Atk					UMETA( ToolTip = "공격력" ),
 	AtkSpeed			UMETA( ToolTip = "공격속도" ),

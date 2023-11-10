@@ -32,7 +32,7 @@ void ADamageUIActor::CreateDamageUI()
 	if( DamageUI.IsValid() )
 		return;
 
-	FString inPath =  FString::Printf(TEXT( "/Script/UMGEditor.WidgetBlueprint'/Game/DieselPunk/UI/Widgets/HUD/DamageUI.DamageUI_C'" ));
+	FString inPath = UtilPath::GetUIPath( TEXT("DamageUI") );
 	UClass* widgetClass = ConstructorHelpersInternal::FindOrLoadClass( inPath, UUserWidget::StaticClass() );
 	if(!widgetClass)
 		return;

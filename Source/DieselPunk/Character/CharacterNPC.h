@@ -10,7 +10,7 @@ class UPlayerSkill;
 class UEnemyStatusUI;
 
 UCLASS()
-class DIESELPUNK_API ACharacterNPC : public ACharacterPC
+class DIESELPUNK_API ACharacterNPC : public ACharacterBase
 {
 	GENERATED_BODY()
 	

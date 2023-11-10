@@ -11,7 +11,7 @@
 #include <Particles/ParticleSystemComponent.h>
 #include <Components/SkeletalMeshComponent.h>
 #include <Components/WidgetComponent.h>
-
+#include <GameFramework/CharacterMovementComponent.h>
 
 
 ACharacterNPC::ACharacterNPC()
@@ -41,11 +41,14 @@ ACharacterNPC::ACharacterNPC()
 	
 	MeleeAttack = CreateDefaultSubobject<UPlayerSkill>(TEXT("MeleeAttack"));
 	ProjectileAttack = CreateDefaultSubobject<UPlayerSkill>(TEXT("ProjectileAttack"));
+	
 }
 
 void ACharacterNPC::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GetCharacterMovement()->MaxWalkSpeed = Stat.GetStat(ECharacterStatType::MoveSpeed);
 }
 
 void ACharacterNPC::Tick(float DeltaTime)
@@ -75,7 +78,7 @@ void ACharacterNPC::CreateStatusUI()
 	if( EnemyStatusUI.IsValid() )
 		return;
 
-	FString inPath = FString::Printf(TEXT( "/Script/UMGEditor.WidgetBlueprint'/Game/DieselPunk/UI/Widgets/HUD/NPC_HpBar.NPC_HpBar_C'" ));
+	FString inPath = UtilPath::GetUIPath( TEXT("NPC_HpBar") );
 	UClass* widgetClass = ConstructorHelpersInternal::FindOrLoadClass( inPath, UUserWidget::StaticClass() );
 	if(!widgetClass)
 		return;
@@ -111,9 +114,6 @@ void ACharacterNPC::SetupPlayerInputComponent(class UInputComponent *PlayerInput
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	check(PlayerInputComponent);
-
-	//PlayerInputComponent->BindAction("LeftMouse", IE_Pressed, this, &ABaseEnemyCharacter::MeleeAttackHandle);
-	//PlayerInputComponent->BindAction("RightMouse", IE_Pressed, this, &ABaseEnemyCharacter::DoProjectileAttack);
 }
 
 float ACharacterNPC::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,AActor* DamageCauser)

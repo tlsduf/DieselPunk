@@ -27,7 +27,8 @@ void FStat::Initialize(ACharacterBase* InOwner, const FString& InCharacterName)
 
 	CharacterStat.FindOrAdd(ECharacterStatType::Level) = 1;
 	CharacterStat.FindOrAdd(ECharacterStatType::Exp) = 0;
-	
+
+	CharacterStat.FindOrAdd(ECharacterStatType::MaxHp)				= data->Hp;
 	CharacterStat.FindOrAdd(ECharacterStatType::Hp)					= data->Hp;
 	CharacterStat.FindOrAdd(ECharacterStatType::HpRecoverySpeed)	= data->HpRecoverySpeed;
 	CharacterStat.FindOrAdd(ECharacterStatType::Atk)				= data->Atk;

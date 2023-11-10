@@ -55,7 +55,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction *InputM;
 	
-	// 6개의 스킬 InputAction // 순서대로 LM, RM, LShift, Q, E, R
+	// 6개의 스킬 InputAction // LM, RM, LShift, Q, E, R
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TMap<EAbilityType, TObjectPtr<UInputAction>> SkillInputActions;
 	

@@ -11,23 +11,15 @@
 #include <Components/CapsuleComponent.h>
 #include <GameFramework/SpringArmComponent.h>
 #include <GameFramework/CharacterMovementComponent.h>
-
 #include <GameFramework/Controller.h>
-
 #include <TimerManager.h>
-#include <DrawDebugHelpers.h>
 #include <EnhancedInputComponent.h>
-#include <Engine/DamageEvents.h>
-#include <Components/WidgetComponent.h>
-
 #include "AIHelpers.h"
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(CharacterPC)
 
 ACharacterPC::ACharacterPC()
-	:
-	Exp(0), Level(1), TempLevel(Level)
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -69,9 +61,9 @@ void ACharacterPC::BeginPlay()
 	Super::BeginPlay();
 
 	// 게임시작시 기본체력초기화
-	Health = MaxHealth;
-	HpPercent = Health / MaxHealth;
-	HpPercentAfterImage = Health / MaxHealth;
+	Stat.ChangeStat(ECharacterStatType::Hp , Stat.GetStat(ECharacterStatType::MaxHp));
+	HpPercent = Stat.GetStat(ECharacterStatType::Hp) / Stat.GetStat(ECharacterStatType::MaxHp);
+	HpPercentAfterImage = Stat.GetStat(ECharacterStatType::Hp) / Stat.GetStat(ECharacterStatType::MaxHp);
 
 	PCSkillManager.ResetSkill();
 }
@@ -116,10 +108,10 @@ void ACharacterPC::Tick(float DeltaTime)
 	}
 
 	// 레벨이 올랐음을 감지하는 구문.
-	if(TempLevel != Level)
+	if(TempLevel != Stat.GetStat(ECharacterStatType::Level))
 	{
-		Health = MaxHealth;
-		TempLevel = Level;
+		Stat.ChangeStat(ECharacterStatType::Hp , Stat.GetStat(ECharacterStatType::MaxHp));
+		TempLevel = Stat.GetStat(ECharacterStatType::Level);
 		LevelUpEvent();
 	}
 
@@ -184,12 +176,6 @@ void ACharacterPC::Look(const FInputActionValue &Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
-}
-
-float ACharacterPC::GetRotationRateVelocity()
-{
-	
-	return 0;
 }
 
 // =============================================================
@@ -257,24 +243,6 @@ void ACharacterPC::SkillCanceled(const EAbilityType InAbilityType)
 	{
 		ability->SkillCanceled();
 	}
-}
-
-// Debug #BP on/off
-void ACharacterPC::DebugActorRotation()
-{
-	const FRotator Rotation = GetActorRotation();
-	FVector Start = GetActorLocation();
-	FVector End = GetActorLocation() + Rotation.Vector() * 300;
-	DrawDebugLine(GetWorld(), Start, End, FColor::Red, 0, -1);
-	DrawDebugDirectionalArrow(GetWorld(),
-							  Start - Rotation.Vector() * 150,
-							  Start + Rotation.Vector() * 150,
-							  120.f,
-							  FColor::Red,
-							  0,
-							  -1.f,
-							  0,
-							  3.f);
 }
 
 //================================================================
@@ -387,18 +355,6 @@ void ACharacterPC::Jump()
 }
 
 //================================================================
-// 캐릭터 이동속도 설정함수
-//================================================================
-void ACharacterPC::SetThisSpeed(float Speed)
-{
-	ThisSpeed = Speed;
-}
-void ACharacterPC::SetThisJogSpeed(float JogSpeed)
-{
-	ThisJogSpeed = JogSpeed;
-}
-
-//================================================================
 // Pawn 회전 함수 // 전투상태일 때만 자동회전. Tick에서 구현
 //================================================================
 void ACharacterPC::RotatePawn(float DeltaTime)
@@ -417,181 +373,12 @@ void ACharacterPC::RotatePawn(float DeltaTime)
 		10));
 }
 
-
-//================================================================
-// 데미지 받는 함수
-//================================================================
-// TakeDamageHandle
-float ACharacterPC::TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent, class AController *EventInstigator, AActor *DamageCauser)
-{
-	float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	// DamageImmunity가 false 일 때 데미지계산
-	if (!DamageImmunity && EventInstigator != Controller)
-	{
-		HandleCombatState();
-		//================================================================
-		// 1.데미지이벤트 판별
-		//================================================================
-		
-		if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Taken Point Damage"));
-			const FPointDamageEvent *PointDamageEvent = static_cast<const FPointDamageEvent *>(&DamageEvent);
-			if (0 == (PointDamageEvent->HitInfo.BoneName).Compare(FName(TEXT("Head"))))
-			{
-				// TODO 부위별 데미지 기능 실현
-				Damage *= 5;
-			}
-		}
-		else if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Taken Radial Damage"));
-			const FRadialDamageEvent *RadialDamageEvent = static_cast<const FRadialDamageEvent *>(&DamageEvent);
-		}
-
-		//================================================================
-		// 2.데미지 계산(공식적용-올림내림)
-		//================================================================
-		// TODO 방어력, 공격효과 적용해서 데미지공식 적용하기
-		// TODO 효과적용 방식 : 체력비례피해(최대or현재), 고정피해(방어구관통), 지속피해(틱뎀), 방어력감소(영구or시간), 폭발스택
-		Damage = Damage * (100 / (100 + Armor));
-		Damage = (int)(Damage + 0.2); // 데미지 소수점 처리 *소수점첫째자리가 0.8 이상이면 올림, 미만시 내림
-
-		Damage = FMath::Min(Health, (int)Damage);
-		_UpdateHp(Health - Damage, MaxHealth);
-		Health -= Damage;
-		DisplayDamage(Damage);
-		
-		//================================================================
-		// 3.애니메이션 플레이 //bool 변수로 0.3초마다 애니메이션 실행
-		//================================================================
-		if (CanTakeDamageAnim)
-		{
-			TakeDamageAnim = true;
-			GetWorldTimerManager().SetTimerForNextTick(this, &ACharacterPC::SetTakeDamageAnimFalse);
-			CanTakeDamageAnim = false;
-			GetWorldTimerManager().SetTimer(TakeDamageHandle, this, &ACharacterPC::SetCanTakeDamageAnimTrue, 0.3f, false);
-		}
-
-		//================================================================
-		// 4.죽음구현
-		//================================================================
-		if (IsDead())
-		{
-			//LOG_SCREEN(TEXT("He Died"));
-			ADpGameMode *GameMode = GetWorld()->GetAuthGameMode<ADpGameMode>();
-			if (GameMode != nullptr)
-			{
-				GameMode->PawnKilled(this);
-			}
-			
-			/*
-			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision); // 캡슐콜리전 무효
-			// 20초 뒤 액터 destroy
-			TWeakObjectPtr<ACharacterPC> thisPtr = this;
-			GetWorld()->GetTimerManager().SetTimer(
-				TakeDamageHandle, [thisPtr]()
-				{
-					if(thisPtr.IsValid())
-						thisPtr->Destroy();
-				},
-				20.0f, false);
-			*/
-
-			auto DamageCauserPlayer = Cast<ACharacterPC>(DamageCauser);
-			// 플레이어의 경험치를 1 올림 //TODO NPC와 구분지어서 레벨디자인 할 수 있게끔
-			DamageCauserPlayer->Exp = DamageCauserPlayer->Exp + 1;
-			if(DamageCauserPlayer->Level != UtilLevelCal::LevelCal(DamageCauserPlayer->Exp))
-				DamageCauserPlayer->Level = UtilLevelCal::LevelCal(DamageCauserPlayer->Exp);
-			if(DamageCauserPlayer->MaxHealth != UtilLevelCal::MaxHealthCal(DamageCauserPlayer->Level))
-				DamageCauserPlayer->MaxHealth = UtilLevelCal::MaxHealthCal(DamageCauserPlayer->Level);
-			
-			Destroy();
-		}
-
-		//LOG_SCREEN(TEXT("Now Health : %f"), Health);
-		return Damage;
-	}
-	else // DamageImmunity가 true 일 때 Damage = 0
-	{
-		HandleCombatState();
-		Damage = 0.f;
-		DisplayDamage(Damage);
-		
-		// 애니메이션 플레이 //bool 변수로 0.3초마다 애니메이션 실행
-		if (CanTakeDamageAnim)
-		{
-			TakeDamageAnim = true;
-			GetWorldTimerManager().SetTimerForNextTick(this, &ACharacterPC::SetTakeDamageAnimFalse);
-			CanTakeDamageAnim = false;
-			GetWorldTimerManager().SetTimer(TakeDamageHandle, this, &ACharacterPC::SetCanTakeDamageAnimTrue, 0.3f, false);
-		}
-		//LOG_SCREEN(TEXT("Damage Immune! || Now Health : %d"), Health);
-		return Damage;
-	}
-}
-//================================================================
-// 데미지를 받을 때, 데미지 받는 애니메이션 출력을 위한 함수. TakeDamage에서 호출합니다. ABP에서 활용됩니다.
-//================================================================
-void ACharacterPC::SetTakeDamageAnimFalse()
-{
-	TakeDamageAnim = false;
-}
-void ACharacterPC::SetCanTakeDamageAnimTrue()
-{
-	CanTakeDamageAnim = true;
-}
-
-//================================================================
-// 전투상태 핸들링 함수 // 전투상태 돌입 5초 후, 전투상태 자동 해제. // 해제 전 갱신 시, 5초갱신.
-//================================================================
-void ACharacterPC::HandleCombatState()
-{
-	// InCombat을 true로 설정합니다.
-	InCombat = true;
-
-	// 만약 타이머가 이미 실행 중이면, 타이머를 초기화하고 5초 후에 다시 호출합니다.
-	if (GetWorldTimerManager().IsTimerActive(CombatStateTHandle))
-	{
-		GetWorldTimerManager().ClearTimer(CombatStateTHandle);
-		GetWorldTimerManager().SetTimer(CombatStateTHandle, this, &ACharacterPC::SetInCombatFalse, 5.f, false);
-	}
-	else
-	{
-		// 타이머가 실행 중이 아니면, 5초 후에 InCombat을 false로 설정합니다.
-		GetWorldTimerManager().SetTimer(CombatStateTHandle, this, &ACharacterPC::SetInCombatFalse, 5.f, false);
-	}
-}
-void ACharacterPC::SetInCombatFalse()
-{
-	InCombat = false;
-}
-
 //================================================================
 // Level 이 올라갔을때, 이벤트를 발동시킵니다.
 //================================================================
 void ACharacterPC::LevelUpEvent()
 {
 	Cast<APlayerControllerBase>(GetController())->SkillUpgradeEventStart();
-}
-
-//================================================================
-// HUD에서 받을 Level
-//================================================================
-int ACharacterPC::GetCharacterLevel()
-{
-	return Level;
-}
-
-//================================================================
-// HUD에서 받을 Exp 퍼센트
-//================================================================
-float ACharacterPC::GetCharacterExpPercent()
-{
-	if(Level == 1)
-		return (float)Exp / (float)10;
-		
-	return ((float)Exp - (float)UtilLevelCal::MaxExpCal(Level - 1)) / ((float)UtilLevelCal::MaxExpCal(Level) - (float)UtilLevelCal::MaxExpCal(Level - 1));
 }
 
 //================================================================
@@ -627,47 +414,13 @@ bool ACharacterPC::GetOtherSkillActivating(EAbilityType inType)
 }
 
 //================================================================
-// ABP에서 Die 애니메이션 재생
-//================================================================
-bool ACharacterPC::IsDead() const
-{
-	return Health <= 0;
-}
-
-//================================================================
-// 체력 변화를 애니메이팅합니다.
-//================================================================
-void ACharacterPC::_UpdateHp(int InCurHp, int InMaxHp)
-{
-	// 현재 체력 퍼센트
-	float curPercent = ( float )Health / ( float )MaxHealth;
-	curPercent = FMath::Clamp( curPercent, 0.f, 1.f );
-
-	// 목표 체력 퍼센트
-	float destPercent = ( float )InCurHp / ( float )InMaxHp;
-	destPercent = FMath::Clamp( destPercent, 0.f, 1.f );
-
-	// 퍼센트차이
-	float percentAmount = curPercent - destPercent;
-
-	HpBarAnimator.SetParam(curPercent, destPercent, 0.6f, EAnimType::CubicOut);
-	HpBarAnimator.Start();
-
-	HpBarAfterImageAnimator.SetParam(curPercent, destPercent,
-		(0.f <= percentAmount && percentAmount < 0.2f) ? 0.6f
-				: (0.2f <= percentAmount && percentAmount < 0.4f) ? 0.85f
-				:													1.1f,
-	EAnimType::CubicIn);
-	HpBarAfterImageAnimator.Start();
-}
-
-//================================================================
 // 스킬 쿨타임을 반환합니다.
 //================================================================
 float ACharacterPC::GetSkillCoolTimePercent(EAbilityType inType)
 {
 	return Skills[inType]->GetCoolTimePercent();
 }
+
 
 void ACharacterPC::Landed(const FHitResult& Hit)
 {

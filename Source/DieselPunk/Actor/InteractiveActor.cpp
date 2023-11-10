@@ -55,7 +55,7 @@ void AInteractiveActor::CreateUI()
 	if( GuideUI.IsValid() )
 		return;
 
-	FString inPath = FString::Printf(TEXT( "/Script/UMGEditor.WidgetBlueprint'/Game/DieselPunk/UI/Widgets/HUD/WBP_ItemGuideUI.WBP_ItemGuideUI_C'" ));
+	FString inPath = UtilPath::GetUIPath( TEXT("WBP_ItemGuideUI") );
 	UClass* widgetClass = ConstructorHelpersInternal::FindOrLoadClass( inPath, UUserWidget::StaticClass() );
 	if(!widgetClass)
 		return;
