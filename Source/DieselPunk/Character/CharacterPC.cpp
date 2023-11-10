@@ -60,11 +60,6 @@ void ACharacterPC::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// 게임시작시 기본체력초기화
-	Stat.ChangeStat(ECharacterStatType::Hp , Stat.GetStat(ECharacterStatType::MaxHp));
-	HpPercent = Stat.GetStat(ECharacterStatType::Hp) / Stat.GetStat(ECharacterStatType::MaxHp);
-	HpPercentAfterImage = Stat.GetStat(ECharacterStatType::Hp) / Stat.GetStat(ECharacterStatType::MaxHp);
-
 	PCSkillManager.ResetSkill();
 }
 
@@ -114,13 +109,6 @@ void ACharacterPC::Tick(float DeltaTime)
 		TempLevel = Stat.GetStat(ECharacterStatType::Level);
 		LevelUpEvent();
 	}
-
-	// 체력바 애니메이션 업데이트
-	HpBarAnimator.Update(DeltaTime);
-	HpBarAfterImageAnimator.Update(DeltaTime);
-	
-	HpPercent = HpBarAnimator.GetCurValue();
-	HpPercentAfterImage = HpBarAfterImageAnimator.GetCurValue();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -277,22 +265,22 @@ void ACharacterPC::SetZoomOutProp()
 //================================================================
 // Tick에서 작동합니다. 애니메이션 담당
 //================================================================
-void ACharacterPC::ZoomInOut(float DeltaTime)
+void ACharacterPC::ZoomInOut(float InDeltaTime)
 {
 	CameraBoom->TargetArmLength = FMath::FInterpTo(
 		CameraBoom->TargetArmLength,
 		MyTargetArmLength,
-		DeltaTime,
+		InDeltaTime,
 		ZoomInterpTime);
 	CameraBoom->SetRelativeLocation(FMath::VInterpTo(
 		CameraBoom->GetRelativeLocation(),
 		MyTargetArmLocation,
-		DeltaTime,
+		InDeltaTime,
 		ZoomInterpTime));
 	FollowCamera->SetRelativeLocation(FMath::VInterpTo(
 		FollowCamera->GetRelativeLocation(),
 		MyCameraLocation,
-		DeltaTime,
+		InDeltaTime,
 		ZoomInterpTime));
 	if (CameraBoom->TargetArmLength == MyTargetArmLength)
 		CanZoom = false; // 줌인아웃이 완료되면 함수실행중지
@@ -419,10 +407,4 @@ bool ACharacterPC::GetOtherSkillActivating(EAbilityType inType)
 float ACharacterPC::GetSkillCoolTimePercent(EAbilityType inType)
 {
 	return Skills[inType]->GetCoolTimePercent();
-}
-
-
-void ACharacterPC::Landed(const FHitResult& Hit)
-{
-	Super::Landed(Hit);
 }

@@ -2,7 +2,7 @@
 
 #include "SkillSoldierLM.h"
 #include "../../Actor\SoldierProjectile.h"
-#include "../../Character/CharacterSoldier.h"
+#include "../../Character/CharacterPC.h"
 #include "../../Animation/SoldierAnimInstance.h"
 #include "../../Handler/CoolTimeHandler.h"
 #include "../../Skill/SkillSoldier/SkillSoldierR.h"
@@ -30,7 +30,7 @@ void USkillSoldierLM::SkillTriggered()
 {
 	Super::SkillTriggered();
 
-	auto ownerPawn = Cast<ACharacterSoldier>(GetOwner());
+	auto ownerPawn = Cast<ACharacterPC>(GetOwner());
 	if(ownerPawn == nullptr)
 		return;
 	auto ownerController = ownerPawn->GetController();

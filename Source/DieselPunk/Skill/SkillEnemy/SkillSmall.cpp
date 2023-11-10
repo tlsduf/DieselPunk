@@ -2,7 +2,7 @@
 
 #include "SkillSmall.h"
 #include "..\../Actor\ProjectileBase.h"
-#include "..\..\Character\CharacterPC.h"
+#include "..\..\Character\CharacterNPC.h"
 
 #include <GameFramework/PlayerController.h>
 #include <GameFramework/Character.h>
@@ -23,7 +23,7 @@ void USkillSmall::SkillTriggered()
 {
 	Super::SkillTriggered();
 
-	auto ownerPawn = Cast<ACharacterPC>(GetOwner());
+	auto ownerPawn = Cast<ACharacterNPC>(GetOwner());
 	if(ownerPawn == nullptr)
 		return;
 	auto ownerController = ownerPawn->GetController();

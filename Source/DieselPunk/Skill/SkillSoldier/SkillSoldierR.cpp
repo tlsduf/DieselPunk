@@ -2,7 +2,7 @@
 
 #include "SkillSoldierR.h"
 #include "../../Actor\SoldierProjectile.h"
-#include "../../Character/CharacterSoldier.h"
+#include "../../Character/CharacterPC.h"
 #include "../../Logic/PlayerControllerBase.h"
 #include "../../Animation/SoldierAnimInstance.h"
 #include "../../Handler/CoolTimeHandler.h"
@@ -27,7 +27,7 @@ void USkillSoldierR::SkillTriggered()
 {
 	Super::SkillTriggered();
 	
-	auto ownerPawn = Cast<ACharacterSoldier>(GetOwner());
+	auto ownerPawn = Cast<ACharacterPC>(GetOwner());
 	if(ownerPawn == nullptr)
 		return;
 	APlayerController *ownerController = Cast<APlayerControllerBase>(ownerPawn->GetController());
@@ -67,7 +67,6 @@ void USkillSoldierR::SkillTriggered()
 		IsE = true;
 		ownerPawn->CanZoom = true;
 		ownerPawn->CanCameraControl = false;
-		ownerPawn->DrawERange = true;
 	}
 	else if (IsE) //*선행 조건 설정부
 	{
@@ -121,7 +120,7 @@ void USkillSoldierR::SkillTriggered()
 void USkillSoldierR::AfterLogic()
 {
 	
-	auto ownerPawn = Cast<ACharacterSoldier>(GetOwner());
+	auto ownerPawn = Cast<ACharacterPC>(GetOwner());
 	if(ownerPawn == nullptr)
 		return;
 	APlayerController *ownerController = Cast<APlayerControllerBase>(ownerPawn->GetController());
@@ -170,7 +169,6 @@ void USkillSoldierR::AfterLogic()
 	//*후행 조건 설정부
 	ownerPawn->CanZoom = true;
 	ownerPawn->CanCameraControl = true;
-	ownerPawn->DrawERange = false;
 
 	//HandleCombatState();
 	ownerPawn->CanJog = true;

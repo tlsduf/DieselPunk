@@ -63,6 +63,13 @@ void ACharacterBase::BeginDestroy()
 void ACharacterBase::Tick(float InDeltaTime)
 {
 	Super::Tick(InDeltaTime);
+
+	// 체력바 애니메이션 업데이트
+	HpBarAnimator.Update(InDeltaTime);
+	HpBarAfterImageAnimator.Update(InDeltaTime);
+	
+	HpPercent = HpBarAnimator.GetCurValue();
+	HpPercentAfterImage = HpBarAfterImageAnimator.GetCurValue();
 }
 
 // =============================================================
@@ -74,7 +81,15 @@ void ACharacterBase::SetupPlayerInputComponent(UInputComponent* InPlayerInputCom
 }
 
 //================================================================
-// 데미지 받는 함수
+// 블루프린트용 스탯 Getter
+//================================================================
+int32 ACharacterBase::GetCharacterStat(ECharacterStatType InStatType)
+{
+	return Stat.GetStat(InStatType);
+}
+
+//================================================================
+// 데미지 처리
 //================================================================
 float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent, class AController *EventInstigator, AActor *DamageCauser)
 {
@@ -111,8 +126,9 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 
 		Damage = FMath::Min(Stat.GetStat(ECharacterStatType::Hp), (int)Damage);
 		_UpdateHp(Stat.GetStat(ECharacterStatType::Hp) - Damage, Stat.GetStat(ECharacterStatType::MaxHp));
-		Stat.ChangeStat(ECharacterStatType::Hp , Stat.GetStat(ECharacterStatType::Hp) - Damage);
-		DisplayDamage(Damage);
+		Stat.ChangeStat(ECharacterStatType::Hp , -Damage);
+		CreateDamageActor(Damage);
+		LOG_SCREEN(FColor::Red, TEXT("hp : %d"), Stat.GetStat(ECharacterStatType::Hp));
 		
 		//================================================================
 		// 3.애니메이션 플레이 //bool 변수로 0.3초마다 애니메이션 실행
@@ -152,7 +168,7 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 
 			auto DamageCauserPlayer = Cast<ACharacterBase>(DamageCauser);
 			// 플레이어의 경험치를 1 올림
-			DamageCauserPlayer->Stat.ChangeStat(ECharacterStatType::Exp, Stat.GetStat(ECharacterStatType::Exp) + 1);
+			DamageCauserPlayer->Stat.ChangeStat(ECharacterStatType::Exp, 1);
 			if(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Level) != UtilLevelCal::LevelCal(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Exp)))
 				DamageCauserPlayer->Stat.ChangeStat(ECharacterStatType::Level, UtilLevelCal::LevelCal(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Exp)));
 			if(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::MaxHp) != UtilLevelCal::MaxHealthCal(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Level)))
@@ -167,7 +183,7 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 	{
 		HandleCombatState();
 		Damage = 0.f;
-		DisplayDamage(Damage);
+		CreateDamageActor(Damage);
 		
 		// 애니메이션 플레이 //bool 변수로 0.3초마다 애니메이션 실행
 		if (CanTakeDamageAnim)
@@ -196,7 +212,7 @@ void ACharacterBase::SetCanTakeDamageAnimTrue()
 // =============================================================
 // 데미지를 입으면 데미지UI액터를 생성합니다.
 // =============================================================
-void ACharacterBase::DisplayDamage(float inDamage)
+void ACharacterBase::CreateDamageActor(float inDamage)
 {
 	FTransform SpawnTransform( FRotator::ZeroRotator, GetActorLocation());
 	DamageUIActor = GetWorld()->SpawnActorDeferred<ADamageUIActor>(ADamageUIActor::StaticClass(), SpawnTransform, this);
@@ -207,31 +223,6 @@ void ACharacterBase::DisplayDamage(float inDamage)
 		DamageUIActor->SetDamage(inDamage);
 		DamageUIActor->FinishSpawning(SpawnTransform);
 	}
-}
-
-//================================================================
-// 전투상태 핸들링 함수 // 전투상태 돌입 5초 후, 전투상태 자동 해제. // 해제 전 갱신 시, 5초갱신.
-//================================================================
-void ACharacterBase::HandleCombatState()
-{
-	// InCombat을 true로 설정합니다.
-	InCombat = true;
-
-	// 만약 타이머가 이미 실행 중이면, 타이머를 초기화하고 재설정합니다.
-	if (GetWorldTimerManager().IsTimerActive(CombatStateTHandle))
-	{
-		GetWorldTimerManager().ClearTimer(CombatStateTHandle);
-		GetWorldTimerManager().SetTimer(CombatStateTHandle, this, &ACharacterBase::SetInCombatFalse, 5.f, false);
-	}
-	else
-	{
-		// 타이머가 실행 중이 아니면, 5초 후에 InCombat을 false로 설정합니다.
-		GetWorldTimerManager().SetTimer(CombatStateTHandle, this, &ACharacterBase::SetInCombatFalse, 5.f, false);
-	}
-}
-void ACharacterBase::SetInCombatFalse()
-{
-	InCombat = false;
 }
 
 //================================================================
@@ -269,11 +260,37 @@ bool ACharacterBase::IsDead()
 	return Stat.GetStat(ECharacterStatType::Hp) <= 0;
 }
 
-//================================================================
-// 블루프린트용 스탯 Getter
-//================================================================
-int32 ACharacterBase::GetCharacterStat(ECharacterStatType InStatType)
-{
-	return Stat.GetStat(InStatType);
-}
 
+//================================================================
+// 전투상태 핸들링 함수 // 전투상태 돌입 5초 후, 전투상태 자동 해제. // 해제 전 갱신 시, 5초갱신.
+//================================================================
+void ACharacterBase::HandleCombatState()
+{
+	// InCombat을 true로 설정합니다.
+	InCombat = true;
+
+	// 만약 타이머가 이미 실행 중이면, 타이머를 초기화하고 재설정합니다.
+	if (GetWorldTimerManager().IsTimerActive(CombatStateTHandle))
+	{
+		GetWorldTimerManager().ClearTimer(CombatStateTHandle);
+		GetWorldTimerManager().SetTimer(CombatStateTHandle, this, &ACharacterBase::SetInCombatFalse, 5.f, false);
+	}
+	else
+	{
+		// 타이머가 실행 중이 아니면, 5초 후에 InCombat을 false로 설정합니다.
+		GetWorldTimerManager().SetTimer(CombatStateTHandle, this, &ACharacterBase::SetInCombatFalse, 5.f, false);
+	}
+	
+	/*TWeakObjectPtr<ACharacterBase> thisPtr = this;
+	GetWorld()->GetTimerManager().SetTimer(
+		CombatStateTHandle, [thisPtr]()
+		{
+			if(thisPtr.IsValid())
+				thisPtr->InCombat = false;
+		},
+		5.0f, false);*/
+}
+void ACharacterBase::SetInCombatFalse()
+{
+	InCombat = false;
+}
