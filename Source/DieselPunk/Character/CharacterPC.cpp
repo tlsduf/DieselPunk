@@ -166,71 +166,63 @@ void ACharacterPC::Look(const FInputActionValue &Value)
 	}
 }
 
-// =============================================================
-// SkillInfos의 TSubClassOf들을 설정된 순서대로 Skills 배열에 인스턴스화 시킵니다.
-// =============================================================
-void ACharacterPC::InitSkills()
+void ACharacterPC::Jump()
 {
-	if(Skills.Num() > 0)
-		Skills.Empty();
-	for (const TPair<EAbilityType, TSubclassOf<USkillBase>>& ability : SkillInfos)
-	{
-		Skills.Add(ability.Key, NewObject<USkillBase>(this, ability.Value));
-		Skills[ability.Key]->RegisterComponent(); // 컴포넌트를 등록합니다.
-	}
-
-	if(SkillActivating.Num() < 0)
-		SkillActivating.Empty();
-	SkillActivating.Add(EAbilityType::MouseLM, false);
-	SkillActivating.Add(EAbilityType::MouseRM, false);
-	SkillActivating.Add(EAbilityType::Shift, false);
-	SkillActivating.Add(EAbilityType::SkillQ, false);
-	SkillActivating.Add(EAbilityType::SkillE, false);
-	SkillActivating.Add(EAbilityType::SkillR, false);
+	if(GetMovementComponent()->IsMovingOnGround() || (GetMovementComponent()->IsFalling() && GetMovementComponent()->Velocity.Z < 0))
+		Super::Jump();
 }
 
-// =============================================================
-// 아래부터 각 상황에 맞는 스킬 호출 함수입니다. PlayerController에서 호출하면, 받아온 Index대로
-// 인스턴스화 된 배열의 스킬에서 상황에 맞는 함수를 호출합니다.
-// =============================================================
-void ACharacterPC::SkillStarted(const EAbilityType InAbilityType)
+//================================================================
+// Jog //W가 눌린 상태일때만 뛸 수 있음 //W 때면 jog중지
+//================================================================
+void ACharacterPC::StartJog()
 {
-	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
+	//Player의 이동방향
+	FVector playerMovementDirection = GetMovementComponent()->Velocity;
+	playerMovementDirection.Z = 0;
+	playerMovementDirection.Normalize();
+
+	//Controller 방향
+	FVector controllerDirection = Controller->GetControlRotation().Vector();
+	controllerDirection.Z = 0;
+	controllerDirection.Normalize();
+
+	//내적을 통해 사잇각 확인
+	double dotResult = FVector::DotProduct(playerMovementDirection, controllerDirection);
+	
+	if (dotResult > 0.01)
 	{
-		ability->SkillStarted();
+		GetCharacterMovement()->MaxWalkSpeed = ThisJogSpeed;
+		IsJog = true;
+		SetRunZoomOutProp();
+		SetInCombatFalse();
 	}
 }
-void ACharacterPC::SkillOngoing(const EAbilityType InAbilityType)
+
+void ACharacterPC::StopJog()
 {
-	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
-	{
-		ability->SkillOngoing();
-	}
+	GetCharacterMovement()->MaxWalkSpeed = ThisSpeed;
+	IsJog = false;
+	SetZoomOutProp();
 }
-void ACharacterPC::SkillTriggered(const EAbilityType InAbilityType)
+
+//================================================================
+// Pawn 회전 함수 // 전투상태일 때만 자동회전. Tick에서 구현
+//================================================================
+void ACharacterPC::RotatePawn(float DeltaTime)
 {
-	if (Skills[InAbilityType]->CanActivateAbility() && !GetOtherSkillActivating(InAbilityType))
-	{
-		HandleCombatState();
-		if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
-		{
-			ability->SkillTriggered();
-		}
-	}
-}
-void ACharacterPC::SkillCompleted(const EAbilityType InAbilityType)
-{
-	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
-	{
-		ability->SkillCompleted();
-	}
-}
-void ACharacterPC::SkillCanceled(const EAbilityType InAbilityType)
-{
-	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
-	{
-		ability->SkillCanceled();
-	}
+	FRotator rotation = GetActorRotation();
+	FRotator toRotation = Controller->GetControlRotation();
+	
+	FRotator yawRotation(0, toRotation.Yaw, 0);
+
+	//SetActorRotation(yawRotation);
+
+	SetActorRotation(FMath::RInterpTo(
+		rotation,
+		yawRotation,
+		DeltaTime,
+		10));
 }
 
 //================================================================
@@ -301,71 +293,71 @@ void ACharacterPC::ZoomInOut(float InDeltaTime)
 	
 }
 
-//================================================================
-// Jog //W가 눌린 상태일때만 뛸 수 있음 //W 때면 jog중지
-//================================================================
-void ACharacterPC::StartJog()
+// =============================================================
+// SkillInfos의 TSubClassOf들을 설정된 순서대로 Skills 배열에 인스턴스화 시킵니다.
+// =============================================================
+void ACharacterPC::InitSkills()
 {
-	//Player의 이동방향
-	FVector playerMovementDirection = GetMovementComponent()->Velocity;
-	playerMovementDirection.Z = 0;
-	playerMovementDirection.Normalize();
-
-	//Controller 방향
-	FVector controllerDirection = Controller->GetControlRotation().Vector();
-	controllerDirection.Z = 0;
-	controllerDirection.Normalize();
-
-	//내적을 통해 사잇각 확인
-	double dotResult = FVector::DotProduct(playerMovementDirection, controllerDirection);
-	
-	if (dotResult > 0.01)
+	if(Skills.Num() > 0)
+		Skills.Empty();
+	for (const TPair<EAbilityType, TSubclassOf<USkillBase>>& ability : SkillInfos)
 	{
-		GetCharacterMovement()->MaxWalkSpeed = ThisJogSpeed;
-		IsJog = true;
-		SetRunZoomOutProp();
-		SetInCombatFalse();
+		Skills.Add(ability.Key, NewObject<USkillBase>(this, ability.Value));
+		Skills[ability.Key]->RegisterComponent(); // 컴포넌트를 등록합니다.
+	}
+
+	if(SkillActivating.Num() < 0)
+		SkillActivating.Empty();
+	SkillActivating.Add(EAbilityType::MouseLM, false);
+	SkillActivating.Add(EAbilityType::MouseRM, false);
+	SkillActivating.Add(EAbilityType::Shift, false);
+	SkillActivating.Add(EAbilityType::SkillQ, false);
+	SkillActivating.Add(EAbilityType::SkillE, false);
+	SkillActivating.Add(EAbilityType::SkillR, false);
+}
+
+// =============================================================
+// 아래부터 각 상황에 맞는 스킬 호출 함수입니다. PlayerController에서 호출하면, 받아온 Index대로
+// 인스턴스화 된 배열의 스킬에서 상황에 맞는 함수를 호출합니다.
+// =============================================================
+void ACharacterPC::SkillStarted(const EAbilityType InAbilityType)
+{
+	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
+	{
+		ability->SkillStarted();
 	}
 }
-
-void ACharacterPC::StopJog()
+void ACharacterPC::SkillOngoing(const EAbilityType InAbilityType)
 {
-	GetCharacterMovement()->MaxWalkSpeed = ThisSpeed;
-	IsJog = false;
-	SetZoomOutProp();
+	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
+	{
+		ability->SkillOngoing();
+	}
 }
-
-void ACharacterPC::Jump()
+void ACharacterPC::SkillTriggered(const EAbilityType InAbilityType)
 {
-	if(GetMovementComponent()->IsMovingOnGround() || (GetMovementComponent()->IsFalling() && GetMovementComponent()->Velocity.Z < 0))
-		Super::Jump();
+	if (Skills[InAbilityType]->CanActivateAbility() && !GetOtherSkillActivating(InAbilityType))
+	{
+		HandleCombatState();
+		if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
+		{
+			ability->SkillTriggered();
+		}
+	}
 }
-
-//================================================================
-// Pawn 회전 함수 // 전투상태일 때만 자동회전. Tick에서 구현
-//================================================================
-void ACharacterPC::RotatePawn(float DeltaTime)
+void ACharacterPC::SkillCompleted(const EAbilityType InAbilityType)
 {
-	FRotator rotation = GetActorRotation();
-	FRotator toRotation = Controller->GetControlRotation();
-	
-	FRotator yawRotation(0, toRotation.Yaw, 0);
-
-	//SetActorRotation(yawRotation);
-
-	SetActorRotation(FMath::RInterpTo(
-		rotation,
-		yawRotation,
-		DeltaTime,
-		10));
+	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
+	{
+		ability->SkillCompleted();
+	}
 }
-
-//================================================================
-// Level 이 올라갔을때, 이벤트를 발동시킵니다.
-//================================================================
-void ACharacterPC::LevelUpEvent()
+void ACharacterPC::SkillCanceled(const EAbilityType InAbilityType)
 {
-	//Cast<APlayerControllerBase>(GetController())->SkillUpgradeEventStart();
+	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
+	{
+		ability->SkillCanceled();
+	}
 }
 
 //================================================================
@@ -406,4 +398,12 @@ bool ACharacterPC::GetOtherSkillActivating(EAbilityType inType)
 float ACharacterPC::GetSkillCoolTimePercent(EAbilityType inType)
 {
 	return Skills[inType]->GetCoolTimePercent();
+}
+
+//================================================================
+// Level 이 올라갔을때, 이벤트를 발동시킵니다.
+//================================================================
+void ACharacterPC::LevelUpEvent()
+{
+	//Cast<APlayerControllerBase>(GetController())->SkillUpgradeEventStart();
 }
