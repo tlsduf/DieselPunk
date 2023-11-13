@@ -18,59 +18,51 @@ protected:
 	/////////////////////////////////////////////////////////////////////
 	// for Character info Management //
 	
-	int32 ObjectId = -1;	//오브젝트 ID
-	FStat Stat;				//스탯
-
-	//캐릭터 정보를 가져오기 위한 이름
+	int32 ObjectId = -1;			//오브젝트 ID
+	FStat Stat;						//스탯
+	
 	UPROPERTY(EditDefaultsOnly)
-	FString CharacterName = "";
+	FString CharacterName = "";		//캐릭터 정보를 가져오기 위한 이름
 
 	/////////////////////////////////////////////////////////////////////
 	// for UI //
 	
-	// 위젯 컴포넌트
 	UPROPERTY( EditAnywhere )
-	UWidgetComponent* WidgetComp;
-
-	// 데미지 UI 액터
+	UWidgetComponent* WidgetComp;			// 위젯 컴포넌트
+	
 	UPROPERTY()
-	class ADamageUIActor *DamageUIActor;
+	class ADamageUIActor *DamageUIActor;	// 데미지 UI 액터
 
-	Animator HpBarAnimator;				// 체력바 애니메이터
-	float HpPercent = 1;				// 체력바 퍼센테이지
-	Animator HpBarAfterImageAnimator;	// 체력바잔상 애니메이터
-	float HpPercentAfterImage = 1;		// 체력바잔상 퍼센테이지
+	Animator HpBarAnimator;					// 체력바 애니메이터
+	float HpPercent = 1;					// 체력바 퍼센테이지
+	Animator HpBarAfterImageAnimator;		// 체력바잔상 애니메이터
+	float HpPercentAfterImage = 1;			// 체력바잔상 퍼센테이지
 
 	/////////////////////////////////////////////////////////////////////
 	// for Animation //
 	
-	// 데미지 받는 애니메이션 출력을 위한 ABP에서 활용되는 변수입니다.
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	bool TakeDamageAnim = false;
+	bool TakeDamageAnim = false;			// 데미지 받는 애니메이션 출력을 위한 ABP에서 활용되는 변수입니다.
 
 	bool CanTakeDamageAnim = true;
-	
 	FTimerHandle TakeDamageHandle;
 
 	/////////////////////////////////////////////////////////////////////
 	// for State //
-
-	// * 전투state
+	
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	bool InCombat = false;
+	bool InCombat = false;					// InCombat이 True 면 전투상태
 
-	FTimerHandle CombatStateTHandle;
+	FTimerHandle CombatStateTHandle;		// 전투상태 진입 5초 후, 비전투상태로 회귀
 
 	/////////////////////////////////////////////////////////////////////
 	// for Utility //
 	
-	// DamageImmunity 가 True 면 데미지를 안 입게 했습니다. TakeDamage 함수에서 활용합니다.
 	UPROPERTY(EditAnywhere, Category = "Defensive")
-	bool DamageImmunity = false;
-
-	// * 디버그on/off
+	bool DamageImmunity = false;			// DamageImmunity 가 True 면 데미지를 안 입게 했습니다. TakeDamage 함수에서 활용합니다.
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Debug")
-	bool DebugOnOff = false;
+	bool DebugOnOff = false;				// 디버그on/off
 	
 public:
 	//생성자
@@ -120,7 +112,7 @@ public:
 	void SetCanTakeDamageAnimTrue();
 	
 	// 데미지를 입으면 데미지ui액터를 생성합니다.
-	void CreateDamageActor(float inDamage);
+	void CreateDamageActor(float InDamage);
 
 	// 체력 퍼센테이지 반환 애니메이팅
 	void _UpdateHp(int InCurHp, int InMaxHp);

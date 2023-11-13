@@ -93,7 +93,7 @@ int32 ACharacterBase::GetCharacterStat(ECharacterStatType InStatType)
 //================================================================
 float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent, class AController *EventInstigator, AActor *DamageCauser)
 {
-	float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	// DamageImmunity가 false 일 때 데미지계산
 	if (!DamageImmunity && EventInstigator != Controller)
 	{
@@ -108,7 +108,7 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 			if (0 == (PointDamageEvent->HitInfo.BoneName).Compare(FName(TEXT("Head"))))
 			{
 				// TODO 부위별 데미지 기능 실현
-				Damage *= 5;
+				damage *= 5;
 			}
 		}
 		else if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
@@ -122,12 +122,12 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 		// TODO 방어력, 공격효과 적용해서 데미지공식 적용하기
 		// TODO 효과적용 방식 : 체력비례피해(최대or현재), 고정피해(방어구관통), 지속피해(틱뎀), 방어력감소(영구or시간), 폭발스택
 		//Damage = Damage * (100 / (100 + Armor));
-		Damage = (int)(Damage + 0.2); // 데미지 소수점 처리 *소수점첫째자리가 0.8 이상이면 올림, 미만시 내림
+		damage = (int)(damage + 0.2); // 데미지 소수점 처리 *소수점첫째자리가 0.8 이상이면 올림, 미만시 내림
 
-		Damage = FMath::Min(Stat.GetStat(ECharacterStatType::Hp), (int)Damage);
-		_UpdateHp(Stat.GetStat(ECharacterStatType::Hp) - Damage, Stat.GetStat(ECharacterStatType::MaxHp));
-		Stat.ChangeStat(ECharacterStatType::Hp , -Damage);
-		CreateDamageActor(Damage);
+		damage = FMath::Min(Stat.GetStat(ECharacterStatType::Hp), (int)damage);
+		_UpdateHp(Stat.GetStat(ECharacterStatType::Hp) - damage, Stat.GetStat(ECharacterStatType::MaxHp));
+		Stat.ChangeStat(ECharacterStatType::Hp , -damage);
+		CreateDamageActor(damage);
 		LOG_SCREEN(FColor::Red, TEXT("hp : %d"), Stat.GetStat(ECharacterStatType::Hp));
 		
 		//================================================================
@@ -177,13 +177,13 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 			Destroy();
 		}
 		
-		return Damage;
+		return damage;
 	}
 	else // DamageImmunity가 true 일 때 Damage = 0
 	{
 		HandleCombatState();
-		Damage = 0.f;
-		CreateDamageActor(Damage);
+		damage = 0.f;
+		CreateDamageActor(damage);
 		
 		// 애니메이션 플레이 //bool 변수로 0.3초마다 애니메이션 실행
 		if (CanTakeDamageAnim)
@@ -193,7 +193,7 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 			CanTakeDamageAnim = false;
 			GetWorldTimerManager().SetTimer(TakeDamageHandle, this, &ACharacterBase::SetCanTakeDamageAnimTrue, 0.3f, false);
 		}
-		return Damage;
+		return damage;
 	}
 }
 
@@ -212,7 +212,7 @@ void ACharacterBase::SetCanTakeDamageAnimTrue()
 // =============================================================
 // 데미지를 입으면 데미지UI액터를 생성합니다.
 // =============================================================
-void ACharacterBase::CreateDamageActor(float inDamage)
+void ACharacterBase::CreateDamageActor(float InDamage)
 {
 	FTransform SpawnTransform( FRotator::ZeroRotator, GetActorLocation());
 	DamageUIActor = GetWorld()->SpawnActorDeferred<ADamageUIActor>(ADamageUIActor::StaticClass(), SpawnTransform, this);
@@ -220,7 +220,7 @@ void ACharacterBase::CreateDamageActor(float inDamage)
 	if(DamageUIActor)
 	{
 		// DamageUIActor->AttachToComponent( GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
-		DamageUIActor->SetDamage(inDamage);
+		DamageUIActor->SetDamage(InDamage);
 		DamageUIActor->FinishSpawning(SpawnTransform);
 	}
 }

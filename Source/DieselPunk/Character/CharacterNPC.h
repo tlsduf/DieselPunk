@@ -21,7 +21,21 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* TurretTopMesh;
 	
+	/////////////////////////////////////////////////////////////////////
+	// for UI //
+	UPROPERTY()
+	TWeakObjectPtr< UEnemyStatusUI > EnemyStatusUI;		// 상태 UI 포인터
+
+	FTimerHandle EnemyStatusUISetHiddenInGameTHandle;
+	
 public:
+	/////////////////////////////////////////////////////////////////////
+	// for Character info Management //
+	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
+	ENPCType NPCType = ENPCType::Enemy;						// NPC 타입
+	
+	/////////////////////////////////////////////////////////////////////
+	// for skill //
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "skills", meta = (AllowPrivateAccess = "true"))
 	UPlayerSkill *MeleeAttack;
 
@@ -34,15 +48,8 @@ public:
 
 	int8 SoldierStack = 0;
 
-	UPROPERTY()
-	TWeakObjectPtr< UEnemyStatusUI > EnemyStatusUI; // 상태 UI 포인터
-
-	FTimerHandle EnemyStatusUISetHiddenInGameTHandle;
-
-	// NPC 타입
-	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
-	ENPCType NPCType = ENPCType::Enemy;
 	
+public:
 	ACharacterNPC();
 
 	virtual void Tick(float DeltaTime) override;
@@ -52,17 +59,16 @@ protected:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent) override;
 
+	// 상태 UI 위젯을 생성한다.
+	virtual void CreateStatusUI() override;
+	
 	// TakeDamageHandle
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent, class AController *EventInstigator, AActor *DamageCauser) override;
 
 	//void SetTimerWithDelegate(FTimerHandle& TimerHandle, TBaseDelegate<void> ObjectDelegate, float Time, bool bLoop);
 
 	void EnemyStatusUISetHiddenInGame();
-
 public:
-	// 상태 UI 위젯을 생성한다.
-	virtual void CreateStatusUI() override;
-	
 	float DoMeleeAttack();
 	void TempDoMeleeAttack();
 	void DoProjectileAttack();

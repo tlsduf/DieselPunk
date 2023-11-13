@@ -263,6 +263,20 @@ void ACharacterPC::SetZoomOutProp()
 	}
 }
 //================================================================
+// 달릴 때의 카메라 프롭을 설정합니다.
+//================================================================
+void ACharacterPC::SetRunZoomOutProp()
+{
+	MyTargetArmLength = 600.0f;
+	MyTargetArmLocation = FVector(0, 0, 55);
+	MyCameraLocation = FVector(0, 0, 55);
+
+	IsZoomed = true;
+	ZoomInterpTime = 6;
+	CanZoom = true;
+}
+
+//================================================================
 // Tick에서 작동합니다. 애니메이션 담당
 //================================================================
 void ACharacterPC::ZoomInOut(float InDeltaTime)
@@ -286,21 +300,6 @@ void ACharacterPC::ZoomInOut(float InDeltaTime)
 		CanZoom = false; // 줌인아웃이 완료되면 함수실행중지
 	
 }
-
-//================================================================
-// 달릴 때의 카메라 프롭을 설정합니다.
-//================================================================
-void ACharacterPC::SetRunZoomOutProp()
-{
-	MyTargetArmLength = 600.0f;
-	MyTargetArmLocation = FVector(0, 0, 55);
-	MyCameraLocation = FVector(0, 0, 55);
-
-	IsZoomed = true;
-	ZoomInterpTime = 6;
-	CanZoom = true;
-}
-
 
 //================================================================
 // Jog //W가 눌린 상태일때만 뛸 수 있음 //W 때면 jog중지
@@ -366,7 +365,7 @@ void ACharacterPC::RotatePawn(float DeltaTime)
 //================================================================
 void ACharacterPC::LevelUpEvent()
 {
-	Cast<APlayerControllerBase>(GetController())->SkillUpgradeEventStart();
+	//Cast<APlayerControllerBase>(GetController())->SkillUpgradeEventStart();
 }
 
 //================================================================
