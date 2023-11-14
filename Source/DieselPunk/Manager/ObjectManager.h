@@ -72,6 +72,8 @@ private:
 public:
 	//컨트롤 중인 플레이어를 가져옵니다.
 	ACharacterPC* GetPlayer();
+
+	UWorld* GetWorld();
 	
 	//오브젝트ID를 받아 액터를 찾습니다.
 	AActor* FindActor(int64 InObjectId);

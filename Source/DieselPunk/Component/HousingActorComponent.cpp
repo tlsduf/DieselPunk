@@ -6,6 +6,7 @@
 #include "../Character/CharacterPc.h"
 #include "../Character/CharacterTurret.h"
 #include "../Manager/ObjectManager.h"
+#include "../Manager/NavigationManager.h"
 
 #include <DrawDebugHelpers.h>
 #include <GameFramework/PlayerController.h>
@@ -19,7 +20,6 @@ UHousingActorComponent::UHousingActorComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	Range = 10000;
-	GridSize = 100;
 }
 
 
@@ -90,11 +90,11 @@ void UHousingActorComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	{
 		//그리드에 맞춘 위치 탐색
 		int x,y,z;
-		x = static_cast<int>(hit.Location.X) / GridSize;
-		y = static_cast<int>(hit.Location.Y) / GridSize;
+		x = static_cast<int>(hit.Location.X) / FNavigationManager::GridSize;
+		y = static_cast<int>(hit.Location.Y) / FNavigationManager::GridSize;
 		z = 0;
 		FVector newLocation(x,y,z);
-		newLocation *= GridSize;
+		newLocation *= FNavigationManager::GridSize;
 		newLocation.Z = hit.Location.Z + Cast<ACharacter>(GetOwner())->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 
 		FHitResult NewLocationHitResult;
@@ -104,7 +104,7 @@ void UHousingActorComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		//디버그 렌더를 위한 로케이션
 		FVector boxLocation = GetOwner()->GetActorLocation();
 		FVector boxGridSize = {1,1,1};//GetOwner()->GetGridSize();
-		FVector boxExtend = (boxGridSize * GridSize / 2);
+		FVector boxExtend = (boxGridSize * FNavigationManager::GridSize / 2);
 		boxExtend.Z = Cast<ACharacter>(GetOwner())->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 		boxLocation.Z += boxExtend.Z;
 
@@ -119,7 +119,7 @@ bool UHousingActorComponent::IsArrangeTurret()
 	TArray<FOverlapResult> hitResult;
 	FVector location = GetOwner()->GetActorLocation();
 	FVector gridSize = {3,3,3};//GetOwner()->GetGridSize();
-	FVector boxHalfExtend = (gridSize * GridSize / 2) - 0.25;
+	FVector boxHalfExtend = (gridSize * FNavigationManager::GridSize / 2) - 0.25;
 	location.Z += boxHalfExtend.Z;
 
 	//플레이어 충돌범위 제외

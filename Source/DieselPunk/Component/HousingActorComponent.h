@@ -15,8 +15,6 @@ private:
 	//피킹 사거리
 	int32 Range;
 
-	//그리드 사이즈
-	int32 GridSize;
 
 public:	
 	// Sets default values for this component's properties

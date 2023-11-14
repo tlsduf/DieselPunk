@@ -149,6 +149,14 @@ ACharacterPC* FObjectManager::GetPlayer()
 	return Player.Get();
 }
 
+UWorld* FObjectManager::GetWorld()
+{
+	FWorldContext* world = GEngine->GetWorldContextFromGameViewport(GEngine->GameViewport);
+	World = world->World();
+
+	return World.Get();
+}
+
 //오브젝트ID를 받아 액터를 찾습니다.
 AActor* FObjectManager::FindActor(int64 InObjectId)
 {

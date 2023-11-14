@@ -84,3 +84,12 @@ enum class ECharacterStatType : uint8
 	Luck				UMETA( ToolTip = "행운" ),
 	CoolDown			UMETA( ToolTip = "스킬 쿨타임 감소" ),
 };
+
+// 네비 노드 상태
+UENUM( BlueprintType )
+enum class ENavNodeState : uint8
+{
+	Passable				UMETA( ToolTip = "지나갈 수 있는 길" ),
+	BlockedByBreakable		UMETA( ToolTip = "부서질 수 있는 메시에 의해 지나갈 수 없는 길(ex. 포탑)" ),
+	BlockedByNonBreakable	UMETA( ToolTip = "부서질 수 없는 메시에 의해 지나갈 수 없는 길(ex. 환경)" ),
+};

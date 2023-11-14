@@ -8,6 +8,7 @@
 
 #include "../Manager/DatatableManager.h"
 #include "../Manager/ObjectManager.h"
+#include "../Manager/NavigationManager.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(DpGameInstance)
 
@@ -52,12 +53,14 @@ UDpGameInstance::UDpGameInstance()
 
 UDpGameInstance::~UDpGameInstance()
 {
-    FDataTableManager::GetInstance()->DestroyInstance();
+    FNavigationManager::GetInstance()->DestroyInstance();
     FObjectManager::GetInstance()->DestroyInstance();
+    FDataTableManager::GetInstance()->DestroyInstance();
 }
 
 void UDpGameInstance::LoadSingletons()
 {
     FDataTableManager::GetInstance();
     FObjectManager::GetInstance();
+    FNavigationManager::GetInstance();
 }
