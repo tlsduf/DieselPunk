@@ -69,7 +69,7 @@ void USkillSoldierShift::SkillTriggered()
 		ownerPawn->IsJog = true;
 
 		// 스킬트리
-		ownerPawn->ThisJogSpeed += 20 * ownerPawn->PCSkillManager.SoldierShiftUpgradeType[ESoldierShiftUpgradeType::SpeedUp];
+		//ownerPawn->ThisJogSpeed += 20 * ownerPawn->PCSkillManager.SoldierShiftUpgradeType[ESoldierShiftUpgradeType::SpeedUp];
 		
 		// 스킬트리
 		DashDistance += 2000 * ownerPawn->PCSkillManager.SoldierShiftUpgradeType[ESoldierShiftUpgradeType::DashDistance];

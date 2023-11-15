@@ -23,7 +23,7 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly)
 	FString CharacterName = "";		//캐릭터 정보를 가져오기 위한 이름
-
+	
 	/////////////////////////////////////////////////////////////////////
 	// for UI //
 	
@@ -83,6 +83,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* InPlayerInputComponent) override;
 
+	
 	/////////////////////////////////////////////////////////////////////
 	// for Character info Management //
 	
@@ -103,6 +104,7 @@ public:
 	// 데미지 처리
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent, class AController *EventInstigator, AActor *DamageCauser) override;
 
+	
 	/////////////////////////////////////////////////////////////////////
 	// for UI //
 	
@@ -128,6 +130,7 @@ public:
 	// 체력이 0이하일 때, true 반환
 	UFUNCTION(BlueprintPure)
 	bool IsDead();
+
 	
 	/////////////////////////////////////////////////////////////////////
 	// for State //

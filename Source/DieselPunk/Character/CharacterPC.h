@@ -26,12 +26,6 @@ class ACharacterPC : public ACharacterBase
 public:
 	/////////////////////////////////////////////////////////////////////
 	// for movement //
-
-	UPROPERTY(EditAnywhere, Category = "BaseMovement")
-	float ThisSpeed = 600.f;
-
-	UPROPERTY(EditAnywhere, Category = "BaseMovement")
-	float ThisJogSpeed = 1200.f;
 	
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	bool IsJog = false;				// w눌린상태>달리기가능   달리는상태>w때기>달리기종료
@@ -51,7 +45,7 @@ public:
 	FVector MyTargetArmLocation = FVector(0, 0, 55);		// Defalt 카메라 뷰 Set / Zoomed : (0,0,0) / Run : (0,0,55)
 	FVector MyCameraLocation = FVector(0, 0, 55);		// Defalt 카메라 뷰 Set / Zoomed : (0,0,0) / Run : (0,0,55)
 	
-	bool CanCameraControl = true;			// 카메라를 조종 가능여부
+	bool CanCameraControl = true;			// 카메라 조종 가능여부
 
 	/////////////////////////////////////////////////////////////////////
 	// for Skill //

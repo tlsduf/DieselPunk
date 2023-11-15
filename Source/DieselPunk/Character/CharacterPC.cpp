@@ -71,12 +71,12 @@ void ACharacterPC::Tick(float DeltaTime)
 	// 뛰는 상태인지 판별하여 MaxWalkSpeed 초기화.
 	if (IsJog)
 	{
-		GetCharacterMovement()->MaxWalkSpeed = ThisJogSpeed;
+		GetCharacterMovement()->MaxWalkSpeed = Stat.GetStat(ECharacterStatType::MoveSpeed) * 2;
 		SetRunZoomOutProp();
 	}
 	else
 	{
-		GetCharacterMovement()->MaxWalkSpeed = ThisSpeed;
+		GetCharacterMovement()->MaxWalkSpeed = Stat.GetStat(ECharacterStatType::MoveSpeed);
 		IsJog = false;
 		SetZoomOutProp();
 	}
@@ -192,7 +192,7 @@ void ACharacterPC::StartJog()
 	
 	if (dotResult > 0.01)
 	{
-		GetCharacterMovement()->MaxWalkSpeed = ThisJogSpeed;
+		GetCharacterMovement()->MaxWalkSpeed = Stat.GetStat(ECharacterStatType::MoveSpeed) * 2;
 		IsJog = true;
 		SetRunZoomOutProp();
 		SetInCombatFalse();
@@ -201,7 +201,7 @@ void ACharacterPC::StartJog()
 
 void ACharacterPC::StopJog()
 {
-	GetCharacterMovement()->MaxWalkSpeed = ThisSpeed;
+	GetCharacterMovement()->MaxWalkSpeed = Stat.GetStat(ECharacterStatType::MoveSpeed);
 	IsJog = false;
 	SetZoomOutProp();
 }

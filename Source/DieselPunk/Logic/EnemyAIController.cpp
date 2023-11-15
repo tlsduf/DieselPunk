@@ -23,8 +23,7 @@ void AEnemyAIController::Tick(float DeltaTime)
     // PathPoint 받아서 표시
     if(!GetPathFollowingComponent()->GetPath().IsValid())
         return;
-    if(GetPawn() == nullptr)
-        return;
+    
     TArray<FNavPathPoint> pathPoints = GetPathFollowingComponent()->GetPath()->GetPathPoints();
     FVector beforePoint = pathPoints[0].Location;
     for(FNavPathPoint i:pathPoints)

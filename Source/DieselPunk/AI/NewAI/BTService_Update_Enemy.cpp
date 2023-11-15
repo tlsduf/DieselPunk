@@ -52,16 +52,16 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
             lastPathPoint = AIController->GetPathFollowingComponent()->GetPath()->GetGoalLocation();
         if((GetNexusLocation().X == lastPathPoint.X) && (GetNexusLocation().Y == lastPathPoint.Y))
         {
-            GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT("canG%f"), 0.0f));
-            GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::White, FString::Printf(TEXT("Nexus %s"), *GetNexusLocation().ToString()));
-            GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::White, FString::Printf(TEXT("lastLoc %s"), *lastPathPoint.ToString()));
+            //GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT("canG%f"), 0.0f));
+            //GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::White, FString::Printf(TEXT("Nexus %s"), *GetNexusLocation().ToString()));
+            //GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::White, FString::Printf(TEXT("lastLoc %s"), *lastPathPoint.ToString()));
             OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("bCanReach"), true);
         }
         else
         {
-            GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT("N%f"), 0.0f));
-            GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::White, FString::Printf(TEXT("Nexus %s"), *GetNexusLocation().ToString()));
-            GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::White, FString::Printf(TEXT("lastLoc %s"), *lastPathPoint.ToString()));
+            //GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT("N%f"), 0.0f));
+            //GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::White, FString::Printf(TEXT("Nexus %s"), *GetNexusLocation().ToString()));
+            //GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::White, FString::Printf(TEXT("lastLoc %s"), *lastPathPoint.ToString()));
             OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("bCanReach"), false);
         }
     }
