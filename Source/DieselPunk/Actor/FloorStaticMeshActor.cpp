@@ -6,6 +6,7 @@
 
 #include <Components/StaticMeshComponent.h>
 #include <Components/BoxComponent.h>
+#include <DrawDebugHelpers.h>
 
 // Sets default values
 AFloorStaticMeshActor::AFloorStaticMeshActor()
@@ -38,7 +39,16 @@ void AFloorStaticMeshActor::BeginPlay()
 		boxes.Add(box);
 	}
 
-	FNavigationManager::GetInstance()->BuildNavNode(this, boxes);
+	FNavigationManager::GetInstance()->BuildNavMap(this, boxes);
+
+	
+	TArray<FVector> path = FNavigationManager::GetInstance()->PathFinding(FVector(-3200, 2200, 0), FVector(-3200, -2200, 0));
+	for(int i = 0; i < path.Num(); ++i)
+	{
+		DrawDebugSphere(GetWorld(), path[i], 5, 10, FColor::Blue, true, -1, 0, 4);
+		if(i != path.Num() - 1)
+			DrawDebugLine(GetWorld(), path[i], path[i + 1], FColor::Magenta, true, -1, 0, 2);
+	}
 }
 
 // Called every frame

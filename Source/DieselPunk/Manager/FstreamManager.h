@@ -1,8 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #pragma once
+#include <fstream>
 
 class DIESELPUNK_API FFstreamManager
 {
+private:
+	static std::wofstream CustomOutStream;
+	static std::wifstream CustomInStream;
 private:
 	//바이너리 파일 쓰기
 	static bool WriteDataBinary(FString InFileName, const TArray<FString>& InString);

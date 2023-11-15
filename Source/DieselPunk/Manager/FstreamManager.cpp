@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "FstreamManager.h"
-#include <fstream>
 
 //바이너리 파일 쓰기
 bool FFstreamManager::WriteDataBinary(FString InFileName, const TArray<FString>& InString)
