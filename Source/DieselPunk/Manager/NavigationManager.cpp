@@ -319,6 +319,36 @@ TArray<FDpNavNode*> FNavigationManager::CreatePath(int32 InStartX, int32 InStart
 	return outPath;
 }
 
+void FNavigationManager::DrawDebugNavNode(int32 InX, int32 InY)
+{
+	UWorld* world = FObjectManager::GetInstance()->GetWorld();
+	if(world == nullptr)
+		return;
+	
+	if(NavMap.Find(InX) == nullptr || NavMap.Find(InX)->Find(InY) == nullptr)
+		return;
+	
+	TArray<FVector> locations;
+	locations.Reserve(4);
+	locations.Add(NavMap[InX][InY].Location - FVector(GridSize * 0.5, -GridSize * 0.5, 0.0));
+	locations.Add(NavMap[InX][InY].Location - FVector(GridSize * 0.5, GridSize * 0.5, 0.0));
+	locations.Add(NavMap[InX][InY].Location - FVector(-GridSize * 0.5, GridSize * 0.5, 0.0));
+	locations.Add(NavMap[InX][InY].Location - FVector(-GridSize * 0.5, -GridSize * 0.5, 0.0));
+
+	for(int i = 0; i < locations.Num(); ++i)
+	{
+		FColor color = FColor::Green;
+		if(NavMap[InX][InY].NavNodeState == ENavNodeState::Passable)
+			color = FColor::Green;
+		else if (NavMap[InX][InY].NavNodeState == ENavNodeState::BlockedByNonBreakable)
+			color = FColor::Red;
+		else if (NavMap[InX][InY].NavNodeState == ENavNodeState::BlockedByBreakable)
+			color = FColor::Yellow;
+					
+		DrawDebugLine(world, locations[i], locations[(i + 1) % locations.Num()], color, true, -1, 0, 2);
+	}
+}
+
 //디버그용 네비 맵 Draw 
 void FNavigationManager::DrawDebugNavMap()
 {
@@ -345,6 +375,8 @@ void FNavigationManager::DrawDebugNavMap()
 					color = FColor::Green;
 				else if (node.Value.NavNodeState == ENavNodeState::BlockedByNonBreakable)
 					color = FColor::Red;
+				else if (node.Value.NavNodeState == ENavNodeState::BlockedByBreakable)
+					color = FColor::Yellow;
 					
 				DrawDebugLine(world, locations[i], locations[(i + 1) % locations.Num()], color, true, -1, 0, 2);
 			}
@@ -391,4 +423,121 @@ TArray<FVector> FNavigationManager::PathFinding(const FVector& InStartLocation, 
 		outPath.Add(node->Location);
 
 	return outPath;
+}
+
+//터렛 설치 가능한지 검색
+bool FNavigationManager::IsPlacementTurret(FVector InLocation, int32 InGridSize)
+{
+	FVector outLocation = FVector::ZeroVector;
+
+	TArray<int32> xIndex, yIndex;
+
+	//GridSize가 홀수일때
+	if(InGridSize & 1)
+	{
+		int32 startX = floor(InLocation.X / GridSize) - InGridSize / 2;
+		int32 startY = floor(InLocation.Y / GridSize) - InGridSize / 2;
+
+		for(int i = 0; i < InGridSize; ++i)
+		{
+			xIndex.Add(startX + i);
+			yIndex.Add(startY + i);
+		}
+	}
+	//GridSize가 짝수일때
+	else
+	{
+		int32 startX = static_cast<int32>(round(InLocation.X / GridSize)) - InGridSize / 2;
+		int32 startY = static_cast<int32>(round(InLocation.Y / GridSize)) - InGridSize / 2;
+
+		for(int i = 0; i < InGridSize; ++i)
+		{
+			xIndex.Add(startX + i);
+			yIndex.Add(startY + i);
+		}
+	}
+
+	//설치가 가능한지 검사
+	for(int32 x : xIndex)
+	{
+		for(int32 y : yIndex)
+		{
+			if(NavMap.Find(x) == nullptr || NavMap.Find(x)->Find(y) == nullptr || NavMap.Find(x)->Find(y)->NavNodeState != ENavNodeState::Passable)
+				return false;
+		}
+	}
+	return true;
+}
+
+//터렛 설치
+bool FNavigationManager::PlacementTurret(FVector& InOutLocation, int32 InGridSize, TArray<TPair<int32, int32>>& OutIndex)
+{
+	FVector outLocation = FVector::ZeroVector;
+
+	TArray<int32> xIndex, yIndex;
+
+	//GridSize가 홀수일때
+	if(InGridSize & 1)
+	{
+		int32 startX = floor(InOutLocation.X / GridSize) - InGridSize / 2;
+		int32 startY = floor(InOutLocation.Y / GridSize) - InGridSize / 2;
+
+		for(int i = 0; i < InGridSize; ++i)
+		{
+			xIndex.Add(startX + i);
+			yIndex.Add(startY + i);
+		}
+	}
+	//GridSize가 짝수일때
+	else
+	{
+		int32 startX = static_cast<int32>(round(InOutLocation.X / GridSize)) - InGridSize / 2;
+		int32 startY = static_cast<int32>(round(InOutLocation.Y / GridSize)) - InGridSize / 2;
+
+		for(int i = 0; i < InGridSize; ++i)
+		{
+			xIndex.Add(startX + i);
+			yIndex.Add(startY + i);
+		}
+	}
+
+	//설치가 가능한지 검사
+	for(int32 x : xIndex)
+	{
+		for(int32 y : yIndex)
+		{
+			if(NavMap.Find(x) == nullptr || NavMap.Find(x)->Find(y) == nullptr || NavMap.Find(x)->Find(y)->NavNodeState != ENavNodeState::Passable)
+				return false;
+
+			outLocation += NavMap[x][y].Location;
+		}
+	}
+
+	//최종 위치계산
+	outLocation /= xIndex.Num() * yIndex.Num();
+	InOutLocation = outLocation;
+	
+	//설치한 곳에 ENavNodeState를 BlockedByBreakable로 변경
+	for(int32 x : xIndex)
+		for(int32 y : yIndex)
+		{
+			NavMap[x][y].NavNodeState = ENavNodeState::BlockedByBreakable;
+			OutIndex.Add({x, y});
+			DrawDebugNavNode(x, y);
+		}
+
+	return true;
+}
+
+void FNavigationManager::RestoreNavNodeByDestructedTurret(const TArray<TPair<int32, int32>>& InIndex)
+{
+	for(const TPair<int32, int32>& idx : InIndex)
+	{
+		if(NavMap.Find(idx.Key) == nullptr || NavMap.Find(idx.Key)->Find(idx.Value) == nullptr)
+		{
+			LOG_SCREEN(FColor::Red, TEXT("FNavigationManager::RestoreNavNodeByDestructedTurret() Error! Node is not found. Check InIndex"))
+			continue;
+		}
+		NavMap[idx.Key][idx.Value].NavNodeState = ENavNodeState::Passable;
+	}
 }

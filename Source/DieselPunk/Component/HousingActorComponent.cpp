@@ -32,6 +32,12 @@ void UHousingActorComponent::BeginPlay()
 	
 }
 
+void UHousingActorComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	FNavigationManager::GetInstance()->RestoreNavNodeByDestructedTurret(NavIndex);
+	Super::EndPlay(EndPlayReason);
+}
+
 
 // Called every frame
 void UHousingActorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -88,14 +94,23 @@ void UHousingActorComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	//바닥과 충돌 됐다면
 	if(hasHit)
 	{
+		int32 turretGridSize = Cast<ACharacterTurret>(GetOwner())->GetGridSize();
 		//그리드에 맞춘 위치 탐색
-		int x,y,z;
-		x = static_cast<int>(hit.Location.X) / FNavigationManager::GridSize;
-		y = static_cast<int>(hit.Location.Y) / FNavigationManager::GridSize;
-		z = 0;
-		FVector newLocation(x,y,z);
+		FVector newLocation;
+		if(turretGridSize & 1)
+			newLocation = FVector(floor(hit.Location.X / FNavigationManager::GridSize), (floor(hit.Location.Y / FNavigationManager::GridSize)), 0.0);
+		else
+			newLocation = FVector(round(hit.Location.X / FNavigationManager::GridSize), (round(hit.Location.Y / FNavigationManager::GridSize)), 0.0);
 		newLocation *= FNavigationManager::GridSize;
+		
+		if(turretGridSize & 1)
+			newLocation += FVector(FNavigationManager::GridSize / 2);
+		
 		newLocation.Z = hit.Location.Z + Cast<ACharacter>(GetOwner())->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+
+		LOG_SCREEN(FColor::White, TEXT("Hit : %f, %f"), hit.Location.X, hit.Location.Y);
+		LOG_SCREEN(FColor::White, TEXT("New : %f, %f"), newLocation.X, newLocation.Y);
+		
 
 		FHitResult NewLocationHitResult;
 		//그리드에 맞춰 액터 위치 설정
@@ -103,10 +118,11 @@ void UHousingActorComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 		//디버그 렌더를 위한 로케이션
 		FVector boxLocation = GetOwner()->GetActorLocation();
-		FVector boxGridSize = {1,1,1};//GetOwner()->GetGridSize();
+		FVector boxGridSize = FVector(turretGridSize);
 		FVector boxExtend = (boxGridSize * FNavigationManager::GridSize / 2);
 		boxExtend.Z = Cast<ACharacter>(GetOwner())->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
-		boxLocation.Z += boxExtend.Z;
+		//boxLocation.Z += boxExtend.Z;
+		DrawDebugBox(world->World(), boxLocation, boxExtend, FColor::Red, false, -1 , 0, 2);
 
 		//설치가 가능하면 시안 색으로 머터리얼 변경
 		ACharacterTurret* owner = Cast<ACharacterTurret>(GetOwner());
@@ -116,31 +132,27 @@ void UHousingActorComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 bool UHousingActorComponent::IsArrangeTurret()
 {
-	TArray<FOverlapResult> hitResult;
-	FVector location = GetOwner()->GetActorLocation();
-	FVector gridSize = {3,3,3};//GetOwner()->GetGridSize();
-	FVector boxHalfExtend = (gridSize * FNavigationManager::GridSize / 2) - 0.25;
-	location.Z += boxHalfExtend.Z;
-
-	//플레이어 충돌범위 제외
-	FCollisionQueryParams params;
-	params.AddIgnoredActor(GetOwner());
+	ACharacterTurret* owner = Cast<ACharacterTurret>(GetOwner());
+	if(owner == nullptr)
+		return false;
 	
-	return !GetOwner()->GetWorld()->OverlapMultiByChannel(hitResult, location, FQuat::Identity, ECC_WorldStatic,FCollisionShape::MakeBox(boxHalfExtend), params);
+	return FNavigationManager::GetInstance()->IsPlacementTurret(GetOwner()->GetActorLocation(), owner->GetGridSize());
 }
 
 bool UHousingActorComponent::CompleteHousingTurret()
 {
-	if(IsArrangeTurret())
+	ACharacterTurret* owner = Cast<ACharacterTurret>(GetOwner());
+	if(owner == nullptr)
+		return false;
+
+	FVector location = GetOwner()->GetActorLocation();
+	if(FNavigationManager::GetInstance()->PlacementTurret(location, owner->GetGridSize(), NavIndex))
 	{
-		ACharacterTurret* owner = Cast<ACharacterTurret>(GetOwner());
-		if(owner == nullptr)
-			return false;
-		
+		location.Z += owner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+		GetOwner()->SetActorLocation(location);
 		SetComponentTickEnabled(false);
 		return true;
 	}
-
 	return false;
 }
 

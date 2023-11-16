@@ -15,6 +15,8 @@ private:
 	//피킹 사거리
 	int32 Range;
 
+	//네비게이션 인덱스
+	TArray<TPair<int32, int32>> NavIndex;
 
 public:	
 	// Sets default values for this component's properties
@@ -24,7 +26,9 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
+public:
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 

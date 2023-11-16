@@ -60,13 +60,25 @@ private:
 	//경로 생성
 	TArray<FDpNavNode*> CreatePath(int32 InStartX, int32 InStartY, int32 InEndX, int32 InEndY);
 
+	void DrawDebugNavNode(int32 InX, int32 InY);
+
+public:
 	//디버그용 네비 맵 Draw 
 	void DrawDebugNavMap();
-public:
+	
 	//네비 노드 생성
 	void BuildNavMap(TWeakObjectPtr<AFloorStaticMeshActor> InFloorStaticMeshActor, TArray<FDpBox> InBoxes);
 	
 	//A-Star알고리즘을 통해 InStartLocation에서 InEndLocation까지의 최단거리 반환
 	TArray<FVector> PathFinding(const FVector& InStartLocation, const FVector& InEndLocation);
+
+	//터렛 설치 가능한지 검색
+	bool IsPlacementTurret(FVector InLocation, int32 InGridSize);
+
+	//터렛 설치
+	bool PlacementTurret(FVector& InOutLocation, int32 InGridSize, TArray<TPair<int32, int32>>& OutIndex);
+
+	//터렛 부서질 때 노드 복구
+	void RestoreNavNodeByDestructedTurret(const TArray<TPair<int32, int32>>& InIndex);
 };
 
