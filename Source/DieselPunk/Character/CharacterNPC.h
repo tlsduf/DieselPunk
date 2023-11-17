@@ -47,7 +47,6 @@ public:
 	UParticleSystem *GrenadeMuzzleEffect;
 
 	int8 SoldierStack = 0;
-
 	
 public:
 	ACharacterNPC();

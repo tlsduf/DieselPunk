@@ -5,9 +5,9 @@
 #include <Animation/AnimInstance.h>
 #include "TurretAnimInstace.generated.h"
 
-/**
- * 
- */
+enum class ETurretSkillMontageType : uint8;
+class ACharacterNPC;
+
 UCLASS()
 class DIESELPUNK_API UTurretAnimInstace : public UAnimInstance
 {
@@ -18,6 +18,13 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 	TSoftObjectPtr<UAnimMontage> MonsterMontage;
 
+	// 터렛위치와 타겟위치 각도
+	UPROPERTY(BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
+	FRotator OwnerToTargetRot = FRotator::ZeroRotator;
+
+	UPROPERTY()
+	TWeakObjectPtr<ACharacterNPC> CurTarget = nullptr;
+	
 public:
 	// 생성자
 	UTurretAnimInstace();
@@ -33,6 +40,10 @@ public:
 	void PauseMontage(EAbilityType InAbilityType);
 	// 몽타주를 다시 재생합니다.
 	void ResumeMontage(EAbilityType InAbilityType);
+
+	// 현재 타겟을 설정합니다.
+	void SetCurTarget(TWeakObjectPtr<ACharacterNPC> InCharacter);
+	
 };
 
 // AroundSkill 몽타주

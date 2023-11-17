@@ -27,9 +27,6 @@ public:
 	virtual void SkillTriggered() override;
 
 private:
-	FVector ShotLocation;
-	FRotator ShotRotation;
-	
 	UPROPERTY(EditDefaultsOnly, Category = "MyCustomCategory")
 	TSubclassOf<AProjectileBase> ProjectileBaseClass;
 

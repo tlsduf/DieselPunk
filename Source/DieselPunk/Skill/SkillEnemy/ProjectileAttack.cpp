@@ -29,15 +29,16 @@ void UProjectileAttack::SkillTriggered()
 	auto ownerController = ownerPawn->GetController();
 	if(ownerController == nullptr)
 		return;
-
+	
 	//const FRotator shotRotation = ownerPawn->GetActorForwardVector().Rotation();
-	ShotRotation = ownerController->GetControlRotation();
+	//FRotator shotRotation = ownerController->GetControlRotation();
 	
 	// projectile spawn
 	if(ProjectileBaseClass)
 	{
-		ShotLocation = ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket");
-		FTransform SpawnTransform = FTransform( ShotRotation, ShotLocation);
+		FVector shotLocation = ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket");
+		FRotator shotRotation = ownerPawn->GetMesh()->GetSocketRotation("Grenade_socket");
+		FTransform SpawnTransform = FTransform( shotRotation, shotLocation);
 		ProjectileBase = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileBaseClass, SpawnTransform, GetOwner());
 		ProjectileBase->FinishSpawning(SpawnTransform);
 	}

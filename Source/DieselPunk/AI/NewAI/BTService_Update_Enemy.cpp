@@ -3,6 +3,7 @@
 #include "BTService_Update_Enemy.h"
 #include "..\../Logic\EnemyAIController.h"
 #include "../../Character/CharacterNPC.h"
+#include "DieselPunk/Animation/TurretAnimInstace.h"
 
 #include <Components/CapsuleComponent.h>
 #include <BehaviorTree/BlackboardComponent.h>
@@ -10,6 +11,11 @@
 #include <GameFramework/Pawn.h>
 #include <AIController.h>
 #include <Navigation/PathFollowingComponent.h>
+
+#include <Animation/AnimInstance.h>
+#include <Components/SkeletalMeshComponent.h>
+
+
 
 
 UBTService_Update_Enemy::UBTService_Update_Enemy()
@@ -102,6 +108,10 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
                 OwnerComp.GetBlackboardComponent()->ClearValue(TEXT("NearestActor"));
             }
         }
+        
+        UTurretAnimInstace* Temp = Cast<UTurretAnimInstace>(AICharacter->GetMesh()->GetAnimInstance());
+        if(Temp != nullptr)
+            Temp->SetCurTarget(CurTarget);
     }
 
     

@@ -134,9 +134,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
 	USoundBase *HitSound;
 	
-	//UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
-	//TSubclassOf<class UCameraShakeBase> HitCameraShakeClass;
-	
 public:
 	// Sets default values for this actor's properties
 	AProjectileBase();

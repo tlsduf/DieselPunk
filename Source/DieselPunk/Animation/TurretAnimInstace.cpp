@@ -12,6 +12,12 @@ UTurretAnimInstace::UTurretAnimInstace(){}
 void UTurretAnimInstace::NativeUpdateAnimation(float InDeltaSeconds)
 {
 	Super::NativeUpdateAnimation(InDeltaSeconds);
+
+	if(CurTarget.IsValid())
+		OwnerToTargetRot = (CurTarget->GetActorLocation() - GetOwningActor()->GetActorLocation()).Rotation();
+	else
+		OwnerToTargetRot = FRotator::ZeroRotator;
+		
 }
 
 // AbilityType에 따른 몽타주를 반환합니다. None입력시 기본 몽타주 반환
@@ -66,3 +72,12 @@ void UTurretAnimInstace::ResumeMontage(EAbilityType InAbilityType)
 	Montage_Resume(animMontage);
 }
 
+// 현재 타겟을 설정합니다.
+void UTurretAnimInstace::SetCurTarget(TWeakObjectPtr<ACharacterNPC> InCharacter)
+{
+	if(InCharacter.IsValid())
+		CurTarget = InCharacter;
+	else
+		CurTarget = nullptr;
+	
+}
