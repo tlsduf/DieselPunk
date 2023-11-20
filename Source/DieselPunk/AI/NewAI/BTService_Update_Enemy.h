@@ -14,6 +14,8 @@ class DIESELPUNK_API UBTService_Update_Enemy : public UBTService_BlackboardBase
 {
 	GENERATED_BODY()
 	
+	UPROPERTY()
+	TWeakObjectPtr<ACharacterNPC> CurTarget = nullptr;
 
 public:
 	UBTService_Update_Enemy();
@@ -24,9 +26,6 @@ protected:
 private:
 	// 현재 캐릭터로부터 가장 가까운 적을 반환한다. // TODO ObjectManager
 	ACharacterNPC* SearchNearestEnemy(ACharacterNPC* inThisCharacter);
-
-	UPROPERTY()
-	TWeakObjectPtr<ACharacterNPC> CurTarget = nullptr;
 
 	// 넥서스의 위치를 반환한다.
 	FVector GetNexusLocation();

@@ -9,7 +9,7 @@
  *
  */
 
-class ASoldierProjectile;
+class AProjectileBase;
 
 UCLASS()
 class DIESELPUNK_API USkillSoldierRM : public UPlayerSkill
@@ -19,10 +19,10 @@ private:
 	FTimerHandle PlaySkillTHandle;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "MyCustomCategory")
-	TSubclassOf<ASoldierProjectile> ProjectileClass;
+	TSubclassOf<AProjectileBase> ProjectileClass;
 
 	UPROPERTY()
-	ASoldierProjectile *Projectile;
+	AProjectileBase *Projectile;
 	
 public:
 	// 생성자

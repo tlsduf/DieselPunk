@@ -97,30 +97,10 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 	if (!DamageImmunity && EventInstigator != Controller)
 	{
 		HandleCombatState();
-		//================================================================
-		// 1.데미지이벤트 판별
-		//================================================================
-		
-		if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
-		{
-			const FPointDamageEvent *PointDamageEvent = static_cast<const FPointDamageEvent *>(&DamageEvent);
-			if (0 == (PointDamageEvent->HitInfo.BoneName).Compare(FName(TEXT("Head"))))
-			{
-				// TODO 부위별 데미지 기능 실현
-				damage *= 5;
-			}
-		}
-		else if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
-		{
-			const FRadialDamageEvent *RadialDamageEvent = static_cast<const FRadialDamageEvent *>(&DamageEvent);
-		}
 
 		//================================================================
-		// 2.데미지 계산(공식적용-올림내림)
+		// 1.데미지 계산(공식적용-올림내림)
 		//================================================================
-		// TODO 방어력, 공격효과 적용해서 데미지공식 적용하기
-		// TODO 효과적용 방식 : 체력비례피해(최대or현재), 고정피해(방어구관통), 지속피해(틱뎀), 방어력감소(영구or시간), 폭발스택
-		//Damage = Damage * (100 / (100 + Armor));
 		damage = (int)(damage + 0.2); // 데미지 소수점 처리 *소수점첫째자리가 0.8 이상이면 올림, 미만시 내림
 
 		damage = FMath::Min(Stat.GetStat(ECharacterStatType::Hp), (int)damage);
@@ -130,7 +110,7 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 		LOG_SCREEN(FColor::Red, TEXT("hp : %d"), Stat.GetStat(ECharacterStatType::Hp));
 		
 		//================================================================
-		// 3.애니메이션 플레이 //bool 변수로 0.3초마다 애니메이션 실행
+		// 2.애니메이션 플레이 //bool 변수로 0.3초마다 애니메이션 실행
 		//================================================================
 		if (CanTakeDamageAnim)
 		{
@@ -141,7 +121,7 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 		}
 
 		//================================================================
-		// 4.죽음구현
+		// 3.죽음구현
 		//================================================================
 		if (IsDead())
 		{

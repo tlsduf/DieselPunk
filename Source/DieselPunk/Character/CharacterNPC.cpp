@@ -63,11 +63,6 @@ void ACharacterNPC::Tick(float DeltaTime)
 	}
 	if(IsDead())
 		WidgetComp->bHiddenInGame = 1;
-
-	if(NPCType == ENPCType::Alliance)
-	{
-		//TurretTopMesh->SetWolrdRotation();
-	}
 }
 
 // =============================================================
@@ -146,16 +141,20 @@ float ACharacterNPC::DoMeleeAttack()
 
 void ACharacterNPC::TempDoMeleeAttack()
 {
-	// TODO 예외처리해야됨 어떻게? // 블루프린트상 스킬이 할당되어있지 않으면 크래쉬
-	auto _MeleeAttack = Cast<UMeleeAttack>(MeleeAttack);
-	_MeleeAttack->_Attack();
+	if(MeleeAttack != nullptr)
+	{
+		auto _MeleeAttack = Cast<UMeleeAttack>(MeleeAttack);
+		_MeleeAttack->_Attack();
+	}
 }
 
 void ACharacterNPC::DoProjectileAttack()
 {
-	// TODO 예외처리해야됨 어떻게? // 블루프린트상 스킬이 할당되어있지 않으면 크래쉬
-	ProjectileAttack->SkillTriggered();
-
+	if(MeleeAttack != nullptr)
+	{
+		ProjectileAttack->SkillTriggered();
+	}
+	
 	FVector Location = GetMesh()->GetSocketLocation("Granade_socket");
 	if (GrenadeMuzzleEffect)
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), GrenadeMuzzleEffect, Location, GetActorRotation() + FRotator(0, 180, 0));

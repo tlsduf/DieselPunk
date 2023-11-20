@@ -6,7 +6,7 @@
 #include "SkillSoldierLM.generated.h"
 
 class UInputTrigger;
-class ASoldierProjectile;
+class AProjectileBase;
 class UNiagaraSystem;
 
 UCLASS()
@@ -16,13 +16,13 @@ class DIESELPUNK_API USkillSoldierLM : public UPlayerSkill
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "MyCustomCategory")
-	TSubclassOf<ASoldierProjectile> ProjectileClass;
+	TSubclassOf<AProjectileBase> ProjectileClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "MyCustomCategory")
-	TSubclassOf<ASoldierProjectile> ProjectileEBuffClass;
+	TSubclassOf<AProjectileBase> ProjectileEBuffClass;
 	
 	UPROPERTY()
-	ASoldierProjectile *Projectile;
+	AProjectileBase *Projectile;
 
 	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
 	UParticleSystem *MuzzleParticles;

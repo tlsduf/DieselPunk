@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SkillSoldierR.h"
-#include "../../Actor\SoldierProjectile.h"
+#include "../../Actor\ProjectileBase.h"
 #include "../../Character/CharacterPC.h"
 #include "../../Logic/PlayerControllerBase.h"
 #include "../../Animation/SoldierAnimInstance.h"
@@ -149,10 +149,9 @@ void USkillSoldierR::AfterLogic()
 		if(ProjectileClass)
 		{
 			FTransform SpawnTransform( FRotator(0,0, 0), HitResult.Location);
-			Projectile = GetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
+			Projectile = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileClass, SpawnTransform, GetOwner());
 
 			Projectile->Damage += 10 * ownerPawn->PCSkillManager.SoldierSkillRUpgradeType[ESoldierSkillRUpgradeType::CoolDown];
-			Projectile->Stack = 15;
 			Projectile->AttackRadius += 30 * ownerPawn->PCSkillManager.SoldierSkillRUpgradeType[ESoldierSkillRUpgradeType::WideRange];
 				
 			Projectile->FinishSpawning(SpawnTransform);

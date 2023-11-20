@@ -145,7 +145,7 @@ void AInteractiveActor::task()
 	//if (ActionEffect)
 
 	if (ActionParticle)
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ActionParticle,  GetActorLocation());
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ActionParticle, GetActorLocation(), GetActorRotation(), ActionEffectScale);
 	if (ActionSound)
 		UGameplayStatics::PlaySoundAtLocation(this, ActionSound, GetActorLocation());
 	

@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SkillSoldierRM.h"
-#include "../../Actor\SoldierProjectile.h"
+#include "../../Actor\ProjectileBase.h"
 #include "..\..\Character\CharacterPC.h"
 #include "../../Handler/CoolTimeHandler.h"
 
@@ -51,12 +51,9 @@ void USkillSoldierRM::SkillTriggered()
 	if(ProjectileClass)
 	{
 		FTransform SpawnTransform( shotRotation, shotLocation);
-		Projectile = GetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
-		Projectile->SetUpdateRotation(FRotator(0,0,10));
-		Projectile->IsStackBoom = true;
+		Projectile = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileClass, SpawnTransform, GetOwner());
 		
 		Projectile->Damage += 10 * ownerPawn->PCSkillManager.SoldierMouseRMUpgradeType[ESoldierMouseRMUpgradeType::DamageUp];
-		Projectile->StackDamage += ownerPawn->PCSkillManager.SoldierMouseRMUpgradeType[ESoldierMouseRMUpgradeType::StackingDamageUp];
 		
 		Projectile->FinishSpawning(SpawnTransform);
 	}

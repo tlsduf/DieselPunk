@@ -13,6 +13,10 @@ class DIESELPUNK_API AInteractiveActor : public AActor
 	GENERATED_BODY()
 
 protected:
+
+	// =================================================================================================
+	// 기본 구성요소
+	// =================================================================================================
 	
 	// 블록용 캡슐 컴포넌트
 	UPROPERTY(EditAnywhere)
@@ -26,22 +30,21 @@ protected:
 	UPROPERTY( EditAnywhere )
 	UWidgetComponent* WidgetComp;				// 상호작용 안내 UI
 
+	
+	// =================================================================================================
+	// UI , 이펙트
+	// =================================================================================================
+	
 	UPROPERTY()
 	TWeakObjectPtr< UItemGuideUI > GuideUI;		// 상호작용 UI 포인터
 	
-	// 상호작용 이펙트 파티클
-	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
+	UPROPERTY(EditAnywhere, Category = "MYDP_Effect")
 	UParticleSystem *ActionParticle;
 
-	// 상호작용 이펙트 나이아가라
-	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
-	TSoftObjectPtr<class UNiagaraSystem> ActionEffect = nullptr;
-
-	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
-	FVector HitEffectScale = FVector(1);
-
-	// 상호작용 사운드
-	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
+	UPROPERTY(EditAnywhere, Category = "MYDP_Effect")
+	FVector ActionEffectScale = FVector(1);
+	
+	UPROPERTY(EditAnywhere, Category = "MYDP_Effect")
 	USoundBase *ActionSound;
 
 public:	
@@ -67,8 +70,9 @@ protected:
 	UFUNCTION()
 	void RemoveDelegate(UPrimitiveComponent* OverlappedComponent, AActor* InOtherActor, UPrimitiveComponent* InOtherComp, int32 InOtherBodyIndex);
 
+	
 	//================================================================
-	// DelegateInteractTask에 바인딩되는 예시함수 ( 새로운 기능이 필요한 경우 함수를 만들어서 바인딩 )
+	// * DelegateInteractTask에 바인딩되는 예시함수 ( 새로운 기능이 필요한 경우 함수를 만들어서 바인딩 )
 
 	// ChracterPC의 DelegateInteractTask에 바인딩되는 함수 // 각종 효과 실행
 	UFUNCTION()

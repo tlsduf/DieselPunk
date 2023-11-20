@@ -8,7 +8,7 @@
 /**
  *
  */
-class ASoldierProjectile;
+class AProjectileBase;
 
 
 UCLASS()
@@ -30,10 +30,10 @@ public:
 	UParticleSystem *PinPointHitEffect;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "MyCustomCategory")
-	TSubclassOf<ASoldierProjectile> ProjectileClass;
+	TSubclassOf<AProjectileBase> ProjectileClass;
 
 	UPROPERTY()
-	ASoldierProjectile *Projectile;
+	AProjectileBase *Projectile;
 	
 public:
 	// 생성자

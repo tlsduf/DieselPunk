@@ -22,9 +22,9 @@ protected:
 	
 	float Damage;						// DamageUI에 전달할 데미지 값
 
-	float XVelocity = 100;				// x 상수
-	float YVelocity = 100;				// y 상수
-	float ZVelocity = 200;				// z 상수
+	float XVelocity = 100;				// x 계수
+	float YVelocity = 100;				// y 계수
+	float ZVelocity = 200;				// z 계수
 
 	float XYAccel;						// DamageUIActor XY 가속도 변수
 	Animator XYAccelAnimator;			// DamageUIActor XY 가속도 변수를 애니메이팅 합니다.

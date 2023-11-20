@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SkillSoldierLM.h"
-#include "../../Actor\SoldierProjectile.h"
+#include "../../Actor\ProjectileBase.h"
 #include "../../Character/CharacterPC.h"
 #include "../../Animation/SoldierAnimInstance.h"
 #include "../../Handler/CoolTimeHandler.h"
@@ -9,7 +9,6 @@
 #include "../../Util/UtilCollision.h"
 
 #include <Kismet/GameplayStatics.h>
-#include <InputTriggers.h>
 #include <Components/SkeletalMeshComponent.h>
 
 
@@ -79,11 +78,9 @@ void USkillSoldierLM::SkillTriggered()
 			//FString resourcePath = UtilPath::GetSkillPath( TEXT("SkillActor/BP_ProjectileBullet") );
 			//ProjectileClass = LoadClass<ASoldierProjectile>( NULL, *resourcePath );
 			FTransform SpawnTransform( shotRotation, shotLocation);
-			Projectile = GetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileClass, SpawnTransform, GetOwner());
+			Projectile = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileClass, SpawnTransform, GetOwner());
 
 			Projectile->Damage += 5 * ownerPawn->PCSkillManager.SoldierMouseLMUpgradeType[ESoldierMouseLMUpgradeType::DamageUp];
-			if(CalPercentage(ownerPawn->PCSkillManager.SoldierMouseLMUpgradeType[ESoldierMouseLMUpgradeType::StackingPercentage] / 100))
-				Projectile->Stack = 1;
 		
 			Projectile->FinishSpawning(SpawnTransform);
 		
@@ -101,10 +98,9 @@ void USkillSoldierLM::SkillTriggered()
 		if(ProjectileEBuffClass && EBuffOn)
 		{
 			FTransform SpawnTransform( shotRotation, shotLocation);
-			Projectile = GetWorld()->SpawnActorDeferred<ASoldierProjectile>(ProjectileEBuffClass, SpawnTransform, GetOwner());
+			Projectile = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileEBuffClass, SpawnTransform, GetOwner());
 
 			Projectile->Damage += 10 * ownerPawn->PCSkillManager.SoldierSkillEUpgradeType[ESoldierSkillEUpgradeType::DamageUp];;
-			Projectile->Stack = 3 + ownerPawn->PCSkillManager.SoldierSkillEUpgradeType[ESoldierSkillEUpgradeType::StackUp];;
 
 			Projectile->FinishSpawning(SpawnTransform);
 			--Magazine;

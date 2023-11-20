@@ -41,11 +41,12 @@ void ADamageUIActor::CreateDamageUI()
 	if ( userWidget )
 	{
 		userWidget->AddToRoot();
-
+		
 		UUserWidgetBase* userWidgetBase = Cast<UUserWidgetBase>( userWidget );
 		if ( userWidgetBase )
 			userWidgetBase->OnCreated();
 	}
+	
 	UDamageUI* myWidget = Cast<UDamageUI>(userWidget);
     if(myWidget)
     	myWidget->RemoveFromRoot();
