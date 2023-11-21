@@ -1,8 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "CharacterNPC.h"
-#include "../Skill/PlayerSkill.h"
-#include "../Skill/MeleeAttack.h"
+#include "../Skill/SkillBase.h"
 #include "../UI/HUD/EnemyStatusUI.h"
 #include "../Component/HousingActorComponent.h"
 
@@ -39,8 +38,8 @@ ACharacterNPC::ACharacterNPC()
 	// AI possess
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	
-	MeleeAttack = CreateDefaultSubobject<UPlayerSkill>(TEXT("MeleeAttack"));
-	ProjectileAttack = CreateDefaultSubobject<UPlayerSkill>(TEXT("ProjectileAttack"));
+	MeleeAttack = CreateDefaultSubobject<USkillBase>(TEXT("MeleeAttack"));
+	ProjectileAttack = CreateDefaultSubobject<USkillBase>(TEXT("ProjectileAttack"));
 	
 }
 
@@ -59,7 +58,6 @@ void ACharacterNPC::Tick(float DeltaTime)
 	{
 		EnemyStatusUI->SetHPPercent(HpPercent);
 		EnemyStatusUI->SetHPPercentAfterImage(HpPercentAfterImage);
-		EnemyStatusUI->SetTextStack(SoldierStack);
 	}
 	if(IsDead())
 		WidgetComp->bHiddenInGame = 1;
@@ -132,28 +130,16 @@ void ACharacterNPC::EnemyStatusUISetHiddenInGame()
 	WidgetComp->bHiddenInGame = 1;
 }
 
-float ACharacterNPC::DoMeleeAttack()
-{
-	// TODO 예외처리해야됨 어떻게? // 블루프린트상 스킬이 할당되어있지 않으면 크래쉬
-	auto _MeleeAttack = Cast<UMeleeAttack>(MeleeAttack);
-	return _MeleeAttack->Attack();
-}
-
-void ACharacterNPC::TempDoMeleeAttack()
+void ACharacterNPC::DoMeleeAttack()
 {
 	if(MeleeAttack != nullptr)
-	{
-		auto _MeleeAttack = Cast<UMeleeAttack>(MeleeAttack);
-		_MeleeAttack->_Attack();
-	}
+		MeleeAttack->AbilityStart();
 }
 
 void ACharacterNPC::DoProjectileAttack()
 {
 	if(MeleeAttack != nullptr)
-	{
-		ProjectileAttack->SkillTriggered();
-	}
+		ProjectileAttack->AbilityStart();
 	
 	FVector Location = GetMesh()->GetSocketLocation("Granade_socket");
 	if (GrenadeMuzzleEffect)

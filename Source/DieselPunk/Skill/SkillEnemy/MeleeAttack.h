@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "PlayerSkill.h"
+#include "../SkillBase.h"
 #include "MeleeAttack.generated.h"
 
 /**
@@ -12,7 +12,7 @@ class AApplyRadialDamage;
 class ACharacterNPC;
 
 UCLASS()
-class DIESELPUNK_API UMeleeAttack : public UPlayerSkill
+class DIESELPUNK_API UMeleeAttack : public USkillBase
 {
 	GENERATED_BODY()
 
@@ -22,27 +22,27 @@ public:
 private:
 
 	// 소유한 액터의 위치와 캡슐이 스윕을 시작하는 위치 사이의 거리
-	UPROPERTY(EditAnywhere, Category = Melee)
+	UPROPERTY(EditAnywhere, Category = "MYDP")
 	float AttackStartPoint = 50.f;
 
 	// 스윕이 시작하는 위치와 스윕이 끝나는 위치 사이의 거리
-	UPROPERTY(EditAnywhere, Category = Melee)
+	UPROPERTY(EditAnywhere, Category = "MYDP")
 	float AttackRange = 150.f;
 
 	// 캡슐의 반지름
-	UPROPERTY(EditAnywhere, Category = Melee)
+	UPROPERTY(EditAnywhere, Category = "MYDP")
 	float AttackRadius = 50.f;
 
-	UPROPERTY(EditAnywhere, Category = Melee)
+	UPROPERTY(EditAnywhere, Category = "MYDP")
 	float Damage = 10.f;
 
-	UPROPERTY(EditAnywhere, Category = Debug)
+	UPROPERTY(EditAnywhere, Category = "MYDP")
 	bool DebugOnOff = true;
 
 public:
-	virtual void SkillTriggered() override;
+	virtual void AbilityStart() override;
 
-	float Attack();
+	float PlayAnim();
 	
-	void _Attack();
+	void Attack();
 };

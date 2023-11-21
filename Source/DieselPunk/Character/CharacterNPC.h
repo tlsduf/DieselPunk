@@ -6,7 +6,7 @@
 #include "CharacterNPC.generated.h"
 
 class UHousingActorComponent;
-class UPlayerSkill;
+class USkillBase;
 class UEnemyStatusUI;
 
 UCLASS()
@@ -31,22 +31,21 @@ protected:
 public:
 	/////////////////////////////////////////////////////////////////////
 	// for Character info Management //
-	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
+	UPROPERTY(EditAnywhere, Category = "MYDP_info")
 	ENPCType NPCType = ENPCType::Enemy;						// NPC 타입
+
 	
 	/////////////////////////////////////////////////////////////////////
 	// for skill //
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "skills", meta = (AllowPrivateAccess = "true"))
-	UPlayerSkill *MeleeAttack;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MYDP_Skill", meta = (AllowPrivateAccess = "true"))
+	USkillBase *MeleeAttack;
 
 	// [TODO] 범용 스킬 클래스를 자손으로 만들어서 예외처리?
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "skills", meta = (AllowPrivateAccess = "true"))
-	UPlayerSkill *ProjectileAttack;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MYDP_Skill", meta = (AllowPrivateAccess = "true"))
+	USkillBase *ProjectileAttack;
 
-	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
+	UPROPERTY(EditAnywhere, Category = "MYDP_Effect")
 	UParticleSystem *GrenadeMuzzleEffect;
-
-	int8 SoldierStack = 0;
 	
 public:
 	ACharacterNPC();
@@ -68,7 +67,7 @@ protected:
 
 	void EnemyStatusUISetHiddenInGame();
 public:
-	float DoMeleeAttack();
-	void TempDoMeleeAttack();
+
+	void DoMeleeAttack();
 	void DoProjectileAttack();
 };

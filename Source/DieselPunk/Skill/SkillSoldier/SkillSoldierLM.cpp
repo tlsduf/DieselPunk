@@ -29,12 +29,7 @@ void USkillSoldierLM::SkillTriggered()
 {
 	Super::SkillTriggered();
 
-	auto ownerPawn = Cast<ACharacterPC>(GetOwner());
-	if(ownerPawn == nullptr)
-		return;
-	auto ownerController = ownerPawn->GetController();
-	if(ownerController == nullptr)
-		return;
+	auto ownerPawn = Cast<ACharacterPC>(OwnerCharacter);
 
 	// SkillR 다운캐스트
 	USkillSoldierR *SoldierR = nullptr;
@@ -52,7 +47,7 @@ void USkillSoldierLM::SkillTriggered()
 		// 라인트레이스로 최종경로설정
 		FVector lineTraceLocation;
 		FRotator lineTraceRotation;
-		ownerController->GetPlayerViewPoint(lineTraceLocation, lineTraceRotation);
+		OwnerController->GetPlayerViewPoint(lineTraceLocation, lineTraceRotation);
 	
 		FVector end = lineTraceLocation + lineTraceRotation.Vector() * 10000;
 		//FHitResult hit;

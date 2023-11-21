@@ -1,17 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "BTTask_MeleeAttack2.h"
+#include "BTTask_MeleeAttack.h"
 #include "../Character/CharacterNPC.h"
 
 #include <AIController.h>
 
 
-UBTTask_MeleeAttack2::UBTTask_MeleeAttack2()
+UBTTask_MeleeAttack::UBTTask_MeleeAttack()
 {
-    NodeName = "MeleeAttack2";
+    NodeName = "MeleeAttack";
 }
 
-EBTNodeResult::Type UBTTask_MeleeAttack2::ExecuteTask(UBehaviorTreeComponent &OwnerComp, uint8 *NodeMemory)
+EBTNodeResult::Type UBTTask_MeleeAttack::ExecuteTask(UBehaviorTreeComponent &OwnerComp, uint8 *NodeMemory)
 {
     Super::ExecuteTask(OwnerComp, NodeMemory);
 
@@ -27,7 +27,7 @@ EBTNodeResult::Type UBTTask_MeleeAttack2::ExecuteTask(UBehaviorTreeComponent &Ow
     }
 
     //OwnerCharacter->DoMeleeAttack();
-    OwnerCharacter->TempDoMeleeAttack();
+    OwnerCharacter->DoMeleeAttack();
 
     return EBTNodeResult::Succeeded;
 }

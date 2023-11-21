@@ -15,7 +15,7 @@ class DIESELPUNK_API USkillSoldierE : public UPlayerSkill
 {
 	GENERATED_BODY()
 	
-	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
+	UPROPERTY(EditAnywhere, Category = "MYDP")
 	UParticleSystem *BuffEffect;
 public:
 	// 생성자
@@ -27,5 +27,4 @@ protected:
 public:
 	virtual void SkillTriggered() override;
 
-private:
 };

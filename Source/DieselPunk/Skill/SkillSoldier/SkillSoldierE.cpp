@@ -6,7 +6,6 @@
 #include "../../Skill/SkillSoldier/SkillSoldierLM.h"
 #include "../../Handler/CoolTimeHandler.h"
 
-#include <GameFramework/PlayerController.h>
 #include <Components/SkeletalMeshComponent.h>
 #include <Kismet/GameplayStatics.h>
 
@@ -24,12 +23,7 @@ void USkillSoldierE::SkillTriggered()
 {
 	Super::SkillTriggered();
 	
-	auto ownerPawn = Cast<ACharacterPC>(GetOwner());
-	if(ownerPawn == nullptr)
-		return;
-	auto ownerController = ownerPawn->GetController();
-	if(ownerController == nullptr)
-		return;
+	auto ownerPawn = Cast<ACharacterPC>(OwnerCharacter);
 
 	// 쿨타임 감소
 	float CoolDown = 0.5 * ownerPawn->PCSkillManager.SoldierSkillEUpgradeType[ESoldierSkillEUpgradeType::CoolDown];

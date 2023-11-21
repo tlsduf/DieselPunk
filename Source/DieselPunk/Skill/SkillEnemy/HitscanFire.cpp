@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "HitscanFire.h"
-#include "../Util/UtilCollision.h"
+#include "../../Character/CharacterNPC.h"
+#include "../../Util/UtilCollision.h"
 
-#include <GameFramework/PlayerController.h>
 #include <Kismet/GameplayStatics.h>
 
 void UHitscanFire::BeginPlay()
@@ -16,17 +16,11 @@ void UHitscanFire::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UHitscanFire::SkillTriggered()
+void UHitscanFire::AbilityStart()
 {
-	Super::SkillTriggered();
+	Super::AbilityStart();
 
-	// 데미지 프레임워크를 위한 Instigator, Causer
-	APawn *ownerPawn = Cast<APawn>(GetOwner());
-	if (ownerPawn == nullptr)
-		return;
-	AController *ownerController = ownerPawn->GetController();
-	if (ownerController == nullptr)
-		return;
+	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
 
 	// 충돌 검사
 	FHitResult hit = UtilCollision::LineTraceForward(ownerPawn, AttackRange, DebugOnOff);
@@ -34,11 +28,9 @@ void UHitscanFire::SkillTriggered()
 
 	// 데미지 정보 전달
 	if (hitActor != nullptr && hitActor != ownerPawn)
-	{
-		UGameplayStatics::ApplyDamage(hitActor, Damage, ownerController, ownerPawn, nullptr);
-	}
+		UGameplayStatics::ApplyDamage(hitActor, Damage, OwnerController, ownerPawn, nullptr);
+	
 	if (HitParticles)
-	{
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitParticles, hit.Location);
-	}
+	
 }

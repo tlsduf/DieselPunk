@@ -3,7 +3,7 @@
 
 #include "MonsterAnimInstace.h"
 
-#include "../Skill/MeleeAttack.h"
+#include "../Skill/SkillEnemy/MeleeAttack.h"
 #include "../Character/CharacterNPC.h"
 
 #include <Animation/AnimMontage.h>
@@ -79,7 +79,7 @@ void UMonsterAnimInstace::AnimNotify_NotifyMeleeAttack() const
 		MA = Cast<UMeleeAttack>(ownerPawn->MeleeAttack);
 	
 	if(MA != nullptr)
-		MA->SkillTriggered();
+		MA->AbilityStart();
 }
 
 int16 UMonsterAnimInstace::AddRotation()

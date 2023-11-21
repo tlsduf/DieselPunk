@@ -23,12 +23,7 @@ void USkillSoldierRM::SkillTriggered()
 {
 	Super::SkillTriggered();
 	
-	auto ownerPawn = Cast<ACharacterPC>(GetOwner());
-	if(ownerPawn == nullptr)
-		return;
-	auto ownerController = ownerPawn->GetController();
-	if(ownerController == nullptr)
-		return;
+	auto ownerPawn = Cast<ACharacterPC>(OwnerCharacter);
 	
 	// 쿨타임 감소
 	float CoolDown = 0.2 * ownerPawn->PCSkillManager.SoldierMouseRMUpgradeType[ESoldierMouseRMUpgradeType::CoolDown];
@@ -42,7 +37,7 @@ void USkillSoldierRM::SkillTriggered()
 	
 	FVector lineTraceLocation;
 	FRotator lineTraceRotation;
-	ownerController->GetPlayerViewPoint(lineTraceLocation, lineTraceRotation);
+	OwnerController->GetPlayerViewPoint(lineTraceLocation, lineTraceRotation);
 	FVector end = lineTraceLocation + lineTraceRotation.Vector() * 10000;
 	FVector shotLocation = ownerPawn->GetMesh()->GetSocketLocation("Muzzle_01");
 	FRotator shotRotation = (end - shotLocation).Rotation();

@@ -1,12 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "MeleeAttack.h"
-#include "../Util/UtilCollision.h"
-#include "../Character/CharacterNPC.h"
-#include "../Animation/MonsterAnimInstace.h"
+#include "../../Util/UtilCollision.h"
+#include "../../Character/CharacterNPC.h"
+#include "../../Animation/MonsterAnimInstace.h"
 
 #include <Kismet/GameplayStatics.h>
-#include <GameFramework/PlayerController.h>
 #include <Components/SkeletalMeshComponent.h>
 
 void UMeleeAttack::BeginPlay()
@@ -14,18 +13,16 @@ void UMeleeAttack::BeginPlay()
 	Super::BeginPlay();
 }
 
-void UMeleeAttack::SkillTriggered()
+void UMeleeAttack::AbilityStart()
 {
-	Super::SkillTriggered();
+	Super::AbilityStart();
 
-	_Attack();
+	Attack();
 }
 
-float UMeleeAttack::Attack()
+float UMeleeAttack::PlayAnim()
 {
-	auto *ownerPawn = Cast<ACharacterNPC>(GetOwner());
-	if (ownerPawn == nullptr)
-		return 0;
+	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
 
 	//애니메이션 재생?
 	UMonsterAnimInstace* animInst = Cast<UMonsterAnimInstace>(ownerPawn->GetMesh()->GetAnimInstance());
@@ -35,15 +32,9 @@ float UMeleeAttack::Attack()
 	return animInst->PlayMontage(EAbilityType::None, EMonsterSkillMontageType::Attack);
 }
 
-void UMeleeAttack::_Attack()
+void UMeleeAttack::Attack()
 {
-	// 데미지 프레임워크를 위한 Instigator, Causer
-	auto *ownerPawn = Cast<ACharacterNPC>(GetOwner());
-	if (ownerPawn == nullptr)
-		return;
-	auto *ownerController = ownerPawn->GetController();
-	if (ownerController == nullptr)
-		return;
+	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
 
 	// 충돌 검사
 	TArray<FHitResult> sweepResults;
@@ -58,7 +49,7 @@ void UMeleeAttack::_Attack()
 		for (auto It = sweepResults.CreateIterator(); It; It++)
 		{
 			hitActor = It->GetActor();
-			UGameplayStatics::ApplyDamage(hitActor, Damage, ownerController, ownerPawn, nullptr);
+			UGameplayStatics::ApplyDamage(hitActor, Damage, OwnerController, ownerPawn, nullptr);
 		}
 	}
 }

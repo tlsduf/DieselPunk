@@ -19,16 +19,11 @@ void UProjectileAttack::BeginPlay()
 	Super::BeginPlay();
 }
 
-void UProjectileAttack::SkillTriggered()
+void UProjectileAttack::AbilityStart()
 {
-	Super::SkillTriggered();
+	Super::AbilityStart();
 
-	auto ownerPawn = Cast<ACharacterNPC>(GetOwner());
-	if(ownerPawn == nullptr)
-		return;
-	auto ownerController = ownerPawn->GetController();
-	if(ownerController == nullptr)
-		return;
+	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
 	
 	//const FRotator shotRotation = ownerPawn->GetActorForwardVector().Rotation();
 	//FRotator shotRotation = ownerController->GetControlRotation();

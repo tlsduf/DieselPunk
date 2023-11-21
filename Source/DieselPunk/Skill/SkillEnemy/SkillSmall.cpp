@@ -19,19 +19,14 @@ void USkillSmall::BeginPlay()
 	Super::BeginPlay();
 }
 
-void USkillSmall::SkillTriggered()
+void USkillSmall::AbilityStart()
 {
-	Super::SkillTriggered();
+	Super::AbilityStart();
 
-	auto ownerPawn = Cast<ACharacterNPC>(GetOwner());
-	if(ownerPawn == nullptr)
-		return;
-	auto ownerController = ownerPawn->GetController();
-	if(ownerController == nullptr)
-		return;
-
+	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
+	
 	//const FRotator shotRotation = ownerPawn->GetActorForwardVector().Rotation();
-	ShotRotation = ownerController->GetControlRotation();
+	ShotRotation = OwnerController->GetControlRotation();
 	
 	// projectile spawn
 	if(ProjectileBaseClass)

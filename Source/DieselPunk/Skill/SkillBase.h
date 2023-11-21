@@ -3,12 +3,26 @@
 #pragma once
 
 
-#include <Components/ActorComponent.h>
+// =========================================
+/*
+ * 스킬 템플릿 클래스입니다.
+ * 
+ * * 상속구조
+ * 플레이어 스킬  SkillBase - PlayerSkill - 스킬클래스
+ * 몬스터 스킬    SkillBase - 스킬클래스
+ *
+ * * UPlayerSkill
+ * UPlayerSkill 은 TriggerType, CoolTimeHandler, 
+*/ 
+// =========================================
 
+
+#include <Components/ActorComponent.h>
 #include "SkillBase.generated.h"
 
 class UInputTrigger;
-class FCoolTimeHandler;
+class ACharacterBase;
+
 
 UCLASS(Blueprintable)
 class DIESELPUNK_API USkillBase : public UActorComponent
@@ -16,40 +30,31 @@ class DIESELPUNK_API USkillBase : public UActorComponent
 	GENERATED_BODY()
 
 protected:
-	// 쿨타임을 관리하기 위한 CoolTime Handler입니다.
-	FCoolTimeHandler* CoolTimeHandler;
-
-public:
-	UPROPERTY(EditAnywhere, Category = Skill)
-	float CoolTime = 5;
-
-	// 스킬 발동 시간입니다. 해당 시간동안 SkillActivating이 On 됩니다.
-	UPROPERTY(EditAnywhere, Category = Skill)
-	float SkillPlayTime = 1;
-public:
+	UPROPERTY()
+	ACharacterBase* OwnerCharacter = nullptr;	// 소유자
+	
+	UPROPERTY()
+	AController* OwnerController = nullptr;		// 소유 컨트롤러
+	
+protected:
 	// Sets default values for this component's properties
 	USkillBase();
-
-protected:
+	
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 	// 소멸자 용도로 쓸 BeginDestroy
 	virtual void BeginDestroy() override;
 
+	
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
 
+	// 몬스터클래스가 오버라이드하여 사용합니다.
+	virtual void AbilityStart();
+	
 	// 스킬이 어떠한 이유로 인해 캔슬될 때 호출됩니다.
 	virtual void CancelSkill(){};
-
-	// 능력이 사용 가능한지 확인합니다.
-	// 마나, 상태 이상 등 더 필요한 것들을 추후 추가할 예정입니다.
-	// 더 자세한 확인 필요 시 오버라이드하여 Super::를 통해 같이 호출하여 사용하시면 됩니다.
-	virtual bool CanActivateAbility();
-
-	virtual float GetCoolTime();
-
-	virtual float GetCoolTimePercent();
+	
 };

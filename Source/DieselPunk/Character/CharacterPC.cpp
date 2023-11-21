@@ -2,8 +2,9 @@
 
 #include "CharacterPC.h"
 #include "../Logic/PlayerControllerBase.h"
-#include "..\Core\DpGameMode.h"
-#include "../Skill/SkillBase.h"
+#include "../Core/DpGameMode.h"
+
+#include "../Skill/PlayerSkill.h"
 #include "../Interface/PlayerInputInterface.h"
 #include "../Util/UtilLevelCal.h"
 
@@ -11,10 +12,11 @@
 #include <Components/CapsuleComponent.h>
 #include <GameFramework/SpringArmComponent.h>
 #include <GameFramework/CharacterMovementComponent.h>
+
 #include <GameFramework/Controller.h>
 #include <TimerManager.h>
 #include <EnhancedInputComponent.h>
-#include "AIHelpers.h"
+#include <AIHelpers.h>
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(CharacterPC)
@@ -112,7 +114,7 @@ void ACharacterPC::Tick(float DeltaTime)
 }
 
 //////////////////////////////////////////////////////////////////////////
-// Input
+// Input //
 
 void ACharacterPC::SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent)
 {
@@ -127,6 +129,9 @@ void ACharacterPC::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
 {
 	StopJumping();
 }
+
+//////////////////////////////////////////////////////////////////////////
+// Movement //
 
 void ACharacterPC::Move(const FInputActionValue &Value)
 {
@@ -300,9 +305,9 @@ void ACharacterPC::InitSkills()
 {
 	if(Skills.Num() > 0)
 		Skills.Empty();
-	for (const TPair<EAbilityType, TSubclassOf<USkillBase>>& ability : SkillInfos)
+	for (const TPair<EAbilityType, TSubclassOf<UPlayerSkill>>& ability : SkillInfos)
 	{
-		Skills.Add(ability.Key, NewObject<USkillBase>(this, ability.Value));
+		Skills.Add(ability.Key, NewObject<UPlayerSkill>(this, ability.Value));
 		Skills[ability.Key]->RegisterComponent(); // 컴포넌트를 등록합니다.
 	}
 
@@ -323,16 +328,13 @@ void ACharacterPC::InitSkills()
 void ACharacterPC::SkillStarted(const EAbilityType InAbilityType)
 {
 	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
-	{
 		ability->SkillStarted();
-	}
+	
 }
 void ACharacterPC::SkillOngoing(const EAbilityType InAbilityType)
 {
 	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
-	{
 		ability->SkillOngoing();
-	}
 }
 void ACharacterPC::SkillTriggered(const EAbilityType InAbilityType)
 {
@@ -340,24 +342,18 @@ void ACharacterPC::SkillTriggered(const EAbilityType InAbilityType)
 	{
 		HandleCombatState();
 		if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
-		{
 			ability->SkillTriggered();
-		}
 	}
 }
 void ACharacterPC::SkillCompleted(const EAbilityType InAbilityType)
 {
 	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
-	{
 		ability->SkillCompleted();
-	}
 }
 void ACharacterPC::SkillCanceled(const EAbilityType InAbilityType)
 {
 	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
-	{
 		ability->SkillCanceled();
-	}
 }
 
 //================================================================

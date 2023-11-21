@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "PlayerSkill.h"
+#include "../SkillBase.h"
 #include "HitscanFire.generated.h"
 
 /**
@@ -12,7 +12,7 @@ class AHitscanBase;
 
 
 UCLASS()
-class DIESELPUNK_API UHitscanFire : public UPlayerSkill
+class DIESELPUNK_API UHitscanFire : public USkillBase
 {
 	GENERATED_BODY()
 
@@ -22,18 +22,18 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
 private:
 
-	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
+	UPROPERTY(EditAnywhere, Category = "MYDP")
 	float AttackRange = 10000;
 
-	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
+	UPROPERTY(EditAnywhere, Category = "MYDP")
 	float Damage = 10.f;
 
-	UPROPERTY(EditAnywhere, Category = Debug)
+	UPROPERTY(EditAnywhere, Category = "MYDP")
 	bool DebugOnOff = true;
 
-	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
+	UPROPERTY(EditAnywhere, Category = "MYDP")
 	UParticleSystem *HitParticles;
 
 public:
-	virtual void SkillTriggered() override;
+	virtual void AbilityStart() override;
 };

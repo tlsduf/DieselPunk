@@ -17,19 +17,19 @@ class DIESELPUNK_API USkillSoldierR : public UPlayerSkill
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
+	UPROPERTY(EditAnywhere, Category = "MYDP")
 	float EDamage = 50;
 	
 	bool IsE = false;
 	bool InCooldownE = false;
 	
-	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
+	UPROPERTY(EditAnywhere, Category = "MYDP")
 	float ECooldownTime = 5.f;
 
-	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
+	UPROPERTY(EditAnywhere, Category = "MYDP")
 	UParticleSystem *PinPointHitEffect;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "MyCustomCategory")
+	UPROPERTY(EditDefaultsOnly, Category = "MYDP")
 	TSubclassOf<AProjectileBase> ProjectileClass;
 
 	UPROPERTY()

@@ -24,10 +24,8 @@ void USkillSoldierQ::SkillTriggered()
 {
 	Super::SkillTriggered();
 	
-	auto ownerPawn = Cast<ACharacterPC>(GetOwner());
-	if(ownerPawn == nullptr)
-		return;
-
+	auto ownerPawn = Cast<ACharacterPC>(OwnerCharacter);
+	
 	// 쿨타임 감소
 	float CoolDown = 0.5 * ownerPawn->PCSkillManager.SoldierSkillQUpgradeType[ESoldierSkillQUpgradeType::CoolDown];
 	// 쿨타임!!!!!!!!!!!!!!!!!! && 스킬플레이타임
@@ -48,16 +46,10 @@ void USkillSoldierQ::SkillTriggered()
 
 void USkillSoldierQ::Shot()
 {
-	auto ownerPawn = Cast<ACharacterPC>(GetOwner());
-	if(ownerPawn == nullptr)
-		return;
-	auto ownerController = ownerPawn->GetController();
-	if(ownerController == nullptr)
-		return;
-	
+	auto ownerPawn = Cast<ACharacterPC>(OwnerCharacter);
 	
 	FVector shotLocation = ownerPawn->GetMesh()->GetSocketLocation("Granade_socket");
-	const FRotator shotRotation = ownerController->GetControlRotation();
+	const FRotator shotRotation = OwnerController->GetControlRotation();
 	FRotator spawnPitch = FRotator(0, 0, 0);
 	if (30 <= shotRotation.Pitch && shotRotation.Pitch <= 90)
 	{

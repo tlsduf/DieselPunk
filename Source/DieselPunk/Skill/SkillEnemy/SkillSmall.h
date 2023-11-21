@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../PlayerSkill.h"
+#include "../SkillBase.h"
 #include "SkillSmall.generated.h"
 
 /**
@@ -12,7 +12,7 @@ class AProjectileBase;
 
 
 UCLASS()
-class DIESELPUNK_API USkillSmall : public UPlayerSkill
+class DIESELPUNK_API USkillSmall : public USkillBase
 {
 	GENERATED_BODY()
 
@@ -24,13 +24,13 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	virtual void SkillTriggered() override;
+	virtual void AbilityStart() override;
 
 private:
 	FVector ShotLocation;
 	FRotator ShotRotation;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "MyCustomCategory")
+	UPROPERTY(EditDefaultsOnly, Category = "MYDP")
 	TSubclassOf<AProjectileBase> ProjectileBaseClass;
 
 	UPROPERTY()

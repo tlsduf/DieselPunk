@@ -25,12 +25,7 @@ void USkillSoldierShift::SkillTriggered()
 {
 	Super::SkillTriggered();
 	
-	auto ownerPawn = Cast<ACharacterPC>(GetOwner());
-	if(ownerPawn == nullptr)
-		return;
-	auto ownerController = ownerPawn->GetController();
-	if(ownerController == nullptr)
-		return;
+	auto ownerPawn = Cast<ACharacterPC>(OwnerCharacter);
 
 	//Player의 이동방향
 	FVector playerMovementDirection = ownerPawn->GetMovementComponent()->Velocity;
@@ -75,7 +70,7 @@ void USkillSoldierShift::SkillTriggered()
 		DashDistance += 2000 * ownerPawn->PCSkillManager.SoldierShiftUpgradeType[ESoldierShiftUpgradeType::DashDistance];
 		
 		// 카메라방향으로 대쉬
-		const FRotator rotation = ownerController->GetControlRotation();	//카메라방향으로 대쉬
+		const FRotator rotation = OwnerController->GetControlRotation();	//카메라방향으로 대쉬
 		const FVector Direction = FRotationMatrix(rotation).GetUnitAxis(EAxis::X);
 		ownerPawn->GetCharacterMovement()->BrakingFrictionFactor = 0.f;
 		ownerPawn->LaunchCharacter(Direction * DashDistance, true, true);
@@ -118,7 +113,7 @@ void USkillSoldierShift::SkillTriggered()
 }
 void USkillSoldierShift::StopDashing()
 {
-	auto ownerPawn = Cast<ACharacterPC>(GetOwner());
+	auto ownerPawn = Cast<ACharacterPC>(OwnerCharacter);
 	if(ownerPawn == nullptr)
 	{
 		return;
@@ -129,7 +124,7 @@ void USkillSoldierShift::StopDashing()
 }
 void USkillSoldierShift::ResetDash()
 {
-	auto ownerPawn = Cast<ACharacterPC>(GetOwner());
+	auto ownerPawn = Cast<ACharacterPC>(OwnerCharacter);
 	if(ownerPawn == nullptr)
 	{
 		return;

@@ -58,10 +58,10 @@ protected:
 	/////////////////////////////////////////////////////////////////////
 	// for Utility //
 	
-	UPROPERTY(EditAnywhere, Category = "Defensive")
+	UPROPERTY(EditAnywhere, Category = "MYDP_Combat")
 	bool DamageImmunity = false;			// DamageImmunity 가 True 면 데미지를 안 입게 했습니다. TakeDamage 함수에서 활용합니다.
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Debug")
+	UPROPERTY(EditDefaultsOnly, Category = "MYDP_Util")
 	bool DebugOnOff = false;				// 디버그on/off
 	
 public:

@@ -15,19 +15,19 @@ class DIESELPUNK_API USkillSoldierLM : public UPlayerSkill
 	GENERATED_BODY()
 
 private:
-	UPROPERTY(EditDefaultsOnly, Category = "MyCustomCategory")
+	UPROPERTY(EditDefaultsOnly, Category = "MYDP")
 	TSubclassOf<AProjectileBase> ProjectileClass;
 
-	UPROPERTY(EditDefaultsOnly, Category = "MyCustomCategory")
+	UPROPERTY(EditDefaultsOnly, Category = "MYDP")
 	TSubclassOf<AProjectileBase> ProjectileEBuffClass;
 	
 	UPROPERTY()
 	AProjectileBase *Projectile;
 
-	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
+	UPROPERTY(EditAnywhere, Category = "MYDP")
 	UParticleSystem *MuzzleParticles;
 
-	UPROPERTY(EditAnywhere, Category = "MyCustomCategory")
+	UPROPERTY(EditAnywhere, Category = "MYDP")
 	UParticleSystem *MuzzleParticlesSpecial;
 public:
 

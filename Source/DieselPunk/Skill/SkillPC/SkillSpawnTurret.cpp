@@ -24,9 +24,7 @@ void USkillSpawnTurret::SkillStarted()
 {
 	Super::SkillStarted();
 
-	auto ownerPawn = Cast<ACharacterPC>(GetOwner());
-	if(ownerPawn == nullptr)
-		return;
+	auto ownerPawn = Cast<ACharacterPC>(OwnerCharacter);
 	
 	if(bTaskOn == false)
 	{

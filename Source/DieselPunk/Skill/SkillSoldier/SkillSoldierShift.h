@@ -30,21 +30,19 @@ private:
 	FTimerHandle PlaySkillTHandle;
 	
 	bool IsDash = false;
-	UPROPERTY(EditAnywhere, Category = "ThisMovement")
+	UPROPERTY(EditAnywhere, Category = "MYDP")
 	float DashingTime = 0.1f;
 	
 	bool CanDash = true;
 
-	UPROPERTY(EditAnywhere, Category = "ThisMovement")
+	UPROPERTY(EditAnywhere, Category = "MYDP")
 	float DashDistance = 10000.f;
 
-	UPROPERTY(EditAnywhere, Category = "ThisMovement")
+	UPROPERTY(EditAnywhere, Category = "MYDP")
 	UParticleSystem *DashEffect;
 
 	FTimerHandle DashTHandle;
 
 	void StopDashing();
 	void ResetDash();
-	void ResetCooldownDash();
-	
 };
