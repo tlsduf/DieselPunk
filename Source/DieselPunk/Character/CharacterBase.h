@@ -111,7 +111,6 @@ public:
 	// 데미지를 받을 때, 데미지 받는 애니메이션 출력을 위한 함수. TakeDamage에서 호출합니다. ABP에서 활용됩니다.
 	// [TODO] 구조상 타이머를 쓰고있는데, 타이머를 쓰지말라는 조언이 있어서 구조변경 요함.
 	void SetTakeDamageAnimFalse();
-	void SetCanTakeDamageAnimTrue();
 	
 	// 데미지를 입으면 데미지ui액터를 생성합니다.
 	void CreateDamageActor(float InDamage);

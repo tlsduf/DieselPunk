@@ -207,7 +207,7 @@ void USkillUpgradeUI::AfterClick()
 	InButton_Right->OnClicked.Clear();
 
 	// 플레이어 컨트롤러에서 입력 및 UI컨트롤 함수 호출
-	Cast<APlayerControllerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0))->SkillUpgradeEventEnd();
+	//Cast<APlayerControllerBase>(UGameplayStatics::GetPlayerController(GetWorld(), 0))->SkillUpgradeEventEnd();
 }
 
 // =============================================================

@@ -108,7 +108,7 @@ void USkillSoldierShift::SkillTriggered()
 			return;
 
 		animInst->Montage_Stop(0.1);
-		animInst->PlayMontage(EAbilityType::Shift, ESoldierSkillMontageType::AroundAttack1);
+		animInst->PlayMontage(EAbilityType::Shift, ESoldierSkillMontageType::Attack);
 	}
 }
 void USkillSoldierShift::StopDashing()

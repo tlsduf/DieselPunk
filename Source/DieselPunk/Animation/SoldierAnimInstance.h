@@ -57,18 +57,9 @@ private:
 	void AnimNotify_NotifySkillQ() const;
 };
 
-// AroundSkill 몽타주
 UENUM()
 enum class ESoldierSkillMontageType : uint8
 {
-	AroundAttack1,				// 첫 번 째 콤보공격
-	AroundAttack1ToIdle,		// 입력초과시 준비자세로 이어지는 시퀀스
-	AroundAttack2,				// 두 번 째 콤보공격
-	AroundAttack2ToIdle,		// 입력초과시 준비자세로 이어지는 시퀀스
-	AroundAttack3,				// 세 번 째 콤보공격
-	AroundAttack3ToIdle,		// 입력초과시 준비자세로 이어지는 시퀀스
-	AroundAttack4,				// 네 번 째 콤보공격 (마지막)
-	AroundAttack4ToIdle,		// 입력초과시 준비자세로 이어지는 시퀀스
-	ToIdle,						// 네 번 째 콤보공격에서 준비자세로 이어지는 시퀀스
+	Attack,				// 공격
 	Max
 };

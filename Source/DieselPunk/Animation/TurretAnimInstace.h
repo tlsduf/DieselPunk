@@ -46,7 +46,6 @@ public:
 	
 };
 
-// AroundSkill 몽타주
 UENUM()
 enum class ETurretSkillMontageType : uint8
 {

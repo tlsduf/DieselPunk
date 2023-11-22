@@ -16,8 +16,6 @@
 #include <Components/SkeletalMeshComponent.h>
 
 
-
-
 UBTService_Update_Enemy::UBTService_Update_Enemy()
 {
     NodeName = "UpdateEnemy";
@@ -142,20 +140,21 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
             OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InMeleeRange"), true);
         }
     }
-
-
-    // 스폰 시, 죽음 시 블랙보드를 멈추기위해서 임시로 구현함
-    AEnemyAIController * Controller = Cast<AEnemyAIController>(OwnerComp.GetAIOwner());
     
-    if (Controller->IsDead())
+
+    // 죽음 시 블랙보드를 멈추기위해서 임시로 구현함
+    if (AICharacter->IsDead())
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("IsLive"), false);
     else
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("IsLive"), true);
     
-    if (Controller->PlaySpawnAnim())
-        OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("PlaySpawnAnim"), false);
-    else
+    AEnemyAIController * Controller = Cast<AEnemyAIController>(OwnerComp.GetAIOwner());
+    
+    // 캐릭터가 생성될 때, 일정시간동안 Spawn 애니메이션을 실행시킴
+    if (Controller->bPlaySpawnAnim)
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("PlaySpawnAnim"), true);
+    else
+        OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("PlaySpawnAnim"), false);
 
     // 몬스터의 머리 앞에 플레이어가 위치할 경우 true 반환
     float AIDirection = AICharacter->GetActorForwardVector().GetSafeNormal().Rotation().Yaw;

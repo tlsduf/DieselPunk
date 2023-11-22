@@ -27,7 +27,8 @@ void USkillSoldierRM::SkillTriggered()
 	
 	// 쿨타임 감소
 	float CoolDown = 0.2 * ownerPawn->PCSkillManager.SoldierMouseRMUpgradeType[ESoldierMouseRMUpgradeType::CoolDown];
-	// 쿨타임!!!!!!!!!!!!!!!!!!
+	
+	// 쿨타임 && 스킬플레이타임
 	CoolTimeHandler->SetCoolTime(CoolTime - CoolDown);
 	ownerPawn->SkillActivating[EAbilityType::MouseRM] = true;
 	GetWorld()->GetTimerManager().SetTimer(
@@ -38,6 +39,7 @@ void USkillSoldierRM::SkillTriggered()
 	FVector lineTraceLocation;
 	FRotator lineTraceRotation;
 	OwnerController->GetPlayerViewPoint(lineTraceLocation, lineTraceRotation);
+	
 	FVector end = lineTraceLocation + lineTraceRotation.Vector() * 10000;
 	FVector shotLocation = ownerPawn->GetMesh()->GetSocketLocation("Muzzle_01");
 	FRotator shotRotation = (end - shotLocation).Rotation();

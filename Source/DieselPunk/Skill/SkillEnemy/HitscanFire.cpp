@@ -32,5 +32,4 @@ void UHitscanFire::AbilityStart()
 	
 	if (HitParticles)
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitParticles, hit.Location);
-	
 }

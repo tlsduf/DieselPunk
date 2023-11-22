@@ -40,7 +40,7 @@ void USkillSoldierR::SkillTriggered()
 		// 쿨타임!!!!!!!!!!!!!!!!!!
 		ownerPawn->SkillActivating[EAbilityType::SkillR] = true;
 		
-		animInst->PlayMontage(EAbilityType::SkillR, ESoldierSkillMontageType::AroundAttack1);
+		animInst->PlayMontage(EAbilityType::SkillR, ESoldierSkillMontageType::Attack);
 		
 		//*기능 실현부
 		// 마우스 화면 중앙위치 //TODO 필요에 따라 마우스 위치변경 //TODO 마우스 우클릭으로도 fire 가능하게

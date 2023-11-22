@@ -23,7 +23,8 @@ void AEnemyAIController::Tick(float DeltaTime)
     // PathPoint 받아서 표시
     if(!GetPathFollowingComponent()->GetPath().IsValid())
         return;
-    
+
+    // PathPoint 경로 DrawDebug
     TArray<FNavPathPoint> pathPoints = GetPathFollowingComponent()->GetPath()->GetPathPoints();
     FVector beforePoint = pathPoints[0].Location;
     for(FNavPathPoint i:pathPoints)
@@ -35,36 +36,21 @@ void AEnemyAIController::Tick(float DeltaTime)
     DrawDebugPoint(GetWorld(), pathPoints[pathPoints.Num()-1].Location, 25, FColor::Blue, false, -1);
 }
 
-bool AEnemyAIController::IsDead() const
-{
-    ACharacterBase * ControlledCharacter = Cast<ACharacterBase>(GetPawn());
-    if(ControlledCharacter != nullptr)
-        return ControlledCharacter->IsDead();
-    
-    return true;
-}
-
 void AEnemyAIController::OnPossess(APawn* InPawn)
 {
     Super::OnPossess(InPawn);
 
     RunAi(InPawn, false);
 
-    GetWorldTimerManager().SetTimer(SpawnAnimTHandle, this, &AEnemyAIController::SetTruePlaySpawnAnim, SpawnTime, false);
-}
-
-bool AEnemyAIController::PlaySpawnAnim()
-{
-    if(GPlaySpawnAnim)
-    {
-        return false;
-    }
-    return true;
-}
-
-void AEnemyAIController::SetTruePlaySpawnAnim()
-{
-    GPlaySpawnAnim = true;
+    // 스폰 애니메이션
+    TWeakObjectPtr<AEnemyAIController> thisPtr = this;
+    GetWorld()->GetTimerManager().SetTimer(
+        SpawnAnimTHandle, [thisPtr]()
+        {
+            if(thisPtr.IsValid())
+                thisPtr->bPlaySpawnAnim = false;
+        },
+        SpawnTime, false);
 }
 
 //Ai를 실행합니다.

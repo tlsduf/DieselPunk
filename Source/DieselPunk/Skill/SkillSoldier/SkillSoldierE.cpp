@@ -59,5 +59,5 @@ void USkillSoldierE::SkillTriggered()
 	if (!animInst)
 		return;
 
-	animInst->PlayMontage(EAbilityType::SkillE, ESoldierSkillMontageType::AroundAttack1);
+	animInst->PlayMontage(EAbilityType::SkillE, ESoldierSkillMontageType::Attack);
 }

@@ -2,13 +2,9 @@
 
 #pragma once
 
+
 #include "../PlayerSkill.h"
 #include "SkillSoldierShift.generated.h"
-
-/**
- *
- */
-
 
 
 UCLASS()

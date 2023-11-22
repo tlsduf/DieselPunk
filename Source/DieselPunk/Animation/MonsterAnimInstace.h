@@ -46,7 +46,6 @@ private:
 	int radian = 0;
 };
 
-// AroundSkill 몽타주
 UENUM()
 enum class EMonsterSkillMontageType : uint8
 {

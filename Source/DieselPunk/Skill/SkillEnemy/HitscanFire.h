@@ -5,9 +5,7 @@
 #include "../SkillBase.h"
 #include "HitscanFire.generated.h"
 
-/**
- *
- */
+
 class AHitscanBase;
 
 

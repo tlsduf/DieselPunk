@@ -28,7 +28,8 @@ void USkillSoldierQ::SkillTriggered()
 	
 	// 쿨타임 감소
 	float CoolDown = 0.5 * ownerPawn->PCSkillManager.SoldierSkillQUpgradeType[ESoldierSkillQUpgradeType::CoolDown];
-	// 쿨타임!!!!!!!!!!!!!!!!!! && 스킬플레이타임
+	
+	// 쿨타임 && 스킬플레이타임
 	CoolTimeHandler->SetCoolTime(CoolTime - CoolDown);
 	ownerPawn->SkillActivating[EAbilityType::SkillQ] = true;
 	GetWorld()->GetTimerManager().SetTimer(
@@ -36,19 +37,20 @@ void USkillSoldierQ::SkillTriggered()
 	{ Cast<ACharacterPC>(GetOwner())->SkillActivating[EAbilityType::SkillQ] = false; },
 	SkillPlayTime, false);
 	
-	//애니메이션 재생?
+	//애니메이션 재생
 	USoldierAnimInstance* animInst = Cast<USoldierAnimInstance>(ownerPawn->GetMesh()->GetAnimInstance());
 	if (!animInst)
 		return;
 
-	animInst->PlayMontage(EAbilityType::SkillQ, ESoldierSkillMontageType::AroundAttack1);
+	animInst->PlayMontage(EAbilityType::SkillQ, ESoldierSkillMontageType::Attack);
 }
 
+// 몽타주에서 실행합니다.
 void USkillSoldierQ::Shot()
 {
 	auto ownerPawn = Cast<ACharacterPC>(OwnerCharacter);
 	
-	FVector shotLocation = ownerPawn->GetMesh()->GetSocketLocation("Granade_socket");
+	FVector shotLocation = ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket");
 	const FRotator shotRotation = OwnerController->GetControlRotation();
 	FRotator spawnPitch = FRotator(0, 0, 0);
 	if (30 <= shotRotation.Pitch && shotRotation.Pitch <= 90)

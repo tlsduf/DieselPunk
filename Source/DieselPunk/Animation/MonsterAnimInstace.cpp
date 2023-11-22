@@ -2,7 +2,6 @@
 
 
 #include "MonsterAnimInstace.h"
-
 #include "../Skill/SkillEnemy/MeleeAttack.h"
 #include "../Character/CharacterNPC.h"
 
@@ -34,8 +33,7 @@ float UMonsterAnimInstace::PlayMontage(EAbilityType InAbilityType, EMonsterSkill
 	UAnimMontage* animMontage = GetMontageByAbilityType(InAbilityType);
 	if (!animMontage)
 		return 0.f;
-
-	//TODO InSectionType 고쳐야됨 근데 Default로 읽어지긴하는듯?
+	
 	FName sectionName = "Default";
 	Montage_Play(animMontage, InPlayRate);
 	Montage_JumpToSection(sectionName, animMontage);

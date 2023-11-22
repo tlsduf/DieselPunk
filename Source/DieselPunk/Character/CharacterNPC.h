@@ -26,7 +26,7 @@ protected:
 	UPROPERTY()
 	TWeakObjectPtr< UEnemyStatusUI > EnemyStatusUI;		// 상태 UI 포인터
 
-	FTimerHandle EnemyStatusUISetHiddenInGameTHandle;
+	FTimerHandle EnemyStatusUITHandle;
 	
 public:
 	/////////////////////////////////////////////////////////////////////
@@ -39,13 +39,9 @@ public:
 	// for skill //
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MYDP_Skill", meta = (AllowPrivateAccess = "true"))
 	USkillBase *MeleeAttack;
-
-	// [TODO] 범용 스킬 클래스를 자손으로 만들어서 예외처리?
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MYDP_Skill", meta = (AllowPrivateAccess = "true"))
 	USkillBase *ProjectileAttack;
-
-	UPROPERTY(EditAnywhere, Category = "MYDP_Effect")
-	UParticleSystem *GrenadeMuzzleEffect;
 	
 public:
 	ACharacterNPC();
@@ -60,14 +56,14 @@ protected:
 	// 상태 UI 위젯을 생성한다.
 	virtual void CreateStatusUI() override;
 	
-	// TakeDamageHandle
+	// UI 컨트롤 하기 위한 오버라이드
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent, class AController *EventInstigator, AActor *DamageCauser) override;
 
-	//void SetTimerWithDelegate(FTimerHandle& TimerHandle, TBaseDelegate<void> ObjectDelegate, float Time, bool bLoop);
-
+	// UI 타이머 컨트롤
+	void HandleStatusUI();
 	void EnemyStatusUISetHiddenInGame();
 public:
-
+	// 몬스터 스킬
 	void DoMeleeAttack();
 	void DoProjectileAttack();
 };

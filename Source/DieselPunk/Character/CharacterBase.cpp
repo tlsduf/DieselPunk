@@ -93,7 +93,9 @@ int32 ACharacterBase::GetCharacterStat(ECharacterStatType InStatType)
 float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent, class AController *EventInstigator, AActor *DamageCauser)
 {
 	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	
 	// DamageImmunity가 false 일 때 데미지계산
+	// EventInstigator 가 본인이 아닐 때 데미지 계산
 	if (!DamageImmunity && EventInstigator != Controller)
 	{
 		HandleCombatState();
@@ -107,7 +109,6 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 		_UpdateHp(Stat.GetStat(ECharacterStatType::Hp) - damage, Stat.GetStat(ECharacterStatType::MaxHp));
 		Stat.ChangeStat(ECharacterStatType::Hp , -damage);
 		CreateDamageActor(damage);
-		LOG_SCREEN(FColor::Red, TEXT("hp : %d"), Stat.GetStat(ECharacterStatType::Hp));
 		
 		//================================================================
 		// 2.애니메이션 플레이 //bool 변수로 0.3초마다 애니메이션 실행
@@ -117,7 +118,11 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 			TakeDamageAnim = true;
 			GetWorldTimerManager().SetTimerForNextTick(this, &ACharacterBase::SetTakeDamageAnimFalse);
 			CanTakeDamageAnim = false;
-			GetWorldTimerManager().SetTimer(TakeDamageHandle, this, &ACharacterBase::SetCanTakeDamageAnimTrue, 0.3f, false);
+			TWeakObjectPtr<ACharacterBase> thisPtr = this;
+			GetWorld()->GetTimerManager().SetTimer(TakeDamageHandle, [thisPtr](){
+				if(thisPtr.IsValid())
+					thisPtr->TakeDamageAnim = true;
+				},0.3f, false);
 		}
 
 		//================================================================
@@ -125,26 +130,6 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 		//================================================================
 		if (IsDead())
 		{
-			//LOG_SCREEN(TEXT("He Died"));
-			ADpGameMode *GameMode = GetWorld()->GetAuthGameMode<ADpGameMode>();
-			if (GameMode != nullptr)
-			{
-				GameMode->PawnKilled(this);
-			}
-			
-			/*
-			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision); // 캡슐콜리전 무효
-			// 20초 뒤 액터 destroy
-			TWeakObjectPtr<ACharacterPC> thisPtr = this;
-			GetWorld()->GetTimerManager().SetTimer(
-				TakeDamageHandle, [thisPtr]()
-				{
-					if(thisPtr.IsValid())
-						thisPtr->Destroy();
-				},
-				20.0f, false);
-			*/
-
 			auto DamageCauserPlayer = Cast<ACharacterBase>(DamageCauser);
 			// 플레이어의 경험치를 1 올림
 			DamageCauserPlayer->Stat.ChangeStat(ECharacterStatType::Exp, 1);
@@ -170,7 +155,11 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 			TakeDamageAnim = true;
 			GetWorldTimerManager().SetTimerForNextTick(this, &ACharacterBase::SetTakeDamageAnimFalse);
 			CanTakeDamageAnim = false;
-			GetWorldTimerManager().SetTimer(TakeDamageHandle, this, &ACharacterBase::SetCanTakeDamageAnimTrue, 0.3f, false);
+			TWeakObjectPtr<ACharacterBase> thisPtr = this;
+			GetWorld()->GetTimerManager().SetTimer(TakeDamageHandle, [thisPtr](){
+				if(thisPtr.IsValid())
+					thisPtr->TakeDamageAnim = true;
+				},0.3f, false);
 		}
 		return damage;
 	}
@@ -183,10 +172,6 @@ void ACharacterBase::SetTakeDamageAnimFalse()
 {
 	TakeDamageAnim = false;
 }
-void ACharacterBase::SetCanTakeDamageAnimTrue()
-{
-	CanTakeDamageAnim = true;
-}
 
 // =============================================================
 // 데미지를 입으면 데미지UI액터를 생성합니다.
@@ -198,7 +183,6 @@ void ACharacterBase::CreateDamageActor(float InDamage)
 	
 	if(DamageUIActor)
 	{
-		// DamageUIActor->AttachToComponent( GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
 		DamageUIActor->SetDamage(InDamage);
 		DamageUIActor->FinishSpawning(SpawnTransform);
 	}
@@ -258,15 +242,6 @@ void ACharacterBase::HandleCombatState()
 		// 타이머가 실행 중이 아니면, 5초 후에 InCombat을 false로 설정합니다.
 		GetWorldTimerManager().SetTimer(CombatStateTHandle, this, &ACharacterBase::SetInCombatFalse, 5.f, false);
 	}
-	
-	/*TWeakObjectPtr<ACharacterBase> thisPtr = this;
-	GetWorld()->GetTimerManager().SetTimer(
-		CombatStateTHandle, [thisPtr]()
-		{
-			if(thisPtr.IsValid())
-				thisPtr->InCombat = false;
-		},
-		5.0f, false);*/
 }
 void ACharacterBase::SetInCombatFalse()
 {

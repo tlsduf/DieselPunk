@@ -11,7 +11,20 @@ class DIESELPUNK_API AEnemyAIController : public AAIController
 {
 	GENERATED_BODY()
 
+private:
+	// 비헤비어 트리
+	UPROPERTY(EditAnywhere)
+	UBehaviorTree *AIBehavior;
+
+	// SpawnTime 동안 Spawn 로직을 비헤비어 트리에서 실행
+	UPROPERTY(EditAnywhere)
+	float SpawnTime = 1.0f;
+
+	FTimerHandle SpawnAnimTHandle;
+
 public:
+	bool bPlaySpawnAnim = true;			//BTService 에서 활용
+
 	static const FName TargetKey;		//블랙보드에 등록된 변수를 지칭합니다.
 	
 protected:
@@ -20,24 +33,10 @@ protected:
 
 	virtual void OnPossess(APawn* InPawn) override;
 
-private:
-	UPROPERTY(EditAnywhere)
-	class UBehaviorTree *AIBehavior;
-
-	UPROPERTY(EditAnywhere)
-	float SpawnTime = 1.0f;
-
-	FTimerHandle SpawnAnimTHandle;
-	
-	bool GPlaySpawnAnim = false;
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	bool IsDead() const;
-	bool PlaySpawnAnim();
-	void SetTruePlaySpawnAnim();
 
 	//Ai를 실행합니다.
 	void RunAi(APawn* InPawn, bool InForced = false);
-	
 };

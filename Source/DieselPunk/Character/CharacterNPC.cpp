@@ -3,12 +3,10 @@
 #include "CharacterNPC.h"
 #include "../Skill/SkillBase.h"
 #include "../UI/HUD/EnemyStatusUI.h"
-#include "../Component/HousingActorComponent.h"
 
 #include <Components/StaticMeshComponent.h>
 #include <Kismet/GameplayStatics.h>
 #include <Particles/ParticleSystemComponent.h>
-#include <Components/SkeletalMeshComponent.h>
 #include <Components/WidgetComponent.h>
 #include <GameFramework/CharacterMovementComponent.h>
 
@@ -109,27 +107,43 @@ void ACharacterNPC::SetupPlayerInputComponent(class UInputComponent *PlayerInput
 	check(PlayerInputComponent);
 }
 
+// =============================================================
+// UI 컨트롤 하기 위한 오버라이드
+// =============================================================
 float ACharacterNPC::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,AActor* DamageCauser)
 {
-	WidgetComp->bHiddenInGame = 0;
-	TWeakObjectPtr<ACharacterNPC> thisPtr = this;
-	//SetTimerWithDelegate(EnemyStatusUISetHiddenInGameTHandle, FTimerDelegate::CreateUObject(this, &ACharacterNPC::EnemyStatusUISetHiddenInGame), 10.f, false);
+	HandleStatusUI();
 	
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 
-/*void ACharacterNPC::SetTimerWithDelegate(FTimerHandle& TimerHandle, TBaseDelegate<void> ObjectDelegate, float Time,
-	bool bLoop)
+// =============================================================
+// UI 타이머 컨트롤
+// =============================================================
+void ACharacterNPC::HandleStatusUI()
 {
-	GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, ObjectDelegate, Time, bLoop);
-}*/
+	WidgetComp->bHiddenInGame = 0;
 
+	// 만약 타이머가 이미 실행 중이면, 타이머를 초기화하고 재설정합니다.
+	if (GetWorldTimerManager().IsTimerActive(EnemyStatusUITHandle))
+	{
+		GetWorldTimerManager().ClearTimer(EnemyStatusUITHandle);
+		GetWorldTimerManager().SetTimer(EnemyStatusUITHandle, this, &ACharacterNPC::EnemyStatusUISetHiddenInGame, 10.f, false);
+	}
+	else
+	{
+		// 타이머가 실행 중이 아니면, 10초 후에 EnemyStatusUI를 화면에서 제거합니다.(SetHidden)
+		GetWorldTimerManager().SetTimer(EnemyStatusUITHandle, this, &ACharacterNPC::EnemyStatusUISetHiddenInGame, 10.f, false);
+	}
+}
 void ACharacterNPC::EnemyStatusUISetHiddenInGame()
 {
 	WidgetComp->bHiddenInGame = 1;
 }
 
+// =============================================================
+// 몬스터 스킬
+// =============================================================
 void ACharacterNPC::DoMeleeAttack()
 {
 	if(MeleeAttack != nullptr)
@@ -140,8 +154,4 @@ void ACharacterNPC::DoProjectileAttack()
 {
 	if(MeleeAttack != nullptr)
 		ProjectileAttack->AbilityStart();
-	
-	FVector Location = GetMesh()->GetSocketLocation("Granade_socket");
-	if (GrenadeMuzzleEffect)
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), GrenadeMuzzleEffect, Location, GetActorRotation() + FRotator(0, 180, 0));
 }

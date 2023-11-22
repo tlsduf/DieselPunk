@@ -37,6 +37,7 @@ public:
 	// 생성자
 	USkillSoldierQ();
 
+	// 몽타주에서 실행합니다.
 	void Shot();
 
 protected:

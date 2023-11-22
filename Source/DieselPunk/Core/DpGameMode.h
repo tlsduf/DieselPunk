@@ -13,16 +13,10 @@ class ADpGameMode : public AGameModeBase
 public:
 	ADpGameMode();
 
-	void PawnKilled(APawn *PawnKilled);
-
 protected:
 	virtual void BeginPlay() override;
 
 private:
-	void HandleGameStart();
-
-	
-	void EndGame();
 	
 	FTimerHandle GameEndTHandle;
 };

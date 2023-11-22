@@ -67,8 +67,7 @@ float USoldierAnimInstance::PlayMontage(EAbilityType InAbilityType, ESoldierSkil
 	UAnimMontage* animMontage = GetMontageByAbilityType(InAbilityType);
 	if (!animMontage)
 		return 0.f;
-
-	//TODO InSectionType 고쳐야됨 근데 Default로 읽어지긴하는듯?
+	
 	FName sectionName = "Default";
 	Montage_Play(animMontage, InPlayRate);
 	Montage_JumpToSection(sectionName, animMontage);
@@ -121,6 +120,13 @@ void USoldierAnimInstance::AnimNotify_NotifySkillQ() const
 	USkillSoldierQ *SoldierQ = nullptr;
 	if(ownerPawn->Skills[EAbilityType::SkillQ])
 		SoldierQ = Cast<USkillSoldierQ>(ownerPawn->Skills[EAbilityType::SkillQ]);
+	
+	if(SoldierQ != nullptr)
+		SoldierQ->Shot();
+
+	// 임시로 스킬Q를 R위치에 지정했음.
+	if(ownerPawn->Skills[EAbilityType::SkillR])
+		SoldierQ = Cast<USkillSoldierQ>(ownerPawn->Skills[EAbilityType::SkillR]);
 	
 	if(SoldierQ != nullptr)
 		SoldierQ->Shot();

@@ -31,12 +31,12 @@ void USkillSmall::AbilityStart()
 	// projectile spawn
 	if(ProjectileBaseClass)
 	{
-		ShotLocation = ownerPawn->GetMesh()->GetSocketLocation("Granade_socket");
+		ShotLocation = ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket");
 		FTransform SpawnTransform = FTransform( ShotRotation, ShotLocation);
 		ProjectileBase1 = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileBaseClass, SpawnTransform, GetOwner());
 		ProjectileBase1->FinishSpawning(SpawnTransform);
 
-		ShotLocation = ownerPawn->GetMesh()->GetSocketLocation("Granade_socket2");
+		ShotLocation = ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket2");
 		TWeakObjectPtr<USkillSmall> thisPtr = this;
 		GetWorld()->GetTimerManager().SetTimer(
 		FireHandle2, [thisPtr]()
@@ -50,7 +50,7 @@ void USkillSmall::AbilityStart()
 		},
 	0.1f, false);
 
-		ShotLocation = ownerPawn->GetMesh()->GetSocketLocation("Granade_socket3");
+		ShotLocation = ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket3");
 		//TWeakObjectPtr<USkillSmall> thisPtr = this;
 		GetWorld()->GetTimerManager().SetTimer(
 		FireHandle3, [thisPtr]()
@@ -64,7 +64,7 @@ void USkillSmall::AbilityStart()
 		},
 	0.2f, false);
 
-		ShotLocation = ownerPawn->GetMesh()->GetSocketLocation("Granade_socket4");
+		ShotLocation = ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket4");
 		//TWeakObjectPtr<USkillSmall> thisPtr = this;
 		GetWorld()->GetTimerManager().SetTimer(
 		FireHandle4, [thisPtr]()

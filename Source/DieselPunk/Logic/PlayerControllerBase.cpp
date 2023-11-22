@@ -44,15 +44,6 @@ void APlayerControllerBase::BeginPlay()
 		HUD = CreateWidget(this, HUDClass);
 	if (HUD)
 		HUD->AddToViewport();
-	
-	if(SkillUpgradeUIClass)
-	{
-		SkillUpgradeUI = CreateWidget(this, SkillUpgradeUIClass);
-		Cast<USkillUpgradeUI>(SkillUpgradeUI)->OnCreated();
-	}
-	if(SkillUpgradeUI)
-		SkillUpgradeUI->AddToViewport();
-	//SkillUpgradeUI->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void APlayerControllerBase::SetupInputComponent()
@@ -281,85 +272,6 @@ void APlayerControllerBase::Look(const FInputActionValue &Value)
 	}
 }
 
-void APlayerControllerBase::SetPlayerEnabledState(bool bPlayerEnabled)
-{
-	// enhanced input 용으로 만들어야됨
-    bShowMouseCursor = bPlayerEnabled;
-}
-
-// =============================================================
-// 스킬 업그레이드 UI를 화면에 띄운다
-// =============================================================
-void APlayerControllerBase::SkillUpgradeEventStart()
-{
-	ACharacterPC *character = Cast<ACharacterPC>(GetCharacter());
-	if (character == nullptr)
-		return;
-	
-	// 시간 정지
-	GetWorldSettings()->SetTimeDilation(0.f);
-	
-	// 기존 HUD Remove
-	if (HUD)
-		HUD->SetVisibility(ESlateVisibility::Hidden);
-	
-	// 스킬 업그레이드 UI Add
-	if (SkillUpgradeUI)
-	{
-		SkillUpgradeUI->SetVisibility(ESlateVisibility::Visible);
-		Cast<USkillUpgradeUI>(SkillUpgradeUI)->SetControls();
-	}
-	
-	// 마우스 위치 세팅 // 마우스 커서 on //키보드 입력 off
-	int32 ScreenWidth;
-	int32 ScreenHeight;
-	GetViewportSize(ScreenWidth, ScreenHeight);
-	SetMouseLocation(ScreenWidth * 0.5f, ScreenHeight * 0.5f);
-	bShowMouseCursor = true;
-	character->CanCameraControl = false;
-}
-
-// =============================================================
-// 스킬 업그레이드 UI를 화면에서 제거한다.
-// =============================================================
-void APlayerControllerBase::SkillUpgradeEventEnd()
-{
-	ACharacterPC *character = Cast<ACharacterPC>(GetCharacter());
-	if (character == nullptr)
-		return;
-	
-	// 시간 재게
-	GetWorldSettings()->SetTimeDilation(1.f);
-	
-	//  스킬 업그레이드 UI Remove
-	if (SkillUpgradeUI)
-		SkillUpgradeUI->SetVisibility(ESlateVisibility::Hidden);
-
-	// 기존 HUD Add
-	if (HUD)
-		HUD->SetVisibility(ESlateVisibility::Visible);
-	
-	// 마우스 커서 off //키보드 입력 on
-	bShowMouseCursor = false;
-	character->CanCameraControl = true;
-}
-
-// =============================================================
-// (임시) 블루프린트에서 활용할 UI컨트롤을 위한 시간, 컨트롤 제어
-// =============================================================
-void APlayerControllerBase::SetUIControlOnForStartMenu()
-{	
-	// 시간 정지
- 	GetWorldSettings()->SetTimeDilation(0.f);
- 	
- 	// 마우스 위치 세팅 // 마우스 커서 on //키보드 입력 off
- 	int32 ScreenWidth;
- 	int32 ScreenHeight;
- 	GetViewportSize(ScreenWidth, ScreenHeight);
- 	SetMouseLocation(ScreenWidth * 0.5f, ScreenHeight * 0.5f);
- 	bShowMouseCursor = true;
-}
-
 // =============================================================
 // (임시) 블루프린트에서 활용할 UI컨트롤을 위한 시간, 컨트롤 제어
 // =============================================================
@@ -370,16 +282,17 @@ void APlayerControllerBase::SetUIControlOn()
 		return;
 	
 	// 시간 정지
-	GetWorldSettings()->SetTimeDilation(0.f);
-	
-	// 마우스 위치 세팅 // 마우스 커서 on //키보드 입력 off
-	int32 ScreenWidth;
-	int32 ScreenHeight;
-	GetViewportSize(ScreenWidth, ScreenHeight);
-	SetMouseLocation(ScreenWidth * 0.5f, ScreenHeight * 0.5f);
-	bShowMouseCursor = true;
-	character->CanCameraControl = false;
+ 	GetWorldSettings()->SetTimeDilation(0.f);
+ 	
+ 	// 마우스 위치 세팅 // 마우스 커서 on //키보드 입력 off
+ 	int32 ScreenWidth;
+ 	int32 ScreenHeight;
+ 	GetViewportSize(ScreenWidth, ScreenHeight);
+ 	SetMouseLocation(ScreenWidth * 0.5f, ScreenHeight * 0.5f);
+ 	bShowMouseCursor = true;
+	//character->CanCameraControl = false;	// << 이거 오류남;;
 }
+
 
 // =============================================================
 // (임시) 블루프린트에서 활용할 UI컨트롤을 위한 시간, 컨트롤 제어
@@ -398,15 +311,3 @@ void APlayerControllerBase::SetUIControlOff()
 	character->CanCameraControl = true;
 }
 
-// =============================================================
-// (임시) 게임이 종료되었을 때 띄울 UI 작업 전개
-// =============================================================
-void APlayerControllerBase::SetEndUI()
-{
-	if(EndUIClass)
-		EndUI = CreateWidget(this, EndUIClass);
-	if (EndUI)
-		EndUI->AddToViewport();
-
-	SetUIControlOn();
-}

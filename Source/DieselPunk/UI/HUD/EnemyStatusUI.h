@@ -8,8 +8,6 @@
 #include "EnemyStatusUI.generated.h"
 
 class UProgressBar;
-class UTextBlock;
-class UImage;
 
 UCLASS()
 class DIESELPUNK_API UEnemyStatusUI : public UUserWidgetBase
@@ -19,14 +17,10 @@ class DIESELPUNK_API UEnemyStatusUI : public UUserWidgetBase
 protected:
 	UProgressBar*			InProgressBarHP;				// HP 바
 	UProgressBar*			InProgressBarHPAfterImage;		// HP 바 잔상
-	UTextBlock*				InStack;						// 스택
-	UTextBlock*				InStackMulti;					// 곱하기
-	UImage*                 InImageIcon;					// 아이콘 이미지
 
 public:
 	void SetHPPercent(float inPercent);
 	void SetHPPercentAfterImage(float inPercent);
-	void SetTextStack(int inNumber);
 	
 protected:
 	// 생성자
