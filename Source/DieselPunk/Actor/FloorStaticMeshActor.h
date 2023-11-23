@@ -13,7 +13,7 @@ class DIESELPUNK_API AFloorStaticMeshActor : public AActor
 {
 	GENERATED_BODY()
 private:
-	UPROPERTY(EditDefaultsOnly, Category="DpSetting", meta=(AllowPrivateAccess="true"))
+	UPROPERTY(EditDefaultsOnly, Category="MYDP_Setting", meta=(AllowPrivateAccess="true"))
 	TObjectPtr<UStaticMeshComponent> FloorComponent;
 	
 public:	

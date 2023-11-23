@@ -38,7 +38,6 @@ ACharacterNPC::ACharacterNPC()
 	
 	MeleeAttack = CreateDefaultSubobject<USkillBase>(TEXT("MeleeAttack"));
 	ProjectileAttack = CreateDefaultSubobject<USkillBase>(TEXT("ProjectileAttack"));
-	
 }
 
 void ACharacterNPC::BeginPlay()
@@ -128,17 +127,21 @@ void ACharacterNPC::HandleStatusUI()
 	if (GetWorldTimerManager().IsTimerActive(EnemyStatusUITHandle))
 	{
 		GetWorldTimerManager().ClearTimer(EnemyStatusUITHandle);
-		GetWorldTimerManager().SetTimer(EnemyStatusUITHandle, this, &ACharacterNPC::EnemyStatusUISetHiddenInGame, 10.f, false);
+		TWeakObjectPtr<ACharacterNPC> thisPtr = this;
+		GetWorld()->GetTimerManager().SetTimer(TakeDamageHandle, [thisPtr](){
+				if(thisPtr.IsValid())
+					thisPtr->WidgetComp->bHiddenInGame = 1;
+			},10.0f, false);
 	}
 	else
 	{
 		// 타이머가 실행 중이 아니면, 10초 후에 EnemyStatusUI를 화면에서 제거합니다.(SetHidden)
-		GetWorldTimerManager().SetTimer(EnemyStatusUITHandle, this, &ACharacterNPC::EnemyStatusUISetHiddenInGame, 10.f, false);
+		TWeakObjectPtr<ACharacterNPC> thisPtr = this;
+		GetWorld()->GetTimerManager().SetTimer(TakeDamageHandle, [thisPtr](){
+				if(thisPtr.IsValid())
+					thisPtr->WidgetComp->bHiddenInGame = 1;
+			},10.0f, false);
 	}
-}
-void ACharacterNPC::EnemyStatusUISetHiddenInGame()
-{
-	WidgetComp->bHiddenInGame = 1;
 }
 
 // =============================================================

@@ -18,7 +18,7 @@ class DIESELPUNK_API USkillSoldierQ : public UPlayerSkill
 private:
 	FTimerHandle PlaySkillTHandle;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "MYDP")
+	UPROPERTY(EditDefaultsOnly, Category = "MYDP_Setting")
 	TSubclassOf<AProjectileBase> ProjectileClass;
 
 	UPROPERTY()

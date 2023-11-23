@@ -86,8 +86,12 @@ void ADamageUIActor::BeginPlay()
 	XYAccelAnimator.Start();
 	ZAccelAnimator.Start();
 
-	// LifeTime = 1.5f 후에 파괴
-	GetWorldTimerManager().SetTimer(DestroyTHandle, this, &ADamageUIActor::SelfDestroy, LifeTime, false);
+	// LifeTime 후에 파괴
+	TWeakObjectPtr<ADamageUIActor> thisPtr = this;
+	GetWorld()->GetTimerManager().SetTimer(DestroyTHandle, [thisPtr](){
+			if(thisPtr.IsValid())
+				thisPtr->SelfDestroy();
+		},LifeTime, false);
 }
 
 void ADamageUIActor::Tick(float InDeltaTime)

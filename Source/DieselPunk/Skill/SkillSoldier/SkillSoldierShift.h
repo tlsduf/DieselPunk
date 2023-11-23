@@ -23,20 +23,17 @@ public:
 	virtual void SkillTriggered() override;
 
 private:
+	bool IsDash = false;				// 대쉬중이면 true
+	
+	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
+	float DashingTime = 0.1f;			// 해당 시간 동안 대쉬유지
+	
+	bool CanDash = true;				// 대쉬 가능한 상태인가
+
+	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
+	float DashDistance = 10000.f;		// 대쉬 거리
+
 	FTimerHandle PlaySkillTHandle;
-	
-	bool IsDash = false;
-	UPROPERTY(EditAnywhere, Category = "MYDP")
-	float DashingTime = 0.1f;
-	
-	bool CanDash = true;
-
-	UPROPERTY(EditAnywhere, Category = "MYDP")
-	float DashDistance = 10000.f;
-
-	UPROPERTY(EditAnywhere, Category = "MYDP")
-	UParticleSystem *DashEffect;
-
 	FTimerHandle DashTHandle;
 
 	void StopDashing();

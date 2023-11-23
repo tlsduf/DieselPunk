@@ -15,8 +15,4 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
-private:
-	
-	FTimerHandle GameEndTHandle;
 };

@@ -20,7 +20,7 @@ class DIESELPUNK_API AMonsterSpawner : public AActor
 	GENERATED_BODY()
 
 	//스포너 이름
-	UPROPERTY(EditInstanceOnly)
+	UPROPERTY(EditInstanceOnly, Category = "MYDP_Setting")
 	FString SpawnerName = TEXT("");
 
 	//스폰 몬스터 정보

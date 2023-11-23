@@ -61,7 +61,7 @@ protected:
 
 	// UI 타이머 컨트롤
 	void HandleStatusUI();
-	void EnemyStatusUISetHiddenInGame();
+
 public:
 	// 몬스터 스킬
 	void DoMeleeAttack();

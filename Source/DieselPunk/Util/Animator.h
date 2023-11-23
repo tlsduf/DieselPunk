@@ -62,5 +62,5 @@ public:
 
 	// 시간, 애니메이션 타입에 따라 애니메이팅
 	// 엔진에서 제공하는 ApplyEasing 와 같은 구조. #include <Animation/CurveHandle.h> 에 정의됨.
-	static float ApplyEasing(float Time, EAnimType EaseType);
+	static float ApplyEasing(float inTime, EAnimType EaseType);
 };

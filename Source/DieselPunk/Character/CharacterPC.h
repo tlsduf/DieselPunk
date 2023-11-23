@@ -27,7 +27,7 @@ public:
 	/////////////////////////////////////////////////////////////////////
 	// for movement //
 	
-	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	bool IsJog = false;				// w눌린상태>달리기가능   달리는상태>w때기>달리기종료
 
 	bool CanJog = true;				// Jog 가능여부
@@ -62,10 +62,10 @@ public:
 private:
 	
 	/////////////////////////////////////////////////////////////////////
-	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float MoveForward = 0;
 
-	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float MoveRight = 0;
 
 public:
@@ -125,7 +125,7 @@ public:
 	// 달릴 때의 카메라 프롭을 설정합니다.
 	void SetRunZoomOutProp();
 	// Tick에서 작동합니다. 애니메이션 담당
-	void ZoomInOut(float DeltaTime);
+	void ZoomInOut(float inDeltaTime);
 
 	
 	/////////////////////////////////////////////////////////////////////
@@ -138,11 +138,11 @@ public:
 	FORCEINLINE const TMap<EAbilityType, TObjectPtr<UPlayerSkill>> &GetSkills() const { return Skills; }
 
 	// PlayerController에서 호출될 스킬 발동 함수들입니다.
-	void SkillStarted(const EAbilityType InAbilityType);
-	void SkillOngoing(const EAbilityType InAbilityType);
-	void SkillTriggered(const EAbilityType InAbilityType);
-	void SkillCompleted(const EAbilityType InAbilityType);
-	void SkillCanceled(const EAbilityType InAbilityType);
+	void SkillStarted(const EAbilityType inAbilityType);
+	void SkillOngoing(const EAbilityType inAbilityType);
+	void SkillTriggered(const EAbilityType inAbilityType);
+	void SkillCompleted(const EAbilityType inAbilityType);
+	void SkillCanceled(const EAbilityType inAbilityType);
 
 	// 스킬을 실행할 때, 다른 스킬이 작동중인지 확인하는 함수. 다른 스킬이 작동중이면 1 반환
 	bool GetOtherSkillActivating(EAbilityType inType);

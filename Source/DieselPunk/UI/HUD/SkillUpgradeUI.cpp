@@ -2,14 +2,9 @@
 
 
 #include "SkillUpgradeUI.h"
-#include "../../Skill/SkillManager.h"
-#include "../../Logic/PlayerControllerBase.h"
-#include "../../Character/CharacterPC.h"
 
 #include <Components/TextBlock.h>
 #include <Components/Button.h>
-
-#include <string>
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(SkillUpgradeUI)

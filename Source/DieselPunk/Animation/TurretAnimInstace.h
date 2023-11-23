@@ -15,7 +15,7 @@ class DIESELPUNK_API UTurretAnimInstace : public UAnimInstance
 	
 private:
 	// 캐릭터가 사용할 애님 몽타주 Shift
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP", Meta = (AllowPrivateAccess = true))
 	TSoftObjectPtr<UAnimMontage> MonsterMontage;
 
 	// 터렛위치와 타겟위치 각도

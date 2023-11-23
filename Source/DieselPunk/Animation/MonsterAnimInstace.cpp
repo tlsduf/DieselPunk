@@ -80,12 +80,13 @@ void UMonsterAnimInstace::AnimNotify_NotifyMeleeAttack() const
 		MA->AbilityStart();
 }
 
+// 공중몹 프로펠러 회전
 int16 UMonsterAnimInstace::AddRotation()
 {
-	radian++;
+	Radian++;
 
-	if(radian == 360)
-		radian = 0;
+	if(Radian == 360)
+		Radian = 0;
 	
-	return radian;
+	return Radian;
 }

@@ -4,10 +4,7 @@
 #include "../Character/CharacterPC.h"
 #include "../UI/HUD/ItemGuideUI.h"
 
-#include <NiagaraFunctionLibrary.h>
-#include <NiagaraComponent.h>
 #include <Kismet/GameplayStatics.h>
-
 #include <Components/CapsuleComponent.h>
 #include <Components/StaticMeshComponent.h>
 #include <Components/WidgetComponent.h>
@@ -125,7 +122,7 @@ void AInteractiveActor::BindingDelegate(UPrimitiveComponent* InOverlappedCompone
 // =============================================================
 // EndOverlap시 CharacterPC의 DelegateInteractTask에 함수 언바인드 /상호작용 비활성화
 // =============================================================
-void AInteractiveActor::RemoveDelegate(UPrimitiveComponent* OverlappedComponent, AActor* InOtherActor,
+void AInteractiveActor::RemoveDelegate(UPrimitiveComponent* InOverlappedComponent, AActor* InOtherActor,
 	UPrimitiveComponent* InOtherComp, int32 InOtherBodyIndex)
 {
 	if(Cast<ACharacterPC>(InOtherActor)->DelegateInteractTask.IsBound())

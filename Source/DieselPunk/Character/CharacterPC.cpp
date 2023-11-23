@@ -14,9 +14,7 @@
 #include <GameFramework/CharacterMovementComponent.h>
 
 #include <GameFramework/Controller.h>
-#include <TimerManager.h>
 #include <EnhancedInputComponent.h>
-#include <AIHelpers.h>
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(CharacterPC)
@@ -97,8 +95,7 @@ void ACharacterPC::Tick(float DeltaTime)
 		if (IsZoomed)
 			SetZoomOutProp();
 		
-		auto Acceleration = GetCharacterMovement()->GetCurrentAcceleration().Length();
-		if(Acceleration == 0)
+		if(GetCharacterMovement()->GetCurrentAcceleration().Length() == 0)
 			RotatePawn(DeltaTime);
 		else
 			SetActorRotation(FRotator(0, GetController()->GetControlRotation().Yaw, 0));
@@ -193,14 +190,14 @@ void ACharacterPC::StartJog()
 	controllerDirection.Normalize();
 
 	//내적을 통해 사잇각 확인
-	double dotResult = FVector::DotProduct(playerMovementDirection, controllerDirection);
+	const double dotResult = FVector::DotProduct(playerMovementDirection, controllerDirection);
 	
 	if (dotResult > 0.01)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = Stat.GetStat(ECharacterStatType::MoveSpeed) * 2;
 		IsJog = true;
 		SetRunZoomOutProp();
-		SetInCombatFalse();
+		InCombat = false;
 	}
 }
 
@@ -216,10 +213,10 @@ void ACharacterPC::StopJog()
 //================================================================
 void ACharacterPC::RotatePawn(float DeltaTime)
 {
-	FRotator rotation = GetActorRotation();
-	FRotator toRotation = Controller->GetControlRotation();
+	const FRotator rotation = GetActorRotation();
+	const FRotator toRotation = Controller->GetControlRotation();
 	
-	FRotator yawRotation(0, toRotation.Yaw, 0);
+	const FRotator yawRotation(0, toRotation.Yaw, 0);
 
 	//SetActorRotation(yawRotation);
 
@@ -325,34 +322,33 @@ void ACharacterPC::InitSkills()
 // 아래부터 각 상황에 맞는 스킬 호출 함수입니다. PlayerController에서 호출하면, 받아온 Index대로
 // 인스턴스화 된 배열의 스킬에서 상황에 맞는 함수를 호출합니다.
 // =============================================================
-void ACharacterPC::SkillStarted(const EAbilityType InAbilityType)
+void ACharacterPC::SkillStarted(const EAbilityType inAbilityType)
 {
-	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
+	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
 		ability->SkillStarted();
-	
 }
-void ACharacterPC::SkillOngoing(const EAbilityType InAbilityType)
+void ACharacterPC::SkillOngoing(const EAbilityType inAbilityType)
 {
-	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
+	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
 		ability->SkillOngoing();
 }
-void ACharacterPC::SkillTriggered(const EAbilityType InAbilityType)
+void ACharacterPC::SkillTriggered(const EAbilityType inAbilityType)
 {
-	if (Skills[InAbilityType]->CanActivateAbility() && !GetOtherSkillActivating(InAbilityType))
+	if (Skills[inAbilityType]->CanActivateAbility() && !GetOtherSkillActivating(inAbilityType))
 	{
 		HandleCombatState();
-		if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
+		if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
 			ability->SkillTriggered();
 	}
 }
-void ACharacterPC::SkillCompleted(const EAbilityType InAbilityType)
+void ACharacterPC::SkillCompleted(const EAbilityType inAbilityType)
 {
-	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
+	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
 		ability->SkillCompleted();
 }
-void ACharacterPC::SkillCanceled(const EAbilityType InAbilityType)
+void ACharacterPC::SkillCanceled(const EAbilityType inAbilityType)
 {
-	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[InAbilityType]))
+	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
 		ability->SkillCanceled();
 }
 

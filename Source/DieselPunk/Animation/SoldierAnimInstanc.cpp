@@ -106,8 +106,7 @@ void USoldierAnimInstance::GunRecoil()
 {
 	GunRecoilBool = 1;
 	TWeakObjectPtr<USoldierAnimInstance> thisPtr = this;
-	GetWorld()->GetTimerManager().SetTimerForNextTick([thisPtr]()
-	{
+	GetWorld()->GetTimerManager().SetTimerForNextTick([thisPtr](){
 		if(thisPtr.IsValid())
 			thisPtr->GunRecoilBool = 0;
 	});

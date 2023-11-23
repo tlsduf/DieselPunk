@@ -68,7 +68,7 @@ protected:
 	
 	// EndOverlap시 CharacterPC의 DelegateInteractTask에 함수 언바인드 /상호작용 비활성화
 	UFUNCTION()
-	void RemoveDelegate(UPrimitiveComponent* OverlappedComponent, AActor* InOtherActor, UPrimitiveComponent* InOtherComp, int32 InOtherBodyIndex);
+	void RemoveDelegate(UPrimitiveComponent* InOverlappedComponent, AActor* InOtherActor, UPrimitiveComponent* InOtherComp, int32 InOtherBodyIndex);
 
 	
 	//================================================================

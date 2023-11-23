@@ -30,7 +30,7 @@ private:
 	FVector ShotLocation;
 	FRotator ShotRotation;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "MYDP")
+	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
 	TSubclassOf<AProjectileBase> ProjectileBaseClass;
 
 	UPROPERTY()

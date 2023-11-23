@@ -1,26 +1,27 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "UtilCollision.h"
-#include "../DieselPunk.h"
+#include "DieselPunk/Character/CharacterBase.h"
 
 #include <CollisionShape.h>
 #include <DrawDebugHelpers.h>
 #include <GameFramework/PlayerController.h>
+#include <Kismet/GameplayStatics.h>
 
-#include "Kismet/GameplayStatics.h"
+
 
 
 // =============================================================
 /**
 	 *시작점->끝점까지 구로 스윕 트레이스를 합니다.
 	 * @param OutHitResults : Sweep 결과 를 담아주는 배열입니다.
-	 * @param InStartLocation : 트레이스의 시작점입니다. (시작 구의 정 가운데)
-	 * @param InEndLocation : 트레이스의 끝점 입니다. (끝 구의 정 가운데)
-	 * @param InCapsuleRadius : Sweep할 구의 반지름입니다.
-	 * @param InDebugOnOff : 디버그캡슐의 Draw를 결정하는 bool변수입니다.
+	 * @param inStartLocation : 트레이스의 시작점입니다. (시작 구의 정 가운데)
+	 * @param inEndLocation : 트레이스의 끝점 입니다. (끝 구의 정 가운데)
+	 * @param inCapsuleRadius : Sweep할 구의 반지름입니다.
+	 * @param inDebugOnOff : 디버그캡슐의 Draw를 결정하는 bool변수입니다.
 	 */
 // =============================================================
-void UtilCollision::CapsuleSweepMulti(TArray<FHitResult>& OutHitResults, const FVector& InStartLocation, const FVector& InEndLocation, const float& InCapsuleRadius, EProjectileOwnerType inProjectileOwnerType, bool InDebugOnOff)
+void UtilCollision::CapsuleSweepMulti(TArray<FHitResult>& OutHitResults, const FVector& inStartLocation, const FVector& inEndLocation, const float& inCapsuleRadius, EProjectileOwnerType inProjectileOwnerType, bool inDebugOnOff)
 {
 	// 월드 get
 	FWorldContext* world = GEngine->GetWorldContextFromGameViewport( GEngine->GameViewport );
@@ -30,19 +31,19 @@ void UtilCollision::CapsuleSweepMulti(TArray<FHitResult>& OutHitResults, const F
 	FCollisionQueryParams params;
 	world->World()->SweepMultiByChannel(
 		OutHitResults,
-		InStartLocation,
-		InEndLocation,
+		inStartLocation,
+		inEndLocation,
 		FQuat::Identity,
 		(inProjectileOwnerType == EProjectileOwnerType::Player) ? ECollisionChannel::ECC_GameTraceChannel7 : ECollisionChannel::ECC_GameTraceChannel8,
-		FCollisionShape::MakeSphere(InCapsuleRadius),
+		FCollisionShape::MakeSphere(inCapsuleRadius),
 		params);
 	
 	// 디버그 캡슐을 그린다. Red - hit 실패/ Green - hit 성공
-	if (InDebugOnOff)
+	if (inDebugOnOff)
 	{
-		FVector traceVec = InEndLocation - InStartLocation;
-		FVector center = InStartLocation + traceVec * 0.5f;
-		float halfHeight = traceVec.Size() * 0.5f + InCapsuleRadius;
+		FVector traceVec = inEndLocation - inStartLocation;
+		FVector center = inStartLocation + traceVec * 0.5f;
+		float halfHeight = traceVec.Size() * 0.5f + inCapsuleRadius;
 		FQuat capsuleRot = FRotationMatrix::MakeFromZ(traceVec).ToQuat();
 		FColor drawColor = !OutHitResults.IsEmpty() ? FColor::Green : FColor::Red;
 		float debugLifeTime = 5.0f;
@@ -50,7 +51,7 @@ void UtilCollision::CapsuleSweepMulti(TArray<FHitResult>& OutHitResults, const F
 		DrawDebugCapsule(world->World(),
 						 center,
 						 halfHeight,
-						 InCapsuleRadius,
+						 inCapsuleRadius,
 						 capsuleRot,
 						 drawColor,
 						 false,
@@ -60,13 +61,17 @@ void UtilCollision::CapsuleSweepMulti(TArray<FHitResult>& OutHitResults, const F
 
 
 // =============================================================
-// 전방으로 라인트레이스를 해 히트정보를 받아온다 LineTraceSingleByChannel
+/**
+	 *액터기준 전방으로 라인트레이스를 해 히트정보를 받아온다 LineTraceSingleByChannel
+	 * @param inOwner : 트레이스하는 액터
+	 * @param inAttackRange : 트레이스 거리
+	 * @param inDebugOnOff : 드로우 디버그 On/Off
+	 */
 // =============================================================
-FHitResult UtilCollision::LineTraceForward(APawn *OwnerPawn, float InAttackRange, bool InDebugOnOff)
+FHitResult UtilCollision::LineTraceForward(AActor *inOwner, float inAttackRange, bool inDebugOnOff)
 {
-	AController *OwnerController = OwnerPawn->GetController();
 	FHitResult hit;
-	if (OwnerPawn == nullptr)
+	if (inOwner == nullptr)
 		return hit;
 	
 	// 월드 get
@@ -75,31 +80,32 @@ FHitResult UtilCollision::LineTraceForward(APawn *OwnerPawn, float InAttackRange
 		return hit;
 	
 
-	FVector location;
-	FRotator rotation;
-	OwnerController->GetPlayerViewPoint(location, rotation);
-	FVector end = location + rotation.Vector() * InAttackRange;
+	FVector startLocation = inOwner->GetActorLocation();
+	FRotator startRotation = inOwner->GetActorRotation();
+	//if(AController *OwnerController = Cast<ACharacterBase>(inOwner)->GetController())
+	//	OwnerController->GetPlayerViewPoint(startLocation, startRotation);
+	FVector endLocation = startLocation + startRotation.Vector() * inAttackRange;
 	
 	FCollisionQueryParams params;
-	params.AddIgnoredActor(OwnerPawn);
+	params.AddIgnoredActor(inOwner);
 
 	bool hasHit = world->World()->LineTraceSingleByChannel(
 		hit,
-		location,
-		end,
+		startLocation,
+		endLocation,
 		ECollisionChannel::ECC_GameTraceChannel1,
 		params);
 
 	AActor *hitActor = hit.GetActor();
 
 	// 디버그 캡슐을 그린다. Red - hit 실패/ Green - hit 성공
-	if (InDebugOnOff)
+	if (inDebugOnOff)
 	{
-		FVector traceVec = rotation.Vector() * InAttackRange;
-		FVector center = location + traceVec * 0.5f;
-		float halfHeight = InAttackRange * 0.5f;
+		FVector traceVec = startRotation.Vector() * inAttackRange;
+		FVector center = startLocation + traceVec * 0.5f;
+		float halfHeight = inAttackRange * 0.5f;
 		FQuat capsuleRot = FRotationMatrix::MakeFromZ(traceVec).ToQuat();
-		FColor drawColor = (hitActor != nullptr && hitActor != OwnerPawn) ? FColor::Green : FColor::Red;
+		FColor drawColor = (hitActor != nullptr && hitActor != inOwner) ? FColor::Green : FColor::Red;
 		float debugLifeTime = 5.0f;
 
 		DrawDebugCapsule(world->World(),

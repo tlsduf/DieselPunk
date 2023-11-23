@@ -24,16 +24,14 @@ void USkillSoldierShift::BeginPlay()
 void USkillSoldierShift::SkillTriggered()
 {
 	Super::SkillTriggered();
-	
-	auto ownerPawn = Cast<ACharacterPC>(OwnerCharacter);
 
 	//Player의 이동방향
-	FVector playerMovementDirection = ownerPawn->GetMovementComponent()->Velocity;
+	FVector playerMovementDirection = OwnerCharacterPC->GetMovementComponent()->Velocity;
 	playerMovementDirection.Z = 0;
 	playerMovementDirection.Normalize();
 
 	//Controller 방향
-	FVector controllerDirection = ownerPawn->GetController()->GetControlRotation().Vector();
+	FVector controllerDirection = OwnerCharacterPC->GetController()->GetControlRotation().Vector();
 	controllerDirection.Z = 0;
 	controllerDirection.Normalize();
 
@@ -45,90 +43,88 @@ void USkillSoldierShift::SkillTriggered()
 		return;
 
 	// 쿨타임 감소
-	float CoolDown = 0.5 * ownerPawn->PCSkillManager.SoldierShiftUpgradeType[ESoldierShiftUpgradeType::CoolDown];
+	float CoolDown = 0.5 * OwnerCharacterPC->PCSkillManager.SoldierShiftUpgradeType[ESoldierShiftUpgradeType::CoolDown];
 	// 쿨타임!!!!!!!!!!!!!!!!!!
 	CoolTimeHandler->SetCoolTime(CoolTime - CoolDown);
-	ownerPawn->SkillActivating[EAbilityType::Shift] = true;
-	GetWorld()->GetTimerManager().SetTimer(
-	PlaySkillTHandle, [this]()
-	{ Cast<ACharacterPC>(GetOwner())->SkillActivating[EAbilityType::Shift] = false; },
-	SkillPlayTime, false);
+	OwnerCharacterPC->SkillActivating[EAbilityType::Shift] = true;
+	TWeakObjectPtr<USkillSoldierShift> thisPtr = this;
+	GetWorld()->GetTimerManager().SetTimer(PlaySkillTHandle, [thisPtr]()
+	{
+		if(thisPtr.IsValid())
+			thisPtr->OwnerCharacterPC->SkillActivating[EAbilityType::Shift] = false;
+	},SkillPlayTime, false);
 	
-	const FVector currentAcceleration = ownerPawn->GetCharacterMovement()->GetCurrentAcceleration();
+	const FVector currentAcceleration = OwnerCharacterPC->GetCharacterMovement()->GetCurrentAcceleration();
 	float currentAccelLength = currentAcceleration.SizeSquared();
 	if (CanDash && currentAccelLength > 0 )
 	{
 		// 화면 와이드 아웃(Run)
-		Cast<ACharacterBase>(ownerPawn)->SetInCombatFalse();
+		OwnerCharacterPC->InCombat = false;
 		//ownerPawn->SetRunZoomOutProp();
-		ownerPawn->IsJog = true;
+		OwnerCharacterPC->IsJog = true;
 
 		// 스킬트리
 		//ownerPawn->ThisJogSpeed += 20 * ownerPawn->PCSkillManager.SoldierShiftUpgradeType[ESoldierShiftUpgradeType::SpeedUp];
 		
 		// 스킬트리
-		DashDistance += 2000 * ownerPawn->PCSkillManager.SoldierShiftUpgradeType[ESoldierShiftUpgradeType::DashDistance];
+		DashDistance += 2000 * OwnerCharacterPC->PCSkillManager.SoldierShiftUpgradeType[ESoldierShiftUpgradeType::DashDistance];
 		
 		// 카메라방향으로 대쉬
 		const FRotator rotation = OwnerController->GetControlRotation();	//카메라방향으로 대쉬
-		const FVector Direction = FRotationMatrix(rotation).GetUnitAxis(EAxis::X);
-		ownerPawn->GetCharacterMovement()->BrakingFrictionFactor = 0.f;
-		ownerPawn->LaunchCharacter(Direction * DashDistance, true, true);
+		const FVector direction = FRotationMatrix(rotation).GetUnitAxis(EAxis::X);
+		OwnerCharacterPC->GetCharacterMovement()->BrakingFrictionFactor = 0.f;
+		OwnerCharacterPC->LaunchCharacter(direction * DashDistance, true, true);
 		
 
-		// 액터정면방향으로 대쉬 (Yaw방향)
+		// 액터정면방향으로 대쉬 (Yaw방향) //
 		/*
-		const FRotator rotation = ownerPawn->GetActorRotation();	//이동방향으로 대쉬
+		const FRotator rotation = OwnerCharacterPC->GetActorRotation();	//이동방향으로 대쉬
 		const FRotator yawRotation(0, rotation.Yaw, 0);
 		const FVector Direction = FRotationMatrix(yawRotation).GetUnitAxis(EAxis::X);
-		ownerPawn->GetCharacterMovement()->BrakingFrictionFactor = 0.f;
-		ownerPawn->LaunchCharacter(Direction * DashDistance, true, true);
+		OwnerCharacterPC->GetCharacterMovement()->BrakingFrictionFactor = 0.f;
+		OwnerCharacterPC->LaunchCharacter(Direction * DashDistance, true, true);
 		*/
 		
-		// 액터의 진행방향으로 대쉬 (Yaw방향)
-		/*ownerPawn->GetCharacterMovement()->BrakingFrictionFactor = 0.f;
-		ownerPawn->LaunchCharacter(currentAcceleration.GetSafeNormal() * DashDistance, true, true);	//현재 가고있는방향으로 대쉬*/
-		
-		// 일정시간동안 스피드업
+		// 액터의 진행방향으로 대쉬 (Yaw방향) //
 		/*
-		ownerPawn->GetCharacterMovement()->MaxWalkSpeed = DashDistance;	//다른종류의 대쉬(일정시간동안 스피드업)
+		OwnerCharacterPC->GetCharacterMovement()->BrakingFrictionFactor = 0.f;
+		OwnerCharacterPC->LaunchCharacter(currentAcceleration.GetSafeNormal() * DashDistance, true, true);	//현재 가고있는방향으로 대쉬
 		*/
-
-		//UParticleSystemComponent *ParticleSystemComponent = UGameplayStatics::SpawnEmitterAttached(DashEffect, GetRootComponent());
+		
+		// 일정시간동안 스피드업 //
+		/*
+		OwnerCharacterPC->GetCharacterMovement()->MaxWalkSpeed = DashDistance;	//다른종류의 대쉬(일정시간동안 스피드업)
+		*/
 
 		//*후행 조건 설정부
 		IsDash = true;
 		CanDash = false;
-
-		ownerPawn->GetWorldTimerManager().SetTimer(DashTHandle, this, &USkillSoldierShift::StopDashing, DashingTime, false);
+		
+		GetWorld()->GetTimerManager().SetTimer(DashTHandle, [thisPtr](){
+				if(thisPtr.IsValid())
+					thisPtr->StopDashing();
+			},DashingTime, false);
 
 		//애니메이션 재생
-		USoldierAnimInstance* animInst = Cast<USoldierAnimInstance>(ownerPawn->GetMesh()->GetAnimInstance());
-		if (!animInst)
-			return;
-
-		animInst->Montage_Stop(0.1);
-		animInst->PlayMontage(EAbilityType::Shift, ESoldierSkillMontageType::Attack);
+		if(USoldierAnimInstance* animInst = Cast<USoldierAnimInstance>(OwnerCharacterPC->GetMesh()->GetAnimInstance()))
+		{
+			animInst->Montage_Stop(0.1);
+			animInst->PlayMontage(EAbilityType::Shift, ESoldierSkillMontageType::Attack);
+		}
 	}
 }
 void USkillSoldierShift::StopDashing()
 {
-	auto ownerPawn = Cast<ACharacterPC>(OwnerCharacter);
-	if(ownerPawn == nullptr)
-	{
-		return;
-	}
-	ownerPawn->GetCharacterMovement()->StopMovementImmediately();
-	ownerPawn->GetWorldTimerManager().SetTimer(DashTHandle, this, &USkillSoldierShift::ResetDash, 0.2f, false);
-	ownerPawn->GetCharacterMovement()->BrakingFrictionFactor = 2.f;
+	OwnerCharacterPC->GetCharacterMovement()->StopMovementImmediately();
+	TWeakObjectPtr<USkillSoldierShift> thisPtr = this;
+	GetWorld()->GetTimerManager().SetTimer(DashTHandle, [thisPtr](){
+		if(thisPtr.IsValid())
+			thisPtr->ResetDash();
+	},0.2f, false);
+	OwnerCharacterPC->GetCharacterMovement()->BrakingFrictionFactor = 2.f;
 }
 void USkillSoldierShift::ResetDash()
 {
-	auto ownerPawn = Cast<ACharacterPC>(OwnerCharacter);
-	if(ownerPawn == nullptr)
-	{
-		return;
-	}
 	IsDash = false;
 	CanDash = true;
 }

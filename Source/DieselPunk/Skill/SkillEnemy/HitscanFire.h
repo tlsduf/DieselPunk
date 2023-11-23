@@ -20,16 +20,16 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
 private:
 
-	UPROPERTY(EditAnywhere, Category = "MYDP")
+	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
 	float AttackRange = 10000;
 
-	UPROPERTY(EditAnywhere, Category = "MYDP")
+	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
 	float Damage = 10.f;
 
-	UPROPERTY(EditAnywhere, Category = "MYDP")
+	UPROPERTY(EditAnywhere, Category = "MYDP_Util")
 	bool DebugOnOff = true;
 
-	UPROPERTY(EditAnywhere, Category = "MYDP")
+	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
 	UParticleSystem *HitParticles;
 
 public:

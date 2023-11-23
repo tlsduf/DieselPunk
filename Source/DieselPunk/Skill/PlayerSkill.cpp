@@ -3,7 +3,7 @@
 
 #include "PlayerSkill.h"
 #include "../Handler/CoolTimeHandler.h"
-#include "..\Character\CharacterPC.h"
+#include "../Character/CharacterPC.h"
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PlayerSkill)
@@ -18,6 +18,8 @@ void UPlayerSkill::BeginPlay()
 	Super::BeginPlay();
 
 	CoolTimeHandler = new FCoolTimeHandler(this);
+
+	OwnerCharacterPC = Cast<ACharacterPC>(OwnerCharacter);
 }
 
 void UPlayerSkill::BeginDestroy()
@@ -34,55 +36,7 @@ void UPlayerSkill::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-// =============================================================
-// 스킬 사용 시작시 호출됩니다.
-// =============================================================
-void UPlayerSkill::SkillStarted()
-{
-	if(OwnerCharacter == nullptr)
-		return;
-}
-
-// =============================================================
-// 스킬이 시작되고 트리거 되기전까지 계속 호출됩니다. (아마도)..
-// =============================================================
-void UPlayerSkill::SkillOngoing()
-{
-	if(OwnerCharacter == nullptr)
-		return;
-}
-
-// =============================================================
-// 스킬 입력이 Triggered일 때 호출됩니다.
-// =============================================================
-void UPlayerSkill::SkillTriggered()
-{
-	if(OwnerCharacter == nullptr)
-		return;
-}
-
-// =============================================================
-// 스킬 입력이 Triggered 후 입력이 해제되거나, Triggered가 호출 된 후 호출됩니다.
-// TriggerType에 따라 다릅니다.
-// =============================================================
-void UPlayerSkill::SkillCompleted()
-{
-	if(OwnerCharacter == nullptr)
-		return;
-}
-
-// =============================================================
-// 스킬 입력이 Ongoing 중 입력이 해제되면 호출됩니다.
-// =============================================================
-void UPlayerSkill::SkillCanceled()
-{
-	if(OwnerCharacter == nullptr)
-		return;
-}
-
-// =============================================================
 // 스킬 사용이 취소되면 호출됩니다.
-// =============================================================
 void UPlayerSkill::CancelSkill()
 {
 	Super::CancelSkill();

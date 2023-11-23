@@ -3,7 +3,7 @@
 #include "CharacterTurret.h"
 
 #include "../Component/HousingActorComponent.h"
-#include "../Logic/EnemyAIController.h"
+#include "..\Logic\NPCAIController.h"
 #include <Components/SkeletalMeshComponent.h>
 #include <Components/StaticMeshComponent.h>
 #include <Components/CapsuleComponent.h>
@@ -84,7 +84,7 @@ bool ACharacterTurret::CompleteHousingTurret()
 
 void ACharacterTurret::RunAi()
 {
-	AEnemyAIController* aiController = Cast<AEnemyAIController>(GetController());
+	ANPCAIController* aiController = Cast<ANPCAIController>(GetController());
 	if(aiController)
 		aiController->RunAi(this, true);
 }

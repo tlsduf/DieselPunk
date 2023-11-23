@@ -21,7 +21,7 @@ protected:
 	int32 ObjectId = -1;			//오브젝트 ID
 	FStat Stat;						//스탯
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "MYDP")
 	FString CharacterName = "";		//캐릭터 정보를 가져오기 위한 이름
 	
 	/////////////////////////////////////////////////////////////////////
@@ -41,7 +41,7 @@ protected:
 	/////////////////////////////////////////////////////////////////////
 	// for Animation //
 	
-	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	bool TakeDamageAnim = false;			// 데미지 받는 애니메이션 출력을 위한 ABP에서 활용되는 변수입니다.
 
 	bool CanTakeDamageAnim = true;
@@ -49,8 +49,9 @@ protected:
 
 	/////////////////////////////////////////////////////////////////////
 	// for State //
-	
-	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+
+public:
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	bool InCombat = false;					// InCombat이 True 면 전투상태
 
 	FTimerHandle CombatStateTHandle;		// 전투상태 진입 5초 후, 비전투상태로 회귀
@@ -61,7 +62,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "MYDP_Combat")
 	bool DamageImmunity = false;			// DamageImmunity 가 True 면 데미지를 안 입게 했습니다. TakeDamage 함수에서 활용합니다.
 	
-	UPROPERTY(EditDefaultsOnly, Category = "MYDP_Util")
+	UPROPERTY(EditAnywhere, Category = "MYDP_Util")
 	bool DebugOnOff = false;				// 디버그on/off
 	
 public:
@@ -99,18 +100,17 @@ public:
 	
 	// [Stat] 블루프린트용 스탯 Getter
 	UFUNCTION(BlueprintPure)
-	int32 GetCharacterStat(ECharacterStatType InStatType);
+	int32 GetCharacterStat(ECharacterStatType inStatType);
 
 	// 데미지 처리
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent, class AController *EventInstigator, AActor *DamageCauser) override;
 
 	
 	/////////////////////////////////////////////////////////////////////
-	// for UI //
-	
-	// 데미지를 받을 때, 데미지 받는 애니메이션 출력을 위한 함수. TakeDamage에서 호출합니다. ABP에서 활용됩니다.
-	// [TODO] 구조상 타이머를 쓰고있는데, 타이머를 쓰지말라는 조언이 있어서 구조변경 요함.
-	void SetTakeDamageAnimFalse();
+	// for UI // Animation //
+
+	// Damaged 애니메이션 플레이 //bool 변수로 0.3초마다 애니메이션 실행
+	void PlayDamagedAnim();
 	
 	// 데미지를 입으면 데미지ui액터를 생성합니다.
 	void CreateDamageActor(float InDamage);
@@ -136,6 +136,5 @@ public:
 	
 	// 전투상태 핸들링 함수 // 전투상태 돌입 5초 후, 전투상태 자동 해제. // 해제 전 갱신 시, 5초갱신.
 	void HandleCombatState();
-	void SetInCombatFalse();
 	
 };

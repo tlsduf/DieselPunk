@@ -15,7 +15,7 @@ class DIESELPUNK_API UMonsterAnimInstace : public UAnimInstance
 	
 private:
 	// 캐릭터가 사용할 애님 몽타주 Shift
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP", Meta = (AllowPrivateAccess = true))
 	TSoftObjectPtr<UAnimMontage> MonsterMontage;
 
 public:
@@ -42,8 +42,8 @@ private:
 	// 공중몹 프로펠러 회전
 	int16 AddRotation();
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
-	int radian = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP", Meta = (AllowPrivateAccess = true))
+	int Radian = 0;
 };
 
 UENUM()

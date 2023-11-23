@@ -45,7 +45,7 @@ void UMeleeAttack::Attack()
 	// 데미지 전달
 	if(!sweepResults.IsEmpty())
 	{
-		AActor *hitActor;
+		AActor* hitActor;
 		for (auto It = sweepResults.CreateIterator(); It; It++)
 		{
 			hitActor = It->GetActor();

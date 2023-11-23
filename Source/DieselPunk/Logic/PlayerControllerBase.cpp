@@ -2,17 +2,14 @@
 
 #include "PlayerControllerBase.h"
 #include "../Character/CharacterPC.h"
-#include "../Skill/SkillBase.h"
 #include "../Skill/PlayerSkill.h"
 #include "../UI/HUD/SkillUpgradeUI.h"
 #include "../Core/DpCheatManager.h"
-
 
 #include <Blueprint/UserWidget.h>
 #include <EnhancedInputComponent.h>
 #include <EnhancedInputSubsystems.h>
 #include <InputMappingContext.h>
-
 #include <GameFramework/WorldSettings.h>
 
 
@@ -32,14 +29,20 @@ APlayerControllerBase::APlayerControllerBase()
 void APlayerControllerBase::BeginPlay()
 {
     Super::BeginPlay();
-
-	SetMappingContextByInputType();
 	
     if (UEnhancedInputLocalPlayerSubsystem *Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
-    {
         Subsystem->AddMappingContext(MappingContext, 0);
-    }
+	
+	// 시작 메뉴 생성
+	if(StartMenuClass)
+		StartMenu = CreateWidget(this, StartMenuClass);
+	if (StartMenu)
+		StartMenu->AddToViewport();
 
+	// 마우스 위치 Set // 시간 멈춤 // 캐릭터 회전 불가
+	SetUIControlOn();
+
+	// HUD 생성
 	if(HUDClass)
 		HUD = CreateWidget(this, HUDClass);
 	if (HUD)
@@ -81,11 +84,11 @@ void APlayerControllerBase::SetupInputComponent()
 
 // =============================================================
 // 캐릭터가 포즈되었을때 호출됩니다.
-// 캐릭터 변경 시스템을 위해 캐릭터가 변경되면, 바뀐 캐릭터의 스킬을 인스턴스화 시키고 trigger 타입을 리매핑합니다.
 // =============================================================
 void APlayerControllerBase::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
+	
 	SetMappingContextByInputType();
 }
 
@@ -117,9 +120,9 @@ void APlayerControllerBase::SetMappingContextByInputType()
 // =============================================================
 // 입력된 ActionInput의 이름을 비교하여 무슨 능력인지 (Key)를 알아 내는 함수입니다.
 // =============================================================
-const EAbilityType APlayerControllerBase::GetAbilityKeyFromAction(const FInputActionInstance &InInstance) const
+const EAbilityType APlayerControllerBase::GetAbilityKeyFromAction(const FInputActionInstance &inInstance) const
 {
-	if (const UInputAction *inputAction = InInstance.GetSourceAction())
+	if (const UInputAction *inputAction = inInstance.GetSourceAction())
 	{
 		if (inputAction->GetName().Contains(TEXT("IA_LeftMouse")))
 			return EAbilityType::MouseLM;
@@ -148,51 +151,51 @@ const EAbilityType APlayerControllerBase::GetAbilityKeyFromAction(const FInputAc
 // 호출할 index에 스킬이 들어 있는지 크기를 통해 확인하고,
 // 캐릭터의 각 타입에 맞는 기능을 호출합니다.
 // =============================================================
-void APlayerControllerBase::OnInputSkillStarted(const FInputActionInstance& InInstance)
+void APlayerControllerBase::OnInputSkillStarted(const FInputActionInstance& inInstance)
 {
 	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
 	{
-		const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
+		const EAbilityType abilityKey = GetAbilityKeyFromAction(inInstance);
 		if (abilityKey != EAbilityType::None)
 			character->SkillStarted(abilityKey);
 	}
 }
 
-void APlayerControllerBase::OnInputSkillOngoing(const FInputActionInstance& InInstance)
+void APlayerControllerBase::OnInputSkillOngoing(const FInputActionInstance& inInstance)
 {
 	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
 	{
-		const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
+		const EAbilityType abilityKey = GetAbilityKeyFromAction(inInstance);
 		if (abilityKey != EAbilityType::None)
 			character->SkillOngoing(abilityKey);
 	}
 }
 
-void APlayerControllerBase::OnInputSkillTriggered(const FInputActionInstance& InInstance)
+void APlayerControllerBase::OnInputSkillTriggered(const FInputActionInstance& inInstance)
 {
 	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
 	{
-		const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
+		const EAbilityType abilityKey = GetAbilityKeyFromAction(inInstance);
 		if (abilityKey != EAbilityType::None)
 			character->SkillTriggered(abilityKey);
 	}
 }
 
-void APlayerControllerBase::OnInputSkillCompleted(const FInputActionInstance& InInstance)
+void APlayerControllerBase::OnInputSkillCompleted(const FInputActionInstance& inInstance)
 {
 	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
 	{
-		const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
+		const EAbilityType abilityKey = GetAbilityKeyFromAction(inInstance);
 		if (abilityKey != EAbilityType::None)
 			character->SkillCompleted(abilityKey);
 	}
 }
 
-void APlayerControllerBase::OnInputSkillCanceled(const FInputActionInstance& InInstance)
+void APlayerControllerBase::OnInputSkillCanceled(const FInputActionInstance& inInstance)
 {
 	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
 	{
-		const EAbilityType abilityKey = GetAbilityKeyFromAction(InInstance);
+		const EAbilityType abilityKey = GetAbilityKeyFromAction(inInstance);
 		if (abilityKey != EAbilityType::None)
 			character->SkillCanceled(abilityKey);
 	}
@@ -202,49 +205,37 @@ void APlayerControllerBase::OnInputSkillCanceled(const FInputActionInstance& InI
 void APlayerControllerBase::Jump()
 {
 	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-	{
 		character->Jump();
-	}
 }
 
 void APlayerControllerBase::StopJumping()
 {
 	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-	{
 		character->StopJumping();
-	}
 }
 
 void APlayerControllerBase::StartJog()
 {
 	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-	{
 		character->StartJog();
-	}
 }
 
 void APlayerControllerBase::StopJog()
 {
 	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-	{
 		character->StopJog();
-	}
 }
 
 void APlayerControllerBase::SetZoomInProp()
 {
 	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-	{
 		character->SetZoomInProp();
-	}
 }
 
 void APlayerControllerBase::SetZoomOutProp()
 {
 	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-	{
 		character->SetZoomOutProp();
-	}
 }
 
 void APlayerControllerBase::Interaction()
@@ -259,17 +250,13 @@ void APlayerControllerBase::Interaction()
 void APlayerControllerBase::Move(const FInputActionValue &Value)
 {
 	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-	{
 		character->Move(Value);
-	}
 }
 
 void APlayerControllerBase::Look(const FInputActionValue &Value)
 {
 	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-	{
 		character->Look(Value);
-	}
 }
 
 // =============================================================
@@ -290,7 +277,7 @@ void APlayerControllerBase::SetUIControlOn()
  	GetViewportSize(ScreenWidth, ScreenHeight);
  	SetMouseLocation(ScreenWidth * 0.5f, ScreenHeight * 0.5f);
  	bShowMouseCursor = true;
-	//character->CanCameraControl = false;	// << 이거 오류남;;
+	character->CanCameraControl = false;	// << 이거 오류남;;
 }
 
 

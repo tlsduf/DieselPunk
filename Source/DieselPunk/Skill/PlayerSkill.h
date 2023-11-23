@@ -8,25 +8,28 @@
 
 
 class FCoolTimeHandler;
-
+class ACharacterPC;
 
 UCLASS(Blueprintable)
 class DIESELPUNK_API UPlayerSkill : public USkillBase, public IPlayerInputInterface
 {
 	GENERATED_BODY()
-public:
-	// 해당 스킬이 어떤 입력 방식을 가지는지 설정합니다.
+
+protected:
+	UPROPERTY()
+	ACharacterPC* OwnerCharacterPC = nullptr;	// CharacterPC로 다운캐스팅 할 소유자
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP_Input", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputTrigger> TriggerType;
+	TObjectPtr<UInputTrigger> TriggerType;		// 해당 스킬이 어떤 입력 방식을 가지는지 설정합니다.
 	
 	FCoolTimeHandler* CoolTimeHandler;			// 쿨타임을 관리하기 위한 CoolTime Handler입니다.
+
+public:
+	UPROPERTY(EditAnywhere, Category = "MYDP_Skill")
+	float CoolTime = 5;							// 스킬 쿨타임 입니다람쥐.
 	
 	UPROPERTY(EditAnywhere, Category = "MYDP_Skill")
-	float CoolTime = 5;
-
-	// 스킬 발동 시간입니다. 해당 시간동안 SkillActivating이 On 됩니다.
-	UPROPERTY(EditAnywhere, Category = "MYDP_Skill")
-	float SkillPlayTime = 1;
+	float SkillPlayTime = 1;					// 스킬 발동 시간입니다. 해당 시간동안 SkillActivating이 On 됩니다.
 	
 protected:
 	// 생성자
@@ -44,11 +47,11 @@ public:
 	FORCEINLINE const TObjectPtr<UInputTrigger>& GetTriggerType() const { return TriggerType; }
 	
 	// Input 상황에 따른 로직 처리 함수들입니다.
-	virtual void SkillStarted() override;
-	virtual void SkillOngoing() override;
-	virtual void SkillTriggered() override;
-	virtual void SkillCompleted() override;
-	virtual void SkillCanceled() override;
+	virtual void SkillStarted() override {};
+	virtual void SkillOngoing() override {};
+	virtual void SkillTriggered() override {};
+	virtual void SkillCompleted() override {};
+	virtual void SkillCanceled() override {};
 
 	// 스킬이 어떠한 이유로 인해 캔슬될 때 호출됩니다.
 	virtual void CancelSkill() override;

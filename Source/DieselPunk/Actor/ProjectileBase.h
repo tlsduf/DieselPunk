@@ -14,8 +14,8 @@
  *  * 투사체는 2가지의 상태를 가집니다.
  *  1. ECollisionResponsesType	: 캡슐 콜리전 반응Type // OnHit , Overlap
  *		콜리전반응Type 에 따라 투사체 캡슐콜리전 Set
- *  2. EProjectileOwnerType		: 소유자Type // Player , Alliance , Enemy
- *		소유자Type에 따라 
+ *  2. EProjectileOwnerType		: 소유자Type // Player , Enemy
+ *		소유자Type에 따라 투사체 캡슐콜리전 및 캡슐스윕 의 TraceChannel Set
 */ 
 // =========================================
 
@@ -23,7 +23,6 @@
 #include "GameFramework/Actor.h"
 #include "ProjectileBase.generated.h"
 
-class UNiagaraSystem;
 class AProjectilePathingSpline;
 class ACharacterBase;
 

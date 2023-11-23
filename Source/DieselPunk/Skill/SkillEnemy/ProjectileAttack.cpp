@@ -4,7 +4,6 @@
 #include "..\../Actor\ProjectileBase.h"
 #include "..\..\Character\CharacterNPC.h"
 
-#include <GameFramework/PlayerController.h>
 #include <GameFramework/Character.h>
 #include <Components/SkeletalMeshComponent.h>
 
@@ -25,15 +24,13 @@ void UProjectileAttack::AbilityStart()
 
 	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
 	
-	//const FRotator shotRotation = ownerPawn->GetActorForwardVector().Rotation();
-	//FRotator shotRotation = ownerController->GetControlRotation();
-	
 	// projectile spawn
 	if(ProjectileBaseClass)
 	{
 		FVector shotLocation = ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket");
 		FRotator shotRotation = ownerPawn->GetMesh()->GetSocketRotation("Grenade_socket");
 		FTransform SpawnTransform = FTransform( shotRotation, shotLocation);
+		
 		ProjectileBase = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileBaseClass, SpawnTransform, GetOwner());
 		ProjectileBase->FinishSpawning(SpawnTransform);
 	}

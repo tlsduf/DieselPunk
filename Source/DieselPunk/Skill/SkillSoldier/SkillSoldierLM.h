@@ -15,25 +15,25 @@ class DIESELPUNK_API USkillSoldierLM : public UPlayerSkill
 	GENERATED_BODY()
 
 private:
-	UPROPERTY(EditDefaultsOnly, Category = "MYDP")
+	UPROPERTY(EditDefaultsOnly, Category = "MYDP_Setting")
 	TSubclassOf<AProjectileBase> ProjectileClass;
 
-	UPROPERTY(EditDefaultsOnly, Category = "MYDP")
+	UPROPERTY(EditDefaultsOnly, Category = "MYDP_Setting")
 	TSubclassOf<AProjectileBase> ProjectileEBuffClass;
 	
 	UPROPERTY()
 	AProjectileBase *Projectile;
 
-	UPROPERTY(EditAnywhere, Category = "MYDP")
+	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
 	UParticleSystem *MuzzleParticles;
 
-	UPROPERTY(EditAnywhere, Category = "MYDP")
+	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
 	UParticleSystem *MuzzleParticlesSpecial;
 public:
 
-	bool EBuffOn = false;		//임시 구현 SkillE
-	int8 Magazine = 5;			//임시 구현 SkillE 탄창 수
-	float TempCoolTime;			//e버프 쿨타임 롤백용 
+	bool EBuffOn = false;		//SkillE 활성화상태
+	int8 Magazine = 5;			//SkillE 탄창 수
+	float TempCoolTime;			//E버프 쿨타임 롤백용 
 	
 	// 생성자
 	USkillSoldierLM();

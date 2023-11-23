@@ -38,7 +38,5 @@ void USkillBase::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 
 void USkillBase::AbilityStart()
 {
-	if(OwnerCharacter == nullptr)
-		return;
 }
 

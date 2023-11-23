@@ -3,8 +3,6 @@
 
 #pragma once
 
-
-#include "AITestsCommon.h"
 #include "../UserWidgetBase.h"
 #include "../../Skill/SkillManager.h"
 #include "../../Character/CharacterPC.h"
@@ -21,9 +19,8 @@
 private:																			\
 	UFUNCTION()																		\
 	void Plus##SkillType##UpgradeTypeName()											\
-	{																										\
-			return ;																						\
-		auto *character = Cast<ACharacterPC>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));		\
+	{																									\
+		auto character = Cast<ACharacterPC>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));		\
 		++character->PCSkillManager.SkillType[E##SkillType::UpgradeTypeName];		\
 		AfterClick();																\
 	}																				\

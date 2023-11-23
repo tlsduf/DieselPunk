@@ -2,7 +2,6 @@
 
 #include "ProjectileBase.h"
 #include "../Character/CharacterBase.h"
-#include "../Util/UtilCollision.h"
 
 #include <Components/CapsuleComponent.h>
 #include <Components/StaticMeshComponent.h>
@@ -71,9 +70,7 @@ void AProjectileBase::BeginPlay()
 	
 	// 투사체 5초 뒤 자동 파괴
 	TWeakObjectPtr<AProjectileBase> thisPtr = this;
-	GetWorld()->GetTimerManager().SetTimer(
-		DestroyTimeHandler,[thisPtr]()
-		{
+	GetWorld()->GetTimerManager().SetTimer(DestroyTimeHandler,[thisPtr](){
 			if(thisPtr.IsValid())
 				thisPtr->Destroy();
 		}, 5, false);

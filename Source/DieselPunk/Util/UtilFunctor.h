@@ -12,8 +12,8 @@ FORCEINLINE int GetRandomNumber(int min, int max)
 	return min + static_cast<int>((max - min + 1) * (std::rand() * fraction));
 }
 
-// 입력한 확률(0 ~ 1)로 bool 반환
-FORCEINLINE bool CalPercentage(float inPercentage)
+// 확률계산 함수 // 입력한 확률(0 ~ 1)로 성공여부 반환
+FORCEINLINE bool CalProbability(float inPercentage)
 {
 	bool success = (GetRandomNumber(0 , 100000) <= 100000 * inPercentage);
 	

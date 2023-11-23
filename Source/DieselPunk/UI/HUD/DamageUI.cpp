@@ -4,8 +4,6 @@
 #include "DamageUI.h"
 #include <Components/TextBlock.h>
 
-#include <string>
-
 #include "Animation/AnimBoneCompressionCodec.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(DamageUI)

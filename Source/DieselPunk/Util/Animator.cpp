@@ -75,7 +75,7 @@ float Animator::GetCurValue()
 // =============================================================
 // 시간, 애니메이션 타입에 따라 애니메이팅
 // =============================================================
-float Animator::ApplyEasing( float Time, EAnimType EaseFunction )
+float Animator::ApplyEasing( float inTime, EAnimType inEaseFunction )
 {
 	// Currently we always use normalized distances
 	const float Distance = 1.0f;
@@ -84,49 +84,49 @@ float Animator::ApplyEasing( float Time, EAnimType EaseFunction )
 	const float Start = 0.0f;
 	float CurveValue = 0.0f;
 
-	switch( EaseFunction )
+	switch( inEaseFunction )
 	{
 	case EAnimType::Linear:
-		CurveValue = Start + Distance * Time;
+		CurveValue = Start + Distance * inTime;
 		break;
 
 	case EAnimType::QuadIn:
-		CurveValue = Start + Distance * Time * Time;
+		CurveValue = Start + Distance * inTime * inTime;
 		break;
 
 	case EAnimType::QuadOut:
-		CurveValue = Start + -Distance * Time * (Time - 2.0f);
+		CurveValue = Start + -Distance * inTime * (inTime - 2.0f);
 		break;
 
 	case EAnimType::QuadInOut:
 		{
-			if( Time < 0.5f )
+			if( inTime < 0.5f )
 			{
-				const float Scaled = Time * 2.0f;
+				const float Scaled = inTime * 2.0f;
 				CurveValue = Start + Distance * 0.5f * Scaled * Scaled;
 			}
 			else
 			{
-				const float Scaled = (Time - 0.5f) * 2.0f;
+				const float Scaled = (inTime - 0.5f) * 2.0f;
 				CurveValue = Start + -Distance * 0.5f * (Scaled * (Scaled - 2.0f) - 1.0f);
 			}
 		}
 		break;
 
 	case EAnimType::CubicIn:
-		CurveValue = Start + Distance * Time * Time * Time;
+		CurveValue = Start + Distance * inTime * inTime * inTime;
 		break;
 
 	case EAnimType::CubicOut:
 		{
-			const float Offset = Time - 1.0f;
+			const float Offset = inTime - 1.0f;
 			CurveValue = Start + Distance * (Offset * Offset * Offset + 1.0f);
 		}
 		break;
 
 	case EAnimType::CubicInOut:
 		{
-			float Scaled = Time * 2.0f;
+			float Scaled = inTime * 2.0f;
 			if (Scaled < 1.0f)
 			{
 				CurveValue = Start + Distance / 2.0f * Scaled * Scaled * Scaled;
@@ -141,7 +141,7 @@ float Animator::ApplyEasing( float Time, EAnimType EaseFunction )
 
 	default:
 		// Unrecognized curve easing function type
-		// checkf(0, TEXT("Unrecognized curve easing function type [%i] for FCurveHandle"), (int)EaseFunction);
+		// checkf(0, TEXT("Unrecognized curve easing function type [%i] for FCurveHandle"), (int)inEaseFunction);
 		break;
 	}
 

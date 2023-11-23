@@ -4,7 +4,7 @@
 
 #include "..\Character\CharacterNPC.h"
 #include "../Character/CharacterBase.h"
-#include "../Logic/EnemyAIController.h"
+#include "..\Logic\NPCAIController.h"
 
 #include <BehaviorTree/Blackboard/BlackboardKeyType_Object.h>
 #include <BehaviorTree/Blackboard/BlackboardKeyType_Vector.h>

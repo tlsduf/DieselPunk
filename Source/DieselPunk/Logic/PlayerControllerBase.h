@@ -6,12 +6,11 @@
 #include <GameFramework/PlayerController.h>
 #include "PlayerControllerBase.generated.h"
 
-/** Forward declaration to improve compiling times */
-class UNiagaraSystem;
 class UInputAction;
 class UInputMappingContext;
 struct FInputActionInstance;
 enum class EAbilityType : uint8;
+class ACharacterPC;
 
 UCLASS()
 class DIESELPUNK_API APlayerControllerBase : public APlayerController
@@ -19,6 +18,7 @@ class DIESELPUNK_API APlayerControllerBase : public APlayerController
 	GENERATED_BODY()
 
 private:
+
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP_Input", meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext *MappingContext;
@@ -87,20 +87,26 @@ private:
 	void SetMappingContextByInputType();
 
 	// 입력된 ActionInput의 이름을 비교하여 무슨 능력인지 (Key)를 알아 내는 함수입니다.
-	const EAbilityType GetAbilityKeyFromAction(const FInputActionInstance& InInstance) const;
+	const EAbilityType GetAbilityKeyFromAction(const FInputActionInstance& inInstance) const;
 	
 	// 스킬 관련 바인딩
-	void OnInputSkillStarted(const FInputActionInstance &InInstance);
-	void OnInputSkillOngoing(const FInputActionInstance &InInstance);
-	void OnInputSkillTriggered(const FInputActionInstance &InInstance);
-	void OnInputSkillCompleted(const FInputActionInstance &InInstance);
-	void OnInputSkillCanceled(const FInputActionInstance &InInstance);
+	void OnInputSkillStarted(const FInputActionInstance &inInstance);
+	void OnInputSkillOngoing(const FInputActionInstance &inInstance);
+	void OnInputSkillTriggered(const FInputActionInstance &inInstance);
+	void OnInputSkillCompleted(const FInputActionInstance &inInstance);
+	void OnInputSkillCanceled(const FInputActionInstance &inInstance);
 
 private:
 	UPROPERTY()
+	UUserWidget* StartMenu;
+
+	UPROPERTY(EditAnywhere, Category="MYDP_UI")
+	TSubclassOf<UUserWidget> StartMenuClass;
+	
+	UPROPERTY()
 	UUserWidget* HUD;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="MYDP_UI")
 	TSubclassOf<UUserWidget> HUDClass;
 
 public:

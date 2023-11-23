@@ -7,7 +7,6 @@
 
 #include <Components/WidgetComponent.h>
 #include <Components/StaticMeshComponent.h>
-#include <Engine/DamageEvents.h>
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(CharacterBase)
@@ -82,9 +81,9 @@ void ACharacterBase::SetupPlayerInputComponent(UInputComponent* InPlayerInputCom
 //================================================================
 // 블루프린트용 스탯 Getter
 //================================================================
-int32 ACharacterBase::GetCharacterStat(ECharacterStatType InStatType)
+int32 ACharacterBase::GetCharacterStat(ECharacterStatType inStatType)
 {
-	return Stat.GetStat(InStatType);
+	return Stat.GetStat(inStatType);
 }
 
 //================================================================
@@ -94,40 +93,26 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 {
 	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	
-	// DamageImmunity가 false 일 때 데미지계산
-	// EventInstigator 가 본인이 아닐 때 데미지 계산
+	// DamageImmunity가 false 일 때 데미지계산 // EventInstigator 가 본인이 아닐 때 데미지 계산
 	if (!DamageImmunity && EventInstigator != Controller)
 	{
 		HandleCombatState();
 
 		//================================================================
-		// 1.데미지 계산(공식적용-올림내림)
-		//================================================================
+		// 1.데미지 계산(공식적용|올림내림)
 		damage = (int)(damage + 0.2); // 데미지 소수점 처리 *소수점첫째자리가 0.8 이상이면 올림, 미만시 내림
-
 		damage = FMath::Min(Stat.GetStat(ECharacterStatType::Hp), (int)damage);
+		
 		_UpdateHp(Stat.GetStat(ECharacterStatType::Hp) - damage, Stat.GetStat(ECharacterStatType::MaxHp));
 		Stat.ChangeStat(ECharacterStatType::Hp , -damage);
 		CreateDamageActor(damage);
 		
 		//================================================================
 		// 2.애니메이션 플레이 //bool 변수로 0.3초마다 애니메이션 실행
-		//================================================================
-		if (CanTakeDamageAnim)
-		{
-			TakeDamageAnim = true;
-			GetWorldTimerManager().SetTimerForNextTick(this, &ACharacterBase::SetTakeDamageAnimFalse);
-			CanTakeDamageAnim = false;
-			TWeakObjectPtr<ACharacterBase> thisPtr = this;
-			GetWorld()->GetTimerManager().SetTimer(TakeDamageHandle, [thisPtr](){
-				if(thisPtr.IsValid())
-					thisPtr->TakeDamageAnim = true;
-				},0.3f, false);
-		}
+		PlayDamagedAnim();
 
 		//================================================================
 		// 3.죽음구현
-		//================================================================
 		if (IsDead())
 		{
 			auto DamageCauserPlayer = Cast<ACharacterBase>(DamageCauser);
@@ -140,7 +125,6 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 			
 			Destroy();
 		}
-		
 		return damage;
 	}
 	else // DamageImmunity가 true 일 때 Damage = 0
@@ -148,43 +132,47 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 		HandleCombatState();
 		damage = 0.f;
 		CreateDamageActor(damage);
+		PlayDamagedAnim();
 		
-		// 애니메이션 플레이 //bool 변수로 0.3초마다 애니메이션 실행
-		if (CanTakeDamageAnim)
-		{
-			TakeDamageAnim = true;
-			GetWorldTimerManager().SetTimerForNextTick(this, &ACharacterBase::SetTakeDamageAnimFalse);
-			CanTakeDamageAnim = false;
-			TWeakObjectPtr<ACharacterBase> thisPtr = this;
-			GetWorld()->GetTimerManager().SetTimer(TakeDamageHandle, [thisPtr](){
-				if(thisPtr.IsValid())
-					thisPtr->TakeDamageAnim = true;
-				},0.3f, false);
-		}
 		return damage;
 	}
 }
 
-//================================================================
-// 데미지를 받을 때, 데미지 받는 애니메이션 출력을 위한 함수. TakeDamage에서 호출합니다. ABP에서 활용됩니다.
-//================================================================
-void ACharacterBase::SetTakeDamageAnimFalse()
+// =============================================================
+// Damaged 애니메이션 플레이 //bool 변수로 0.3초마다 애니메이션 실행
+// =============================================================
+void ACharacterBase::PlayDamagedAnim()
 {
-	TakeDamageAnim = false;
+	if (CanTakeDamageAnim)
+	{
+		TakeDamageAnim = true;
+
+		TWeakObjectPtr<ACharacterBase> thisPtr = this;
+		GetWorld()->GetTimerManager().SetTimerForNextTick([thisPtr](){
+			if(thisPtr.IsValid())
+				thisPtr->TakeDamageAnim = false;
+			});
+
+		CanTakeDamageAnim = false;
+		GetWorld()->GetTimerManager().SetTimer(TakeDamageHandle, [thisPtr](){
+			if(thisPtr.IsValid())
+				thisPtr->CanTakeDamageAnim = true;
+			},0.3f, false);
+	}
 }
+
 
 // =============================================================
 // 데미지를 입으면 데미지UI액터를 생성합니다.
 // =============================================================
 void ACharacterBase::CreateDamageActor(float InDamage)
 {
-	FTransform SpawnTransform( FRotator::ZeroRotator, GetActorLocation());
-	DamageUIActor = GetWorld()->SpawnActorDeferred<ADamageUIActor>(ADamageUIActor::StaticClass(), SpawnTransform, this);
-	
+	FTransform spawnTransform( FRotator::ZeroRotator, GetActorLocation());
+	DamageUIActor = GetWorld()->SpawnActorDeferred<ADamageUIActor>(ADamageUIActor::StaticClass(), spawnTransform, this);
 	if(DamageUIActor)
 	{
 		DamageUIActor->SetDamage(InDamage);
-		DamageUIActor->FinishSpawning(SpawnTransform);
+		DamageUIActor->FinishSpawning(spawnTransform);
 	}
 }
 
@@ -235,15 +223,19 @@ void ACharacterBase::HandleCombatState()
 	if (GetWorldTimerManager().IsTimerActive(CombatStateTHandle))
 	{
 		GetWorldTimerManager().ClearTimer(CombatStateTHandle);
-		GetWorldTimerManager().SetTimer(CombatStateTHandle, this, &ACharacterBase::SetInCombatFalse, 5.f, false);
+		TWeakObjectPtr<ACharacterBase> thisPtr = this;
+		GetWorld()->GetTimerManager().SetTimer(TakeDamageHandle, [thisPtr](){
+				if(thisPtr.IsValid())
+					thisPtr->InCombat = false;
+			},5.0f, false);
 	}
 	else
 	{
 		// 타이머가 실행 중이 아니면, 5초 후에 InCombat을 false로 설정합니다.
-		GetWorldTimerManager().SetTimer(CombatStateTHandle, this, &ACharacterBase::SetInCombatFalse, 5.f, false);
+		TWeakObjectPtr<ACharacterBase> thisPtr = this;
+		GetWorld()->GetTimerManager().SetTimer(TakeDamageHandle, [thisPtr](){
+				if(thisPtr.IsValid())
+					thisPtr->InCombat = false;
+			},5.0f, false);
 	}
-}
-void ACharacterBase::SetInCombatFalse()
-{
-	InCombat = false;
 }
