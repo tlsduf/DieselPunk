@@ -23,10 +23,8 @@ void USkillSoldierE::SkillTriggered()
 {
 	Super::SkillTriggered();
 	
-	// 쿨타임 감소
-	float coolDown = 0.5 * OwnerCharacterPC->PCSkillManager.SoldierSkillEUpgradeType[ESoldierSkillEUpgradeType::CoolDown];
 	// 쿨타임
-	CoolTimeHandler->SetCoolTime(CoolTime - coolDown);
+	CoolTimeHandler->SetCoolTime(CoolTime);
 	
 	//트리거 이벤트
 	if(OwnerCharacterPC->Skills[EAbilityType::MouseLM])

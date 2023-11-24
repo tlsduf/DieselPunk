@@ -4,7 +4,6 @@
 
 #include "CharacterBase.h"
 #include "InputActionValue.h"
-#include "DieselPunk/Skill/SkillManager.h"
 #include "CharacterPC.generated.h"
 
 class UPlayerSkill;
@@ -57,7 +56,6 @@ public:
 	TMap<EAbilityType, TObjectPtr<UPlayerSkill>> Skills;			// 런타임에 인스턴스화된 스킬들을 담는 배열입니다. (실제로 이 배열에 담긴 스킬들을 호출)
 	
 	TMap<EAbilityType, bool> SkillActivating;					// 각 스킬이 작동중인지 확인하는 티맵. Key(EAbilityType)의 값이 1이면 작동중입니다.
-	SkillManager PCSkillManager;								// 스킬 특성 업그레이드 지원 매니저
 	
 private:
 	

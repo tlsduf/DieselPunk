@@ -109,7 +109,7 @@ void USkillUpgradeUI::InitWidget()
 // =============================================================
 void USkillUpgradeUI::LeftButtonClick()
 {
-	switch(RandomNum)
+	/*switch(RandomNum)
 	{
 	case 0 :
 		PlusSoldierMouseLMUpgradeTypeDamageUp();
@@ -130,7 +130,7 @@ void USkillUpgradeUI::LeftButtonClick()
 		PlusSoldierSkillRUpgradeTypeDamageUp();
 		break;
 	default : break;
-	}
+	}*/
 }
 
 // =============================================================
@@ -138,7 +138,7 @@ void USkillUpgradeUI::LeftButtonClick()
 // =============================================================
 void USkillUpgradeUI::MiddleButtonClick()
 {
-	switch(RandomNum)
+	/*switch(RandomNum)
 	{
 	case 0 :
 		PlusSoldierMouseLMUpgradeTypeCastSpeedUp();
@@ -159,7 +159,7 @@ void USkillUpgradeUI::MiddleButtonClick()
 		PlusSoldierSkillRUpgradeTypeCoolDown();
 		break;
 	default : break;
-	}
+	}*/
 }
 
 // =============================================================
@@ -167,7 +167,7 @@ void USkillUpgradeUI::MiddleButtonClick()
 // =============================================================
 void USkillUpgradeUI::RightButtonClick()
 {
-	switch(RandomNum)
+	/*switch(RandomNum)
 	{
 	case 0 :
 		PlusSoldierMouseLMUpgradeTypeStackingPercentage();
@@ -188,7 +188,7 @@ void USkillUpgradeUI::RightButtonClick()
 		PlusSoldierSkillRUpgradeTypeWideRange();
 		break;
 	default : break;
-	}
+	}*/
 }
 
 // =============================================================

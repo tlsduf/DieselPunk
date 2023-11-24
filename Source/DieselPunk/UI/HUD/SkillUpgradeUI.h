@@ -3,6 +3,11 @@
 
 #pragma once
 
+/*
+ * !! 20231124 부로 사용하고있지 않습니다. !!
+ * 
+ */
+
 #include "../UserWidgetBase.h"
 #include "../../Skill/SkillManager.h"
 #include "../../Character/CharacterPC.h"
@@ -90,7 +95,7 @@ private:
 	void SetText(int inNum);
 
 private:
-	// SoldierMouseLMUpgradeType
+	/*// SoldierMouseLMUpgradeType
 	DECLARE_SKILLMANAGER_SETTYPE(SoldierMouseLMUpgradeType, DamageUp);
 	DECLARE_SKILLMANAGER_SETTYPE(SoldierMouseLMUpgradeType, CastSpeedUp);
 	DECLARE_SKILLMANAGER_SETTYPE(SoldierMouseLMUpgradeType, StackingPercentage);
@@ -113,7 +118,6 @@ private:
 	// SoldierSkillRUpgradeType
 	DECLARE_SKILLMANAGER_SETTYPE(SoldierSkillRUpgradeType, DamageUp);
 	DECLARE_SKILLMANAGER_SETTYPE(SoldierSkillRUpgradeType, CoolDown);
-	DECLARE_SKILLMANAGER_SETTYPE(SoldierSkillRUpgradeType, WideRange);
-	
+	DECLARE_SKILLMANAGER_SETTYPE(SoldierSkillRUpgradeType, WideRange);*/
 };
 

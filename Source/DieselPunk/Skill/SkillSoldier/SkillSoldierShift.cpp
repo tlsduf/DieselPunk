@@ -41,11 +41,9 @@ void USkillSoldierShift::SkillTriggered()
 	// 뒤로가는 키(s) 가 눌려있을 때 즉, 뒤로가는 중이면 리턴
 	if(dotResult < -0.01)
 		return;
-
-	// 쿨타임 감소
-	float CoolDown = 0.5 * OwnerCharacterPC->PCSkillManager.SoldierShiftUpgradeType[ESoldierShiftUpgradeType::CoolDown];
+	
 	// 쿨타임!!!!!!!!!!!!!!!!!!
-	CoolTimeHandler->SetCoolTime(CoolTime - CoolDown);
+	CoolTimeHandler->SetCoolTime(CoolTime);
 	OwnerCharacterPC->SkillActivating[EAbilityType::Shift] = true;
 	TWeakObjectPtr<USkillSoldierShift> thisPtr = this;
 	GetWorld()->GetTimerManager().SetTimer(PlaySkillTHandle, [thisPtr]()
@@ -62,12 +60,6 @@ void USkillSoldierShift::SkillTriggered()
 		OwnerCharacterPC->InCombat = false;
 		//ownerPawn->SetRunZoomOutProp();
 		OwnerCharacterPC->IsJog = true;
-
-		// 스킬트리
-		//ownerPawn->ThisJogSpeed += 20 * ownerPawn->PCSkillManager.SoldierShiftUpgradeType[ESoldierShiftUpgradeType::SpeedUp];
-		
-		// 스킬트리
-		DashDistance += 2000 * OwnerCharacterPC->PCSkillManager.SoldierShiftUpgradeType[ESoldierShiftUpgradeType::DashDistance];
 		
 		// 카메라방향으로 대쉬
 		const FRotator rotation = OwnerController->GetControlRotation();	//카메라방향으로 대쉬

@@ -59,8 +59,6 @@ ACharacterPC::ACharacterPC()
 void ACharacterPC::BeginPlay()
 {
 	Super::BeginPlay();
-
-	PCSkillManager.ResetSkill();
 }
 
 // Called every frame

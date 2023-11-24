@@ -27,11 +27,9 @@ void USkillSoldierLM::BeginPlay()
 void USkillSoldierLM::SkillTriggered()
 {
 	Super::SkillTriggered();
-
-	// 공격속도 업
-	float coolDown = 0.025 * OwnerCharacterPC->PCSkillManager.SoldierMouseLMUpgradeType[ESoldierMouseLMUpgradeType::CastSpeedUp];
+	
 	// 쿨타임
-	CoolTimeHandler->SetCoolTime(CoolTime - coolDown);
+	CoolTimeHandler->SetCoolTime(CoolTime);
 	
 	// 라인트레이스로 최종경로설정
 	FVector lineTraceLocation;
@@ -60,7 +58,6 @@ void USkillSoldierLM::SkillTriggered()
 		//ProjectileClass = LoadClass<ASoldierProjectile>( NULL, *resourcePath );
 		FTransform spawnTransform( shotRotation, shotLocation);
 		Projectile = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileClass, spawnTransform, GetOwner());
-		Projectile->Damage += 5 * OwnerCharacterPC->PCSkillManager.SoldierMouseLMUpgradeType[ESoldierMouseLMUpgradeType::DamageUp];
 		Projectile->FinishSpawning(spawnTransform);
 	}
 	// * or if EBuffOn is true
@@ -68,7 +65,6 @@ void USkillSoldierLM::SkillTriggered()
 	{
 		FTransform spawnTransform( shotRotation, shotLocation);
 		Projectile = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileEBuffClass, spawnTransform, GetOwner());
-		Projectile->Damage += 10 * OwnerCharacterPC->PCSkillManager.SoldierSkillEUpgradeType[ESoldierSkillEUpgradeType::DamageUp];;
 		Projectile->FinishSpawning(spawnTransform);
 		--Magazine;
 

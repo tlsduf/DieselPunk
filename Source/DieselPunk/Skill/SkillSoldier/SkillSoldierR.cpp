@@ -73,10 +73,8 @@ void USkillSoldierR::AfterLogic()
 	if (!animInst)
 		return;
 	
-	// 쿨타임 감소
-	float coolDown = 0.5 * OwnerCharacterPC->PCSkillManager.SoldierSkillRUpgradeType[ESoldierSkillRUpgradeType::CoolDown];
 	// 쿨타임
-	CoolTimeHandler->SetCoolTime(CoolTime - coolDown);
+	CoolTimeHandler->SetCoolTime(CoolTime);
 	OwnerCharacterPC->SkillActivating[EAbilityType::SkillR] = false;
 
 	// 몽타주 정지
@@ -91,10 +89,6 @@ void USkillSoldierR::AfterLogic()
 		{
 			FTransform spawnTransform( FRotator(0,0, 0), hitResult.Location);
 			Projectile = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileClass, spawnTransform, GetOwner());
-
-			Projectile->Damage += 10 * OwnerCharacterPC->PCSkillManager.SoldierSkillRUpgradeType[ESoldierSkillRUpgradeType::CoolDown];
-			Projectile->AttackRadius += 30 * OwnerCharacterPC->PCSkillManager.SoldierSkillRUpgradeType[ESoldierSkillRUpgradeType::WideRange];
-				
 			Projectile->FinishSpawning(spawnTransform);
 		}
 	}

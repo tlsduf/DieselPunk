@@ -8,10 +8,25 @@
 /*
 *	헤더에					Animator AnimName;
 	Tick함수에				AnimName.Update( DeltaTime );
-	애니메이션 발동 위치에		AnimName.Start();
+	애니메이션 발동 위치에		AnimatorParam param; 설정 후 SetParam(param);
+							AnimName.Start();
 
-*	param setting
-	
+*	param setting template
+
+	AnimatorParam param;
+	param.StartValue = 0.f;
+	param.EndValue = 1.f;
+	param.DurationTime = 1.f;
+	param.AnimType = EAnimType::CubicIn;
+
+	TWeakObjectPtr<AMyClass> thisPtr = this;
+	param.DurationFunc = [thisPtr](float InCurValue)
+	{
+		if(thisPtr.IsValid())
+			thisPtr->MyVar = InCurValue;
+	};
+	HpBarAnimator.SetParam(param);
+	HpBarAnimator.Start();
 */
 // =========================================
 

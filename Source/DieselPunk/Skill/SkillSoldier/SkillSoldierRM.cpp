@@ -22,11 +22,8 @@ void USkillSoldierRM::SkillTriggered()
 {
 	Super::SkillTriggered();
 	
-	// 쿨타임 감소
-	float coolDown = 0.2 * OwnerCharacterPC->PCSkillManager.SoldierMouseRMUpgradeType[ESoldierMouseRMUpgradeType::CoolDown];
-	
 	// 쿨타임 && 스킬플레이타임
-	CoolTimeHandler->SetCoolTime(CoolTime - coolDown);
+	CoolTimeHandler->SetCoolTime(CoolTime);
 	OwnerCharacterPC->SkillActivating[EAbilityType::MouseRM] = true;
 	TWeakObjectPtr<USkillSoldierRM> thisPtr = this;
 	GetWorld()->GetTimerManager().SetTimer(PlaySkillTHandle, [thisPtr]()
@@ -48,7 +45,6 @@ void USkillSoldierRM::SkillTriggered()
 	{
 		FTransform spawnTransform( shotRotation, shotLocation);
 		Projectile = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileClass, spawnTransform, GetOwner());
-		Projectile->Damage += 10 * OwnerCharacterPC->PCSkillManager.SoldierMouseRMUpgradeType[ESoldierMouseRMUpgradeType::DamageUp];
 		Projectile->FinishSpawning(spawnTransform);
 	}
 }

@@ -2,6 +2,13 @@
 
 
 #pragma once
+
+/*
+ * !! 20231124 부로 사용하고있지 않습니다. !!
+ * 
+ */
+
+
 #include <functional>
 
 
