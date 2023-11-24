@@ -65,9 +65,6 @@ void ACharacterBase::Tick(float InDeltaTime)
 	// 체력바 애니메이션 업데이트
 	HpBarAnimator.Update(InDeltaTime);
 	HpBarAfterImageAnimator.Update(InDeltaTime);
-	
-	HpPercent = HpBarAnimator.GetCurValue();
-	HpPercentAfterImage = HpBarAfterImageAnimator.GetCurValue();
 }
 
 // =============================================================
@@ -192,14 +189,36 @@ void ACharacterBase::_UpdateHp(int InCurHp, int InMaxHp)
 	// 퍼센트차이
 	float percentAmount = curPercent - destPercent;
 
-	HpBarAnimator.SetParam(curPercent, destPercent, 0.6f, EAnimType::CubicOut);
+	TWeakObjectPtr<ACharacterBase> thisPtr = this;
+
+	// HPbar 애니메이션
+	AnimatorParam HpBarparam;
+	HpBarparam.StartValue = curPercent;
+	HpBarparam.EndValue = destPercent;
+	HpBarparam.DurationTime = 0.6f;
+	HpBarparam.AnimType = EAnimType::CubicOut;
+	HpBarparam.DurationFunc = [thisPtr](float InCurValue)
+	{
+		if(thisPtr.IsValid())
+			thisPtr->HpPercent = InCurValue;
+	};
+	HpBarAnimator.SetParam(HpBarparam);
 	HpBarAnimator.Start();
 
-	HpBarAfterImageAnimator.SetParam(curPercent, destPercent,
-		(0.f <= percentAmount && percentAmount < 0.2f) ? 0.6f
-				: (0.2f <= percentAmount && percentAmount < 0.4f) ? 0.85f
-				:													1.1f,
-	EAnimType::CubicIn);
+	// HPbar 잔상 애니메이션
+	AnimatorParam HpBarAfterparam;
+	HpBarAfterparam.StartValue = curPercent;
+	HpBarAfterparam.EndValue = destPercent;
+	HpBarAfterparam.DurationTime = (0.f <= percentAmount && percentAmount < 0.2f) ? 0.6f
+								: (0.2f <= percentAmount && percentAmount < 0.4f) ? 0.85f
+								:													1.1f;
+	HpBarAfterparam.AnimType = EAnimType::CubicIn;
+	HpBarAfterparam.DurationFunc = [thisPtr](float InCurValue)
+	{
+		if(thisPtr.IsValid())
+			thisPtr->HpPercentAfterImage = InCurValue;
+	};
+	HpBarAfterImageAnimator.SetParam(HpBarAfterparam);
 	HpBarAfterImageAnimator.Start();
 }
 

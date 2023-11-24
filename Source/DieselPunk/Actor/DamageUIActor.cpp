@@ -78,16 +78,38 @@ void ADamageUIActor::BeginPlay()
 	// 랜덤 목표위치 set
 	XVelocity = GetRandomNumber(-100, 100);
 	YVelocity = GetRandomNumber(-100, 100);
+	
+	TWeakObjectPtr<ADamageUIActor> thisPtr = this;
 
-	// 애니메이터 세팅
-	XYAccelAnimator.SetParam(1.f, 0.f, LifeTime, EAnimType::CubicIn);
-	ZAccelAnimator.SetParam(1.f, 0.f, LifeTime, EAnimType::QuadOut);
-	// 애니메이터 시작
+	// XY축 움직임 애니메이션
+	AnimatorParam XYAccelparam;
+	XYAccelparam.StartValue = 1.f;
+	XYAccelparam.EndValue = 0.f;
+	XYAccelparam.DurationTime = LifeTime;
+	XYAccelparam.AnimType = EAnimType::CubicIn;
+	XYAccelparam.DurationFunc = [thisPtr](float InCurValue)
+	{
+		if(thisPtr.IsValid())
+			thisPtr->XYAccel = InCurValue;
+	};
+	XYAccelAnimator.SetParam(XYAccelparam);
 	XYAccelAnimator.Start();
+
+	// Z축 움직임 애니메이션
+	AnimatorParam ZAccelparam;
+	ZAccelparam.StartValue = 1.f;
+	ZAccelparam.EndValue = 0.f;
+	ZAccelparam.DurationTime = LifeTime;
+	ZAccelparam.AnimType = EAnimType::QuadOut;
+	ZAccelparam.DurationFunc = [thisPtr](float InCurValue)
+	{
+		if(thisPtr.IsValid())
+			thisPtr->ZAccel = InCurValue;
+	};
+	ZAccelAnimator.SetParam(ZAccelparam);
 	ZAccelAnimator.Start();
 
 	// LifeTime 후에 파괴
-	TWeakObjectPtr<ADamageUIActor> thisPtr = this;
 	GetWorld()->GetTimerManager().SetTimer(DestroyTHandle, [thisPtr](){
 			if(thisPtr.IsValid())
 				thisPtr->SelfDestroy();
@@ -100,9 +122,7 @@ void ADamageUIActor::Tick(float InDeltaTime)
 
 	// AccelAnimator 업데이트
 	XYAccelAnimator.Update(InDeltaTime);
-	XYAccel = XYAccelAnimator.GetCurValue();
 	ZAccelAnimator.Update(InDeltaTime);
-	ZAccel = ZAccelAnimator.GetCurValue();
 	
 	// 위치 업데이트
 	FVector currentLocation = GetActorLocation();

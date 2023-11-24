@@ -5,10 +5,23 @@
 
 
 // =============================================================
+// 애니메이터 파람 생성자
+// =============================================================
+AnimatorParam::AnimatorParam()
+	: StartValue( 0.f )
+	, EndValue( 0.f )
+	, DurationTime( 1.f )
+	, AnimType( EAnimType::Linear )
+	, DurationFunc(nullptr)
+{
+	
+}
+
+// =============================================================
 // 생성자
 // =============================================================
 Animator::Animator()
-	: AnimType( EAnimType::Linear )
+	: Param( AnimatorParam() )
 	, StartValue( 0.f )
 	, CurValue( 0.f )
 	, EndValue( 0.f )
@@ -19,15 +32,17 @@ Animator::Animator()
 }
 
 // =============================================================
-// 파라미터 Setter [TODO] 애니메이션이 실행중일때 호출되면 어떻게 되는지? 예외처리를 해야하는지?
+// 파라미터 Setter // 애니메이션이 실행 중이면 세팅하지 않습니다.
 // =============================================================
-void Animator::SetParam(const float inStartValue, const float inEndValue, const float inDurationTime, EAnimType inAnimType)
+void Animator::SetParam(const AnimatorParam& InParam)
 {
-	AnimType = inAnimType;
-	StartValue = inStartValue;
-	EndValue = inEndValue;
-	AccTime = inDurationTime;
-	DurationTime = inDurationTime;
+	if(IsRunning())
+		return;
+	
+	StartValue = InParam.StartValue;
+	EndValue = InParam.EndValue;
+	AccTime = InParam.DurationTime;
+	DurationTime = InParam.DurationTime;
 }
 
 // =============================================================
@@ -37,22 +52,18 @@ void Animator::Update(float InDeltaTime)
 {
 	if ( AccTime >= DurationTime )
 	{
-		CalCurValue(1);
+		CurValue = StartValue + ((EndValue - StartValue) * ApplyEasing(1, Param.AnimType));
 		return;
 	}
 	
 	AccTime += InDeltaTime;
 	
 	const float Time = FMath::Clamp(AccTime / DurationTime, 0.0f, 1.0f);
-	CalCurValue(Time);
-}
+	
+	CurValue = StartValue + ((EndValue - StartValue) * ApplyEasing(Time, Param.AnimType));
 
-// =============================================================
-// 파라미터 값에 따라 CurValue 설정 //inTime 은 0.f ~ 1.f
-// =============================================================
-void Animator::CalCurValue(float inTime)
-{
-	CurValue = StartValue + ((EndValue - StartValue) * ApplyEasing(inTime, AnimType));
+	if(Param.DurationFunc)
+		Param.DurationFunc( CurValue );
 }
 
 // =============================================================
@@ -64,13 +75,20 @@ void Animator::Start()
 }
 
 // =============================================================
-// CurValue 반환
+// 애니메이션 중지
 // =============================================================
-float Animator::GetCurValue()
+void Animator::Stop()
 {
-	return CurValue;
+	AccTime = DurationTime;
 }
 
+// =============================================================
+// 애니메이션이 실행중인가?
+// =============================================================
+bool Animator::IsRunning()
+{
+	return (AccTime != DurationTime);
+}
 
 // =============================================================
 // 시간, 애니메이션 타입에 따라 애니메이팅

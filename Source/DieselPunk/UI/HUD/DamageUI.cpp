@@ -41,8 +41,18 @@ void UDamageUI::OnCreated()
 	InitWidget();
 	
 	// 애니메이터 세팅
-	AlphaAnimator.SetParam(1.f, 0.f, 1.5f, EAnimType::CubicIn);
-	// 애니메이터 시작
+	AnimatorParam param;
+	param.StartValue = 1.f;
+	param.EndValue = 0.f;
+	param.DurationTime = 1.5f;
+	param.AnimType = EAnimType::CubicIn;
+	TWeakObjectPtr<UDamageUI> thisPtr = this;
+	param.DurationFunc = [thisPtr](float InCurValue)
+	{
+		if(thisPtr.IsValid())
+			thisPtr->Alpha = InCurValue;
+	};
+	AlphaAnimator.SetParam(param);
 	AlphaAnimator.Start();
 }
 
@@ -52,7 +62,6 @@ void UDamageUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 	// 데미지 텍스트 알파값 애니메이팅
 	AlphaAnimator.Update(InDeltaTime);
-	Alpha = AlphaAnimator.GetCurValue();
 	FLinearColor linearColor = FLinearColor(GetColorAndOpacity().R, GetColorAndOpacity().G, GetColorAndOpacity().B, Alpha);
 	SetColorAndOpacity(linearColor);
 }
