@@ -144,7 +144,8 @@ public:
 	void SkillCompleted(const EAbilityType inAbilityType);
 	void SkillCanceled(const EAbilityType inAbilityType);
 
-	// 스킬을 실행할 때, 다른 스킬이 작동중인지 확인하는 함수. 다른 스킬이 작동중이면 1 반환
+	// 스킬을 실행할 때, 다른 스킬이 작동중인지 확인하는 함수. 다른 스킬이 작동중이면 1 반환.
+	// 캐릭터마다 다른 로직을 써줘야합니다. ㅠㅠ
 	bool GetOtherSkillActivating(EAbilityType inType);
 
 	// 스킬 쿨타임을 반환합니다. 

@@ -36,9 +36,7 @@ Animator::Animator()
 // =============================================================
 void Animator::SetParam(const AnimatorParam& InParam)
 {
-	if(IsRunning())
-		return;
-	
+	Param = InParam;
 	StartValue = InParam.StartValue;
 	EndValue = InParam.EndValue;
 	AccTime = InParam.DurationTime;
@@ -62,7 +60,7 @@ void Animator::Update(float InDeltaTime)
 	
 	CurValue = StartValue + ((EndValue - StartValue) * ApplyEasing(Time, Param.AnimType));
 
-	if(Param.DurationFunc)
+	if( Param.DurationFunc )
 		Param.DurationFunc( CurValue );
 }
 
@@ -72,22 +70,6 @@ void Animator::Update(float InDeltaTime)
 void Animator::Start()
 {
 	AccTime = 0;
-}
-
-// =============================================================
-// 애니메이션 중지
-// =============================================================
-void Animator::Stop()
-{
-	AccTime = DurationTime;
-}
-
-// =============================================================
-// 애니메이션이 실행중인가?
-// =============================================================
-bool Animator::IsRunning()
-{
-	return (AccTime != DurationTime);
 }
 
 // =============================================================

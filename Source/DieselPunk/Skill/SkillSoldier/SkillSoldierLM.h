@@ -23,12 +23,6 @@ private:
 	
 	UPROPERTY()
 	AProjectileBase *Projectile;
-
-	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
-	UParticleSystem *MuzzleParticles;
-
-	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
-	UParticleSystem *MuzzleParticlesSpecial;
 public:
 
 	bool EBuffOn = false;		//SkillE 활성화상태

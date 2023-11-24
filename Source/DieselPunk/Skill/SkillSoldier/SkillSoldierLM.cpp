@@ -62,15 +62,6 @@ void USkillSoldierLM::SkillTriggered()
 		Projectile = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileClass, spawnTransform, GetOwner());
 		Projectile->Damage += 5 * OwnerCharacterPC->PCSkillManager.SoldierMouseLMUpgradeType[ESoldierMouseLMUpgradeType::DamageUp];
 		Projectile->FinishSpawning(spawnTransform);
-		
-		if (MuzzleParticles)
-			UGameplayStatics::SpawnEmitterAttached(
-				MuzzleParticles,
-				OwnerCharacterPC->GetMesh(),
-				TEXT("Muzzle_01"),
-				FVector(ForceInit),
-				FRotator::ZeroRotator,
-				FVector(0.1) );
 	}
 	// * or if EBuffOn is true
 	if(ProjectileEBuffClass && EBuffOn)
@@ -80,15 +71,6 @@ void USkillSoldierLM::SkillTriggered()
 		Projectile->Damage += 10 * OwnerCharacterPC->PCSkillManager.SoldierSkillEUpgradeType[ESoldierSkillEUpgradeType::DamageUp];;
 		Projectile->FinishSpawning(spawnTransform);
 		--Magazine;
-		
-		if (MuzzleParticlesSpecial)
-			UGameplayStatics::SpawnEmitterAttached(
-				MuzzleParticlesSpecial,
-				OwnerCharacterPC->GetMesh(),
-				TEXT("Muzzle_01"),
-				FVector(ForceInit),
-				FRotator::ZeroRotator,
-				FVector(0.05));
 
 		// 탄창 수 다 소진 시 버프 off
 		if (Magazine == 0)

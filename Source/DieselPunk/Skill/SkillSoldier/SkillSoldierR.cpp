@@ -97,8 +97,6 @@ void USkillSoldierR::AfterLogic()
 				
 			Projectile->FinishSpawning(spawnTransform);
 		}
-		if (PinPointHitEffect)
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), PinPointHitEffect, hitResult.Location);
 	}
 
 	// 화면와이드인

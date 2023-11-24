@@ -21,9 +21,6 @@ public:
 	float EDamage = 50;
 	
 	bool IsE = false;
-
-	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
-	UParticleSystem *PinPointHitEffect;
 	
 	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
 	TSubclassOf<AProjectileBase> ProjectileClass;
