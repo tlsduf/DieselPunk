@@ -139,10 +139,13 @@ void AInteractiveActor::RemoveDelegate(UPrimitiveComponent* InOverlappedComponen
 void AInteractiveActor::task()
 {
 	// 이펙트, 사운드 출력
-	//if (ActionEffect)
+	ActionEffectTransform.Location = ActionEffectTransform.Location + GetActorLocation();
+	ActionEffectTransform.Rotation = ActionEffectTransform.Rotation + GetActorRotation();
 
+	if (N_ActionParticle)
+		UtilEffect::SpawnNiagaraEffect(GetWorld(), N_ActionParticle, ActionEffectTransform);
 	if (ActionParticle)
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ActionParticle, GetActorLocation(), GetActorRotation(), ActionEffectScale);
+		UtilEffect::SpawnParticleEffect(GetWorld(), ActionParticle, ActionEffectTransform);
 	if (ActionSound)
 		UGameplayStatics::PlaySoundAtLocation(this, ActionSound, GetActorLocation());
 	

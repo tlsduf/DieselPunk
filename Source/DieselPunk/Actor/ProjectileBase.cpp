@@ -50,8 +50,13 @@ void AProjectileBase::BeginPlay()
 	SetCapsuleCollisionResponses();
 
 	// Effect
+	ShotEffectTransform.Location = ShotEffectTransform.Location + GetActorLocation();
+	ShotEffectTransform.Rotation = ShotEffectTransform.Rotation + GetActorRotation();
+
+	if (N_ShotEffect)
+		UtilEffect::SpawnNiagaraEffect(GetWorld(), N_ShotEffect, ShotEffectTransform);
 	if (ShotEffect)
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ShotEffect, GetActorLocation(), GetActorRotation(), ShotEffectScale);
+		UtilEffect::SpawnParticleEffect(GetWorld(), ShotEffect, ShotEffectTransform);
 	if (ShotSound)
 		UGameplayStatics::PlaySoundAtLocation(this, ShotSound, GetActorLocation());
 
@@ -90,8 +95,13 @@ void AProjectileBase::Tick(float DeltaTime)
 void AProjectileBase::OneTickTask()
 {
 	// Effect
+	HitEffectFTransform.Location = HitEffectFTransform.Location + GetActorLocation();
+	HitEffectFTransform.Rotation = HitEffectFTransform.Rotation + GetActorRotation();
+
+	if (N_HitEffect)
+		UtilEffect::SpawnNiagaraEffect(GetWorld(), N_HitEffect, HitEffectFTransform);
 	if (HitEffect)
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, GetActorLocation(), GetActorRotation(), HitEffectScale);
+		UtilEffect::SpawnParticleEffect(GetWorld(), HitEffect, HitEffectFTransform);
 	if (HitSound)
 		UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetActorLocation());
 	
@@ -124,8 +134,13 @@ void AProjectileBase::OnHit(UPrimitiveComponent* InHitComp, AActor* InOtherActor
 void AProjectileBase::_OnHit(UPrimitiveComponent* InHitComp, AActor* InOtherActor, UPrimitiveComponent* InOtherComp, FVector InNormalImpulse, const FHitResult& InHitResult)
 {
 	// Effect
+	HitEffectFTransform.Location = HitEffectFTransform.Location + GetActorLocation();
+	HitEffectFTransform.Rotation = HitEffectFTransform.Rotation + GetActorRotation();
+
+	if (N_HitEffect)
+		UtilEffect::SpawnNiagaraEffect(GetWorld(), N_HitEffect, HitEffectFTransform);
 	if (HitEffect)
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, GetActorLocation(), GetActorRotation(), HitEffectScale);
+		UtilEffect::SpawnParticleEffect(GetWorld(), HitEffect, HitEffectFTransform);
 	if (HitSound)
 		UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetActorLocation());
 
@@ -174,8 +189,13 @@ void AProjectileBase::_BeginOverlapEvent(UPrimitiveComponent* InOverlappedCompon
 	bool InbFromSweep, const FHitResult & InSweepResult)
 {
 	// Effect
+	HitEffectFTransform.Location = HitEffectFTransform.Location + GetActorLocation();
+	HitEffectFTransform.Rotation = HitEffectFTransform.Rotation + GetActorRotation();
+
+	if (N_HitEffect)
+		UtilEffect::SpawnNiagaraEffect(GetWorld(), N_HitEffect, HitEffectFTransform);
 	if (HitEffect)
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, GetActorLocation(), GetActorRotation(), HitEffectScale);
+		UtilEffect::SpawnParticleEffect(GetWorld(), HitEffect, HitEffectFTransform);
 	if (HitSound)
 		UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetActorLocation());
 

@@ -101,22 +101,28 @@ public:
 	UPROPERTY(EditAnywhere, Category = "MYDP_Util")
 	bool DebugOnOff = false;
 
+
+	UPROPERTY(EditAnywhere, Category = "MYDP_Effect")
+	class UNiagaraSystem *N_ShotEffect;
 	
 	UPROPERTY(EditAnywhere, Category = "MYDP_Effect")
 	UParticleSystem *ShotEffect;
 
 	UPROPERTY(EditAnywhere, Category = "MYDP_Effect")
-	FVector ShotEffectScale = FVector(1);
+	FEffectTransform ShotEffectTransform = FEffectTransform();
 
 	UPROPERTY(EditAnywhere, Category = "MYDP_Effect")
 	USoundBase *ShotSound;
 	
+
+	UPROPERTY(EditAnywhere, Category = "MYDP_Effect")
+	class UNiagaraSystem *N_HitEffect;
 	
 	UPROPERTY(EditAnywhere, Category = "MYDP_Effect")
 	UParticleSystem *HitEffect;
 
 	UPROPERTY(EditAnywhere, Category = "MYDP_Effect")
-	FVector HitEffectScale = FVector(1);
+	FEffectTransform HitEffectFTransform = FEffectTransform();
 	
 	UPROPERTY(EditAnywhere, Category = "MYDP_Effect")
 	USoundBase *HitSound;

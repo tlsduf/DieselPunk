@@ -37,12 +37,15 @@ protected:
 	
 	UPROPERTY()
 	TWeakObjectPtr< UItemGuideUI > GuideUI;		// 상호작용 UI 포인터
+
+	UPROPERTY(EditAnywhere, Category = "MYDP_Effect")
+	class UNiagaraSystem *N_ActionParticle;
 	
 	UPROPERTY(EditAnywhere, Category = "MYDP_Effect")
 	UParticleSystem *ActionParticle;
 
 	UPROPERTY(EditAnywhere, Category = "MYDP_Effect")
-	FVector ActionEffectScale = FVector(1);
+	FEffectTransform ActionEffectTransform = FEffectTransform();
 	
 	UPROPERTY(EditAnywhere, Category = "MYDP_Effect")
 	USoundBase *ActionSound;
