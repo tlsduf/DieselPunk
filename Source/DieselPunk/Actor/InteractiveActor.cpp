@@ -18,7 +18,7 @@
 AInteractiveActor::AInteractiveActor()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	// 오버랩 캡슐 컴포넌트
 	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
@@ -39,9 +39,6 @@ AInteractiveActor::AInteractiveActor()
 		WidgetComp->SetSimulatePhysics( false );
 		WidgetComp->SetWidgetSpace( EWidgetSpace::Screen );
 	}
-
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
 }
 
 // =============================================================

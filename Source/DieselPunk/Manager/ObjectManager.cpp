@@ -1,12 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ObjectManager.h"
-
 #include "../Character/CharacterPc.h"
 
 #include <GameFramework/PlayerController.h>
-
-#include "Components/CapsuleComponent.h"
+#include <Components/CapsuleComponent.h>
 
 Singleton_Defintion(FObjectManager)
 

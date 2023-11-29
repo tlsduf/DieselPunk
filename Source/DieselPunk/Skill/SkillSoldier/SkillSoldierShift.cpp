@@ -5,11 +5,9 @@
 #include "../../Animation/SoldierAnimInstance.h"
 #include "../../Handler/CoolTimeHandler.h"
 
-#include <GameFramework/Character.h>
 #include <GameFramework/CharacterMovementComponent.h>
 #include <Components/SkeletalMeshComponent.h>
-#include <GameFramework/PlayerController.h>
-#include <TimerManager.h>
+
 
 USkillSoldierShift::USkillSoldierShift() : Super()
 {

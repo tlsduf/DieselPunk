@@ -5,8 +5,6 @@
 #include "../UI/HUD/EnemyStatusUI.h"
 
 #include <Components/StaticMeshComponent.h>
-#include <Kismet/GameplayStatics.h>
-#include <Particles/ParticleSystemComponent.h>
 #include <Components/WidgetComponent.h>
 #include <GameFramework/CharacterMovementComponent.h>
 

@@ -3,6 +3,7 @@
 #include "BTService_Update_Enemy.h"
 #include "..\Logic\NPCAIController.h"
 #include "../Character/CharacterNPC.h"
+#include "../Manager/ObjectManager.h"
 
 #include <Components/CapsuleComponent.h>
 #include <BehaviorTree/BlackboardComponent.h>
@@ -112,20 +113,17 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
 // =============================================================
 FVector UBTService_Update_Enemy::GetNexusLocation()
 {
-    FVector returnVector = FVector::ZeroVector;
-
-    TArray<AActor*> OutActors;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacterNPC::StaticClass(), OutActors);
-    for (AActor* a : OutActors)
+    int nexusID = FObjectManager::GetInstance()->FindActorByPredicate([](AActor* InActor)
     {
-        if(Cast<ACharacterNPC>(a)->NPCType == ENPCType::Alliance)
-            continue;
+        if(ACharacterNPC* thisNPC = Cast<ACharacterNPC>(InActor))
+            if(thisNPC->NPCType == ENPCType::Nexus)
+                return true;
+        
+        return false;
+    });
 
-        if(Cast<ACharacterNPC>(a)->NPCType == ENPCType::Enemy)
-            continue;
-
-        returnVector = Cast<ACharacterNPC>(a)->GetActorLocation();
-    }
-
-    return returnVector;
+    if(nexusID == FObjectManager::GetInstance()->INVALID_OBJECTID)
+        return FVector::ZeroVector;
+    
+    return FObjectManager::GetInstance()->FindActor(nexusID)->GetActorLocation();
 }

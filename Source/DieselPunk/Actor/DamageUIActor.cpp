@@ -10,6 +10,9 @@
 // Sets default values
 ADamageUIActor::ADamageUIActor()
 {
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
+	
 	WidgetComp = CreateDefaultSubobject< UWidgetComponent >( TEXT( "StatusUI" ) );
 	if ( WidgetComp )
 	{
@@ -21,9 +24,6 @@ ADamageUIActor::ADamageUIActor()
 	}
 
 	SetRootComponent(WidgetComp);
-	
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
 }
 
 // 데미지UI 위젯을 생성한다.
@@ -46,11 +46,10 @@ void ADamageUIActor::CreateDamageUI()
 		if ( userWidgetBase )
 			userWidgetBase->OnCreated();
 	}
-	
 	UDamageUI* myWidget = Cast<UDamageUI>(userWidget);
     if(myWidget)
     	myWidget->RemoveFromRoot();
-    		
+	
     DamageUI = myWidget;
 	
 	if ( !WidgetComp || !DamageUI.IsValid() )

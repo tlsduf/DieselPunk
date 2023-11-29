@@ -2,17 +2,15 @@
 
 #include "SkillSpawnTurret.h"
 #include "../../Manager/ObjectManager.h"
+#include "../../Manager/DatatableManager.h"
+#include "../../Data/CharacterDataTable.h"
 #include "../../Character/CharacterTurret.h"
 
 #include <DrawDebugHelpers.h>
 
-#include "DieselPunk/Data/CharacterDataTable.h"
-#include "DieselPunk/Manager/DatatableManager.h"
-
-
 USkillSpawnTurret::USkillSpawnTurret()
 {
-	PrimaryComponentTick.bCanEverTick = true; // 일단 Tick은 OFF 해두었습니다.
+	PrimaryComponentTick.bCanEverTick = false; // 일단 Tick은 OFF 해두었습니다.
 }
 
 void USkillSpawnTurret::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

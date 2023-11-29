@@ -14,6 +14,8 @@ class DIESELPUNK_API UHitscanFire : public USkillBase
 {
 	GENERATED_BODY()
 
+	UHitscanFire();
+	
 public:
 	virtual void BeginPlay() override;
 
@@ -32,6 +34,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
 	UParticleSystem *HitParticles;
 
+	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
+	FEffectTransform HitEffectFTransform = FEffectTransform();
+	
 public:
 	virtual void AbilityStart() override;
 };

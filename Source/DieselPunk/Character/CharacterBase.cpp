@@ -19,6 +19,9 @@
 // =============================================================
 ACharacterBase::ACharacterBase()
 {
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
+	
 	WidgetComp = CreateDefaultSubobject< UWidgetComponent >( TEXT( "StatusUI" ) );
 	if ( WidgetComp )
 	{
@@ -28,9 +31,6 @@ ACharacterBase::ACharacterBase()
 		WidgetComp->SetSimulatePhysics( false );
 		WidgetComp->SetWidgetSpace( EWidgetSpace::Screen );
 	}
-	
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
 }
 
 

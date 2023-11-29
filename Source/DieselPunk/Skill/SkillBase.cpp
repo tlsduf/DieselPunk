@@ -10,7 +10,7 @@
 // Sets default values for this component's properties
 USkillBase::USkillBase()
 {
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
 // Called when the game starts

@@ -10,7 +10,7 @@
 
 UPlayerSkill::UPlayerSkill() : Super()
 {
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
 void UPlayerSkill::BeginPlay()

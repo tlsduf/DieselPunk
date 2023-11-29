@@ -7,7 +7,7 @@
 #include "../../Handler/CoolTimeHandler.h"
 
 #include <Components/SkeletalMeshComponent.h>
-#include <Kismet/GameplayStatics.h>
+
 
 USkillSoldierE::USkillSoldierE() : Super()
 {
@@ -34,18 +34,10 @@ void USkillSoldierE::SkillTriggered()
 			soldierLM->Magazine = 5;
 			soldierLM->CoolTime = 0.2;
 		}
-	
-	//이펙트 
+
+	//이펙트
 	if (BuffEffect)
-	{
-		UGameplayStatics::SpawnEmitterAttached(
-			BuffEffect,
-			OwnerCharacterPC->GetMesh(),
-			TEXT("pelvis"),
-			FVector(ForceInit),
-			FRotator::ZeroRotator,
-			FVector(1));
-	}
+		UtilEffect::SpawnParticleEffectAttached(BuffEffect, OwnerCharacterPC->GetRootComponent());
 	
 	//애니메이션 재생?
 	if(USoldierAnimInstance* animInst = Cast<USoldierAnimInstance>(OwnerCharacterPC->GetMesh()->GetAnimInstance()))	

@@ -3,7 +3,8 @@
 #include "BTService_Update_Turret.h"
 #include "..\Logic\NPCAIController.h"
 #include "../Character/CharacterNPC.h"
-#include "DieselPunk/Animation/TurretAnimInstace.h"
+#include "../Animation/TurretAnimInstace.h"
+#include "../Manager/ObjectManager.h"
 
 #include <Components/CapsuleComponent.h>
 #include <BehaviorTree/BlackboardComponent.h>
@@ -95,27 +96,28 @@ void UBTService_Update_Turret::TickNode(UBehaviorTreeComponent &OwnerComp, uint8
 // =============================================================
 ACharacterNPC* UBTService_Update_Turret::SearchNearestEnemy(ACharacterNPC* inThisCharacter)
 {
-    ACharacterNPC* nearestActor = nullptr;
-    
-    TArray<AActor*> OutActors;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacterNPC::StaticClass(), OutActors);
-    float minDistance = FLT_MAX;
-    for (AActor* a : OutActors)
+    TArray<int> OutActors;
+    FObjectManager::GetInstance()->FindActorArrayByPredicate(OutActors, [](AActor* InActor)
     {
-        if(Cast<ACharacterNPC>(a)->NPCType == ENPCType::Alliance)
-            continue;
-
-        if(Cast<ACharacterNPC>(a)->NPCType == ENPCType::Nexus)
-            continue;
+        if(ACharacterNPC* thisNPC = Cast<ACharacterNPC>(InActor))
+            if(thisNPC->NPCType == ENPCType::Enemy)
+                return true;
         
-        float distance = FVector::Dist(Cast<ACharacterNPC>(a)->GetActorLocation(), inThisCharacter->GetActorLocation());
+        return false;
+    });
+
+    ACharacterNPC* nearestActor = nullptr;
+    float minDistance = FLT_MAX;
+    for( auto It : OutActors)
+    {
+        float distance = FVector::Dist(Cast<ACharacterNPC>(FObjectManager::GetInstance()->FindActor(It))->GetActorLocation(), inThisCharacter->GetActorLocation());
         if ( minDistance < distance )
             continue;
         
         minDistance = distance;
-        nearestActor = Cast<ACharacterNPC>(a);
+        nearestActor = Cast<ACharacterNPC>(FObjectManager::GetInstance()->FindActor(It));
     }
-    
+
     return nearestActor;
 }
 

@@ -37,13 +37,13 @@ void USkillSoldierLM::SkillTriggered()
 	OwnerController->GetPlayerViewPoint(lineTraceLocation, lineTraceRotation);
 	
 	FVector endLocation = lineTraceLocation + lineTraceRotation.Vector() * 10000;
-	//FHitResult hit;
-	//bool Hit = GetWorld()->LineTraceSingleByChannel(hit, lineTraceLocation, end, ECollisionChannel::ECC_GameTraceChannel1);	//라인 트레이스 
+	FHitResult hit;
+	bool Hit = GetWorld()->LineTraceSingleByChannel(hit, lineTraceLocation, endLocation, ECollisionChannel::ECC_GameTraceChannel1);	//라인 트레이스 
 
 	// Muzzle Location by BoneName
 	FVector shotLocation =OwnerCharacterPC->GetMesh()->GetSocketLocation("Muzzle_01");
-	//FRotator shotRotation = (Hit ? hit.Location - shotLocation : end - shotLocation).Rotation();	//트레이스 히트된 위치로 발사
-	FRotator shotRotation = (endLocation - shotLocation).Rotation();
+	FRotator shotRotation = (Hit ? hit.Location - shotLocation : endLocation - shotLocation).Rotation();	//트레이스 히트된 위치로 발사
+	//FRotator shotRotation = (endLocation - shotLocation).Rotation();	//고정된 위치로 발사
 
 	//===========================================
 	// * MainAction 1 // 반동 애니메이션

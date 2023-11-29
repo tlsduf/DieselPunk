@@ -6,6 +6,11 @@
 
 #include <Kismet/GameplayStatics.h>
 
+UHitscanFire::UHitscanFire()
+{
+	PrimaryComponentTick.bCanEverTick = false; // 일단 Tick은 OFF 해두었습니다.
+}
+
 void UHitscanFire::BeginPlay()
 {
 	Super::BeginPlay();
@@ -29,7 +34,8 @@ void UHitscanFire::AbilityStart()
 	// 데미지 정보 전달
 	if (hitActor != nullptr && hitActor != ownerPawn)
 		UGameplayStatics::ApplyDamage(hitActor, Damage, OwnerController, ownerPawn, nullptr);
-	
+
+	HitEffectFTransform.Location = hit.Location;
 	if (HitParticles)
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitParticles, hit.Location);
+		UtilEffect::SpawnParticleEffect(GetWorld(), HitParticles, HitEffectFTransform);
 }

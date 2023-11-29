@@ -16,6 +16,8 @@ class DIESELPUNK_API UMeleeAttack : public USkillBase
 {
 	GENERATED_BODY()
 
+	UMeleeAttack();
+	
 public:
 	virtual void BeginPlay() override;
 

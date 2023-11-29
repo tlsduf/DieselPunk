@@ -41,4 +41,30 @@ namespace UtilPath
 	{
 		return FString::Printf(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/DieselPunk/UI/Widgets/%s.%s_C'"), InUIName, InUIName);
 	}
+
+	/*template<typename T>
+	T* CreateUI( const TCHAR* InPath )
+	{
+		FString path = GetUIPath( InPath );
+		UClass* widgetClass = ConstructorHelpersInternal::FindOrLoadClass( path, UUserWidget::StaticClass() );
+		if ( !widgetClass )
+		{
+			return nullptr;
+		}
+
+		UUserWidget* userWidget = CreateWidget<UUserWidget>( GetWorld(), widgetClass );
+		if ( userWidget )
+		{
+			userWidget->AddToRoot();
+
+			UUserWidgetBase* userWidgetBase = Cast<UUserWidgetBase>( userWidget );
+			if ( userWidgetBase )
+				userWidgetBase->OnCreated();
+		}
+		T* myWidget = Cast<T>(userWidget);
+		if(myWidget)
+			myWidget->RemoveFromRoot();
+		
+		return myWidget;
+	}*/
 }
