@@ -26,13 +26,16 @@ void FNavigationManager::Initialize()
 	TArray<int32> loadData;
 	if(FFstreamManager::ReadDataBinaryByInteger<int32>(fileName, loadData))
 	{
-		for(int i = 0; i < loadData.Num(); i += 3)
+		for(int i = 0; i < loadData.Num(); i += (3 + Character_MaxHalfGrid))
 		{
 			uint8 value = loadData[i + 2];
 			FDpNavNode& node = NavMap.FindOrAdd(loadData[i]).FindOrAdd(loadData[i + 1]);
 			node.X = loadData[i];
 			node.Y = loadData[i + 1];
 			node.NavNodeState = static_cast<ENavNodeState>(loadData[i + 2]);
+			node.IsGoNodeState.SetNum(Character_MaxHalfGrid);
+			for(int j = 0; j < Character_MaxHalfGrid; ++j)
+				node.IsGoNodeState[j] = static_cast<ENavNodeState>(loadData[i + 3 + j]);
 		}
 	}
 }
@@ -50,10 +53,10 @@ void FNavigationManager::AddNavNode(int32 InX, int32 InY, FDpNavNode InNavNode)
 	FDpNavNode& navNode = NavMap.FindOrAdd(InX).FindOrAdd(InY);
 	navNode.X = InNavNode.X;
 	navNode.Y = InNavNode.Y;
+	if(navNode.IsGoNodeState.Num() != Character_MaxHalfGrid)
+		navNode.IsGoNodeState.SetNum(Character_MaxHalfGrid);
 	if(navNode.NavNodeState < InNavNode.NavNodeState)
-	{
 		navNode.NavNodeState = InNavNode.NavNodeState;
-	}
 }
 
 //리스트 안에 존재 여부 반환
@@ -127,8 +130,6 @@ void FNavigationManager::BuildNavMap(TWeakObjectPtr<AFloorStaticMeshActor> InFlo
 				//FloorStaticMeshActor와 충돌하지 않는다면 continue
 				if(find == nullptr)
 					continue;
-
-				
 				
 				FDpNavNode navNode;
 				navNode.X = x;
@@ -149,6 +150,33 @@ void FNavigationManager::BuildNavMap(TWeakObjectPtr<AFloorStaticMeshActor> InFlo
 		}
 	}
 
+	//못지나 가는 노드가 주위에 있는 지 세팅
+	for(TPair<int32, TMap<int32, FDpNavNode>>& nodes : NavMap)
+	{
+		for(TPair<int32, FDpNavNode>& node : nodes.Value)
+		{
+			if(node.Value.NavNodeState == ENavNodeState::BlockedByNonBreakable)
+			{
+				//못지나 가는 노드를 생성 시 주위 노드에 알림
+				for(int i = 0; i < Character_MaxHalfGrid; ++i)
+				{
+					for(int j = -i; j <= i; ++j)
+					{
+						for(int k = -i; k <= i; ++k)
+						{
+							if(!IsInCircle(0, 0, i, j, k))
+								continue;
+							FDpNavNode& otherNavNode = NavMap.FindOrAdd(node.Value.X + j).FindOrAdd(node.Value.Y + k);
+							if(otherNavNode.IsGoNodeState.Num() != Character_MaxHalfGrid)
+								otherNavNode.IsGoNodeState.SetNum(Character_MaxHalfGrid);
+							otherNavNode.IsGoNodeState[i] = ENavNodeState::BlockedByNonBreakable;
+						}
+					}
+				}
+			}
+		}
+	}
+
 	//파일 출력을 위한 데이터 정리
 	TArray<int32> outArray;
 	for(const TPair<int32, TMap<int32, FDpNavNode>>& nodes : NavMap)
@@ -158,6 +186,8 @@ void FNavigationManager::BuildNavMap(TWeakObjectPtr<AFloorStaticMeshActor> InFlo
 			outArray.Add(node.Value.X);
 			outArray.Add(node.Value.Y);
 			outArray.Add(static_cast<int32>(node.Value.NavNodeState));
+			for(int i = 0; i < Character_MaxHalfGrid; ++i)
+				outArray.Add(static_cast<int32>(node.Value.IsGoNodeState[i]));
 		}
 	}
 	
@@ -182,7 +212,6 @@ void FNavigationManager::BuildNavMapLocation()
 	{
 		for(TPair<int32, FDpNavNode>& node : nodes.Value)
 		{
-			
 			FHitResult hit;
 			FVector location;
 			location.X = static_cast<double>(node.Value.X * GridSize + GridSize * 0.5);
@@ -197,7 +226,6 @@ void FNavigationManager::BuildNavMapLocation()
 				node.Value.Location = hit.Location;
 		}
 	}
-	//DrawDebugNavMap();
 }
 
 //그래프 생성
@@ -246,7 +274,7 @@ void FNavigationManager::BuildNavGraph()
 }
 
 //최단 경로 찾기
-bool FNavigationManager::_PathFinding(int32 InStartX, int32 InStartY, int32 InEndX, int32 InEndY)
+bool FNavigationManager::_PathFinding(int32 InStartX, int32 InStartY, int32 InEndX, int32 InEndY, const int32 InCharacterGridSize)
 {
 	if(!OpenList.IsEmpty())
 		OpenList.CreateIterator().RemoveCurrent();
@@ -262,6 +290,8 @@ bool FNavigationManager::_PathFinding(int32 InStartX, int32 InStartY, int32 InEn
 			NavMap[idx.Key][idx.Value].Parent = &NavMap[InStartX][InStartY];
 			return true;
 		}
+		if(NavMap[idx.Key][idx.Value].IsGoNodeState[InCharacterGridSize - 1] == ENavNodeState::BlockedByNonBreakable)
+			continue;
 
 		//목적지 노드가 아니라면 OpenList에 보관
 		if(!IsInList(idx.Key, idx.Value, OpenList) && !IsInList(idx.Key, idx.Value, CloseList))
@@ -290,7 +320,7 @@ bool FNavigationManager::_PathFinding(int32 InStartX, int32 InStartY, int32 InEn
 		return distStartCurrentLhs + distCurrentEndLhs <= distStartCurrentRhs + distCurrentEndRhs;
 	});
 
-	return _PathFinding(OpenList[0].Key, OpenList[0].Value, InEndX, InEndY);
+	return _PathFinding(OpenList[0].Key, OpenList[0].Value, InEndX, InEndY, InCharacterGridSize);
 }
 
 //두 인덱스 사이 거리 측정
@@ -317,6 +347,33 @@ TArray<FDpNavNode*> FNavigationManager::CreatePath(int32 InStartX, int32 InStart
 	}
 
 	return outPath;
+}
+
+//포탑이 설치될 때 IsGoNodeState갱신
+void FNavigationManager::SetBlockedByBreakableIsGoNodeState(int32 InX, int32 InY)
+{
+	for(int i = 0; i < Character_MaxHalfGrid; ++i)
+	{
+		for(int j = -i; j <= i; ++j)
+		{
+			for(int k = -i; k <= i; ++k)
+			{
+				if(!IsInCircle(0, 0, i, j, k))
+					continue;
+				
+				if(NavMap.Find(InX) != nullptr && NavMap.Find(InX)->Find(InY) != nullptr)
+				{
+					if(NavMap.Find(InX)->Find(InY)->IsGoNodeState[i] == ENavNodeState::Passable)
+						NavMap.Find(InX)->Find(InY)->IsGoNodeState[i] = ENavNodeState::BlockedByBreakable;
+				}
+			}			
+		}
+	}
+}
+
+bool FNavigationManager::IsInCircle(double InMiddleX, double InMiddleY, double InRadius, double InX, double InY)
+{
+	return DistanceIndex(InMiddleX, InMiddleY, InX, InY) <= InRadius;
 }
 
 void FNavigationManager::DrawDebugNavNode(int32 InX, int32 InY)
@@ -346,6 +403,37 @@ void FNavigationManager::DrawDebugNavNode(int32 InX, int32 InY)
 			color = FColor::Yellow;
 					
 		DrawDebugLine(world, locations[i], locations[(i + 1) % locations.Num()], color, true, -1, 0, 2);
+	}
+}
+
+void FNavigationManager::DrawNonPassableNavNode(int32 InGridSize)
+{
+	if(InGridSize > Character_MaxHalfGrid || InGridSize < 0)
+		return;
+	
+	UWorld* world = FObjectManager::GetInstance()->GetWorld();
+	if(world == nullptr)
+		return;
+	
+	for(const TPair<int32, TMap<int32, FDpNavNode>>& nodes : NavMap)
+	{
+		for(const TPair<int32, FDpNavNode>& node : nodes.Value)
+		{
+			TArray<FVector> locations;
+			locations.Reserve(4);
+			locations.Add(node.Value.Location - FVector(GridSize * 0.5, -GridSize * 0.5, 0.0));
+			locations.Add(node.Value.Location - FVector(GridSize * 0.5, GridSize * 0.5, 0.0));
+			locations.Add(node.Value.Location - FVector(-GridSize * 0.5, GridSize * 0.5, 0.0));
+			locations.Add(node.Value.Location - FVector(-GridSize * 0.5, -GridSize * 0.5, 0.0));
+
+			FColor color = FColor::Green;
+			if(node.Value.IsGoNodeState[InGridSize - 1] == ENavNodeState::BlockedByNonBreakable)
+				color = FColor::Red;
+			else
+				continue;
+			for(int i = 0; i < locations.Num(); ++i)
+				DrawDebugLine(world, locations[i], locations[(i + 1) % locations.Num()], color, true, -1, 0, 2);
+		}
 	}
 }
 
@@ -385,8 +473,13 @@ void FNavigationManager::DrawDebugNavMap()
 }
 
 //A-Star알고리즘을 통해 InStartLocation에서 InEndLocation까지의 최단거리 반환
-TArray<FVector> FNavigationManager::PathFinding(const FVector& InStartLocation, const FVector& InEndLocation)
+TArray<FVector> FNavigationManager::PathFinding(const FVector& InStartLocation, const FVector& InEndLocation, const int32 InCharacterGridSize)
 {
+	TArray<FVector> outPath;
+	
+	if(InCharacterGridSize > Character_MaxHalfGrid || InCharacterGridSize < 0)
+		return outPath;
+	
 	int32 startX = static_cast<int32>(InStartLocation.X) / GridSize;
 	int32 startY = static_cast<int32>(InStartLocation.Y) / GridSize;
 	int32 endX = static_cast<int32>(InEndLocation.X) / GridSize;
@@ -397,9 +490,7 @@ TArray<FVector> FNavigationManager::PathFinding(const FVector& InStartLocation, 
 
 	StartX = startX;
 	StartY = startY;
-
-	TArray<FVector> outPath;
-
+	
 	//이미 도착한 경우
 	if(startX == endX && startY == endY)
 		return outPath;
@@ -413,7 +504,7 @@ TArray<FVector> FNavigationManager::PathFinding(const FVector& InStartLocation, 
 		return outPath;
 
 	//길찾기 수행
-	if(!_PathFinding(startX, startY, endX, endY))
+	if(!_PathFinding(startX, startY, endX, endY, InCharacterGridSize))
 		return outPath;
 
 	//경로 생성
@@ -523,6 +614,7 @@ bool FNavigationManager::PlacementTurret(FVector& InOutLocation, int32 InGridSiz
 		{
 			NavMap[x][y].NavNodeState = ENavNodeState::BlockedByBreakable;
 			OutIndex.Add({x, y});
+			//SetBlockedByBreakableIsGoNodeState(x, y);
 			DrawDebugNavNode(x, y);
 		}
 

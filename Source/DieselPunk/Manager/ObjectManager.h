@@ -42,6 +42,7 @@ public:
 	constexpr static int32 INVALID_UCLASS = -9999;			//생성 시 UCLASS의 오류
 	constexpr static int32 OBJECT_SPAWN_FAILED = -9998;		//오브젝트 생성 실패
 	constexpr static int32 INVALID_OBJECTID = -9997;		//잘못된 오브젝트 ID
+	constexpr static int32 OBJECT_ALREADY_SPAWNED = -9996;	//이미 생성된 오브젝트
 private:
 	void Initialize();
 	void Release();
@@ -54,13 +55,16 @@ public:
 	void	DestroyActor(AActor* InActor);
 	
 	//오브젝트ID를 받아 액터를 파괴합니다.
-	void	DestroyActor(int64 InObjectId);
+	void	DestroyActor(int32 InObjectId);
 
 	//플레이어를 세팅합니다.
 	void	SetPlayer(ACharacterPC* InPlayer);
 
 	//반환받은 Id값이 정상인지 확인합니다.
-	static bool	IdIsValid(int32 InId);
+	static bool	IsValidId(int32 InId);
+
+	//ObjectManager를 통해 생성하지 않은(미리 월드에 배치해놓은) 액터를 추가합니다.
+	int32	AddActor(AActor* InActor);
 	
 private:
 	//캐릭터 베이스의 오브젝트 ID를 설정합니다.
@@ -76,7 +80,7 @@ public:
 	UWorld* GetWorld();
 	
 	//오브젝트ID를 받아 액터를 찾습니다.
-	AActor* FindActor(int64 InObjectId);
+	AActor* FindActor(int32 InObjectId);
 
 	//액터를 찾는 함수포인터를 받아 액터의 Id를 찾습니다.
 	int32	FindActorByPredicate(const std::function<bool(AActor*)>& InPredicate);

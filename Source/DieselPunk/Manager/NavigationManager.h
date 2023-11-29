@@ -14,10 +14,11 @@ struct FDpBox
 
 struct FDpNavNode
 {
-	int32			X = 0, Y = 0;
-	FVector			Location = FVector::ZeroVector;
-	ENavNodeState	NavNodeState = ENavNodeState::Passable;
-	FDpNavNode*		Parent = nullptr;
+	int32					X = 0, Y = 0;
+	FVector					Location = FVector::ZeroVector;
+	ENavNodeState			NavNodeState = ENavNodeState::Passable;
+	TArray<ENavNodeState>	IsGoNodeState;
+	FDpNavNode*				Parent = nullptr;
 	TArray<TPair<int32, int32>> Road;
 };
 
@@ -34,6 +35,7 @@ private:
 public:
 	//그리드 사이즈
 	static constexpr int32 GridSize = 100;
+	static constexpr int32 Character_MaxHalfGrid = 3;
 
 private:
 	void Initialize();
@@ -52,7 +54,7 @@ private:
 	void BuildNavGraph();
 
 	//최단 경로 찾기
-	bool _PathFinding(int32 InStartX, int32 InStartY, int32 InEndX, int32 InEndY);
+	bool _PathFinding(int32 InStartX, int32 InStartY, int32 InEndX, int32 InEndY, const int32 InCharacterGridSize);
 
 	//두 인덱스 사이 거리 측정
 	static double DistanceIndex(double InAx, double InAy, double InBx, double InBy);
@@ -60,17 +62,22 @@ private:
 	//경로 생성
 	TArray<FDpNavNode*> CreatePath(int32 InStartX, int32 InStartY, int32 InEndX, int32 InEndY);
 
-	void DrawDebugNavNode(int32 InX, int32 InY);
+	//포탑이 설치될 때 IsGoNodeState갱신
+	void SetBlockedByBreakableIsGoNodeState(int32 InX, int32 InY);
 
+	//원 안에 있는 지 판별
+	bool IsInCircle(double InMiddleX, double InMiddleY, double InRadius, double InX, double InY);
 public:
 	//디버그용 네비 맵 Draw 
 	void DrawDebugNavMap();
+	void DrawDebugNavNode(int32 InX, int32 InY);
+	void DrawNonPassableNavNode(int32 InGridSize);
 	
 	//네비 노드 생성
 	void BuildNavMap(TWeakObjectPtr<AFloorStaticMeshActor> InFloorStaticMeshActor, TArray<FDpBox> InBoxes);
 	
 	//A-Star알고리즘을 통해 InStartLocation에서 InEndLocation까지의 최단거리 반환
-	TArray<FVector> PathFinding(const FVector& InStartLocation, const FVector& InEndLocation);
+	TArray<FVector> PathFinding(const FVector& InStartLocation, const FVector& InEndLocation, const int32 InCharacterGridSize);
 
 	//터렛 설치 가능한지 검색
 	bool IsPlacementTurret(FVector InLocation, int32 InGridSize);

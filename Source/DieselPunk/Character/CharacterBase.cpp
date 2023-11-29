@@ -3,7 +3,8 @@
 
 #include "CharacterBase.h"
 #include "../Actor/DamageUIActor.h"
-#include "DieselPunk/Core/DpGameMode.h"
+#include "../Core/DpGameMode.h"
+#include "../Manager/ObjectManager.h"
 
 #include <Components/WidgetComponent.h>
 #include <Components/StaticMeshComponent.h>
@@ -40,6 +41,9 @@ ACharacterBase::ACharacterBase()
 void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if(ObjectId == -1)
+		FObjectManager::GetInstance()->AddActor(this);
 
 	CreateStatusUI();
 	

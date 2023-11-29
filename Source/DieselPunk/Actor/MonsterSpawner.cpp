@@ -92,7 +92,7 @@ void AMonsterSpawner::Tick(float DeltaTime)
 			int32 id = FObjectManager::GetInstance()->CreateActor<ACharacterNPC>(classInfo, spawnParam);
 
 			//몬스터 생성 검증
-			if(!FObjectManager::IdIsValid(id))
+			if(!FObjectManager::IsValidId(id))
 				LOG_SCREEN(FColor::Red, TEXT("스포너: %s에서 몬스터를 생성하지 못했습니다."), *SpawnerName)
 			else
 				SpawnMonsterId.Add(id);

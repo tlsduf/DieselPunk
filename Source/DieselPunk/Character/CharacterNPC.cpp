@@ -3,6 +3,7 @@
 #include "CharacterNPC.h"
 #include "../Skill/SkillBase.h"
 #include "../UI/HUD/EnemyStatusUI.h"
+#include "../Manager/NavigationManager.h"
 
 #include <Components/StaticMeshComponent.h>
 #include <Components/WidgetComponent.h>
@@ -155,4 +156,10 @@ void ACharacterNPC::DoProjectileAttack()
 {
 	if(MeleeAttack != nullptr)
 		ProjectileAttack->AbilityStart();
+}
+
+bool ACharacterNPC::FindShortestPath(const FVector& InEndLocation)
+{
+	ShortestPath = FNavigationManager::GetInstance()->PathFinding(GetActorLocation(), InEndLocation, GridSize);
+	return !ShortestPath.IsEmpty();
 }

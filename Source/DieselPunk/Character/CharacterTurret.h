@@ -16,10 +16,6 @@ class DIESELPUNK_API ACharacterTurret : public ACharacterNPC
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UHousingActorComponent* HousingActorComponent;
-
-	//포탑의 사이즈입니다. 1그리드 = 100입니다.
-	UPROPERTY(EditDefaultsOnly, Category="MYDP_Setting", meta=(AllowPrivateAccess="true"))
-	int32 GridSize = 1;
 	
 	//강조용 머터리얼
 	TWeakObjectPtr<UMaterialInterface> HousingMaterial;

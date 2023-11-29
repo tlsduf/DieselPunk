@@ -59,7 +59,7 @@ void FObjectManager::DestroyActor(AActor* InActor)
 }
 
 //오브젝트ID를 받아 액터를 파괴합니다.
-void FObjectManager::DestroyActor(int64 InObjectId)
+void FObjectManager::DestroyActor(int32 InObjectId)
 {
 	//넘겨받은 ObjectID로 액터를 찾습니다.
 	TWeakObjectPtr<AActor>* actorPtr = Objects.Find(InObjectId);
@@ -92,12 +92,42 @@ void FObjectManager::SetPlayer(ACharacterPC* InPlayer)
 }
 
 //반환받은 Id값이 정상인지 확인합니다.
-bool FObjectManager::IdIsValid(int32 InId)
+bool FObjectManager::IsValidId(int32 InId)
 {
-	if((InId == INVALID_UCLASS) || (InId == INVALID_UCLASS) || (InId == OBJECT_SPAWN_FAILED))
+	if((InId == INVALID_UCLASS) || (InId == INVALID_OBJECTID) || (InId == OBJECT_SPAWN_FAILED) || (InId == OBJECT_ALREADY_SPAWNED))
 		return false;
 
 	return true;
+}
+
+int32 FObjectManager::AddActor(AActor* InActor)
+{
+	if(InActor == nullptr)
+		return INVALID_OBJECTID;
+
+	//이미 스폰되어 있는지 검사
+	TWeakObjectPtr<AActor> actor = nullptr;
+	for(const TPair<int32, TWeakObjectPtr<AActor>>& object : Objects)
+	{
+		if(object.Value.IsValid() || object.Value.Get() == InActor)
+			actor = object.Value;
+	}
+	
+	if(actor != nullptr)
+	{
+		TWeakObjectPtr<ACharacterBase> character = Cast<ACharacterBase>(actor);
+		if(character != nullptr)
+			return character->GetObjectId();
+		return OBJECT_ALREADY_SPAWNED;
+	}
+	
+	//오브젝트ID 등록
+	int32 objId = FObjectIdGenerator::GenerateID();
+	SetObjectIdAtCharacterBase(InActor, objId);
+
+	Objects.Add(objId, InActor);
+	
+	return objId;
 }
 
 //캐릭터 베이스의 오브젝트 ID를 설정합니다.
@@ -156,7 +186,7 @@ UWorld* FObjectManager::GetWorld()
 }
 
 //오브젝트ID를 받아 액터를 찾습니다.
-AActor* FObjectManager::FindActor(int64 InObjectId)
+AActor* FObjectManager::FindActor(int32 InObjectId)
 {
 	TWeakObjectPtr<AActor>* findActor = Objects.Find(InObjectId);
 	

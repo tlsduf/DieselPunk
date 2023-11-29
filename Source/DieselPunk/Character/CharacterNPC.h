@@ -43,6 +43,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MYDP_Skill", meta = (AllowPrivateAccess = "true"))
 	USkillBase *ProjectileAttack;
 	
+	//포탑의 사이즈입니다. 1그리드 = 100입니다.
+	UPROPERTY(EditDefaultsOnly, Category="MYDP_Setting", meta=(AllowPrivateAccess="true"))
+	int32 GridSize = 1;
+
+	TArray<FVector> ShortestPath;	//최단거리
+	
 public:
 	ACharacterNPC();
 
@@ -66,4 +72,7 @@ public:
 	// 몬스터 스킬
 	void DoMeleeAttack();
 	void DoProjectileAttack();
+
+	bool FindShortestPath(const FVector& InEndLocation);
+	const TArray<FVector>& GetShortestPath() {return ShortestPath;} 
 };

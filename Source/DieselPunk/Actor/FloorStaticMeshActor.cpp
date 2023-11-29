@@ -41,11 +41,11 @@ void AFloorStaticMeshActor::BeginPlay()
 
 	FNavigationManager::GetInstance()->BuildNavMap(this, boxes);
 
+	FNavigationManager::GetInstance()->DrawNonPassableNavNode(3);
 	
-	TArray<FVector> path = FNavigationManager::GetInstance()->PathFinding(FVector(-3200, 2200, 0), FVector(-3200, -2200, 0));
+	TArray<FVector> path = FNavigationManager::GetInstance()->PathFinding(FVector(-3200, 2200, 0), FVector(-3200, -2200, 0), 3);
 	for(int i = 0; i < path.Num(); ++i)
 	{
-		DrawDebugSphere(GetWorld(), path[i], 5, 10, FColor::Blue, true, -1, 0, 4);
 		if(i != path.Num() - 1)
 			DrawDebugLine(GetWorld(), path[i], path[i + 1], FColor::Magenta, true, -1, 0, 2);
 	}
