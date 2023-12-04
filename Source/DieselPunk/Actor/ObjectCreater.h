@@ -24,5 +24,6 @@ protected:
 	/** Overridable native event for when play begins for this actor. */
 	virtual void BeginPlay()override;
 
+	// 캐릭터를 스폰합니다.
 	void Spawn();
 };

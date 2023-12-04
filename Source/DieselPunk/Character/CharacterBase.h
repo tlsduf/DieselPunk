@@ -68,7 +68,7 @@ public:
 public:
 	//생성자
 	ACharacterBase();
-	
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

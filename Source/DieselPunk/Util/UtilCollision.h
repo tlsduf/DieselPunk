@@ -1,5 +1,3 @@
-// Copyright GuardiansW. All Rights Reserved.
-//
 // 충돌 관련 편의 함수 모음
 
 #pragma once

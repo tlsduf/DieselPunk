@@ -33,8 +33,7 @@ void UBTService_Update_Turret::TickNode(UBehaviorTreeComponent &OwnerComp, uint8
 
     // AIController , self
     AAIController *AIController = OwnerComp.GetAIOwner();
-    APawn *AIPawn = AIController->GetPawn();
-    auto AICharacter = Cast<ACharacterNPC>(AIPawn);
+    auto AICharacter = Cast<ACharacterNPC>(AIController->GetPawn());
     
 
     // * 터렛은 현재 목표가 없으면 탐색을 하여, 사거리가 유효한 가장 가까운 적을 목표로 삼는다.

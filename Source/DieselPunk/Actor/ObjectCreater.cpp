@@ -32,13 +32,15 @@ void AObjectCreater::BeginPlay()
 	Spawn();
 }
 
+// =============================================================
+// 캐릭터를 스폰합니다.
+// =============================================================
 void AObjectCreater::Spawn()
 {
 	//해당하는 경로 탐색을 위한 데이터 테이블 서치
 	const FCharacterDataTable* dataTable = FDataTableManager::GetInstance()->GetData<FCharacterDataTable>(EDataTableType::Character, CharacterName);
 	if(!dataTable)
 	{
-		LOG_SCREEN(FColor::Red, TEXT("해당하는 데이터테이블 정보가 존재하지 않습니다."))
 		Destroy();
 		return;
 	}

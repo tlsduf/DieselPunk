@@ -88,6 +88,8 @@ void APlayerControllerBase::SetupInputComponent()
 void APlayerControllerBase::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
+
+	PC = Cast<ACharacterPC>(GetCharacter());
 	
 	SetMappingContextByInputType();
 }
@@ -98,15 +100,15 @@ void APlayerControllerBase::OnPossess(APawn* InPawn)
 void APlayerControllerBase::SetMappingContextByInputType()
 {
 	// 스킬에 관한 바인딩
-	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
+	if (PC.IsValid())
 	{
-		character->InitSkills(); // TSubClassOf로 설정된 캐릭터의 스킬들을 인스턴스화 시킵니다.
+		PC->InitSkills(); // TSubClassOf로 설정된 캐릭터의 스킬들을 인스턴스화 시킵니다.
 		
 		for (const TPair<EAbilityType, TObjectPtr<UInputAction>>& inputActions : SkillInputActions)
 		{
 			// 설정해둔 트리거 타입을 넣습니다.
 			SkillInputActions[inputActions.Key]->Triggers.Reset();
-			SkillInputActions[inputActions.Key]->Triggers.Add(Cast<UPlayerSkill>(character->GetSkills()[inputActions.Key])->GetTriggerType());
+			SkillInputActions[inputActions.Key]->Triggers.Add(Cast<UPlayerSkill>(PC->GetSkills()[inputActions.Key])->GetTriggerType());
 		}
 	}
 	
@@ -153,51 +155,51 @@ const EAbilityType APlayerControllerBase::GetAbilityKeyFromAction(const FInputAc
 // =============================================================
 void APlayerControllerBase::OnInputSkillStarted(const FInputActionInstance& inInstance)
 {
-	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
+	if (PC.IsValid())
 	{
 		const EAbilityType abilityKey = GetAbilityKeyFromAction(inInstance);
 		if (abilityKey != EAbilityType::None)
-			character->SkillStarted(abilityKey);
+			PC->SkillStarted(abilityKey);
 	}
 }
 
 void APlayerControllerBase::OnInputSkillOngoing(const FInputActionInstance& inInstance)
 {
-	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
+	if (PC.IsValid())
 	{
 		const EAbilityType abilityKey = GetAbilityKeyFromAction(inInstance);
 		if (abilityKey != EAbilityType::None)
-			character->SkillOngoing(abilityKey);
+			PC->SkillOngoing(abilityKey);
 	}
 }
 
 void APlayerControllerBase::OnInputSkillTriggered(const FInputActionInstance& inInstance)
 {
-	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
+	if (PC.IsValid())
 	{
 		const EAbilityType abilityKey = GetAbilityKeyFromAction(inInstance);
 		if (abilityKey != EAbilityType::None)
-			character->SkillTriggered(abilityKey);
+			PC->SkillTriggered(abilityKey);
 	}
 }
 
 void APlayerControllerBase::OnInputSkillCompleted(const FInputActionInstance& inInstance)
 {
-	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
+	if (PC.IsValid())
 	{
 		const EAbilityType abilityKey = GetAbilityKeyFromAction(inInstance);
 		if (abilityKey != EAbilityType::None)
-			character->SkillCompleted(abilityKey);
+			PC->SkillCompleted(abilityKey);
 	}
 }
 
 void APlayerControllerBase::OnInputSkillCanceled(const FInputActionInstance& inInstance)
 {
-	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
+	if (PC.IsValid())
 	{
 		const EAbilityType abilityKey = GetAbilityKeyFromAction(inInstance);
 		if (abilityKey != EAbilityType::None)
-			character->SkillCanceled(abilityKey);
+			PC->SkillCanceled(abilityKey);
 	}
 }
 
@@ -205,59 +207,59 @@ void APlayerControllerBase::OnInputSkillCanceled(const FInputActionInstance& inI
 
 void APlayerControllerBase::Jump()
 {
-	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-		character->Jump();
+	if (PC.IsValid())
+		PC->Jump();
 }
 
 void APlayerControllerBase::StopJumping()
 {
-	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-		character->StopJumping();
+	if (PC.IsValid())
+		PC->StopJumping();
 }
 
 void APlayerControllerBase::StartJog()
 {
-	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-		character->StartJog();
+	if (PC.IsValid())
+		PC->StartJog();
 }
 
 void APlayerControllerBase::StopJog()
 {
-	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-		character->StopJog();
+	if (PC.IsValid())
+		PC->StopJog();
 }
 
 void APlayerControllerBase::SetZoomInProp()
 {
-	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-		character->SetZoomInProp();
+	if (PC.IsValid())
+		PC->SetZoomInProp();
 }
 
 void APlayerControllerBase::SetZoomOutProp()
 {
-	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-		character->SetZoomOutProp();
+	if (PC.IsValid())
+		PC->SetZoomOutProp();
 }
 
 void APlayerControllerBase::Interaction()
 {
-	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
+	if (PC.IsValid())
 	{
-		if(character->DelegateInteractTask.IsBound())
-			character->DelegateInteractTask.Execute();
+		if(PC->DelegateInteractTask.IsBound())
+			PC->DelegateInteractTask.Execute();
 	}
 }
 
 void APlayerControllerBase::Move(const FInputActionValue &Value)
 {
-	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-		character->Move(Value);
+	if (PC.IsValid())
+		PC->Move(Value);
 }
 
 void APlayerControllerBase::Look(const FInputActionValue &Value)
 {
-	if (ACharacterPC *character = Cast<ACharacterPC>(GetCharacter()))
-		character->Look(Value);
+	if (PC.IsValid())
+		PC->Look(Value);
 }
 
 // =============================================================
@@ -265,8 +267,8 @@ void APlayerControllerBase::Look(const FInputActionValue &Value)
 // =============================================================
 void APlayerControllerBase::SetUIControlOn()
 {
-	ACharacterPC *character = Cast<ACharacterPC>(GetCharacter());
-	if (character == nullptr)
+	if (PC.IsValid())
+	if (PC == nullptr)
 		return;
 	
 	// 시간 정지
@@ -278,7 +280,7 @@ void APlayerControllerBase::SetUIControlOn()
  	GetViewportSize(ScreenWidth, ScreenHeight);
  	SetMouseLocation(ScreenWidth * 0.5f, ScreenHeight * 0.5f);
  	bShowMouseCursor = true;
-	character->CanCameraControl = false;	// << 이거 오류남;;
+	PC->CanCameraControl = false;	// << 이거 오류남;;
 }
 
 
@@ -287,8 +289,8 @@ void APlayerControllerBase::SetUIControlOn()
 // =============================================================
 void APlayerControllerBase::SetUIControlOff()
 {
-	ACharacterPC *character = Cast<ACharacterPC>(GetCharacter());
-	if (character == nullptr)
+	if (PC.IsValid())
+	if (PC == nullptr)
 		return;
 	
 	// 시간 재게
@@ -296,6 +298,6 @@ void APlayerControllerBase::SetUIControlOff()
 
 	// 마우스 커서 off //키보드 입력 on
 	bShowMouseCursor = false;
-	character->CanCameraControl = true;
+	PC->CanCameraControl = true;
 }
 

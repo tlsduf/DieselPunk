@@ -149,6 +149,8 @@ void ACharacterPC::Move(const FInputActionValue &Value)
 		AddMovementInput(ForwardDirection, MovementVector.Y);
 		AddMovementInput(RightDirection, MovementVector.X);
 
+		HorizontalForce = MovementVector;
+		
 		MoveForward = MovementVector.Y;
 		MoveRight = MovementVector.X;
 	}
@@ -169,7 +171,19 @@ void ACharacterPC::Look(const FInputActionValue &Value)
 void ACharacterPC::Jump()
 {
 	if(GetMovementComponent()->IsMovingOnGround() || (GetMovementComponent()->IsFalling() && GetMovementComponent()->Velocity.Z < 0))
+	{
+		if(DelegateJumpAction.IsBound())
+			DelegateJumpAction.Execute();
 		Super::Jump();
+	}
+}
+
+void ACharacterPC::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+
+	if(DelegateLandAction.IsBound())
+		DelegateLandAction.Execute(Hit);
 }
 
 //================================================================

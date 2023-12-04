@@ -25,14 +25,12 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
     APawn *PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
     if (PlayerPawn == nullptr)
         return;
-    
     if(OwnerComp.GetAIOwner() == nullptr)
         return;
 
     // AIController , self
     AAIController *AIController = OwnerComp.GetAIOwner();
-    APawn *AIPawn = AIController->GetPawn();
-    auto AICharacter = Cast<ACharacterNPC>(AIPawn);
+    auto AICharacter = Cast<ACharacterNPC>(AIController->GetPawn());
 
     
     // 플레이어 위치 업데이트
@@ -62,7 +60,7 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
     }
     
     float MeleeRange = AICharacter->GetCapsuleComponent()->GetScaledCapsuleRadius() + 400;
-    FVector VRange = AIPawn->GetActorLocation() - GetNexusLocation();
+    FVector VRange = AICharacter->GetActorLocation() - GetNexusLocation();
     float FRange = VRange.Size();
 
     // 몬스터와 목표의 거리에 따른 조건 설정

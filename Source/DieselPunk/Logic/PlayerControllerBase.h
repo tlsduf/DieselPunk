@@ -17,7 +17,8 @@ class DIESELPUNK_API APlayerControllerBase : public APlayerController
 {
 	GENERATED_BODY()
 
-private:
+	// 빙의 된 플레이어 캐릭터
+	TWeakObjectPtr<ACharacterPC> PC;
 
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP_Input", meta = (AllowPrivateAccess = "true"))

@@ -13,6 +13,7 @@ AnimatorParam::AnimatorParam()
 	, DurationTime( 1.f )
 	, AnimType( EAnimType::Linear )
 	, DurationFunc(nullptr)
+	, CompleteFunc(nullptr)
 {
 	
 }
@@ -22,6 +23,7 @@ AnimatorParam::AnimatorParam()
 // =============================================================
 Animator::Animator()
 	: Param( AnimatorParam() )
+	, bIsRunning( false )
 	, StartValue( 0.f )
 	, CurValue( 0.f )
 	, EndValue( 0.f )
@@ -32,10 +34,13 @@ Animator::Animator()
 }
 
 // =============================================================
-// 파라미터 Setter // 애니메이션이 실행 중이면 세팅하지 않습니다.
+// 파라미터 Setter // 애니메이션이 실행 중이면 중지 및 초기화를 하고 다시 세팅합니다.
 // =============================================================
 void Animator::SetParam(const AnimatorParam& InParam)
 {
+	if( bIsRunning )
+		Stop();
+	
 	Param = InParam;
 	StartValue = InParam.StartValue;
 	EndValue = InParam.EndValue;
@@ -48,13 +53,20 @@ void Animator::SetParam(const AnimatorParam& InParam)
 // =============================================================
 void Animator::Update(float InDeltaTime)
 {
+	// 애니메이션 작동 판별
+	if( !bIsRunning )
+		return;
+
+	AccTime += InDeltaTime;
+	
+	// 애니메이션 종료 작업
 	if ( AccTime >= DurationTime )
 	{
-		CurValue = StartValue + ((EndValue - StartValue) * ApplyEasing(1, Param.AnimType));
+		bIsRunning = false;
+		if( Param.CompleteFunc )
+			Param.CompleteFunc( CurValue );
 		return;
 	}
-	
-	AccTime += InDeltaTime;
 	
 	const float Time = FMath::Clamp(AccTime / DurationTime, 0.0f, 1.0f);
 	
@@ -69,7 +81,18 @@ void Animator::Update(float InDeltaTime)
 // =============================================================
 void Animator::Start()
 {
+	bIsRunning = true;
 	AccTime = 0;
+}
+
+// =============================================================
+// 애니메이션 정지 및 초기화 (Stop을 호출하면 SetParam 과정을 다시 해준뒤, Start 해야합니다.)
+// =============================================================
+void Animator::Stop()
+{
+	bIsRunning = false;
+	Param = AnimatorParam();
+	SetParam(Param);
 }
 
 // =============================================================

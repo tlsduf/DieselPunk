@@ -57,20 +57,28 @@ public:
 	
 	TMap<EAbilityType, bool> SkillActivating;					// 각 스킬이 작동중인지 확인하는 티맵. Key(EAbilityType)의 값이 1이면 작동중입니다.
 	
-private:
-	
 	/////////////////////////////////////////////////////////////////////
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float MoveForward = 0;
 
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float MoveRight = 0;
-
-public:
+	
+	//상호작용 액터용 댈리게이트 // 컨트롤러에서 입력 시 Execute 
 	DECLARE_DYNAMIC_DELEGATE(FDelegateInteractTask);
-
-	//상호작용 액터용 댈리게이트, 컨트롤러에서 입력 시 Execute 
 	FDelegateInteractTask DelegateInteractTask;
+
+	//SplineGrinder 의 JumpAction 함수 호출용 // Jump 시 Execute
+	DECLARE_DYNAMIC_DELEGATE(FDelegateJumpAction);
+	
+	FDelegateJumpAction DelegateJumpAction;
+
+	FVector2D HorizontalForce = FVector2D::Zero();
+
+	//SplineGrinder 의 LandAction 함수 호출용 // Land 시 Execute
+	DECLARE_DYNAMIC_DELEGATE_OneParam(FDelegateLandAction, const FHitResult&, Hit);
+	
+	FDelegateLandAction DelegateLandAction;
 	
 public:
 	ACharacterPC();
@@ -106,6 +114,8 @@ public:
 	
 	virtual void Jump() override;
 
+	virtual void Landed(const FHitResult& Hit) override;
+	
 	// 조건에따라 bool IsJog를 설정합니다. Tick에서 IsJog의 상태에 따라 캐릭터의 이동속도를 설정합니다.
 	void StartJog();
 	void StopJog();
