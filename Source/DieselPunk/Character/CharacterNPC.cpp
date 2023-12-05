@@ -8,6 +8,7 @@
 #include <Components/StaticMeshComponent.h>
 #include <Components/WidgetComponent.h>
 #include <GameFramework/CharacterMovementComponent.h>
+#include <NavigationSystem.h>
 
 
 ACharacterNPC::ACharacterNPC()
@@ -57,6 +58,10 @@ void ACharacterNPC::Tick(float DeltaTime)
 	}
 	if(IsDead())
 		WidgetComp->bHiddenInGame = 1;
+
+	//공격 대상이 사라졌다면 nullptr로 초기화
+	if(!AttackTarget.IsValid())
+		AttackTarget = nullptr;
 }
 
 // =============================================================
@@ -162,4 +167,29 @@ bool ACharacterNPC::FindShortestPath(const FVector& InEndLocation)
 {
 	ShortestPath = FNavigationManager::GetInstance()->PathFinding(GetActorLocation(), InEndLocation, GridSize);
 	return !ShortestPath.IsEmpty();
+}
+
+bool ACharacterNPC::SetAttackTarget(TWeakObjectPtr<AActor> InTarget, const TArray<FVector>& InPath, int InIndex)
+{
+	if(InTarget.IsValid() && InTarget != nullptr)
+	{
+		AttackTarget = InTarget;
+
+		//Path중에 네비메쉬 안에 포함되는 지점 등록
+		UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+		const FNavAgentProperties& agentProps = GetNavAgentPropertiesRef();
+		FNavLocation projectedLocation;
+		
+		for(int i = 0; i < InIndex; ++i)
+		{
+			if(navSys && !navSys->ProjectPointToNavigation(InPath[InIndex - i], projectedLocation, INVALID_NAVEXTENT, &agentProps))
+				continue;
+
+			AttackTargetLocation = InPath[InIndex - i];
+			break;
+		}
+		
+		return true;
+	}
+	return false;
 }

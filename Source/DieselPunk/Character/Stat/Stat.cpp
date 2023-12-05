@@ -41,6 +41,7 @@ void FStat::Initialize(ACharacterBase* InOwner, const FString& InCharacterName)
 	CharacterStat.FindOrAdd(ECharacterStatType::JumpCount)			= data->JumpCount;
 	CharacterStat.FindOrAdd(ECharacterStatType::Luck)				= data->Luck;
 	CharacterStat.FindOrAdd(ECharacterStatType::CoolDown)			= data->CoolDown;
+	CharacterStat.FindOrAdd(ECharacterStatType::AttackRange)			= data->AttackRange;
 }
 
 //스탯 클래스를 비웁니다.
@@ -65,9 +66,9 @@ void FStat::ChangeStat(ECharacterStatType InStatType, int32 InValue)
 }
 
 //스탯을 반환합니다.
-const int32& FStat::GetStat(ECharacterStatType InStatType)
+const int32& FStat::GetStat(ECharacterStatType InStatType) const
 {
-	int32* stat = CharacterStat.Find(InStatType);
+	const int32* stat = CharacterStat.Find(InStatType);
 	if(!stat)
 		return INVALID_STAT;
 

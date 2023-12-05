@@ -60,4 +60,8 @@ struct DIESELPUNK_API FStatDataTable : public FTableRowBase
 	//스킬 쿨타임 감소
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int CoolDown = 0;
+
+	//사거리
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int AttackRange = 0;
 };

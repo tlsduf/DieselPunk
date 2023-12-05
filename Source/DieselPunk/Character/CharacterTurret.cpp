@@ -9,6 +9,8 @@
 #include <Components/CapsuleComponent.h>
 #include <Materials/MaterialInstanceDynamic.h>
 
+#include <Components/BoxComponent.h>
+
 ACharacterTurret::ACharacterTurret()
 {
 	HousingActorComponent = CreateDefaultSubobject<UHousingActorComponent>(TEXT("Housing Actor Component"));
@@ -48,6 +50,17 @@ void ACharacterTurret::BeginPlay()
 	//캡슐 콜리전 끄기
 	GetCapsuleComponent()->SetGenerateOverlapEvents(false);
 	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	UActorComponent* actor = GetComponentByClass(UBoxComponent::StaticClass());
+	if(actor != nullptr)
+	{
+		Box = Cast<UBoxComponent>(actor);
+		if(Box != nullptr)
+		{
+			Box->SetGenerateOverlapEvents(false);
+			Box->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+			Box->SetCanEverAffectNavigation(false);
+		}
+	}
 }
 
 void ACharacterTurret::BeginDestroy()
@@ -67,6 +80,7 @@ bool ACharacterTurret::CompleteHousingTurret()
 		RunAi();
 		ChangeMaterialByHousingEffect(false);
 
+		GetCapsuleComponent()->SetGenerateOverlapEvents(true);
 		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
 		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
@@ -76,6 +90,11 @@ bool ACharacterTurret::CompleteHousingTurret()
 		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Block);
 		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel3, ECollisionResponse::ECR_Block);
 		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Block);
+
+		Box->SetGenerateOverlapEvents(true);
+		Box->SetCollisionResponseToChannel(ECC_EngineTraceChannel5, ECR_Block);
+		Box->SetCanEverAffectNavigation(true);
+
 
 		return true;
 	}

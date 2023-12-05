@@ -2,6 +2,7 @@
 
 #include "ObjectManager.h"
 #include "../Character/CharacterPc.h"
+#include "../Character/CharacterNPC.h"
 
 #include <GameFramework/PlayerController.h>
 #include <Components/CapsuleComponent.h>
@@ -10,7 +11,7 @@ Singleton_Defintion(FObjectManager)
 
 //생성자
 FObjectManager::FObjectManager()
-	: World(nullptr), Controller(nullptr), Player(nullptr) 
+	: World(nullptr), Controller(nullptr), Player(nullptr), Nexus(nullptr)
 {
 	
 }
@@ -175,6 +176,24 @@ ACharacterPC* FObjectManager::GetPlayer()
 	
 	Player = Cast<ACharacterPC>(Controller->GetCharacter());
 	return Player.Get();
+}
+
+ACharacterNPC* FObjectManager::GetNexus()
+{
+	if(Nexus.IsValid())
+		return Nexus.Get();
+
+	for(TPair<int32, TWeakObjectPtr<AActor>>& object : Objects)
+	{
+		if(object.Value.IsValid())
+		{
+			ACharacterNPC* nexus = Cast<ACharacterNPC>(object.Value);
+			if(nexus != nullptr && nexus->NPCType == ENPCType::Nexus)
+			Nexus = nexus;
+			return Nexus.Get();
+		}
+	}
+	return nullptr;
 }
 
 UWorld* FObjectManager::GetWorld()

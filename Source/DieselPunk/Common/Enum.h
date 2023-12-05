@@ -83,6 +83,7 @@ enum class ECharacterStatType : uint8
 	JumpCount			UMETA( ToolTip = "점프 횟수" ),
 	Luck				UMETA( ToolTip = "행운" ),
 	CoolDown			UMETA( ToolTip = "스킬 쿨타임 감소" ),
+	AttackRange			UMETA( ToolTip = "사거리" ),
 };
 
 // 네비 노드 상태

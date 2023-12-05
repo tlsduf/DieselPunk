@@ -48,7 +48,9 @@ public:
 	int32 GridSize = 1;
 
 	TArray<FVector> ShortestPath;	//최단거리
-	
+
+	TWeakObjectPtr<AActor> AttackTarget = nullptr;		//공격할 타겟
+	FVector AttackTargetLocation = FVector::ZeroVector;	//공격할 타겟 위치
 public:
 	ACharacterNPC();
 
@@ -75,4 +77,9 @@ public:
 
 	bool FindShortestPath(const FVector& InEndLocation);
 	const TArray<FVector>& GetShortestPath() {return ShortestPath;} 
+	int32 GetGridSize() const {return GridSize;}
+
+	bool SetAttackTarget(TWeakObjectPtr<AActor> InTarget, const TArray<FVector>& InPath = TArray<FVector>(), int InIndex = -1);
+	TWeakObjectPtr<AActor> GetAttackTarget() {return AttackTarget;}
+	FVector GetAttackTargetLocation() {return AttackTargetLocation; }
 };

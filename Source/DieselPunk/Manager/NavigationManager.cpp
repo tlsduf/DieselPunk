@@ -290,7 +290,7 @@ bool FNavigationManager::_PathFinding(int32 InStartX, int32 InStartY, int32 InEn
 			NavMap[idx.Key][idx.Value].Parent = &NavMap[InStartX][InStartY];
 			return true;
 		}
-		if(NavMap[idx.Key][idx.Value].IsGoNodeState[InCharacterGridSize - 1] == ENavNodeState::BlockedByNonBreakable)
+		if(NavMap[idx.Key][idx.Value].IsGoNodeState[InCharacterGridSize - 1] != ENavNodeState::Passable)
 			continue;
 
 		//목적지 노드가 아니라면 OpenList에 보관
@@ -317,7 +317,8 @@ bool FNavigationManager::_PathFinding(int32 InStartX, int32 InStartY, int32 InEn
 		double distStartCurrentRhs = DistanceIndex(firstStartX, firstStartY, rhsIdx.Key, rhsIdx.Value);
 		double distCurrentEndRhs = DistanceIndex(rhsIdx.Key, rhsIdx.Value, InEndX, InEndY);
 
-		return distStartCurrentLhs + distCurrentEndLhs <= distStartCurrentRhs + distCurrentEndRhs;
+		//return distStartCurrentLhs + distCurrentEndLhs <= distStartCurrentRhs + distCurrentEndRhs;
+		return distCurrentEndLhs <= distCurrentEndRhs;
 	});
 
 	return _PathFinding(OpenList[0].Key, OpenList[0].Value, InEndX, InEndY, InCharacterGridSize);
@@ -432,7 +433,7 @@ void FNavigationManager::DrawNonPassableNavNode(int32 InGridSize)
 			else
 				continue;
 			for(int i = 0; i < locations.Num(); ++i)
-				DrawDebugLine(world, locations[i], locations[(i + 1) % locations.Num()], color, true, -1, 0, 2);
+				DrawDebugLine(world, locations[i], locations[(i + 1) % locations.Num()], color, false, 1, 0, 2);
 		}
 	}
 }
@@ -512,6 +513,15 @@ TArray<FVector> FNavigationManager::PathFinding(const FVector& InStartLocation, 
 	Algo::Reverse(nodePath);
 	for(const FDpNavNode* node : nodePath)
 		outPath.Add(node->Location);
+
+	//네비맵 초기화
+	for(TPair<int32, TMap<int32, FDpNavNode>>& nodes : NavMap)
+	{
+		for(TPair<int32, FDpNavNode>& node : nodes.Value)
+		{
+			node.Value.Parent = nullptr;
+		}
+	}
 
 	return outPath;
 }

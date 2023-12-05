@@ -29,7 +29,7 @@ public:
 	void ChangeStat(ECharacterStatType InStatType, int32 InValue);
 
 	//스탯을 반환합니다.
-	const int32& GetStat(ECharacterStatType InStatType);
+	const int32& GetStat(ECharacterStatType InStatType) const;
 
 	//스탯을 셋팅합니다. 캐릭터 생성시 이 함수를 통해 스탯을 세팅합니다. 인게임 도중에는 사용하지 않는 것을 추천합니다.
 	void SetStat(ECharacterStatType InStatType, int32 InValue);

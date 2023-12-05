@@ -108,10 +108,6 @@ void UHousingActorComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		
 		newLocation.Z = hit.Location.Z + Cast<ACharacter>(GetOwner())->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 
-		LOG_SCREEN(FColor::White, TEXT("Hit : %f, %f"), hit.Location.X, hit.Location.Y);
-		LOG_SCREEN(FColor::White, TEXT("New : %f, %f"), newLocation.X, newLocation.Y);
-		
-
 		FHitResult NewLocationHitResult;
 		//그리드에 맞춰 액터 위치 설정
 		GetOwner()->SetActorLocation(newLocation,false, &NewLocationHitResult);

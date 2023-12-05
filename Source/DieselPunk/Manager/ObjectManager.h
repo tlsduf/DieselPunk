@@ -26,6 +26,7 @@ public:
 };
 
 class ACharacterPC;
+class ACharacterNPC;
 
 /**
  * 오브젝트 생성, 삭제 등을 관리합니다.
@@ -38,6 +39,7 @@ private:
 	TWeakObjectPtr<UWorld>				World;
 	TWeakObjectPtr<APlayerController>	Controller;
 	TWeakObjectPtr<ACharacterPC>		Player;
+	TWeakObjectPtr<ACharacterNPC>		Nexus;
 public:
 	constexpr static int32 INVALID_UCLASS = -9999;			//생성 시 UCLASS의 오류
 	constexpr static int32 OBJECT_SPAWN_FAILED = -9998;		//오브젝트 생성 실패
@@ -76,6 +78,8 @@ private:
 public:
 	//컨트롤 중인 플레이어를 가져옵니다.
 	ACharacterPC* GetPlayer();
+
+	ACharacterNPC* GetNexus();
 
 	UWorld* GetWorld();
 	

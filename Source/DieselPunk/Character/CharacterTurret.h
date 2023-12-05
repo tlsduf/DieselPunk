@@ -8,6 +8,7 @@
 class UHousingActorComponent;
 class UMeshComponent;
 class UMaterialInterface;
+class UBoxComponent;
 
 UCLASS()
 class DIESELPUNK_API ACharacterTurret : public ACharacterNPC
@@ -25,6 +26,8 @@ class DIESELPUNK_API ACharacterTurret : public ACharacterNPC
 
 	//기존 머터리얼
 	TMap<TWeakObjectPtr<UMeshComponent>, TArray<TWeakObjectPtr<UMaterialInterface>>> OriginalMaterials;
+
+	TWeakObjectPtr<UBoxComponent> Box;
 	
 public:
 	ACharacterTurret();
@@ -39,7 +42,6 @@ public:
 
 	void ChangeHousingMaterialParameterChange(bool InHousing);
 
-	int32 GetGridSize() const {return GridSize;}
 protected:
 	virtual void BeginPlay() override;
 	
