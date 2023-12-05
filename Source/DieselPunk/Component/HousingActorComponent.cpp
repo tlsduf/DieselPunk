@@ -131,8 +131,20 @@ bool UHousingActorComponent::IsArrangeTurret()
 	ACharacterTurret* owner = Cast<ACharacterTurret>(GetOwner());
 	if(owner == nullptr)
 		return false;
+
+	TArray<FOverlapResult> hitResult;
+	FVector location = owner->GetActorLocation();
+	double gridSize = owner->GetGridSize();
+	FVector grid = {gridSize, gridSize, gridSize};
+	FVector boxHalfExtend = (grid * FNavigationManager::GridSize / 2) - 0.25;
+	location.Z += boxHalfExtend.Z;
+
+	//플레이어 충돌범위 제외
+	FCollisionQueryParams params;
+	params.AddIgnoredActor(owner);
 	
-	return FNavigationManager::GetInstance()->IsPlacementTurret(GetOwner()->GetActorLocation(), owner->GetGridSize());
+	return !GetOwner()->GetWorld()->OverlapMultiByChannel(hitResult, location, FQuat::Identity, ECC_WorldStatic,FCollisionShape::MakeBox(boxHalfExtend), params) &&
+		FNavigationManager::GetInstance()->IsPlacementTurret(GetOwner()->GetActorLocation(), owner->GetGridSize());
 }
 
 bool UHousingActorComponent::CompleteHousingTurret()
@@ -141,7 +153,21 @@ bool UHousingActorComponent::CompleteHousingTurret()
 	if(owner == nullptr)
 		return false;
 
-	FVector location = GetOwner()->GetActorLocation();
+	TArray<FOverlapResult> hitResult;
+	FVector location = owner->GetActorLocation();
+	double gridSize = owner->GetGridSize();
+	FVector grid = {gridSize, gridSize, gridSize};
+	FVector boxHalfExtend = (grid * FNavigationManager::GridSize / 2) - 0.25;
+	location.Z += boxHalfExtend.Z;
+
+	//플레이어 충돌범위 제외
+	FCollisionQueryParams params;
+	params.AddIgnoredActor(owner);
+
+	if(GetOwner()->GetWorld()->OverlapMultiByChannel(hitResult, location, FQuat::Identity, ECC_WorldStatic,FCollisionShape::MakeBox(boxHalfExtend), params))
+		return false;
+	
+	location = owner->GetActorLocation();
 	if(FNavigationManager::GetInstance()->PlacementTurret(location, owner->GetGridSize(), NavIndex))
 	{
 		location.Z += owner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
