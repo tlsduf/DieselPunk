@@ -61,7 +61,8 @@ enum class EDataTableType : uint8
 {
 	Stat			UMETA( ToolTip = "스탯 정보" ),
 	Character		UMETA( ToolTip = "캐릭터 정보" ),
-	MonsterSpawner	UMETA( ToolTip = "몬스터 스포너 정보" )
+	MonsterSpawner	UMETA( ToolTip = "몬스터 스포너 정보" ),
+	Card			UMETA( ToolTip = "카드 정보" )
 };
 
 // 스탯 타입
@@ -93,4 +94,13 @@ enum class ENavNodeState : uint8
 	Passable				UMETA( ToolTip = "지나갈 수 있는 길" ),
 	BlockedByBreakable		UMETA( ToolTip = "부서질 수 있는 메시에 의해 지나갈 수 없는 길(ex. 포탑)" ),
 	BlockedByNonBreakable	UMETA( ToolTip = "부서질 수 없는 메시에 의해 지나갈 수 없는 길(ex. 환경)" ),
+};
+
+// 카드 타입
+UENUM( BlueprintType )
+enum class ECardType : uint8
+{
+	Turret			UMETA( ToolTip = "포탑" ),
+	Installation	UMETA( ToolTip = "설치물" ),
+	Ability			UMETA( ToolTip = "능력" ),
 };

@@ -6,6 +6,9 @@
 #include "InputActionValue.h"
 #include "CharacterPC.generated.h"
 
+DECLARE_DELEGATE_OneParam(FDelegate_CardActivate, bool&)
+DECLARE_DELEGATE_OneParam(FDelegate_CardComplete, bool&)
+
 class UPlayerSkill;
 enum class EAbilityType : uint8;
 
@@ -21,6 +24,9 @@ class ACharacterPC : public ACharacterBase
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent *FollowCamera;
+
+	FDelegate_CardActivate DelegateCardActivate;
+	FDelegate_CardComplete DelegateCardComplete;
 
 public:
 	/////////////////////////////////////////////////////////////////////
@@ -162,4 +168,7 @@ public:
 	
 	// Level 이 올라갔을때, 이벤트를 발동시킵니다.
 	void LevelUpEvent();
+
+	FDelegate_CardActivate& GetDelegateCardActivate(){return DelegateCardActivate;}
+	FDelegate_CardComplete& GetDelegateCardComplete(){return DelegateCardComplete;}
 };
