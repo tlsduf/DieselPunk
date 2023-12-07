@@ -3,7 +3,10 @@
 
 #include "../Component/SplineGrinder.h"
 #include "../Character/CharacterPC.h"
-#include "Components/CapsuleComponent.h"
+#include "../Animation/DPAnimInstance.h"
+
+#include <Components/CapsuleComponent.h>
+#include <Components/SkeletalMeshComponent.h>
 
 
 USplineGrinder::USplineGrinder()
@@ -30,11 +33,11 @@ void USplineGrinder::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 // 착지 시, Spline을 타기위한 Setting 을 합니다.
 void USplineGrinder::GrindAction(const FHitResult& Hit)
 {
-	LOG_SCREEN(FColor::Red, TEXT("Landed"));
 	// 착지한 컴포넌트 태그 Rail 확인
 	if(Hit.Component->ComponentHasTag("Rail") && !bOnRail)
 	{
 		bOnRail = true;
+		Cast<UDPAnimInstance>(Cast<ACharacterPC>(GetOwner())->GetMesh()->GetAnimInstance())->OnRail = bOnRail;
 		
 		SplineComponent = Hit.GetActor()->GetComponentByClass<USplineComponent>();
 		const FVector hitPointOnSpline = SplineComponent->FindLocationClosestToWorldLocation(Hit.ImpactPoint, ESplineCoordinateSpace::World);
@@ -45,9 +48,7 @@ void USplineGrinder::GrindAction(const FHitResult& Hit)
 		// 착지한 위치의 스플라인 접선방향
 		const FRotator hitRotOnSpline = SplineComponent->GetWorldRotationAtDistanceAlongSpline(distanceFromStart);
 		// 캐릭터와 스플라인의 방향 지향성(정방향or역방향)이 일치하는가?
-		bForwardDir = (bInsideRot(hitRotOnSpline, 90) || bInsideRot(hitRotOnSpline, -90));
-
-		Cast<ACharacter>(GetOwner())->GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECR_Overlap);
+		bForwardDir = IsBetweenYaw(GetOwner()->GetActorRotation(), hitRotOnSpline, 90);
 		
 		AnimatorParam param;
 		param.StartValue = distanceFromStart;
@@ -87,31 +88,10 @@ void USplineGrinder::GrindAction(const FHitResult& Hit)
 // 점프 시, Spline을 탈출하기위한 Setting 을 합니다.
 void USplineGrinder::JumpAction()
 {
-	LOG_SCREEN(FColor::Red, TEXT("Jumped"));
 	Animator.Stop();
 	bOnRail = false;
+	Cast<UDPAnimInstance>(Cast<ACharacterPC>(GetOwner())->GetMesh()->GetAnimInstance())->OnRail = bOnRail;
 	SplineComponent = nullptr;
-	Cast<ACharacter>(GetOwner())->GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECR_Block);
 }
 
-// 플레이어의 방향이 InRot 과 InRot + InYaw 사이에 있는지 판별합니다.
-bool USplineGrinder::bInsideRot(FRotator InRot, float InYaw)
-{
-	const float yawInRot = InRot.Yaw;
-	const float checkYaw = yawInRot + InYaw;
-	const float normalCheckYaw = FRotator::NormalizeAxis(yawInRot + InYaw);
-	
-	const float min = (yawInRot > normalCheckYaw) ? normalCheckYaw : yawInRot;
-	const float max = (yawInRot > normalCheckYaw) ? yawInRot : normalCheckYaw;
-	
-	bool nealyEqual = ((( checkYaw - normalCheckYaw ) < float(0)) ? -( checkYaw - normalCheckYaw ) : ( checkYaw - normalCheckYaw ))<= 0.1;
-
-	const float charYaw = GetOwner()->GetActorRotation().Yaw;
-
-	bool inRange = nealyEqual ?
-		((min <= charYaw) && (charYaw <= max))
-	:	((min < charYaw) && (charYaw < max));
-	
-	return nealyEqual ? inRange : !inRange;
-}
 

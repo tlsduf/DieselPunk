@@ -6,6 +6,10 @@
 #include "InputActionValue.h"
 #include "CharacterPC.generated.h"
 
+
+DECLARE_DYNAMIC_DELEGATE(FDelegateInteractTask);
+DECLARE_DYNAMIC_DELEGATE(FDelegateJumpAction);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FDelegateLandAction, const FHitResult&, Hit);
 DECLARE_DELEGATE_OneParam(FDelegate_CardActivate, bool&)
 DECLARE_DELEGATE_OneParam(FDelegate_CardComplete, bool&)
 
@@ -71,19 +75,14 @@ public:
 	float MoveRight = 0;
 	
 	//상호작용 액터용 댈리게이트 // 컨트롤러에서 입력 시 Execute 
-	DECLARE_DYNAMIC_DELEGATE(FDelegateInteractTask);
 	FDelegateInteractTask DelegateInteractTask;
 
 	//SplineGrinder 의 JumpAction 함수 호출용 // Jump 시 Execute
-	DECLARE_DYNAMIC_DELEGATE(FDelegateJumpAction);
-	
 	FDelegateJumpAction DelegateJumpAction;
 
 	FVector2D HorizontalForce = FVector2D::Zero();
-
-	//SplineGrinder 의 LandAction 함수 호출용 // Land 시 Execute
-	DECLARE_DYNAMIC_DELEGATE_OneParam(FDelegateLandAction, const FHitResult&, Hit);
 	
+	//SplineGrinder 의 LandAction 함수 호출용 // Land 시 Execute
 	FDelegateLandAction DelegateLandAction;
 	
 public:

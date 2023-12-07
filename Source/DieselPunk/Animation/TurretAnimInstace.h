@@ -2,14 +2,14 @@
 
 #pragma once
 
-#include <Animation/AnimInstance.h>
+#include "../Animation/DPAnimInstance.h"
 #include "TurretAnimInstace.generated.h"
 
 enum class ETurretSkillMontageType : uint8;
 class ACharacterNPC;
 
 UCLASS()
-class DIESELPUNK_API UTurretAnimInstace : public UAnimInstance
+class DIESELPUNK_API UTurretAnimInstace : public UDPAnimInstance
 {
 	GENERATED_BODY()
 	

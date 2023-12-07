@@ -7,17 +7,20 @@
 #include "../Character/CharacterPC.h"
 
 #include <Animation/AnimMontage.h>
+#include <algorithm>
 
 
 USoldierAnimInstance::USoldierAnimInstance()
 	:ShiftMontage(nullptr), SkillQMontage(nullptr), SkillEMontage(nullptr), SkillRMontage(nullptr)
 {
 }
+
 // 틱마다 호출되는 함수
 void USoldierAnimInstance::NativeUpdateAnimation(float InDeltaSeconds)
 {
 	Super::NativeUpdateAnimation(InDeltaSeconds);
 
+	UpdateVelocityBlend(InDeltaSeconds, VelocityBlend);
 }
 
 // AbilityType에 따른 몽타주를 반환합니다. None입력시 기본 몽타주 반환
@@ -102,14 +105,25 @@ void USoldierAnimInstance::ResumeMontage(EAbilityType InAbilityType)
 	Montage_Resume(animMontage);
 }
 
-void USoldierAnimInstance::GunRecoil()
+// VelocityBlend를 업데이트합니다.
+void USoldierAnimInstance::UpdateVelocityBlend(float InDeltaSeconds , FVelocityBlend InVelocityBlend)
 {
-	GunRecoilBool = 1;
-	TWeakObjectPtr<USoldierAnimInstance> thisPtr = this;
-	GetWorld()->GetTimerManager().SetTimerForNextTick([thisPtr](){
-		if(thisPtr.IsValid())
-			thisPtr->GunRecoilBool = 0;
-	});
+	FVector normalVector = Velocity;
+	normalVector.Normalize(0.1);
+	FVector locRelativeVelocityDir = Rotation.UnrotateVector(normalVector);
+	float sum = abs(locRelativeVelocityDir.X) + abs(locRelativeVelocityDir.Y) + abs(locRelativeVelocityDir.Z);
+	FVector relativeDirection = (sum > 0) ? (locRelativeVelocityDir / sum) : locRelativeVelocityDir ;
+	
+	FVelocityBlend target;
+	target.F = std::clamp(relativeDirection.X, 0.0, 1.0);
+	target.B = abs(std::clamp(relativeDirection.X, -1.0, 0.0));
+	target.L = abs(std::clamp(relativeDirection.Y, -1.0, 0.0));
+	target.R = std::clamp(relativeDirection.Y, 0.0, 1.0);
+	
+	VelocityBlend.F = FMath::FInterpTo(VelocityBlend.F, target.F, InDeltaSeconds, 12.0);
+	VelocityBlend.B = FMath::FInterpTo(VelocityBlend.B, target.B, InDeltaSeconds, 12.0);
+	VelocityBlend.L = FMath::FInterpTo(VelocityBlend.L, target.L, InDeltaSeconds, 12.0);
+	VelocityBlend.R = FMath::FInterpTo(VelocityBlend.R, target.R, InDeltaSeconds, 12.0);
 }
 
 void USoldierAnimInstance::AnimNotify_NotifySkillQ() const

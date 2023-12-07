@@ -2,13 +2,31 @@
 
 #pragma once
 
-#include "Animation/AnimInstance.h"
+#include "../Animation/DPAnimInstance.h"
 #include "SoldierAnimInstance.generated.h"
 
 enum class EAroundSkillMontageType : uint8;
 
+USTRUCT( BlueprintType )
+struct FVelocityBlend
+{
+	GENERATED_BODY()
+
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
+	float F = 0;
+	
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
+	float B = 0;
+
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
+	float L = 0;
+
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
+	float R = 0;
+};
+
 UCLASS()
-class DIESELPUNK_API USoldierAnimInstance : public UAnimInstance
+class DIESELPUNK_API USoldierAnimInstance : public UDPAnimInstance
 {
 	GENERATED_BODY()
 	
@@ -29,9 +47,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP", Meta = (AllowPrivateAccess = true))
 	TSoftObjectPtr<UAnimMontage> SkillRMontage;
 
-	// HandL 본 회전 블렌딩 알파
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP", Meta = (AllowPrivateAccess = true))
-	bool GunRecoilBool = 0;
+	// 캐릭터의 앞뒤좌우 움직임을 블렌딩해줄 값
+	UPROPERTY(BlueprintReadOnly, Category = "MYDP", Meta = (AllowPrivateAccess = true))
+	FVelocityBlend VelocityBlend;
 
 public:
 	// 생성자
@@ -48,8 +66,9 @@ public:
 	void PauseMontage(EAbilityType InAbilityType);
 	// 몽타주를 다시 재생합니다.
 	void ResumeMontage(EAbilityType InAbilityType);
-	// 임시 반동 애니메이션
-	void GunRecoil();
+
+	// VelocityBlend를 업데이트합니다.
+	void UpdateVelocityBlend(float InDeltaSeconds , FVelocityBlend InVelocityBlend);
 	
 private:
 	// SkillQ 전용 애님노티파이 입니다. 
@@ -63,3 +82,4 @@ enum class ESoldierSkillMontageType : uint8
 	Attack,				// 공격
 	Max
 };
+

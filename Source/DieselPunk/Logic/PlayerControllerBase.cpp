@@ -32,15 +32,15 @@ void APlayerControllerBase::BeginPlay()
 	
     if (UEnhancedInputLocalPlayerSubsystem *Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
         Subsystem->AddMappingContext(MappingContext, 0);
+
+	// 마우스 위치 Set // 시간 멈춤 // 캐릭터 회전 불가
+	SetUIControlOn();
 	
 	// 시작 메뉴 생성
 	if(StartMenuClass)
 		StartMenu = CreateWidget(this, StartMenuClass);
 	if (StartMenu)
 		StartMenu->AddToViewport();
-
-	// 마우스 위치 Set // 시간 멈춤 // 캐릭터 회전 불가
-	SetUIControlOn();
 
 	// HUD 생성
 	if(HUDClass)

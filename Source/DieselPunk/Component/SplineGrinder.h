@@ -6,7 +6,9 @@
 #include "Components/ActorComponent.h"
 #include "SplineGrinder.generated.h"
 
-
+/*
+ * Rail 태그를 가지고 있는 스플라인을 밟으면 라인을 따라 미끄러집니다.
+ */
 
 class USplineComponent;
 
@@ -45,7 +47,4 @@ public:
 	// 점프 시, Spline을 탈출하기위한 Setting 을 합니다.
 	UFUNCTION()
 	void JumpAction();
-
-	// 플레이어의 방향이 InRot 과 InRot + InYaw 사이에 있는지 판별합니다.
-	bool bInsideRot(FRotator InRot, float InYaw);
 };

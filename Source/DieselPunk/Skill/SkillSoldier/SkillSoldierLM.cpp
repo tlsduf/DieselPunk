@@ -47,8 +47,7 @@ void USkillSoldierLM::SkillTriggered()
 
 	//===========================================
 	// * MainAction 1 // 반동 애니메이션
-	if(USoldierAnimInstance* animInst = Cast<USoldierAnimInstance>(OwnerCharacterPC->GetMesh()->GetAnimInstance()))
-		animInst->GunRecoil();
+
 		
 	//===========================================
 	// * MainAction 2 // Projectile Spawn

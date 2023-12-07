@@ -316,8 +316,17 @@ void ACharacterPC::InitSkills()
 		Skills.Empty();
 	for (const TPair<EAbilityType, TSubclassOf<UPlayerSkill>>& ability : SkillInfos)
 	{
-		Skills.Add(ability.Key, NewObject<UPlayerSkill>(this, ability.Value));
-		Skills[ability.Key]->RegisterComponent(); // 컴포넌트를 등록합니다.
+		if(ability.Value != nullptr)
+		{
+			Skills.Add(ability.Key, NewObject<UPlayerSkill>(this, ability.Value));
+			Skills[ability.Key]->RegisterComponent(); // 컴포넌트를 등록합니다.
+		}
+		else
+		{
+			FString inPath = TEXT("/Script/Engine.DataTable'/Game/DieselPunk/Blueprints/Skill/BP_VoidPlayerSkill.BP_VoidPlayerSkill_C'");
+			Skills.Add(ability.Key, NewObject<UPlayerSkill>(this, ConstructorHelpersInternal::FindOrLoadClass(inPath , UPlayerSkill::StaticClass())));
+			Skills[ability.Key]->RegisterComponent(); // 빈 스킬을 등록합니다.
+		}
 	}
 
 	if(SkillActivating.Num() < 0)

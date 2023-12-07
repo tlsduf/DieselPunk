@@ -2,14 +2,14 @@
 
 #pragma once
 
-#include <Animation/AnimInstance.h>
+#include "../Animation/DPAnimInstance.h"
 #include "MonsterAnimInstace.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class DIESELPUNK_API UMonsterAnimInstace : public UAnimInstance
+class DIESELPUNK_API UMonsterAnimInstace : public UDPAnimInstance
 {
 	GENERATED_BODY()
 	
@@ -18,6 +18,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP", Meta = (AllowPrivateAccess = true))
 	TSoftObjectPtr<UAnimMontage> MonsterMontage;
 
+	// 공중몹 프로펠러 회전
+	UPROPERTY(BlueprintReadOnly, Category = "MYDP", Meta = (AllowPrivateAccess = true))
+	int Radian = 0;
 public:
 	// 생성자
 	UMonsterAnimInstace();
@@ -41,9 +44,7 @@ private:
 
 	// 공중몹 프로펠러 회전
 	int16 AddRotation();
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP", Meta = (AllowPrivateAccess = true))
-	int Radian = 0;
+
 };
 
 UENUM()
