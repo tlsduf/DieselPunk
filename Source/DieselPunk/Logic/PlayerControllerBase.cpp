@@ -5,12 +5,18 @@
 #include "../Skill/PlayerSkill.h"
 #include "../UI/HUD/SkillUpgradeUI.h"
 #include "../Core/DpCheatManager.h"
+#include "../Handler/DeckHandler.h"
 
 #include <Blueprint/UserWidget.h>
 #include <EnhancedInputComponent.h>
 #include <EnhancedInputSubsystems.h>
 #include <InputMappingContext.h>
 #include <GameFramework/WorldSettings.h>
+#include <Blueprint/WidgetTree.h>
+#include <Components/ScrollBox.h>
+
+#include "Components/TextBlock.h"
+#include "DieselPunk/Card/Card.h"
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PlayerControllerBase)
@@ -32,7 +38,7 @@ void APlayerControllerBase::BeginPlay()
 	
     if (UEnhancedInputLocalPlayerSubsystem *Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
         Subsystem->AddMappingContext(MappingContext, 0);
-
+	
 	// 마우스 위치 Set // 시간 멈춤 // 캐릭터 회전 불가
 	SetUIControlOn();
 	
@@ -41,7 +47,7 @@ void APlayerControllerBase::BeginPlay()
 		StartMenu = CreateWidget(this, StartMenuClass);
 	if (StartMenu)
 		StartMenu->AddToViewport();
-
+	
 	// HUD 생성
 	if(HUDClass)
 		HUD = CreateWidget(this, HUDClass);
@@ -203,6 +209,66 @@ void APlayerControllerBase::OnInputSkillCanceled(const FInputActionInstance& inI
 	}
 }
 
+void APlayerControllerBase::OpenDeckInterface()
+{
+	if(!PC.IsValid())
+		return;
+	
+	if(!DeckInterfaceClass)
+		return;
+	DeckInterface = CreateWidget(this, DeckInterfaceClass, TEXT("DeckInterface"));
+
+	const TArray<FCard*>& cards = PC->GetDeckHandler()->GetAllCards();
+	int32 num = cards.Num() / FDeckHandler::MaxHand;
+	UScrollBox* box = Cast<UScrollBox>(DeckInterface->WidgetTree->FindWidget(TEXT("VBox")));
+	if(box == nullptr)
+	{
+		DeckInterface->Destruct();
+		return;
+	}
+	
+	for(int i = 0; i < num; ++i)
+	{
+		FString widgetName = FString::Printf(TEXT("CardRow_%d"), i);
+		UUserWidget* row = CreateWidget(this, CardRowClass, *widgetName);
+
+		for(int j= 0; j < FDeckHandler::MaxHand; ++j)
+		{
+			int index = FDeckHandler::MaxHand * i + j;
+			
+			//TEST!///////////////////////////////////////////////////////////////////////////
+			//테스트를 위한 코드입니다. 추후에 이미지 적용으로 변경됩니다.
+			widgetName = FString::Printf(TEXT("Text%d"), j);
+			UTextBlock* text = Cast<UTextBlock>(row->WidgetTree->FindWidget(*widgetName));
+			text->SetText(FText::FromString(cards[index]->GetCardInfo().CardName));
+			//TEXT!///////////////////////////////////////////////////////////////////////////
+		}
+		box->AddChild(row);
+		CardRows.Add(row);
+	}
+
+	if(!DeckInterface)
+		return;
+	DeckInterface->AddToViewport();
+	
+	SetUIControlOn();
+}
+
+void APlayerControllerBase::CloseDeckInterface()
+{
+	UScrollBox* box = Cast<UScrollBox>(DeckInterface->WidgetTree->FindWidget(TEXT("VBox")));
+	box->ClearChildren();
+
+	for(UUserWidget* widget : CardRows)
+		widget->Destruct();
+	CardRows.Empty();
+	
+	DeckInterface->RemoveFromParent();
+
+	DeckInterface->Destruct();
+	
+	SetUIControlOff();
+}
 
 
 void APlayerControllerBase::Jump()

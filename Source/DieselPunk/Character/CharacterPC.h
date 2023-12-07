@@ -6,7 +6,6 @@
 #include "InputActionValue.h"
 #include "CharacterPC.generated.h"
 
-
 DECLARE_DYNAMIC_DELEGATE(FDelegateInteractTask);
 DECLARE_DYNAMIC_DELEGATE(FDelegateJumpAction);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FDelegateLandAction, const FHitResult&, Hit);
@@ -14,6 +13,7 @@ DECLARE_DELEGATE_OneParam(FDelegate_CardActivate, bool&)
 DECLARE_DELEGATE_OneParam(FDelegate_CardComplete, bool&)
 
 class UPlayerSkill;
+class FDeckHandler;
 enum class EAbilityType : uint8;
 
 UCLASS(config = Game)
@@ -28,6 +28,8 @@ class ACharacterPC : public ACharacterBase
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent *FollowCamera;
+
+	FDeckHandler* DeckHandler;
 
 	FDelegate_CardActivate DelegateCardActivate;
 	FDelegate_CardComplete DelegateCardComplete;
@@ -78,6 +80,7 @@ public:
 	FDelegateInteractTask DelegateInteractTask;
 
 	//SplineGrinder 의 JumpAction 함수 호출용 // Jump 시 Execute
+	
 	FDelegateJumpAction DelegateJumpAction;
 
 	FVector2D HorizontalForce = FVector2D::Zero();
@@ -168,6 +171,9 @@ public:
 	// Level 이 올라갔을때, 이벤트를 발동시킵니다.
 	void LevelUpEvent();
 
+	// 카드 실행 델리게이트를 반환합니다.
 	FDelegate_CardActivate& GetDelegateCardActivate(){return DelegateCardActivate;}
 	FDelegate_CardComplete& GetDelegateCardComplete(){return DelegateCardComplete;}
+
+	const FDeckHandler* GetDeckHandler() const{return DeckHandler;}
 };

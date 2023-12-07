@@ -97,12 +97,30 @@ private:
 	void OnInputSkillCompleted(const FInputActionInstance &inInstance);
 	void OnInputSkillCanceled(const FInputActionInstance &inInstance);
 
+	//덱 인터페이스 켜기
+	void OpenDeckInterface();
+
+	//덱 인터페이스 끄기
+	void CloseDeckInterface();
+
 private:
 	UPROPERTY()
 	UUserWidget* StartMenu;
 
 	UPROPERTY(EditAnywhere, Category="MYDP_UI")
 	TSubclassOf<UUserWidget> StartMenuClass;
+
+	UPROPERTY()
+	UUserWidget* DeckInterface;
+	
+	UPROPERTY(EditAnywhere, Category="MYDP_UI")
+	TSubclassOf<UUserWidget> DeckInterfaceClass;
+
+	UPROPERTY()
+	TArray<UUserWidget*> CardRows;
+	
+	UPROPERTY(EditAnywhere, Category="MYDP_UI")
+	TSubclassOf<UUserWidget> CardRowClass;
 	
 	UPROPERTY()
 	UUserWidget* HUD;

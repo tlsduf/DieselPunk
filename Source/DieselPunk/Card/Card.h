@@ -13,6 +13,7 @@ struct CardInfo
 	FString CardName;		//카드 이름
 	ECardType CardType;		//카드 타입
 	int32 Cost;				//카드 코스트
+	FDateTime GetTime;		//획득 시간
 };
 
 class DIESELPUNK_API FCard
@@ -36,10 +37,13 @@ public:
 	//바인딩을 위한 카드 사용 완료 함수
 	void Complete(bool& OutSuccess);
 
+public:
+	const CardInfo& GetCardInfo(){return Info;}
+
 private:
 	//카드 사용 함수
-	virtual void _Activate(bool& OutSuccess)=0;
+	virtual void _Activate(bool& OutSuccess){}
 	//카드 사용 완료 함수
-	virtual void _Complete(bool& OutSuccess)=0;
+	virtual void _Complete(bool& OutSuccess){}
 	
 };

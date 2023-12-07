@@ -104,3 +104,12 @@ enum class ECardType : uint8
 	Installation	UMETA( ToolTip = "설치물" ),
 	Ability			UMETA( ToolTip = "능력" ),
 };
+
+// 카드 정렬 타입
+UENUM( BlueprintType )
+enum class ECardSortType : uint8
+{
+	Order	UMETA( ToolTip = "획득 순" ),
+	Name	UMETA( ToolTip = "이름 순" ),
+	Cost	UMETA( ToolTip = "코스트 순" ),
+};

@@ -10,6 +10,7 @@ FCard::FCard(const FString& InCardName, TWeakObjectPtr<ACharacterPC> InOwner)
 	: Owner(InOwner)
 {
 	Info.CardName = InCardName;
+	Info.GetTime = FDateTime::Now(); 
 }
 
 FCard::~FCard()

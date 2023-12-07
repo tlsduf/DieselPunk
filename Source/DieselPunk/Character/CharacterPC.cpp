@@ -7,6 +7,7 @@
 #include "../Skill/PlayerSkill.h"
 #include "../Interface/PlayerInputInterface.h"
 #include "../Util/UtilLevelCal.h"
+#include "../Handler/DeckHandler.h"
 
 #include <Camera/CameraComponent.h>
 #include <Components/CapsuleComponent.h>
@@ -15,6 +16,7 @@
 
 #include <GameFramework/Controller.h>
 #include <EnhancedInputComponent.h>
+
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(CharacterPC)
@@ -59,6 +61,8 @@ ACharacterPC::ACharacterPC()
 void ACharacterPC::BeginPlay()
 {
 	Super::BeginPlay();
+	DeckHandler = new FDeckHandler(this);
+	DeckHandler->BeginPlay();
 }
 
 // Called every frame
