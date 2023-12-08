@@ -24,10 +24,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
 	float AttackRange = 10000;
-
-	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
-	float Damage = 10.f;
-
+	
 	UPROPERTY(EditAnywhere, Category = "MYDP_Util")
 	bool DebugOnOff = true;
 

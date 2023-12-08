@@ -30,7 +30,6 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = "MYDP_Skill")
 	float SkillPlayTime = 1;					// 스킬 발동 시간입니다. 해당 시간동안 SkillActivating이 On 됩니다.
-	
 protected:
 	// 생성자
 	UPlayerSkill();

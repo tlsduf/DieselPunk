@@ -45,6 +45,13 @@ void ACharacterNPC::BeginPlay()
 	Super::BeginPlay();
 
 	GetCharacterMovement()->MaxWalkSpeed = Stat.GetStat(ECharacterStatType::MoveSpeed);
+
+	// SKill Stat Initialize
+	if(MeleeAttack != nullptr)
+		MeleeAttack->InitSkillStat();
+
+	if(MeleeAttack != nullptr)
+		ProjectileAttack->InitSkillStat();
 }
 
 void ACharacterNPC::Tick(float DeltaTime)

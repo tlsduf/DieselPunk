@@ -98,6 +98,13 @@ void ACharacterPC::BeginPlay()
 			continue;
 		text->SetText(FText::FromString(hand[i]->GetCardInfo().CardName));
 	}
+
+	
+	//Skill Stat Set
+	for(const auto& It : Skills)
+	{
+		It.Value->InitSkillStat();
+	}
 }
 
 // Called every frame
@@ -370,12 +377,10 @@ void ACharacterPC::InitSkills()
 
 	if(SkillActivating.Num() < 0)
 		SkillActivating.Empty();
-	SkillActivating.Add(EAbilityType::MouseLM, false);
-	SkillActivating.Add(EAbilityType::MouseRM, false);
-	SkillActivating.Add(EAbilityType::Shift, false);
-	SkillActivating.Add(EAbilityType::SkillQ, false);
-	SkillActivating.Add(EAbilityType::SkillE, false);
-	SkillActivating.Add(EAbilityType::SkillR, false);
+	for(auto It : SkillInfos)
+	{
+		SkillActivating.Add(It.Key, false);
+	}
 }
 
 // =============================================================

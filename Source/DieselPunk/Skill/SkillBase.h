@@ -35,6 +35,11 @@ protected:
 	
 	UPROPERTY()
 	AController* OwnerController = nullptr;		// 소유 컨트롤러
+
+	float Atk = 10.f;	// 캐릭터 스텟 공격력
+
+	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
+	float AtkCoefficient = 1.f;					// 데미지 계수
 	
 protected:
 	// Sets default values for this component's properties
@@ -56,5 +61,9 @@ public:
 	
 	// 스킬이 어떠한 이유로 인해 캔슬될 때 호출됩니다.
 	virtual void CancelSkill(){};
+
+	// ActorComponent의 BeginPlay가 Character의 BeginPlay 보다 먼저 호출됨
+	// CharacterBase의 Stat.Initialize 후 호출
+	void InitSkillStat();
 	
 };

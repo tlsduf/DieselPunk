@@ -17,9 +17,6 @@ class DIESELPUNK_API USkillSoldierR : public UPlayerSkill
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
-	float EDamage = 50;
-	
 	bool IsE = false;
 	
 	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")

@@ -31,9 +31,12 @@ void UHitscanFire::AbilityStart()
 	FHitResult hit = UtilCollision::LineTraceForward(ownerPawn, AttackRange, DebugOnOff);
 	AActor *hitActor = hit.GetActor();
 
+	// 데미지 결정
+	float damage = Atk * AtkCoefficient;
+	
 	// 데미지 정보 전달
 	if (hitActor != nullptr && hitActor != ownerPawn)
-		UGameplayStatics::ApplyDamage(hitActor, Damage, OwnerController, ownerPawn, nullptr);
+		UGameplayStatics::ApplyDamage(hitActor, damage, OwnerController, ownerPawn, nullptr);
 
 	HitEffectFTransform.Location = hit.Location;
 	if (HitParticles)

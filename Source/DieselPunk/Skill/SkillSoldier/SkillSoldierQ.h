@@ -22,16 +22,7 @@ private:
 	TSubclassOf<AProjectileBase> ProjectileClass;
 
 	UPROPERTY()
-	AProjectileBase *Projectile1;
-
-	UPROPERTY()
-	AProjectileBase *Projectile2;
-
-	UPROPERTY()
-	AProjectileBase *Projectile3;
-	
-	UPROPERTY()
-	AProjectileBase *Projectile4;
+	AProjectileBase *Projectile;
 	
 public:
 	// 생성자

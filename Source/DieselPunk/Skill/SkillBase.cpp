@@ -3,6 +3,7 @@
 
 #include "SkillBase.h"
 #include "../Character/CharacterBase.h"
+#include "Tests/AutomationTestSettings.h"
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(SkillBase)
@@ -36,7 +37,15 @@ void USkillBase::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
+// 몬스터클래스가 오버라이드하여 사용합니다.
 void USkillBase::AbilityStart()
 {
+}
+
+// CharacterBase의 Stat.Initialize 후 호출
+void USkillBase::InitSkillStat()
+{
+	if(OwnerCharacter)
+		Atk = static_cast<float>(OwnerCharacter->GetStat().GetStat(ECharacterStatType::Atk));
 }
 

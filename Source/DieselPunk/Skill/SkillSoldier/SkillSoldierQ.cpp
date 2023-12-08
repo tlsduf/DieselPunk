@@ -49,13 +49,17 @@ void USkillSoldierQ::Shot()
 		spawnPitch.Pitch = 60;
 	else
 		spawnPitch.Pitch = shotRotation.Pitch + 30;
+
+	// 데미지 결정
+	float damage = Atk * AtkCoefficient;
 	
 	// projectile spawn
 	if(ProjectileClass)
 	{
 		// 투사체1
 		FTransform spawnTransform = FTransform( FRotator(spawnPitch.Pitch, shotRotation.Yaw, 0), shotLocation);
-		Projectile1 = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileClass, spawnTransform, GetOwner());
-		Projectile1->FinishSpawning(spawnTransform);
+		Projectile = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileClass, spawnTransform, GetOwner());
+		Projectile->Damage = damage;
+		Projectile->FinishSpawning(spawnTransform);
 	}
 }
