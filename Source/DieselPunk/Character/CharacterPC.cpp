@@ -8,6 +8,7 @@
 #include "../Interface/PlayerInputInterface.h"
 #include "../Util/UtilLevelCal.h"
 #include "../Handler/DeckHandler.h"
+#include "../Card/Card.h"
 
 #include <Camera/CameraComponent.h>
 #include <Components/CapsuleComponent.h>
@@ -17,6 +18,9 @@
 #include <GameFramework/Controller.h>
 #include <EnhancedInputComponent.h>
 
+#include "Blueprint/WidgetTree.h"
+#include "Components/Image.h"
+#include "Components/TextBlock.h"
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(CharacterPC)
@@ -63,6 +67,37 @@ void ACharacterPC::BeginPlay()
 	Super::BeginPlay();
 	DeckHandler = new FDeckHandler(this);
 	DeckHandler->BeginPlay();
+	for(int i = 0; i < 23; ++i)
+	{
+		int idx = FMath::Floor(FMath::SRand() * 3);
+		FString cardName = FString::Printf(TEXT("TestSmall%d"), idx + 1);
+		DeckHandler->AddCard(cardName);
+	}
+	DeckHandler->BeginPlayStage();
+
+	UUserWidget* hud = Cast<APlayerControllerBase>(GetController())->GetHUD();
+	for(int i = 0; i < FDeckHandler::MaxHand; ++i)
+	{
+		TArray<FCard*> hand = DeckHandler->GetHands();
+		
+		UUserWidget* card = Cast<UUserWidget>(hud->WidgetTree->FindWidget(*FString::Printf(TEXT("Hand%d"), i)));
+		if(card == nullptr)
+			continue;
+
+		UImage* image = Cast<UImage>(card->WidgetTree->FindWidget(TEXT("CardImage")));
+		if(image == nullptr)
+			continue;
+
+		//image->SetBrushFromTexture(LoadObject<UTexture2D>(nullptr, *(hand[i]->GetCardInfo().TexturePath[0])));
+		FSlateBrush brush = image->GetBrush();
+		brush.SetResourceObject(LoadObject<UTexture>(nullptr, *(hand[i]->GetCardInfo().TexturePath[0])));
+		image->SetBrush(brush);
+
+		UTextBlock* text = Cast<UTextBlock>(card->WidgetTree->FindWidget(TEXT("CardName")));
+		if(text == nullptr)
+			continue;
+		text->SetText(FText::FromString(hand[i]->GetCardInfo().CardName));
+	}
 }
 
 // Called every frame
@@ -417,4 +452,47 @@ float ACharacterPC::GetSkillCoolTimePercent(EAbilityType inType)
 void ACharacterPC::LevelUpEvent()
 {
 	// SetEvent!
+}
+
+//카드 Activate를 실행합니다.
+bool ACharacterPC::ExecuteCardActivate()
+{
+	bool IsSuccessActivate = false;
+	if(DelegateCardActivate.IsBound())
+		DelegateCardActivate.Execute(IsSuccessActivate);
+
+	if(!IsSuccessActivate)
+		return false;
+
+	APlayerControllerBase* controller = Cast<APlayerControllerBase>(GetController());
+
+	if(controller == nullptr)
+		return false;
+
+
+	int32 value = controller->PostActivateCard();
+	DeckHandler->UseCard(value);
+	LOG_SCREEN(FColor::White, TEXT("%d카드를 사용합니다."), value)
+	
+	if(DeckHandler->Draw())
+		controller->RenewHand();
+
+	DelegateCardActivate.Unbind();
+	return true;
+}
+
+//카드 Complete를 실행합니다.
+bool ACharacterPC::ExecuteCardComplete()
+{
+	bool IsSuccessComplete = false;
+	if(DelegateCardComplete.IsBound())
+		DelegateCardComplete.Execute(IsSuccessComplete);
+
+	if(!IsSuccessComplete)
+		return false;
+
+	LOG_SCREEN(FColor::White, TEXT("사용 완료"))
+
+	DelegateCardComplete.Unbind();
+	return true;
 }

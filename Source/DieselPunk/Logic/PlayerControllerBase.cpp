@@ -6,6 +6,7 @@
 #include "../UI/HUD/SkillUpgradeUI.h"
 #include "../Core/DpCheatManager.h"
 #include "../Handler/DeckHandler.h"
+#include "../Card/Card.h"
 
 #include <Blueprint/UserWidget.h>
 #include <EnhancedInputComponent.h>
@@ -14,9 +15,12 @@
 #include <GameFramework/WorldSettings.h>
 #include <Blueprint/WidgetTree.h>
 #include <Components/ScrollBox.h>
+#include <Components/Button.h>
+#include <Components/TextBlock.h>
+#include <Engine/Texture.h>
 
-#include "Components/TextBlock.h"
-#include "DieselPunk/Card/Card.h"
+#include "Components/Image.h"
+#include "Components/SizeBox.h"
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PlayerControllerBase)
@@ -53,6 +57,8 @@ void APlayerControllerBase::BeginPlay()
 		HUD = CreateWidget(this, HUDClass);
 	if (HUD)
 		HUD->AddToViewport();
+
+	DeckInterfaceOpen = false;
 }
 
 void APlayerControllerBase::SetupInputComponent()
@@ -76,6 +82,8 @@ void APlayerControllerBase::SetupInputComponent()
     	EnhancedInputComponent->BindAction(InputF, ETriggerEvent::Started, this, &APlayerControllerBase::Interaction);
     	EnhancedInputComponent->BindAction(InputM, ETriggerEvent::Started, this, &APlayerControllerBase::Pause);
 
+    	EnhancedInputComponent->BindAction(InputDeckInterface, ETriggerEvent::Started, this, &APlayerControllerBase::OpenCloseDeckInterface);
+
         //스킬 호출에 관한 바인딩
         for (EAbilityType type : TEnumRange<EAbilityType>())
         {
@@ -85,6 +93,11 @@ void APlayerControllerBase::SetupInputComponent()
         EnhancedInputComponent->BindAction(SkillInputActions[type], ETriggerEvent::Completed, this, &APlayerControllerBase::OnInputSkillCompleted);
         EnhancedInputComponent->BindAction(SkillInputActions[type], ETriggerEvent::Canceled, this, &APlayerControllerBase::OnInputSkillCanceled);
         }
+
+    	for(int i = 0; i < FDeckHandler::MaxHand; ++i)
+    	{
+    		EnhancedInputComponent->BindAction(InputUseCard[i], ETriggerEvent::Started, this, &APlayerControllerBase::UseCard, i);
+    	}
     }
 }
 
@@ -209,67 +222,134 @@ void APlayerControllerBase::OnInputSkillCanceled(const FInputActionInstance& inI
 	}
 }
 
-void APlayerControllerBase::OpenDeckInterface()
+//덱 인터페이스 켜기/끄기
+void APlayerControllerBase::OpenCloseDeckInterface()
 {
 	if(!PC.IsValid())
 		return;
-	
-	if(!DeckInterfaceClass)
-		return;
-	DeckInterface = CreateWidget(this, DeckInterfaceClass, TEXT("DeckInterface"));
 
-	const TArray<FCard*>& cards = PC->GetDeckHandler()->GetAllCards();
-	int32 num = cards.Num() / FDeckHandler::MaxHand;
-	UScrollBox* box = Cast<UScrollBox>(DeckInterface->WidgetTree->FindWidget(TEXT("VBox")));
-	if(box == nullptr)
+	if(!DeckInterfaceOpen)
 	{
-		DeckInterface->Destruct();
-		return;
-	}
-	
-	for(int i = 0; i < num; ++i)
-	{
-		FString widgetName = FString::Printf(TEXT("CardRow_%d"), i);
-		UUserWidget* row = CreateWidget(this, CardRowClass, *widgetName);
+		if(!DeckInterfaceClass)
+			return;
+		DeckInterface = CreateWidget(this, DeckInterfaceClass, TEXT("DeckInterface"));
 
-		for(int j= 0; j < FDeckHandler::MaxHand; ++j)
+		const TArray<FCard*>& cards = PC->GetDeckHandler()->GetAllCards();
+		int32 num = (cards.Num() % FDeckHandler::MaxHand == 0) ? cards.Num() / FDeckHandler::MaxHand : cards.Num() / FDeckHandler::MaxHand + 1;
+		UScrollBox* box = Cast<UScrollBox>(DeckInterface->WidgetTree->FindWidget(TEXT("SBox")));
+		if(box == nullptr)
 		{
-			int index = FDeckHandler::MaxHand * i + j;
-			
-			//TEST!///////////////////////////////////////////////////////////////////////////
-			//테스트를 위한 코드입니다. 추후에 이미지 적용으로 변경됩니다.
-			widgetName = FString::Printf(TEXT("Text%d"), j);
-			UTextBlock* text = Cast<UTextBlock>(row->WidgetTree->FindWidget(*widgetName));
-			text->SetText(FText::FromString(cards[index]->GetCardInfo().CardName));
-			//TEXT!///////////////////////////////////////////////////////////////////////////
+			DeckInterface->Destruct();
+			DeckInterface = nullptr;
+			return;
 		}
-		box->AddChild(row);
-		CardRows.Add(row);
+	
+		for(int i = 0; i < num; ++i)
+		{
+			FString widgetName = FString::Printf(TEXT("CardRow_%d"), i);
+			UUserWidget* row = CreateWidget(this, CardRowClass, *widgetName);
+
+			for(int j= 0; j < FDeckHandler::MaxHand; ++j)
+			{
+				int index = FDeckHandler::MaxHand * i + j;
+
+				if(index < cards.Num())
+				{
+					widgetName = FString::Printf(TEXT("Card%d"), j);
+					UButton* button = Cast<UButton>(row->WidgetTree->FindWidget(*widgetName));
+					FButtonStyle style = button->GetStyle();
+					style.Normal.SetResourceObject(LoadObject<UTexture>(nullptr, *(cards[index]->GetCardInfo().TexturePath[0])));
+					style.Hovered.SetResourceObject(LoadObject<UTexture>(nullptr, *(cards[index]->GetCardInfo().TexturePath[0])));
+					style.Pressed.SetResourceObject(LoadObject<UTexture>(nullptr, *(cards[index]->GetCardInfo().TexturePath[0])));
+					button->SetStyle(style);
+			
+					//TEST!///////////////////////////////////////////////////////////////////////////
+					//테스트를 위한 코드입니다. 추후에 이미지 적용으로 변경됩니다.
+					widgetName = FString::Printf(TEXT("Text%d"), j);
+					UTextBlock* text = Cast<UTextBlock>(row->WidgetTree->FindWidget(*widgetName));
+					text->SetText(FText::FromString(cards[index]->GetCardInfo().CardName));
+					//TEXT!///////////////////////////////////////////////////////////////////////////
+				}
+				else
+				{
+					widgetName = FString::Printf(TEXT("Card%d"), j);
+					UButton* button = Cast<UButton>(row->WidgetTree->FindWidget(*widgetName));
+					button->SetVisibility(ESlateVisibility::Hidden);
+				}
+			}
+			box->AddChild(row);
+			CardRows.Add(row);
+		}
+
+		if(!DeckInterface)
+			return;
+		DeckInterface->AddToViewport();
+	
+		SetUIControlOn();
+		DeckInterfaceOpen = true;
 	}
+	else
+	{
+		UScrollBox* box = Cast<UScrollBox>(DeckInterface->WidgetTree->FindWidget(TEXT("SBox")));
+		if(box == nullptr)
+			return;
+		box->ClearChildren();
 
-	if(!DeckInterface)
-		return;
-	DeckInterface->AddToViewport();
+		for(UUserWidget* widget : CardRows)
+			widget->Destruct();
+		CardRows.Empty();
 	
-	SetUIControlOn();
+		DeckInterface->RemoveFromParent();
+
+		DeckInterface->Destruct();
+
+		DeckInterface = nullptr;
+	
+		SetUIControlOff();
+		DeckInterfaceOpen = false;
+	}
 }
 
-void APlayerControllerBase::CloseDeckInterface()
+void APlayerControllerBase::UseCard(int32 InCardIndex)
 {
-	UScrollBox* box = Cast<UScrollBox>(DeckInterface->WidgetTree->FindWidget(TEXT("VBox")));
-	box->ClearChildren();
+	if(!PC.IsValid())
+		return;
+	if(InCardIndex >= FDeckHandler::MaxHand)
+		return;
+	const FDeckHandler* handler = PC->GetDeckHandler();
+	if(handler == nullptr)
+		return;
 
-	for(UUserWidget* widget : CardRows)
-		widget->Destruct();
-	CardRows.Empty();
-	
-	DeckInterface->RemoveFromParent();
+	if(handler->GetHands()[InCardIndex] == nullptr)
+		return;
 
-	DeckInterface->Destruct();
+	LOG_SCREEN(FColor::White, TEXT("%d카드가 등록되었습니다."), InCardIndex)
 	
-	SetUIControlOff();
+	for(int i = 0; i < FDeckHandler::MaxHand; ++i)
+	{
+		if(i == InCardIndex)
+			ChangeSizeCard(i, FVector2d(1.5, 1.5));
+		else
+			ChangeSizeCard(i, FVector2d(1.0, 1.0));
+	}
+	UseCardNum = InCardIndex;
+	
+	handler->GetHands()[InCardIndex]->BindCardActivate();
+	handler->GetHands()[InCardIndex]->BindCardComplete();
 }
 
+void APlayerControllerBase::ChangeSizeCard(int32 InCardIndex, FVector2d InScale)
+{
+	UUserWidget* card = Cast<UUserWidget>(HUD->WidgetTree->FindWidget(*FString::Printf(TEXT("Hand%d"), InCardIndex)));
+	if(card == nullptr)
+		return;
+
+	USizeBox* sizebox = Cast<USizeBox>(card->WidgetTree->FindWidget(TEXT("SizeBox")));
+	if(sizebox == nullptr)
+		return;
+	
+	sizebox->SetRenderScale(InScale);
+}
 
 void APlayerControllerBase::Jump()
 {
@@ -365,5 +445,48 @@ void APlayerControllerBase::SetUIControlOff()
 	// 마우스 커서 off //키보드 입력 on
 	bShowMouseCursor = false;
 	PC->CanCameraControl = true;
+}
+
+//카드를 Activate한 후 처리를 담당합니다.
+int32 APlayerControllerBase::PostActivateCard()
+{
+	ChangeSizeCard(UseCardNum, FVector2d(1.0, 1.0));
+	UUserWidget* card = Cast<UUserWidget>(HUD->WidgetTree->FindWidget(*FString::Printf(TEXT("Hand%d"), UseCardNum)));
+	if(card == nullptr)
+		return -1;
+
+	card->SetVisibility(ESlateVisibility::Hidden);
+	return UseCardNum;
+}
+
+//드로우 한 후 카드 정보를 갱신합니다.
+void APlayerControllerBase::RenewHand()
+{
+	for(int i = 0; i < FDeckHandler::MaxHand; ++i)
+	{
+		TArray<FCard*> hand = PC->GetDeckHandler()->GetHands();
+		if(hand[i] == nullptr)
+			continue;
+		
+		UUserWidget* card = Cast<UUserWidget>(HUD->WidgetTree->FindWidget(*FString::Printf(TEXT("Hand%d"), i)));
+		if(card == nullptr)
+			continue;
+
+		card->SetVisibility(ESlateVisibility::Visible);
+
+		UImage* image = Cast<UImage>(card->WidgetTree->FindWidget(TEXT("CardImage")));
+		if(image == nullptr)
+			continue;
+
+		//image->SetBrushFromTexture(LoadObject<UTexture2D>(nullptr, *(hand[i]->GetCardInfo().TexturePath[0])));
+		FSlateBrush brush = image->GetBrush();
+		brush.SetResourceObject(LoadObject<UTexture>(nullptr, *(hand[i]->GetCardInfo().TexturePath[0])));
+		image->SetBrush(brush);
+
+		UTextBlock* text = Cast<UTextBlock>(card->WidgetTree->FindWidget(TEXT("CardName")));
+		if(text == nullptr)
+			continue;
+		text->SetText(FText::FromString(hand[i]->GetCardInfo().CardName));
+	}
 }
 

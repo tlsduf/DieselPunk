@@ -26,6 +26,9 @@ void USkillSpawnTurret::SkillStarted()
 	
 	if(bTaskOn == false)
 	{
+		if(ownerPawn->ExecuteCardActivate())
+			bTaskOn = true;
+		/*
 		//터렛 스몰에 해당하는 경로 탐색을 위한 데이터 테이블 서치
 		const FCharacterDataTable* dataTable = FDataTableManager::GetInstance()->GetData<FCharacterDataTable>(EDataTableType::Character, TEXT("TurretSmall"));
 		if(!dataTable)
@@ -48,11 +51,13 @@ void USkillSpawnTurret::SkillStarted()
 			
 			ControlTurretId = FObjectManager::GetInstance()->CreateActor<ACharacterTurret>(TurretClass, spawnParam);
 		}
-		
-		bTaskOn = true;
+		*/
 	}
 	else
 	{
+		if(ownerPawn->ExecuteCardComplete())
+			bTaskOn = false;
+		/*
 		ACharacterTurret* controlTurret = Cast<ACharacterTurret>(FObjectManager::GetInstance()->FindActor(ControlTurretId));
 		if(!controlTurret)
 		{
@@ -66,8 +71,8 @@ void USkillSpawnTurret::SkillStarted()
 			LOG_SCREEN(FColor::Yellow, TEXT("ControlTurretId: %d에 해당하는 Turret이 설치될 수 없습니다.."), ControlTurretId)
 			return;
 		}
+		*/
 		
-		bTaskOn = false;
 	}
 }
 

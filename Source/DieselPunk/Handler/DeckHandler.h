@@ -37,6 +37,7 @@ private:
 public:
 	//가지고 있는 카드를 반환합니다.
 	const TArray<FCard*>& GetAllCards() const {return Manager;}
+	const TArray<FCard*>& GetHands() const {return Hand;}
 public:
 //관리단계에서 카드를 관리하기 위한 함수입니다. 구매/판매/획득 시 사용합니다. 
 	//카드를 생성하고 추가합니다.
@@ -47,7 +48,7 @@ public:
 	
 //인게임에서 카드를 사용하기 위한 함수들입니다.
 	//카드를 드로우 합니다. 패에 카드가 있을 경우 드로우하지 않습니다. 덱에 카드가 없을 때 행거의 카드를 가져와 리필합니다.
-	void Draw();
+	bool Draw();
 
 	//카드를 리플레이스 합니다. 패에 있는 카드를 버리고 다시 카드를 뽑습니다. 덱에 카드가 없을 때 행거의 카드를 가져와 리필합니다.
 	void Replace();
@@ -57,4 +58,7 @@ public:
 
 	//행거에서 덱의 카드를 보충합니다.
 	void RefillDeck();
+
+	//패에서 카드를 사용합니다.
+	void UseCard(int32 InUseCardNum);
 };

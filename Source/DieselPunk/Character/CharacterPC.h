@@ -87,6 +87,7 @@ public:
 	
 	//SplineGrinder 의 LandAction 함수 호출용 // Land 시 Execute
 	FDelegateLandAction DelegateLandAction;
+
 	
 public:
 	ACharacterPC();
@@ -175,5 +176,13 @@ public:
 	FDelegate_CardActivate& GetDelegateCardActivate(){return DelegateCardActivate;}
 	FDelegate_CardComplete& GetDelegateCardComplete(){return DelegateCardComplete;}
 
+	//덱 핸들러를 반환합니다.
 	const FDeckHandler* GetDeckHandler() const{return DeckHandler;}
+
+	//카드 Activate를 실행합니다.
+	bool ExecuteCardActivate();
+
+	//카드 Complete를 실행합니다.
+	bool ExecuteCardComplete();
 };
+

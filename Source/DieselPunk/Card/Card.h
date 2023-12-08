@@ -10,10 +10,11 @@ class ACharacterPC;
 
 struct CardInfo
 {
-	FString CardName;		//카드 이름
-	ECardType CardType;		//카드 타입
-	int32 Cost;				//카드 코스트
-	FDateTime GetTime;		//획득 시간
+	FString CardName;				//카드 이름
+	ECardType CardType;				//카드 타입
+	int32 Cost;						//카드 코스트
+	FDateTime GetTime;				//획득 시간
+	TArray<FString> TexturePath;	//카드 텍스쳐
 };
 
 class DIESELPUNK_API FCard
@@ -21,7 +22,6 @@ class DIESELPUNK_API FCard
 protected:
 	TWeakObjectPtr<ACharacterPC> Owner;
 	CardInfo Info;
-	
 public:
 	FCard(const FString& InCardName, TWeakObjectPtr<ACharacterPC> InOwner);
 	virtual ~FCard();

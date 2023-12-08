@@ -53,10 +53,45 @@ class DIESELPUNK_API APlayerControllerBase : public APlayerController
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP_Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction *InputM;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP_Input", meta = (AllowPrivateAccess = "true"))
+	UInputAction *InputDeckInterface;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP_Input", meta = (AllowPrivateAccess = "true"))
+	TArray<UInputAction*> InputUseCard;
 	
 	// 6개의 스킬 InputAction // LM, RM, LShift, Q, E, R
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP_Input", meta = (AllowPrivateAccess = "true"))
 	TMap<EAbilityType, TObjectPtr<UInputAction>> SkillInputActions;
+
+private:
+	UPROPERTY()
+	UUserWidget* StartMenu;
+
+	UPROPERTY(EditAnywhere, Category="MYDP_UI")
+	TSubclassOf<UUserWidget> StartMenuClass;
+
+	UPROPERTY()
+	UUserWidget* DeckInterface;
+	
+	UPROPERTY(EditAnywhere, Category="MYDP_UI")
+	TSubclassOf<UUserWidget> DeckInterfaceClass;
+
+	UPROPERTY()
+	TArray<UUserWidget*> CardRows;
+	
+	UPROPERTY(EditAnywhere, Category="MYDP_UI")
+	TSubclassOf<UUserWidget> CardRowClass;
+	
+	UPROPERTY()
+	UUserWidget* HUD;
+
+	UPROPERTY(EditAnywhere, Category="MYDP_UI")
+	TSubclassOf<UUserWidget> HUDClass;
+
+	bool DeckInterfaceOpen = false;
+
+	int32 UseCardNum = -1;
 	
 protected:
 	APlayerControllerBase();
@@ -97,37 +132,14 @@ private:
 	void OnInputSkillCompleted(const FInputActionInstance &inInstance);
 	void OnInputSkillCanceled(const FInputActionInstance &inInstance);
 
-	//덱 인터페이스 켜기
-	void OpenDeckInterface();
+	//덱 인터페이스 켜기/끄기
+	void OpenCloseDeckInterface();
 
-	//덱 인터페이스 끄기
-	void CloseDeckInterface();
-
-private:
-	UPROPERTY()
-	UUserWidget* StartMenu;
-
-	UPROPERTY(EditAnywhere, Category="MYDP_UI")
-	TSubclassOf<UUserWidget> StartMenuClass;
-
-	UPROPERTY()
-	UUserWidget* DeckInterface;
+	//카드 사용 준비
+	void UseCard(int32 InCardIndex);
 	
-	UPROPERTY(EditAnywhere, Category="MYDP_UI")
-	TSubclassOf<UUserWidget> DeckInterfaceClass;
-
-	UPROPERTY()
-	TArray<UUserWidget*> CardRows;
-	
-	UPROPERTY(EditAnywhere, Category="MYDP_UI")
-	TSubclassOf<UUserWidget> CardRowClass;
-	
-	UPROPERTY()
-	UUserWidget* HUD;
-
-	UPROPERTY(EditAnywhere, Category="MYDP_UI")
-	TSubclassOf<UUserWidget> HUDClass;
-
+	//카드 크기 변경
+	void ChangeSizeCard(int32 InCardIndex, FVector2d InScale);
 public:
 	
 	// (임시) 블루프린트에서 활용할 UI컨트롤을 위한 시간, 컨트롤 제어
@@ -136,4 +148,13 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetUIControlOff();
+
+	//HUD를 반환합니다.
+	UUserWidget* GetHUD(){return HUD;}
+
+	//카드를 Activate한 후 처리를 담당합니다.
+	int32 PostActivateCard();
+
+	//드로우 한 후 카드 정보를 갱신합니다.
+	void RenewHand();
 };

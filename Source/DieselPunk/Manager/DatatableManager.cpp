@@ -34,6 +34,7 @@ void FDataTableManager::LoadDataTables()
 	LoadDataTable(EDataTableType::Stat);
 	LoadDataTable(EDataTableType::Character);
 	LoadDataTable(EDataTableType::MonsterSpawner);
+	LoadDataTable(EDataTableType::Card);
 }
 
 //변수 TableName의 데이터 테이블을 로드합니다.

@@ -42,6 +42,12 @@ namespace UtilPath
 		return FString::Printf(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/DieselPunk/UI/Widgets/%s.%s_C'"), InUIName, InUIName);
 	}
 
+	//DeckInterFace UI Path를 생성합니다.
+	inline FString GetDeckInterfaceUIPath(const TCHAR* InUIName)
+	{
+		return FString::Printf(TEXT("/Script/Engine.Texture2D'/Game/DieselPunk/UI/Widgets/DeckInterface/Textures/%s.%s'"), InUIName, InUIName);
+	}
+
 	/*template<typename T>
 	T* CreateUI( const TCHAR* InPath )
 	{

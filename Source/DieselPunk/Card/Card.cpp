@@ -10,7 +10,10 @@ FCard::FCard(const FString& InCardName, TWeakObjectPtr<ACharacterPC> InOwner)
 	: Owner(InOwner)
 {
 	Info.CardName = InCardName;
-	Info.GetTime = FDateTime::Now(); 
+	Info.GetTime = FDateTime::Now();
+	const FCardDataTable* data = FDataTableManager::GetInstance()->GetData<FCardDataTable>(EDataTableType::Card, Info.CardName);
+	for(const FString& name : data->ImageNames)
+		Info.TexturePath.Add(UtilPath::GetDeckInterfaceUIPath(*name));
 }
 
 FCard::~FCard()

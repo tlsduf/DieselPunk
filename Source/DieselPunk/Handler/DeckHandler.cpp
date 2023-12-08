@@ -11,7 +11,6 @@
 FDeckHandler::FDeckHandler(TWeakObjectPtr<ACharacterPC> InOwner)
 	: Owner(InOwner)
 {
-	Hand.SetNum(MaxHand);
 }
 
 FDeckHandler::~FDeckHandler()
@@ -35,6 +34,7 @@ void FDeckHandler::BeginPlayStage()
 {
 	Deck.Empty();
 	Hand.Empty();
+	Hand.SetNum(MaxHand);
 	Hanger.Empty();
 
 	//덱에 카드 추가
@@ -78,6 +78,8 @@ void FDeckHandler::SortCard(ECardSortType InSortType)
 void FDeckHandler::AddCard(FString InCardName)
 {
 	const FCardDataTable* data = FDataTableManager::GetInstance()->GetData<FCardDataTable>(EDataTableType::Card, InCardName);
+	if(data == nullptr)
+		return;
 
 	FCard* card = nullptr;
 	
@@ -114,12 +116,12 @@ void FDeckHandler::DeleteCard(FString InCardName)
 }
 
 //카드를 드로우 합니다. 패에 카드가 있을 경우 드로우하지 않습니다. 덱에 카드가 없을 때 행거의 카드를 가져와 리필합니다.
-void FDeckHandler::Draw()
+bool FDeckHandler::Draw()
 {
 	//패에 카드가 있으면 드로우 안함.
 	for(const FCard* card : Hand)
 		if(card != nullptr)
-			return;
+			return false;
 
 	//드로우
 	for(int i = 0; i < MaxHand; ++i)
@@ -130,6 +132,7 @@ void FDeckHandler::Draw()
 		
 		Hand[i] = Deck.Pop();
 	}
+	return true;
 }
 
 //카드를 리플레이스 합니다. 패에 있는 카드를 버리고 다시 카드를 뽑습니다. 덱에 카드가 없을 때 행거의 카드를 가져와 리필합니다.
@@ -167,8 +170,19 @@ void FDeckHandler::RefillDeck()
 
 	//행거의 모든 카드를 덱으로 보냄
 	while(!Hanger.IsEmpty())
-		Deck.Push(Hanger.Pop());
+		Deck.Add(Hanger.Pop());
 
 	//셔플
 	ShuffleDeck();
+}
+
+//패에서 카드를 사용합니다.
+void FDeckHandler::UseCard(int32 InUseCardNum)
+{
+	if(Hand[InUseCardNum] == nullptr)
+		return;
+
+	Hanger.Add(Hand[InUseCardNum]);
+
+	Hand[InUseCardNum] = nullptr;
 }
