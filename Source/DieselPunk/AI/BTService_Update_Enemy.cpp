@@ -156,22 +156,13 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
 // 넥서스의 위치를 반환한다.
 // 타겟의 위치를 반환하도록 변경합니다. ACharacterNPC에 Target이 등록되어 있다면 해당 액터의 위치를 반환합니다. 없다면 nexus를 찾아 위치를 반환합니다.
 // =============================================================
-FVector UBTService_Update_Enemy::GetTargetLocation(ACharacterNPC* InAiCharacter)
+FVector UBTService_Update_Enemy::GetTargetLocation(ACharacterNPC* InAICharacter)
 {
-    if(InAiCharacter->GetAttackTarget().IsValid())
-        return InAiCharacter->GetAttackTargetLocation();
-    
-    int nexusID = FObjectManager::GetInstance()->FindActorByPredicate([](AActor* InActor)
-    {
-        if(ACharacterNPC* thisNPC = Cast<ACharacterNPC>(InActor))
-            if(thisNPC->NPCType == ENPCType::Nexus)
-                return true;
-        
-        return false;
-    });
+    if(InAICharacter->GetAttackTarget().IsValid())
+        return InAICharacter->GetAttackTargetLocation();
 
-    if(nexusID == FObjectManager::GetInstance()->INVALID_OBJECTID)
+    if(FObjectManager::GetInstance()->GetNexus() == nullptr)
         return FVector::ZeroVector;
     
-    return FObjectManager::GetInstance()->FindActor(nexusID)->GetActorLocation();
+    return FObjectManager::GetInstance()->GetNexus()->GetActorLocation();
 }

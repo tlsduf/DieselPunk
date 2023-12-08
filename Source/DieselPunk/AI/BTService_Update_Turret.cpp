@@ -95,7 +95,7 @@ void UBTService_Update_Turret::TickNode(UBehaviorTreeComponent &OwnerComp, uint8
 // =============================================================
 ACharacterNPC* UBTService_Update_Turret::SearchNearestEnemy(ACharacterNPC* inThisCharacter)
 {
-    TArray<int> OutActors;
+    TArray<int32> OutActors;
     FObjectManager::GetInstance()->FindActorArrayByPredicate(OutActors, [](AActor* InActor)
     {
         if(ACharacterNPC* thisNPC = Cast<ACharacterNPC>(InActor))
@@ -104,20 +104,9 @@ ACharacterNPC* UBTService_Update_Turret::SearchNearestEnemy(ACharacterNPC* inThi
         
         return false;
     });
-
-    ACharacterNPC* nearestActor = nullptr;
-    float minDistance = FLT_MAX;
-    for( auto It : OutActors)
-    {
-        float distance = FVector::Dist(Cast<ACharacterNPC>(FObjectManager::GetInstance()->FindActor(It))->GetActorLocation(), inThisCharacter->GetActorLocation());
-        if ( minDistance < distance )
-            continue;
-        
-        minDistance = distance;
-        nearestActor = Cast<ACharacterNPC>(FObjectManager::GetInstance()->FindActor(It));
-    }
-
-    return nearestActor;
+    
+    return Cast<ACharacterNPC>(FObjectManager::GetInstance()->FindActor(
+        FObjectManager::GetInstance()->GetNearestACtorByRangeAndIds(inThisCharacter->GetActorLocation(), OutActors)));
 }
 
 

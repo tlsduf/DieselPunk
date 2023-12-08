@@ -39,12 +39,16 @@ void USkillSoldierRM::SkillTriggered()
 	FVector endLocation = lineTraceLocation + lineTraceRotation.Vector() * 10000;
 	FVector shotLocation = OwnerCharacterPC->GetMesh()->GetSocketLocation("Muzzle_01");
 	FRotator shotRotation = (endLocation - shotLocation).Rotation();
+
+	// 데미지 결정
+	float damage = Atk * AtkCoefficient;
 	
 	// projectile spawn
 	if(ProjectileClass)
 	{
 		FTransform spawnTransform( shotRotation, shotLocation);
 		Projectile = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileClass, spawnTransform, GetOwner());
+		Projectile->Damage = damage;
 		Projectile->FinishSpawning(spawnTransform);
 	}
 }

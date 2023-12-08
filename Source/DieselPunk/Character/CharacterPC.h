@@ -80,7 +80,6 @@ public:
 	FDelegateInteractTask DelegateInteractTask;
 
 	//SplineGrinder 의 JumpAction 함수 호출용 // Jump 시 Execute
-	
 	FDelegateJumpAction DelegateJumpAction;
 
 	FVector2D HorizontalForce = FVector2D::Zero();

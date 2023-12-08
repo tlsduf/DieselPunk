@@ -23,6 +23,9 @@ void UProjectileAttack::AbilityStart()
 	Super::AbilityStart();
 
 	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
+
+	// 데미지 결정
+	float damage = Atk * AtkCoefficient;
 	
 	// projectile spawn
 	if(ProjectileBaseClass)
@@ -32,6 +35,7 @@ void UProjectileAttack::AbilityStart()
 		FTransform SpawnTransform = FTransform( shotRotation, shotLocation);
 		
 		ProjectileBase = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileBaseClass, SpawnTransform, GetOwner());
+		ProjectileBase->Damage = damage;
 		ProjectileBase->FinishSpawning(SpawnTransform);
 	}
 }

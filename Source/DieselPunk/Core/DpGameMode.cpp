@@ -13,7 +13,7 @@ ADpGameMode::ADpGameMode()
 	PlayerControllerClass = APlayerControllerBase::StaticClass();
 	
 	// set default pawn class to our Blueprinted character
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Script/Engine.Blueprint'/Game/DieselPunk/Blueprints/Characters/BP_CharacterPC.BP_CharacterPC_C'"));
+	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Script/Engine.Blueprint'/Game/DieselPunk/Blueprints/Characters/BP_PC_2.BP_PC_2_C'"));
 	if (PlayerPawnBPClass.Class != NULL)
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;

@@ -47,6 +47,9 @@ void UMeleeAttack::Attack()
 	FVector endLocation = startLocation + ownerPawn->GetActorForwardVector() * AttackRange;
 	UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, EProjectileOwnerType::Enemy, DebugOnOff);
 
+	// 데미지 결정
+	float damage = Atk * AtkCoefficient;
+	
 	// 데미지 전달
 	if(!sweepResults.IsEmpty())
 	{
@@ -54,7 +57,7 @@ void UMeleeAttack::Attack()
 		for (auto It = sweepResults.CreateIterator(); It; It++)
 		{
 			hitActor = It->GetActor();
-			UGameplayStatics::ApplyDamage(hitActor, Damage, OwnerController, ownerPawn, nullptr);
+			UGameplayStatics::ApplyDamage(hitActor, damage, OwnerController, ownerPawn, nullptr);
 		}
 	}
 }

@@ -43,3 +43,4 @@ void USkillSoldierE::SkillTriggered()
 	if(USoldierAnimInstance* animInst = Cast<USoldierAnimInstance>(OwnerCharacterPC->GetMesh()->GetAnimInstance()))	
 		animInst->PlayMontage(EAbilityType::SkillE, ESoldierSkillMontageType::Attack);
 }
+

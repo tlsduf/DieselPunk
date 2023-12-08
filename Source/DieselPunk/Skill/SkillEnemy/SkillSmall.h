@@ -25,6 +25,8 @@ protected:
 
 public:
 	virtual void AbilityStart() override;
+	
+	float CaptureDamage;	// 람다함수 캡쳐용 변수
 
 private:
 	FVector ShotLocation;
@@ -45,4 +47,5 @@ private:
 	FTimerHandle FireHandle2;
 	FTimerHandle FireHandle3;
 	FTimerHandle FireHandle4;
+
 };
