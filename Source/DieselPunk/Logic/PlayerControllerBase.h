@@ -134,13 +134,21 @@ private:
 
 	//덱 인터페이스 켜기/끄기
 	void OpenCloseDeckInterface();
-
+	
 	//카드 사용 준비
 	void UseCard(int32 InCardIndex);
 	
 	//카드 크기 변경
 	void ChangeSizeCard(int32 InCardIndex, FVector2d InScale);
 public:
+
+	//필터 변경 시 블루프린트 호출
+	UFUNCTION(BlueprintCallable, Category = "MYDP_Function")
+	void CallBlueprint_ChangeFilter(ECardFilterType InFilterType);
+
+	//정렬 변경 시 블루프린트 호출
+	UFUNCTION(BlueprintCallable, Category = "MYDP_Function")
+	void CallBlueprint_ChangeSort(ECardSortType InSortType);
 	
 	// (임시) 블루프린트에서 활용할 UI컨트롤을 위한 시간, 컨트롤 제어
 	UFUNCTION(BlueprintCallable)

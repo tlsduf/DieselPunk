@@ -176,7 +176,7 @@ public:
 	FDelegate_CardComplete& GetDelegateCardComplete(){return DelegateCardComplete;}
 
 	//덱 핸들러를 반환합니다.
-	const FDeckHandler* GetDeckHandler() const{return DeckHandler;}
+	FDeckHandler* GetDeckHandler() {return DeckHandler;}
 
 	//카드 Activate를 실행합니다.
 	bool ExecuteCardActivate();

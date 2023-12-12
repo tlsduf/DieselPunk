@@ -38,7 +38,7 @@ public:
 	void Complete(bool& OutSuccess);
 
 public:
-	const CardInfo& GetCardInfo(){return Info;}
+	const CardInfo& GetCardInfo() const {return Info;}
 
 private:
 	//카드 사용 함수

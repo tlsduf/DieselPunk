@@ -67,9 +67,9 @@ void ACharacterPC::BeginPlay()
 	Super::BeginPlay();
 	DeckHandler = new FDeckHandler(this);
 	DeckHandler->BeginPlay();
-	for(int i = 0; i < 23; ++i)
+	for(int i = 0; i < 48; ++i)
 	{
-		int idx = FMath::Floor(FMath::SRand() * 3);
+		int idx = FMath::Floor(FMath::SRand() * 9);
 		FString cardName = FString::Printf(TEXT("TestSmall%d"), idx + 1);
 		DeckHandler->AddCard(cardName);
 	}

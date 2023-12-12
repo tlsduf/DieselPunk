@@ -109,7 +109,19 @@ enum class ECardType : uint8
 UENUM( BlueprintType )
 enum class ECardSortType : uint8
 {
+	None,
 	Order	UMETA( ToolTip = "획득 순" ),
 	Name	UMETA( ToolTip = "이름 순" ),
 	Cost	UMETA( ToolTip = "코스트 순" ),
+};
+
+// 카드 정렬 타입
+UENUM( BlueprintType )
+enum class ECardFilterType : uint8
+{
+	Turret			UMETA( ToolTip = "포탑" ),
+	Installation	UMETA( ToolTip = "설치물" ),
+	Ability			UMETA( ToolTip = "능력" ),
+	All				UMETA( ToolTip = "전체" ),
+	None,
 };

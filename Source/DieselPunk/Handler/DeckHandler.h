@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
+#include "DieselPunk/Common/Enum.h"
 /**
  * Deck을 관리하는 핸들러입니다.
  */
@@ -17,8 +18,9 @@ class FDeckHandler
 	TWeakObjectPtr<ACharacterPC> Owner;
 	int32 Cost;
 
-	UPROPERTY()
-	UUserWidget* DeckInterface;
+	ECardSortType	SortType = ECardSortType::Order;
+	ECardFilterType	FilterType = ECardFilterType::All;
+	
 public:
 	static constexpr int32 MaxHand = 5;
 public:
@@ -33,11 +35,14 @@ public:
 private:
 //덱 인터페이스에서 사용할 함수입니다.
 	//카드를 정렬 방법에 따라 정렬합니다.
-	void SortCard(ECardSortType InSortType);
+	void SortCard(TArray<const FCard*>& OutCards, ECardSortType InSortType);
 public:
 	//가지고 있는 카드를 반환합니다.
 	const TArray<FCard*>& GetAllCards() const {return Manager;}
 	const TArray<FCard*>& GetHands() const {return Hand;}
+
+	//덱 인터페이스에 출력하기 위한 카드를 반환합니다.
+	void GetDeckInterfaceCards(TArray<const FCard*>& OutCards, ECardFilterType InFilterType = ECardFilterType::None, ECardSortType InSortType = ECardSortType::None);
 public:
 //관리단계에서 카드를 관리하기 위한 함수입니다. 구매/판매/획득 시 사용합니다. 
 	//카드를 생성하고 추가합니다.

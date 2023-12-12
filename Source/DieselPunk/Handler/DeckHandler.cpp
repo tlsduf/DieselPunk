@@ -49,29 +49,45 @@ void FDeckHandler::BeginPlayStage()
 }
 
 //카드를 정렬 방법에 따라 정렬합니다.
-void FDeckHandler::SortCard(ECardSortType InSortType)
+void FDeckHandler::SortCard(TArray<const FCard*>& OutCards, ECardSortType InSortType)
 {
 	switch (InSortType)
 	{
 	case ECardSortType::Order:
-		Manager.Sort([](FCard& lhs, FCard& rhs)
+		OutCards.Sort([](const FCard& lhs, const FCard& rhs)
 		{
 			return lhs.GetCardInfo().GetTime <= rhs.GetCardInfo().GetTime;
 		});
 		break;
 	case ECardSortType::Name:
-		Manager.Sort([](FCard& lhs, FCard& rhs)
+		OutCards.Sort([](const FCard& lhs, const FCard& rhs)
 		{
 			return lhs.GetCardInfo().CardName <= rhs.GetCardInfo().CardName;
 		});
 		break;
 	case ECardSortType::Cost:
-		Manager.Sort([](FCard& lhs, FCard& rhs)
+		OutCards.Sort([](const FCard& lhs, const FCard& rhs)
 		{
 			return lhs.GetCardInfo().Cost <= rhs.GetCardInfo().Cost;
 		});
 		break;
 	}
+}
+
+//덱 인터페이스에 출력하기 위한 카드를 반환합니다.
+void FDeckHandler::GetDeckInterfaceCards(TArray<const FCard*>& OutCards, ECardFilterType InFilterType, ECardSortType InSortType)
+{
+	if(InFilterType != ECardFilterType::None)
+		FilterType = InFilterType;
+
+	if(InSortType != ECardSortType::None)
+		SortType = InSortType;
+	
+	for(const FCard* card : Manager)
+		if(FilterType == ECardFilterType::All || static_cast<uint8>(card->GetCardInfo().CardType) == static_cast<uint8>(FilterType))
+			OutCards.Add(card);
+
+	SortCard(OutCards, SortType);
 }
 
 //카드를 생성하고 추가합니다.
@@ -86,11 +102,13 @@ void FDeckHandler::AddCard(FString InCardName)
 	switch (data->CardType)
 	{
 	case ECardType::Ability:
+		card = new FTurretCard(InCardName, Owner);
 		break;
 	case ECardType::Turret:
 		card = new FTurretCard(InCardName, Owner);
 		break;
 	case ECardType::Installation:
+		card = new FTurretCard(InCardName, Owner);
 		break;
 	default:
 		LOG_SCREEN(FColor::Red, TEXT("FDeckHandler::AddCard() : 등록되지 않은 ECardType입니다."))
