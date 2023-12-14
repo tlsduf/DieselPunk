@@ -11,8 +11,6 @@
 #include "SpawnArea.generated.h"
 
 class USplineComponent;
-class UStaticMesh;
-class UInstancedStaticMeshComponent;
 
 struct FMonsterSpawnInfo;
 struct FSpawnInfo1

@@ -53,6 +53,7 @@ void UDpCheatManager::StartSpawn(const FString& InCharacterName)
 		return false;
 	});
 	ASpawnArea* spawnArea = Cast<ASpawnArea>(FObjectManager::GetInstance()->FindActor(spawnerID));
-	spawnArea->SetSpawnerName(InCharacterName);
+	if(spawnArea)
+		spawnArea->SetSpawnerName(InCharacterName);
 }
 

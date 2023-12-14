@@ -9,6 +9,7 @@
 #include "../Manager/ObjectManager.h"
 
 #include <Components/SplineComponent.h>
+#include <DrawDebugHelpers.h>
 
 
 // =============================================================
@@ -40,6 +41,15 @@ void ASpawnArea::BeginPlay()
 	PolygonPoints.Reserve(SplineComponent->GetNumberOfSplinePoints());
 	for(int i = 0; i < SplineComponent->GetNumberOfSplinePoints(); ++i)
 		PolygonPoints.Add(SplineComponent->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::World));
+
+	// 스플라인 디버그라인
+	for(int i = 0; i < SplineComponent->GetNumberOfSplinePoints(); ++i)
+	{
+		if(i == SplineComponent->GetNumberOfSplinePoints() - 1)
+			DrawDebugLine( GetWorld(),SplineComponent->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::World),SplineComponent->GetLocationAtSplinePoint(0, ESplineCoordinateSpace::World),FColor::Red, true);
+		else
+			DrawDebugLine( GetWorld(),SplineComponent->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::World),SplineComponent->GetLocationAtSplinePoint(i + 1, ESplineCoordinateSpace::World),FColor::Red, true);
+	}
 }
 
 // =============================================================

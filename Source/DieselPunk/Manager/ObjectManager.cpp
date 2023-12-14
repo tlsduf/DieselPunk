@@ -112,7 +112,7 @@ int32 FObjectManager::AddActor(AActor* InActor)
 	TWeakObjectPtr<AActor> actor = nullptr;
 	for(const TPair<int32, TWeakObjectPtr<AActor>>& object : Objects)
 	{
-		if(object.Value.IsValid() || object.Value.Get() == InActor)
+		if(object.Value.IsValid() && object.Value.Get() == InActor)
 			actor = object.Value;
 	}
 	
@@ -198,8 +198,10 @@ ACharacterNPC* FObjectManager::GetNexus()
 		{
 			ACharacterNPC* nexus = Cast<ACharacterNPC>(object.Value);
 			if(nexus != nullptr && nexus->NPCType == ENPCType::Nexus)
-			Nexus = nexus;
-			return Nexus.Get();
+			{
+				Nexus = nexus;
+				return Nexus.Get();
+			}
 		}
 	}
 	return nullptr;
