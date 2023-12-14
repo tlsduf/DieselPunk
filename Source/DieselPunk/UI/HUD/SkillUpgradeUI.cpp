@@ -15,7 +15,7 @@
 // =============================================================
 void USkillUpgradeUI::SetControls()
 {
-	RandomNum = GetRandomNumber(0,5);
+	RandomNum = FMath::RandRange(0,5);
 
 	// 텍스트 세팅
 	SetText(RandomNum);

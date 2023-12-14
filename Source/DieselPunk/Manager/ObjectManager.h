@@ -69,8 +69,8 @@ public:
 	int32	AddActor(AActor* InActor);
 	
 private:
-	//캐릭터 베이스의 오브젝트 ID를 설정합니다.
-	void	SetObjectIdAtCharacterBase(AActor* InActor, int32 InObjectId);
+	//오브젝트 ID를 설정합니다.
+	void	SetObjectIdAt(AActor* InActor, int32 InObjectId);
 
 	//캐릭터일 경우에 캡슐컴포넌트의 Half Height만큼 위로 올린 값을 반환합니다.
 	FVector GetLocationByPawn(AActor* InActor, const FVector& InLocation);
@@ -126,7 +126,7 @@ int32 FObjectManager::CreateActor(UClass* InClass, const FSpawnParam& InSpawnPar
 
 	//오브젝트ID 등록
 	int32 objId = FObjectIdGenerator::GenerateID();
-	SetObjectIdAtCharacterBase(actor, objId);
+	SetObjectIdAt(actor, objId);
 
 	//스폰 마무리
 	actor->FinishSpawning(spawnTransform);

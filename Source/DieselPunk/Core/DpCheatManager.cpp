@@ -6,6 +6,7 @@
 #include "../Manager/DatatableManager.h"
 #include "../Data/CharacterDataTable.h"
 #include "../Character/CharacterNPC.h"
+#include "../Actor/SpawnArea.h"
 
 //액터를 플레이어 앞에 스폰합니다.
 void UDpCheatManager::SpawnActor(const FString& InCharacterName)
@@ -41,3 +42,17 @@ void UDpCheatManager::DestroyActor(int32 InObjectId)
 {
 	FObjectManager::GetInstance()->DestroyActor(InObjectId);
 }
+
+//SpawnArea를 활성화합니다.
+void UDpCheatManager::StartSpawn(const FString& InCharacterName)
+{
+	int32 spawnerID = FObjectManager::GetInstance()->FindActorByPredicate([](AActor* InActor)
+	{
+		if(Cast<ASpawnArea>(InActor))
+			return true;
+		return false;
+	});
+	ASpawnArea* spawnArea = Cast<ASpawnArea>(FObjectManager::GetInstance()->FindActor(spawnerID));
+	spawnArea->SetSpawnerName(InCharacterName);
+}
+

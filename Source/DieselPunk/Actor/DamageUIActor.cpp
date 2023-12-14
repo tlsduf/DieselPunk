@@ -13,7 +13,7 @@ ADamageUIActor::ADamageUIActor()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
-	WidgetComp = CreateDefaultSubobject< UWidgetComponent >( TEXT( "StatusUI" ) );
+	WidgetComp = CreateDefaultSubobject< UWidgetComponent >( TEXT( "UI" ) );
 	if ( WidgetComp )
 	{
 		WidgetComp->SetupAttachment( GetRootComponent() );
@@ -75,8 +75,8 @@ void ADamageUIActor::BeginPlay()
 	CreateDamageUI();
 
 	// 랜덤 목표위치 set
-	XVelocity = GetRandomNumber(-100, 100);
-	YVelocity = GetRandomNumber(-100, 100);
+	XVelocity = FMath::RandRange(-100, 100);
+	YVelocity = FMath::RandRange(-100, 100);
 	
 	TWeakObjectPtr<ADamageUIActor> thisPtr = this;
 

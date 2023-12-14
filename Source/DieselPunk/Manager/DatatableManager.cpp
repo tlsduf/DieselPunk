@@ -15,7 +15,6 @@ FDataTableManager::~FDataTableManager()
 }
 
 
-
 void FDataTableManager::Initialize()
 {
 	LoadDataTables();
@@ -35,6 +34,7 @@ void FDataTableManager::LoadDataTables()
 	LoadDataTable(EDataTableType::Character);
 	LoadDataTable(EDataTableType::MonsterSpawner);
 	LoadDataTable(EDataTableType::Card);
+	LoadDataTable(EDataTableType::StageWave);
 }
 
 //변수 TableName의 데이터 테이블을 로드합니다.

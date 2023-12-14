@@ -3,6 +3,7 @@
 #include "ObjectManager.h"
 #include "../Character/CharacterPc.h"
 #include "../Character/CharacterNPC.h"
+#include "../Actor/SpawnArea.h"
 
 #include <GameFramework/PlayerController.h>
 #include <Components/CapsuleComponent.h>
@@ -101,6 +102,7 @@ bool FObjectManager::IsValidId(int32 InId)
 	return true;
 }
 
+//ObjectManager를 통해 생성하지 않은(미리 월드에 배치해놓은) 액터를 추가합니다.
 int32 FObjectManager::AddActor(AActor* InActor)
 {
 	if(InActor == nullptr)
@@ -119,12 +121,15 @@ int32 FObjectManager::AddActor(AActor* InActor)
 		TWeakObjectPtr<ACharacterBase> character = Cast<ACharacterBase>(actor);
 		if(character != nullptr)
 			return character->GetObjectId();
+		TWeakObjectPtr<ASpawnArea> spawnArea = Cast<ASpawnArea>(actor);
+		if(spawnArea != nullptr)
+			return spawnArea->GetObjectId();
 		return OBJECT_ALREADY_SPAWNED;
 	}
 	
 	//오브젝트ID 등록
 	int32 objId = FObjectIdGenerator::GenerateID();
-	SetObjectIdAtCharacterBase(InActor, objId);
+	SetObjectIdAt(InActor, objId);
 
 	Objects.Add(objId, InActor);
 	
@@ -132,11 +137,15 @@ int32 FObjectManager::AddActor(AActor* InActor)
 }
 
 //캐릭터 베이스의 오브젝트 ID를 설정합니다.
-void FObjectManager::SetObjectIdAtCharacterBase(AActor* InActor, int32 InObjectId)
+void FObjectManager::SetObjectIdAt(AActor* InActor, int32 InObjectId)
 {
 	ACharacterBase* charBase = Cast<ACharacterBase>(InActor);
 	if(charBase)
 		charBase->SetObjectId(InObjectId);
+	
+	ASpawnArea* spawnArea = Cast<ASpawnArea>(InActor);
+	if(spawnArea)
+		spawnArea->SetObjectId(InObjectId);
 }
 
 //캐릭터일 경우에 캡슐컴포넌트의 Half Height만큼 위로 올린 값을 반환합니다.

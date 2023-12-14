@@ -43,4 +43,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	// SpawnerName을 설정합니다. // MosterSpawner를 생성하기 전 세팅
+	void SetSpawnerName(FString InSpawnerName) { SpawnerName = InSpawnerName; };
 };

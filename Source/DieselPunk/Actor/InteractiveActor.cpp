@@ -30,7 +30,7 @@ AInteractiveActor::AInteractiveActor()
 	Mesh->SetupAttachment(CapsuleComponent);
 
 	// 위젯 컴포넌트 세팅
-	WidgetComp = CreateDefaultSubobject< UWidgetComponent >( TEXT( "StatusUI" ) );
+	WidgetComp = CreateDefaultSubobject< UWidgetComponent >( TEXT( "GuideUI" ) );
 	if ( WidgetComp )
 	{
 		WidgetComp->SetupAttachment( GetRootComponent() );
@@ -109,7 +109,7 @@ void AInteractiveActor::BindingDelegate(UPrimitiveComponent* InOverlappedCompone
 {
 	if(Cast<ACharacterPC>(InOtherActor)->DelegateInteractTask.IsBound())
 		Cast<ACharacterPC>(InOtherActor)->DelegateInteractTask.Unbind();
-	Cast<ACharacterPC>(InOtherActor)->DelegateInteractTask.BindDynamic(this, &AInteractiveActor::task);
+	Cast<ACharacterPC>(InOtherActor)->DelegateInteractTask.BindDynamic(this, &AInteractiveActor::Task);
 
 	// UI 생성
 	if ( WidgetComp && GuideUI.IsValid() )
@@ -133,8 +133,11 @@ void AInteractiveActor::RemoveDelegate(UPrimitiveComponent* InOverlappedComponen
 // =============================================================
 // ChracterPC의 DelegateInteractTask에 바인딩되는 함수 // 각종 효과 실행
 // =============================================================
-void AInteractiveActor::task()
+void AInteractiveActor::Task()
 {
+	// 각종 효과 실행
+	_Task();
+	
 	// 이펙트, 사운드 출력
 	ActionEffectTransform.Location = ActionEffectTransform.Location + GetActorLocation();
 	ActionEffectTransform.Rotation = ActionEffectTransform.Rotation + GetActorRotation();

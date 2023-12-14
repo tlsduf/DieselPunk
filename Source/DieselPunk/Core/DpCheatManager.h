@@ -20,5 +20,9 @@ class DIESELPUNK_API UDpCheatManager : public UCheatManager
 	//오브젝트 ID의 액터를 삭제합니다.
 	UFUNCTION(exec)
 	void DestroyActor(int32 InObjectId);
+	
+	//SpawnArea를 활성화합니다.
+	UFUNCTION(exec)
+	void StartSpawn(const FString& InCharacterName);
 };
 

@@ -23,7 +23,7 @@ protected:
 	class UCapsuleComponent* CapsuleComponent;
 
 	/** The main skeletal mesh associated with this Character (optional sub-object). */
-	UPROPERTY(Category=Character, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(Category = "MYDP", VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	UStaticMeshComponent* Mesh;
 	
 	// 위젯 컴포넌트
@@ -75,10 +75,13 @@ protected:
 
 	
 	//================================================================
-	// * DelegateInteractTask에 바인딩되는 예시함수 ( 새로운 기능이 필요한 경우 함수를 만들어서 바인딩 )
+	// * DelegateInteractTask에 바인딩되는 예시함수 ( 새로운 기능이 필요한 경우 함수를 만들어서 _Task함수에 추가 )
 
 	// ChracterPC의 DelegateInteractTask에 바인딩되는 함수 // 각종 효과 실행
 	UFUNCTION()
-	virtual void task();
+	void Task();
+
+	// 각종 효과 실행
+	virtual void _Task() {};
 };
 

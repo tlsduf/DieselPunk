@@ -528,9 +528,9 @@ void APlayerControllerBase::SetUIControlOn()
  	int32 ScreenWidth;
  	int32 ScreenHeight;
  	GetViewportSize(ScreenWidth, ScreenHeight);
- 	SetMouseLocation(ScreenWidth * 0.5f, ScreenHeight * 0.5f);
+ 	//SetMouseLocation(ScreenWidth * 0.5f, ScreenHeight * 0.5f);
  	bShowMouseCursor = true;
-	PC->CanCameraControl = false;	// << 이거 오류남;;
+	//PC->CanCameraControl = false;	// << 이거 오류남;;
 }
 
 
