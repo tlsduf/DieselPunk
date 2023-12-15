@@ -3,7 +3,7 @@
 #include "ObjectManager.h"
 #include "../Character/CharacterPc.h"
 #include "../Character/CharacterNPC.h"
-#include "../Actor/SpawnArea.h"
+#include "../Actor/MonsterSpawner.h"
 
 #include <GameFramework/PlayerController.h>
 #include <Components/CapsuleComponent.h>
@@ -121,7 +121,7 @@ int32 FObjectManager::AddActor(AActor* InActor)
 		TWeakObjectPtr<ACharacterBase> character = Cast<ACharacterBase>(actor);
 		if(character != nullptr)
 			return character->GetObjectId();
-		TWeakObjectPtr<ASpawnArea> spawnArea = Cast<ASpawnArea>(actor);
+		TWeakObjectPtr<AMonsterSpawner> spawnArea = Cast<AMonsterSpawner>(actor);
 		if(spawnArea != nullptr)
 			return spawnArea->GetObjectId();
 		return OBJECT_ALREADY_SPAWNED;
@@ -143,7 +143,7 @@ void FObjectManager::SetObjectIdAt(AActor* InActor, int32 InObjectId)
 	if(charBase)
 		charBase->SetObjectId(InObjectId);
 	
-	ASpawnArea* spawnArea = Cast<ASpawnArea>(InActor);
+	AMonsterSpawner* spawnArea = Cast<AMonsterSpawner>(InActor);
 	if(spawnArea)
 		spawnArea->SetObjectId(InObjectId);
 }

@@ -18,7 +18,7 @@ struct FStageWaveInfo
 	
 	//스폰할 몬스터의 이름입니다. DT_Character와 행 이름이 동일해야합니다.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FString> WaveInfoID;
+	FString WaveSetInfoID;
 
 	// 웨이브가 끝난 후, 보상관련 정보입니다. (임시)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

@@ -32,8 +32,9 @@ void FDataTableManager::LoadDataTables()
 		Datas.Empty();
 	LoadDataTable(EDataTableType::Stat);
 	LoadDataTable(EDataTableType::Character);
-	LoadDataTable(EDataTableType::MonsterSpawner);
 	LoadDataTable(EDataTableType::Card);
+	LoadDataTable(EDataTableType::WaveModule);
+	LoadDataTable(EDataTableType::WaveSet);
 	LoadDataTable(EDataTableType::StageWave);
 }
 

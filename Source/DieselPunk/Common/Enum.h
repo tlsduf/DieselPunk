@@ -61,8 +61,9 @@ enum class EDataTableType : uint8
 {
 	Stat			UMETA( ToolTip = "스탯 정보" ),
 	Character		UMETA( ToolTip = "캐릭터 정보" ),
-	MonsterSpawner	UMETA( ToolTip = "몬스터 스포너 정보" ),
 	Card			UMETA( ToolTip = "카드 정보" ),
+	WaveModule		UMETA( ToolTip = "웨이브 모듈 정보" ),
+	WaveSet			UMETA( ToolTip = "웨이브 세트 정보" ),
 	StageWave		UMETA( ToolTip = "스테이지 웨이브 정보" )
 };
 
