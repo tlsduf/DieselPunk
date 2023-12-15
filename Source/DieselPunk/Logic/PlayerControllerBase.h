@@ -11,6 +11,9 @@ class UInputMappingContext;
 struct FInputActionInstance;
 enum class EAbilityType : uint8;
 class ACharacterPC;
+class FCard;
+class UDeck;
+class UHand;
 
 UCLASS()
 class DIESELPUNK_API APlayerControllerBase : public APlayerController
@@ -72,22 +75,19 @@ private:
 	TSubclassOf<UUserWidget> StartMenuClass;
 
 	UPROPERTY()
-	UUserWidget* DeckInterface;
+	UDeck* DeckInterface;
 	
 	UPROPERTY(EditAnywhere, Category="MYDP_UI")
 	TSubclassOf<UUserWidget> DeckInterfaceClass;
-
-	UPROPERTY()
-	TArray<UUserWidget*> CardRows;
-	
-	UPROPERTY(EditAnywhere, Category="MYDP_UI")
-	TSubclassOf<UUserWidget> CardRowClass;
 	
 	UPROPERTY()
 	UUserWidget* HUD;
 
 	UPROPERTY(EditAnywhere, Category="MYDP_UI")
 	TSubclassOf<UUserWidget> HUDClass;
+
+	UPROPERTY()
+	UHand* Hand;
 
 	bool DeckInterfaceOpen = false;
 
@@ -137,9 +137,6 @@ private:
 	
 	//카드 사용 준비
 	void UseCard(int32 InCardIndex);
-	
-	//카드 크기 변경
-	void ChangeSizeCard(int32 InCardIndex, FVector2d InScale);
 public:
 
 	//필터 변경 시 블루프린트 호출
@@ -165,4 +162,7 @@ public:
 
 	//드로우 한 후 카드 정보를 갱신합니다.
 	void RenewHand();
+
+	//패에 카드를 등록합니다.
+	void RegisterHands(TArray<FCard*> InCard);
 };

@@ -7,6 +7,8 @@
 #include "../Core/DpCheatManager.h"
 #include "../Handler/DeckHandler.h"
 #include "../Card/Card.h"
+#include "../UI/DeckInterface/Deck.h"
+#include "../UI/HUD/Hand.h"
 
 #include <Blueprint/UserWidget.h>
 #include <EnhancedInputComponent.h>
@@ -15,7 +17,6 @@
 #include <GameFramework/WorldSettings.h>
 #include <Blueprint/WidgetTree.h>
 #include <Components/ScrollBox.h>
-#include <Components/Button.h>
 #include <Components/TextBlock.h>
 #include <Engine/Texture.h>
 
@@ -57,6 +58,13 @@ void APlayerControllerBase::BeginPlay()
 		HUD = CreateWidget(this, HUDClass);
 	if (HUD)
 		HUD->AddToViewport();
+
+	Hand = Cast<UHand>(HUD->WidgetTree->FindWidget(TEXT("WBP_Hand")));
+	if(Hand == nullptr)
+	{
+		LOG_SCREEN(FColor::Red, TEXT("APlayerControllerBase::BeginPlay(): WBP_Hand에 해당하는 위젯을 찾지 못했습니다."))
+		return;
+	}
 
 	DeckInterfaceOpen = false;
 }
@@ -232,81 +240,31 @@ void APlayerControllerBase::OpenCloseDeckInterface()
 	{
 		if(!DeckInterfaceClass)
 			return;
-		DeckInterface = CreateWidget(this, DeckInterfaceClass, TEXT("DeckInterface"));
-
-		TArray<const FCard*> cards;
-		PC->GetDeckHandler()->GetDeckInterfaceCards(cards, ECardFilterType::All);
-		int32 num = (cards.Num() % FDeckHandler::MaxHand == 0) ? cards.Num() / FDeckHandler::MaxHand : cards.Num() / FDeckHandler::MaxHand + 1;
-		UScrollBox* box = Cast<UScrollBox>(DeckInterface->WidgetTree->FindWidget(TEXT("SBox")));
-		if(box == nullptr)
-		{
-			DeckInterface->Destruct();
-			DeckInterface = nullptr;
-			return;
-		}
-	
-		for(int i = 0; i < num; ++i)
-		{
-			FString widgetName = FString::Printf(TEXT("CardRow_%d"), i);
-			UUserWidget* row = CreateWidget(this, CardRowClass, *widgetName);
-
-			for(int j= 0; j < FDeckHandler::MaxHand; ++j)
-			{
-				int index = FDeckHandler::MaxHand * i + j;
-
-				if(index < cards.Num())
-				{
-					widgetName = FString::Printf(TEXT("Card%d"), j);
-					UButton* button = Cast<UButton>(row->WidgetTree->FindWidget(*widgetName));
-					button->SetVisibility(ESlateVisibility::Visible);
-					FButtonStyle style = button->GetStyle();
-					style.Normal.SetResourceObject(LoadObject<UTexture>(nullptr, *(cards[index]->GetCardInfo().TexturePath[0])));
-					style.Hovered.SetResourceObject(LoadObject<UTexture>(nullptr, *(cards[index]->GetCardInfo().TexturePath[0])));
-					style.Pressed.SetResourceObject(LoadObject<UTexture>(nullptr, *(cards[index]->GetCardInfo().TexturePath[0])));
-					button->SetStyle(style);
-			
-					//TEST!///////////////////////////////////////////////////////////////////////////
-					//테스트를 위한 코드입니다. 추후에 이미지 적용으로 변경됩니다.
-					widgetName = FString::Printf(TEXT("Text%d"), j);
-					UTextBlock* text = Cast<UTextBlock>(row->WidgetTree->FindWidget(*widgetName));
-					text->SetText(FText::FromString(cards[index]->GetCardInfo().CardName));
-					//TEXT!///////////////////////////////////////////////////////////////////////////
-				}
-				else
-				{
-					widgetName = FString::Printf(TEXT("Card%d"), j);
-					UButton* button = Cast<UButton>(row->WidgetTree->FindWidget(*widgetName));
-					button->SetVisibility(ESlateVisibility::Hidden);
-				}
-			}
-			box->AddChild(row);
-			CardRows.Add(row);
-		}
-
+		DeckInterface = Cast<UDeck>(CreateWidget(this, DeckInterfaceClass, TEXT("DeckInterface")));
 		if(!DeckInterface)
 			return;
+		
+		//카드 정보를 가져옵니다.
+		TArray<const FCard*> cards;
+		PC->GetDeckHandler()->GetDeckInterfaceCards(cards, ECardFilterType::All);
+
+		//카드를 등록합니다.
+		DeckInterface->RegisterCards(cards);
+
+		//후처리
 		DeckInterface->AddToViewport();
-	
 		SetUIControlOn();
 		DeckInterfaceOpen = true;
 	}
 	else
 	{
-		UScrollBox* box = Cast<UScrollBox>(DeckInterface->WidgetTree->FindWidget(TEXT("SBox")));
-		if(box == nullptr)
-			return;
-		box->ClearChildren();
-
-		for(UUserWidget* widget : CardRows)
-			widget->Destruct();
-		CardRows.Empty();
-	
-		DeckInterface->RemoveFromParent();
-
+		DeckInterface->SetVisibility(ESlateVisibility::Collapsed);
+		
+		//덱 인터페이스를 Destruct합니다.
 		DeckInterface->Destruct();
-
 		DeckInterface = nullptr;
-	
+
+		//후처리
 		SetUIControlOff();
 		DeckInterfaceOpen = false;
 	}
@@ -330,9 +288,9 @@ void APlayerControllerBase::UseCard(int32 InCardIndex)
 	for(int i = 0; i < FDeckHandler::MaxHand; ++i)
 	{
 		if(i == InCardIndex)
-			ChangeSizeCard(i, FVector2d(1.5, 1.5));
+			Hand->ResizeHandCard(i, FVector2d(1.5, 1.5));
 		else
-			ChangeSizeCard(i, FVector2d(1.0, 1.0));
+			Hand->ResizeHandCard(i, FVector2d(1.0, 1.0));
 	}
 	UseCardNum = InCardIndex;
 	
@@ -340,78 +298,13 @@ void APlayerControllerBase::UseCard(int32 InCardIndex)
 	handler->GetHands()[InCardIndex]->BindCardComplete();
 }
 
-void APlayerControllerBase::ChangeSizeCard(int32 InCardIndex, FVector2d InScale)
-{
-	UUserWidget* card = Cast<UUserWidget>(HUD->WidgetTree->FindWidget(*FString::Printf(TEXT("Hand%d"), InCardIndex)));
-	if(card == nullptr)
-		return;
-
-	USizeBox* sizebox = Cast<USizeBox>(card->WidgetTree->FindWidget(TEXT("SizeBox")));
-	if(sizebox == nullptr)
-		return;
-	
-	sizebox->SetRenderScale(InScale);
-}
-
 //필터 변경 시 블루프린트 호출
 void APlayerControllerBase::CallBlueprint_ChangeFilter(ECardFilterType InFilterType)
 {
 	TArray<const FCard*> cards;
 	PC->GetDeckHandler()->GetDeckInterfaceCards(cards, InFilterType);
-	int32 num = (cards.Num() % FDeckHandler::MaxHand == 0) ? cards.Num() / FDeckHandler::MaxHand : cards.Num() / FDeckHandler::MaxHand + 1;
-	UScrollBox* box = Cast<UScrollBox>(DeckInterface->WidgetTree->FindWidget(TEXT("SBox")));
-	if(box == nullptr)
-		return;
 
-	for(int i = 0; i < num; ++i)
-	{
-		if(i >= CardRows.Num())
-		{
-			FString widgetName = FString::Printf(TEXT("CardRow_%d"), i);
-			UUserWidget* row = CreateWidget(this, CardRowClass, *widgetName);
-			box->AddChild(row);
-			CardRows.Push(row);
-		}
-		if(CardRows[i]->GetIsEnabled() == false)
-			CardRows[i]->SetIsEnabled(true);
-		if(CardRows[i]->GetVisibility() == ESlateVisibility::Collapsed)
-			CardRows[i]->SetVisibility(ESlateVisibility::Visible);
-		for(int j = 0; j < FDeckHandler::MaxHand; ++j)
-		{
-			int index = FDeckHandler::MaxHand * i + j;
-
-			if(index < cards.Num())
-			{
-				FString widgetName = FString::Printf(TEXT("Card%d"), j);
-				UButton* button = Cast<UButton>(CardRows[i]->WidgetTree->FindWidget(*widgetName));
-				button->SetVisibility(ESlateVisibility::Visible);
-				FButtonStyle style = button->GetStyle();
-				style.Normal.SetResourceObject(LoadObject<UTexture>(nullptr, *(cards[index]->GetCardInfo().TexturePath[0])));
-				style.Hovered.SetResourceObject(LoadObject<UTexture>(nullptr, *(cards[index]->GetCardInfo().TexturePath[0])));
-				style.Pressed.SetResourceObject(LoadObject<UTexture>(nullptr, *(cards[index]->GetCardInfo().TexturePath[0])));
-				button->SetStyle(style);
-			
-				//TEST!///////////////////////////////////////////////////////////////////////////
-				//테스트를 위한 코드입니다. 추후에 이미지 적용으로 변경됩니다.
-				widgetName = FString::Printf(TEXT("Text%d"), j);
-				UTextBlock* text = Cast<UTextBlock>(CardRows[i]->WidgetTree->FindWidget(*widgetName));
-				text->SetText(FText::FromString(cards[index]->GetCardInfo().CardName));
-				//TEXT!///////////////////////////////////////////////////////////////////////////
-			}
-			else
-			{
-				FString widgetName = FString::Printf(TEXT("Card%d"), j);
-				UButton* button = Cast<UButton>(CardRows[i]->WidgetTree->FindWidget(*widgetName));
-				button->SetVisibility(ESlateVisibility::Hidden);
-			}
-		}
-	}
-	for(int i = num; i < CardRows.Num(); ++i)
-	{
-		CardRows[i]->SetIsEnabled(false);
-		CardRows[i]->SetVisibility(ESlateVisibility::Collapsed);
-	}
-	
+	DeckInterface->RegisterCards(cards);
 }
 
 //정렬 변경 시 블루프린트 호출
@@ -420,38 +313,7 @@ void APlayerControllerBase::CallBlueprint_ChangeSort(ECardSortType InSortType)
 	TArray<const FCard*> cards;
 	PC->GetDeckHandler()->GetDeckInterfaceCards(cards, ECardFilterType::None, InSortType);
 
-	for(int i = 0; i < CardRows.Num(); ++i)
-	{
-		for(int j= 0; j < FDeckHandler::MaxHand; ++j)
-		{
-			int index = FDeckHandler::MaxHand * i + j;
-
-			if(index < cards.Num())
-			{
-				FString widgetName = FString::Printf(TEXT("Card%d"), j);
-				UButton* button = Cast<UButton>(CardRows[i]->WidgetTree->FindWidget(*widgetName));
-				button->SetVisibility(ESlateVisibility::Visible);
-				FButtonStyle style = button->GetStyle();
-				style.Normal.SetResourceObject(LoadObject<UTexture>(nullptr, *(cards[index]->GetCardInfo().TexturePath[0])));
-				style.Hovered.SetResourceObject(LoadObject<UTexture>(nullptr, *(cards[index]->GetCardInfo().TexturePath[0])));
-				style.Pressed.SetResourceObject(LoadObject<UTexture>(nullptr, *(cards[index]->GetCardInfo().TexturePath[0])));
-				button->SetStyle(style);
-			
-				//TEST!///////////////////////////////////////////////////////////////////////////
-				//테스트를 위한 코드입니다. 추후에 이미지 적용으로 변경됩니다.
-				widgetName = FString::Printf(TEXT("Text%d"), j);
-				UTextBlock* text = Cast<UTextBlock>(CardRows[i]->WidgetTree->FindWidget(*widgetName));
-				text->SetText(FText::FromString(cards[index]->GetCardInfo().CardName));
-				//TEXT!///////////////////////////////////////////////////////////////////////////
-			}
-			else
-			{
-				FString widgetName = FString::Printf(TEXT("Card%d"), j);
-				UButton* button = Cast<UButton>(CardRows[i]->WidgetTree->FindWidget(*widgetName));
-				button->SetVisibility(ESlateVisibility::Hidden);
-			}
-		}
-	}
+	DeckInterface->RegisterCards(cards);
 }
 
 void APlayerControllerBase::Jump()
@@ -554,43 +416,21 @@ void APlayerControllerBase::SetUIControlOff()
 //카드를 Activate한 후 처리를 담당합니다.
 int32 APlayerControllerBase::PostActivateCard()
 {
-	ChangeSizeCard(UseCardNum, FVector2d(1.0, 1.0));
-	UUserWidget* card = Cast<UUserWidget>(HUD->WidgetTree->FindWidget(*FString::Printf(TEXT("Hand%d"), UseCardNum)));
-	if(card == nullptr)
-		return -1;
-
-	card->SetVisibility(ESlateVisibility::Hidden);
+	Hand->ResizeHandCard(UseCardNum, FVector2d(1.0, 1.0));
+	Hand->UnRegisterHand(UseCardNum);
+	
 	return UseCardNum;
 }
 
 //드로우 한 후 카드 정보를 갱신합니다.
 void APlayerControllerBase::RenewHand()
 {
-	for(int i = 0; i < FDeckHandler::MaxHand; ++i)
-	{
-		TArray<FCard*> hand = PC->GetDeckHandler()->GetHands();
-		if(hand[i] == nullptr)
-			continue;
-		
-		UUserWidget* card = Cast<UUserWidget>(HUD->WidgetTree->FindWidget(*FString::Printf(TEXT("Hand%d"), i)));
-		if(card == nullptr)
-			continue;
+	TArray<FCard*> hand = PC->GetDeckHandler()->GetHands();
+	Hand->RegisterHands(hand);
+}
 
-		card->SetVisibility(ESlateVisibility::Visible);
-
-		UImage* image = Cast<UImage>(card->WidgetTree->FindWidget(TEXT("CardImage")));
-		if(image == nullptr)
-			continue;
-
-		//image->SetBrushFromTexture(LoadObject<UTexture2D>(nullptr, *(hand[i]->GetCardInfo().TexturePath[0])));
-		FSlateBrush brush = image->GetBrush();
-		brush.SetResourceObject(LoadObject<UTexture>(nullptr, *(hand[i]->GetCardInfo().TexturePath[0])));
-		image->SetBrush(brush);
-
-		UTextBlock* text = Cast<UTextBlock>(card->WidgetTree->FindWidget(TEXT("CardName")));
-		if(text == nullptr)
-			continue;
-		text->SetText(FText::FromString(hand[i]->GetCardInfo().CardName));
-	}
+void APlayerControllerBase::RegisterHands(TArray<FCard*> InCard)
+{
+	Hand->RegisterHands(InCard);
 }
 

@@ -66,7 +66,10 @@ void ACharacterPC::BeginPlay()
 {
 	Super::BeginPlay();
 	DeckHandler = new FDeckHandler(this);
+	
 	DeckHandler->BeginPlay();
+
+	//테스트를 위한 패를 추가합니다.
 	for(int i = 0; i < 48; ++i)
 	{
 		int idx = FMath::Floor(FMath::SRand() * 9);
@@ -75,30 +78,9 @@ void ACharacterPC::BeginPlay()
 	}
 	DeckHandler->BeginPlayStage();
 
-	UUserWidget* hud = Cast<APlayerControllerBase>(GetController())->GetHUD();
-	for(int i = 0; i < FDeckHandler::MaxHand; ++i)
-	{
-		TArray<FCard*> hand = DeckHandler->GetHands();
-		
-		UUserWidget* card = Cast<UUserWidget>(hud->WidgetTree->FindWidget(*FString::Printf(TEXT("Hand%d"), i)));
-		if(card == nullptr)
-			continue;
-
-		UImage* image = Cast<UImage>(card->WidgetTree->FindWidget(TEXT("CardImage")));
-		if(image == nullptr)
-			continue;
-
-		//image->SetBrushFromTexture(LoadObject<UTexture2D>(nullptr, *(hand[i]->GetCardInfo().TexturePath[0])));
-		FSlateBrush brush = image->GetBrush();
-		brush.SetResourceObject(LoadObject<UTexture>(nullptr, *(hand[i]->GetCardInfo().TexturePath[0])));
-		image->SetBrush(brush);
-
-		UTextBlock* text = Cast<UTextBlock>(card->WidgetTree->FindWidget(TEXT("CardName")));
-		if(text == nullptr)
-			continue;
-		text->SetText(FText::FromString(hand[i]->GetCardInfo().CardName));
-	}
-
+	//패를 HUD에 등록합니다.
+	TArray<FCard*> hand = DeckHandler->GetHands();
+	Cast<APlayerControllerBase>(GetController())->RegisterHands(hand);
 	
 	//Skill Stat Set
 	for(const auto& It : Skills)
