@@ -5,7 +5,6 @@
 #include "../Manager/DatatableManager.h"
 #include "../Data/WaveModuleDataTable.h"
 #include "../Data/WaveSetDataTable.h"
-#include "../Data/StageWaveDataTable.h"
 #include "../Data/CharacterDataTable.h"
 #include "../Character/CharacterNPC.h"
 #include "../Manager/ObjectManager.h"
@@ -42,16 +41,19 @@ void AMonsterSpawner::BeginPlay()
 	GetRandomLocation();
 	
 	// 스플라인 디버그라인
-	for(int i = 0; i < SplineComponent->GetNumberOfSplinePoints(); ++i)
+	if(bDrawDebug)
 	{
-		if(i == SplineComponent->GetNumberOfSplinePoints() - 1)
-			DrawDebugLine( GetWorld(),SplineComponent->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::World),SplineComponent->GetLocationAtSplinePoint(0, ESplineCoordinateSpace::World),FColor::Red, true);
-		else
-			DrawDebugLine( GetWorld(),SplineComponent->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::World),SplineComponent->GetLocationAtSplinePoint(i + 1, ESplineCoordinateSpace::World),FColor::Red, true);
-	}
-	for(int i = 0; i < RandomLocation.Num(); i++)
-	{
-		DrawDebugPoint(GetWorld(), RandomLocation[i], 5, FColor::Red, true);
+		for(int i = 0; i < SplineComponent->GetNumberOfSplinePoints(); ++i)
+		{
+			if(i == SplineComponent->GetNumberOfSplinePoints() - 1)
+				DrawDebugLine( GetWorld(),SplineComponent->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::World),SplineComponent->GetLocationAtSplinePoint(0, ESplineCoordinateSpace::World),FColor::Red, true);
+			else
+				DrawDebugLine( GetWorld(),SplineComponent->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::World),SplineComponent->GetLocationAtSplinePoint(i + 1, ESplineCoordinateSpace::World),FColor::Red, true);
+		}
+		for(int i = 0; i < RandomLocation.Num(); i++)
+		{
+			DrawDebugPoint(GetWorld(), RandomLocation[i], 5, FColor::Red, true);
+		}
 	}
 }
 
@@ -89,23 +91,18 @@ void AMonsterSpawner::StartSpawn(FString InWaveSetName)
 	// SpawnerDeltaTime 초기화, 스폰 활성화
 	SpawnerDeltaTime = 0.f;
 	bDoSpawn = true;
-	
-	/*//몬스터 스폰정보 등록
-	const FStageWaveDataTable* StageWaveDataTable = FDataTableManager::GetInstance()->GetData<FStageWaveDataTable>(EDataTableType::StageWave, InSpawnerName);
-	if(StageWaveDataTable == nullptr)
+}
+
+// =============================================================
+//생성한 몬스터 중 Destroy된 액터 삭제
+// =============================================================
+void AMonsterSpawner::RemoveDeadNPCFromArray()
+{
+	for(TArray<int32>::TIterator iterId{SpawnMonsterId.CreateIterator()}; iterId; ++iterId)
 	{
-		LOG_SCREEN(FColor::Red, TEXT("몬스터 스포너: %s의 변수 SpawnerName: %s에 해당하는 데이터가 없습니다. SpawnerName를 데이터 테이블에 맞게 설정해주세요"), *GetName(), *InSpawnerName)
-		return;
+		if(FObjectManager::GetInstance()->FindActor(*iterId) == nullptr)
+			iterId.RemoveCurrent();
 	}
-
-	for(int i = 0; i < StageWaveDataTable->StageWaveInfo.Num(); ++i )
-	{
-		StageWaveDataTable->StageWaveInfo[i].DefconInfo;
-		StageWaveDataTable->StageWaveInfo[i].WaveSetInfoID;
-		StageWaveDataTable->StageWaveInfo[i].SupplyInfo;
-
-		SetWaveSet(StageWaveDataTable->StageWaveInfo[i].WaveSetInfoID);
-	}*/
 }
 
 // =============================================================
@@ -187,13 +184,6 @@ bool AMonsterSpawner::IsWaveCleared()
 void AMonsterSpawner::SpawnMonster(float InDeltaTime)
 {
 	SpawnerDeltaTime += InDeltaTime;
-
-	//생성한 몬스터 중 Destroy된 액터 삭제
-	for(TArray<int32>::TIterator iterId{SpawnMonsterId.CreateIterator()}; iterId; ++iterId)
-	{
-		if(FObjectManager::GetInstance()->FindActor(*iterId) == nullptr)
-			iterId.RemoveCurrent();
-	}
 
 	//생성할 몬스터가 남아있다면
 	if(!SpawnInfo.IsEmpty())

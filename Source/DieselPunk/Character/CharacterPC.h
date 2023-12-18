@@ -54,7 +54,7 @@ public:
 	
 	float MyTargetArmLength = 400.0f;								// Default 카메라 뷰 Set / Zoomed : 250	   / Run : 600
 	FVector MyTargetArmLocation = FVector(0, 0, 55);		// Default 카메라 뷰 Set / Zoomed : (0,0,0) / Run : (0,0,55)
-	FVector MyCameraLocation = FVector(0, 0, 55);		// Default 카메라 뷰 Set / Zoomed : (0,0,0) / Run : (0,0,55)
+	FVector MyCameraLocation = FVector(0, 0, 55);			// Default 카메라 뷰 Set / Zoomed : (0,0,0) / Run : (0,0,55)
 	
 	bool CanCameraControl = true;			// 카메라 조종 가능여부
 	
@@ -67,7 +67,7 @@ public:
 	UPROPERTY()
 	TMap<EAbilityType, TObjectPtr<UPlayerSkill>> Skills;			// 런타임에 인스턴스화된 스킬들을 담는 배열입니다. (실제로 이 배열에 담긴 스킬들을 호출)
 	
-	TMap<EAbilityType, bool> SkillActivating;					// 각 스킬이 작동중인지 확인하는 티맵. Key(EAbilityType)의 값이 1이면 작동중입니다.
+	TMap<EAbilityType, bool> SkillActivating;						// 각 스킬이 작동중인지 확인하는 티맵. Key(EAbilityType)의 값이 1이면 작동중입니다.
 	
 	/////////////////////////////////////////////////////////////////////
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -171,6 +171,10 @@ public:
 	// Level 이 올라갔을때, 이벤트를 발동시킵니다.
 	void LevelUpEvent();
 
+
+	/////////////////////////////////////////////////////////////////////
+	// for Card Deck //
+	
 	// 카드 실행 델리게이트를 반환합니다.
 	FDelegate_CardActivate& GetDelegateCardActivate(){return DelegateCardActivate;}
 	FDelegate_CardComplete& GetDelegateCardComplete(){return DelegateCardComplete;}
@@ -183,5 +187,7 @@ public:
 
 	//카드 Complete를 실행합니다.
 	bool ExecuteCardComplete();
+
+	
 };
 

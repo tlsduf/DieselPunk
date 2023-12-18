@@ -9,6 +9,7 @@
 #include "../Card/Card.h"
 #include "../UI/DeckInterface/Deck.h"
 #include "../UI/HUD/Hand.h"
+#include "../Core/DPLevelScriptActor.h"
 
 #include <Blueprint/UserWidget.h>
 #include <EnhancedInputComponent.h>
@@ -17,11 +18,9 @@
 #include <GameFramework/WorldSettings.h>
 #include <Blueprint/WidgetTree.h>
 #include <Components/ScrollBox.h>
-#include <Components/TextBlock.h>
-#include <Engine/Texture.h>
+#include <Components/SizeBox.h>
 
-#include "Components/Image.h"
-#include "Components/SizeBox.h"
+#include "Engine/Level.h"
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PlayerControllerBase)
@@ -89,6 +88,7 @@ void APlayerControllerBase::SetupInputComponent()
 
     	EnhancedInputComponent->BindAction(InputF, ETriggerEvent::Started, this, &APlayerControllerBase::Interaction);
     	EnhancedInputComponent->BindAction(InputM, ETriggerEvent::Started, this, &APlayerControllerBase::Pause);
+    	EnhancedInputComponent->BindAction(InputB, ETriggerEvent::Started, this, &APlayerControllerBase::WaveStart);
 
     	EnhancedInputComponent->BindAction(InputDeckInterface, ETriggerEvent::Started, this, &APlayerControllerBase::OpenCloseDeckInterface);
 
@@ -372,6 +372,14 @@ void APlayerControllerBase::Look(const FInputActionValue &Value)
 	if (PC.IsValid())
 		PC->Look(Value);
 }
+
+void APlayerControllerBase::WaveStart()
+{
+	if (PC.IsValid())
+		if(auto level = Cast<ADPLevelScriptActor>(PC->GetLevel()->GetLevelScriptActor()))
+			level->StartStageAndNextWave();
+}
+
 
 
 // =============================================================

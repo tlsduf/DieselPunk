@@ -5,11 +5,13 @@
 #include "../Actor/DamageUIActor.h"
 #include "../Core/DpGameMode.h"
 #include "../Manager/ObjectManager.h"
+#include "../Core/DPLevelScriptActor.h"
 
 #include <Components/WidgetComponent.h>
 #include <Components/StaticMeshComponent.h>
 
 #include "ColorManagement/Public/ColorManagementDefines.h"
+#include "Engine/Level.h"
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(CharacterBase)
@@ -127,6 +129,10 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 				DamageCauserPlayer->Stat.ChangeStat(ECharacterStatType::MaxHp , UtilLevelCal::MaxHealthCal(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Level)));
 			
 			Destroy();
+
+			// 레벨관리
+			if(ADPLevelScriptActor* level = Cast<ADPLevelScriptActor>(this->GetLevel()->GetLevelScriptActor()))
+				level->WaveClearEvent();
 		}
 		return damage;
 	}

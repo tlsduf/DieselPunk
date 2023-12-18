@@ -52,8 +52,14 @@ void UDpCheatManager::StartSpawn(const FString& InCharacterName)
 			return true;
 		return false;
 	});
-	AMonsterSpawner* spawnArea = Cast<AMonsterSpawner>(FObjectManager::GetInstance()->FindActor(spawnerID));
-	if(spawnArea)
-		spawnArea->StartSpawn(InCharacterName);
+	AMonsterSpawner* monsterSpawner = Cast<AMonsterSpawner>(FObjectManager::GetInstance()->FindActor(spawnerID));
+	if(monsterSpawner)
+		monsterSpawner->StartSpawn(InCharacterName);
+}
+
+//Stage 의 Wave를 시작합니다.
+void UDpCheatManager::StartStage()
+{
+	
 }
 

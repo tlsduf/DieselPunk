@@ -56,6 +56,9 @@ class DIESELPUNK_API APlayerControllerBase : public APlayerController
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP_Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction *InputM;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP_Input", meta = (AllowPrivateAccess = "true"))
+	UInputAction *InputB;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP_Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction *InputDeckInterface;
@@ -104,9 +107,6 @@ protected:
 	virtual void OnPossess(APawn *InPawn) override;
 
 private:
-	void Move(const FInputActionValue &Value);
-	void Look(const FInputActionValue &Value);
-
 	void Jump();
 	void StopJumping();
 
@@ -117,7 +117,12 @@ private:
 	void SetZoomOutProp();
 
 	void Interaction();
+	
+	void Move(const FInputActionValue &Value);
+	void Look(const FInputActionValue &Value);
 
+	void WaveStart();
+	
 	// InputType에 맞춰 MappingContext을 적용하는 함수입니다.
 	UFUNCTION()
 	void SetMappingContextByInputType();

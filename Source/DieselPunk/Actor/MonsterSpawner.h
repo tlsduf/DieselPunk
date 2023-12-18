@@ -27,18 +27,19 @@ class DIESELPUNK_API AMonsterSpawner : public AActor
 {
 	GENERATED_BODY()
 
-public:
-	constexpr static double DistanceDifference = 150;	// 랜덤 스폰 거리 차이
-	
-protected:
+
+	UPROPERTY(EditInstanceOnly, Category = "MYDP_Setting")
+	bool bDrawDebug = false;	
+
 	/////////////////////////////////////////////////////////////////////
 	// for info Management //
+public:
+	UPROPERTY(EditInstanceOnly, Category = "MYDP_Setting")
+	FString SpawnerName = TEXT("MonsterSpawner");			// 스포너 이름 (MonsterSpawner1, ''2, ''3 ~)
 	
+protected:
 	int32 ObjectId = -1;					//오브젝트 ID
 	
-	UPROPERTY(EditInstanceOnly, Category = "MYDP_Setting")
-	FString SpawnerName = TEXT("");			// [TODO] 스포너 이름 (Spawner1, 2, 3 ~)
-
 	/////////////////////////////////////////////////////////////////////
 	// for Spline , Poligon , MakeRandLoc //
 	
@@ -53,7 +54,7 @@ protected:
 	/////////////////////////////////////////////////////////////////////
 	// for Spawning //
 	
-	FString WaveSetID = TEXT("");			//
+	FString WaveSetID = TEXT("");			//스폰할 웨이브 정보
 	
 	TArray<FSpawnInfo> SpawnInfo;			//스폰 몬스터 정보
 	
@@ -62,6 +63,8 @@ protected:
 	TArray<int32> SpawnMonsterId;			//스폰한 몬스터 IDs
 
 	bool bDoSpawn = false;					//스폰해야하는지
+
+	constexpr static double DistanceDifference = 150;	// 랜덤 스폰 거리 차이
 	
 public:	
 	// Sets default values for this actor's properties
@@ -85,9 +88,14 @@ public:
 	// InWaveSetName에 해당하는 데이터테이블의 정보를 읽어 세팅하고, 스폰을 시작합니다.
 	void StartSpawn(FString InWaveSetName);
 
+	//생성한 몬스터 중 Destroy된 액터 삭제
+	void RemoveDeadNPCFromArray();
+	
 	// 스포너가 소환한 몬스터가 다 파괴되었는지를 반환합니다.
 	bool IsWaveCleared();
 
+	// 몬스터를 다 소환했는지 반환합니다.
+	bool bSpawnComplete() const { return SpawnInfo.IsEmpty(); };
 private:
 	// InWaveSetName에 해당하는 데이터테이블의 정보를 읽어 SpawnInfo를 세팅합니다.
 	void _SetWaveSet(FString InWaveSetName);

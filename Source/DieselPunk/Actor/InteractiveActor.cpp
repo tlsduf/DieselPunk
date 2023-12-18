@@ -90,6 +90,10 @@ void AInteractiveActor::BeginPlay()
 	CapsuleComponent->OnComponentEndOverlap.AddDynamic(this, &AInteractiveActor::RemoveDelegate);
 
 	CreateUI();
+
+	// 이펙트 Param 세팅
+	ActionEffectTransform.Location = ActionEffectTransform.Location + GetActorLocation();
+	ActionEffectTransform.Rotation = ActionEffectTransform.Rotation + GetActorRotation();
 }
 
 // =============================================================
@@ -139,21 +143,23 @@ void AInteractiveActor::Task()
 	_Task();
 	
 	// 이펙트, 사운드 출력
-	ActionEffectTransform.Location = ActionEffectTransform.Location + GetActorLocation();
-	ActionEffectTransform.Rotation = ActionEffectTransform.Rotation + GetActorRotation();
-
 	if (N_ActionParticle)
 		UtilEffect::SpawnNiagaraEffect(GetWorld(), N_ActionParticle, ActionEffectTransform);
 	if (ActionParticle)
 		UtilEffect::SpawnParticleEffect(GetWorld(), ActionParticle, ActionEffectTransform);
 	if (ActionSound)
 		UGameplayStatics::PlaySoundAtLocation(this, ActionSound, GetActorLocation());
+
 	
+	/*
+	 
 	// UI 제거
 	if ( WidgetComp && GuideUI.IsValid() )
 		GuideUI->SetVisibility(ESlateVisibility::Hidden);
 	
 	// 액터 파괴
 	Destroy();
+	
+	*/
 }
 
