@@ -9,6 +9,7 @@
 #include "../Card/Card.h"
 #include "../UI/DeckInterface/Deck.h"
 #include "../UI/HUD/Hand.h"
+#include "../Manager/UIManager.h"
 #include "../Core/DPLevelScriptActor.h"
 
 #include <Blueprint/UserWidget.h>
@@ -19,8 +20,7 @@
 #include <Blueprint/WidgetTree.h>
 #include <Components/ScrollBox.h>
 #include <Components/SizeBox.h>
-
-#include "Engine/Level.h"
+#include <Engine/Level.h>
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PlayerControllerBase)
@@ -39,6 +39,8 @@ APlayerControllerBase::APlayerControllerBase()
 void APlayerControllerBase::BeginPlay()
 {
     Super::BeginPlay();
+
+	FUIManager::GetInstance()->SetController(this);
 	
     if (UEnhancedInputLocalPlayerSubsystem *Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
         Subsystem->AddMappingContext(MappingContext, 0);
@@ -54,11 +56,11 @@ void APlayerControllerBase::BeginPlay()
 	
 	// HUD 생성
 	if(HUDClass)
-		HUD = CreateWidget(this, HUDClass);
+		HUD = FindWidgetBase(FUIManager::GetInstance()->CreateWidgetBase(HUDClass, TEXT("HUD"))).Get();
 	if (HUD)
 		HUD->AddToViewport();
-
-	Hand = Cast<UHand>(HUD->WidgetTree->FindWidget(TEXT("WBP_Hand")));
+	Hand = Cast<UHand>((*HUD)[TEXT("WBP_Hand")]);
+	Hand->OnCreated();
 	if(Hand == nullptr)
 	{
 		LOG_SCREEN(FColor::Red, TEXT("APlayerControllerBase::BeginPlay(): WBP_Hand에 해당하는 위젯을 찾지 못했습니다."))
@@ -240,7 +242,8 @@ void APlayerControllerBase::OpenCloseDeckInterface()
 	{
 		if(!DeckInterfaceClass)
 			return;
-		DeckInterface = Cast<UDeck>(CreateWidget(this, DeckInterfaceClass, TEXT("DeckInterface")));
+		
+		DeckInterface = Cast<UDeck>(FindWidgetBase(FUIManager::GetInstance()->CreateWidgetBase(DeckInterfaceClass, TEXT("DeckInterface"))));
 		if(!DeckInterface)
 			return;
 		
@@ -379,7 +382,6 @@ void APlayerControllerBase::WaveStart()
 		if(auto level = Cast<ADPLevelScriptActor>(PC->GetLevel()->GetLevelScriptActor()))
 			level->StartStageAndNextWave();
 }
-
 
 
 // =============================================================

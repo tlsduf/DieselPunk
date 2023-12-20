@@ -14,6 +14,8 @@ UCLASS()
 class DIESELPUNK_API UUserWidgetBase : public UUserWidget
 {
 	GENERATED_BODY()
+public:
+	UWidget* operator[](const TCHAR* InWidgetName);
 
 public:
 	// 틱

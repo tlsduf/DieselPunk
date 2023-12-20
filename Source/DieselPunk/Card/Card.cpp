@@ -6,9 +6,10 @@
 #include "../Data/CardDataTable.h"
 #include "../Manager/DatatableManager.h"
 
-FCard::FCard(const FString& InCardName, TWeakObjectPtr<ACharacterPC> InOwner)
+FCard::FCard(int32 InKey, const FString& InCardName, TWeakObjectPtr<ACharacterPC> InOwner)
 	: Owner(InOwner)
 {
+	Info.Key = InKey;
 	Info.CardName = InCardName;
 	Info.GetTime = FDateTime::Now();
 	const FCardDataTable* data = FDataTableManager::GetInstance()->GetData<FCardDataTable>(EDataTableType::Card, Info.CardName);

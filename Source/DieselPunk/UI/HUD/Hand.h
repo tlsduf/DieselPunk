@@ -19,15 +19,15 @@ protected:
 	UHorizontalBox* HBox;
 
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
-	UUserWidget* Hand0;
+	UUserWidgetBase* Hand0;
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
-	UUserWidget* Hand1;
+	UUserWidgetBase* Hand1;
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
-	UUserWidget* Hand2;
+	UUserWidgetBase* Hand2;
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
-	UUserWidget* Hand3;
+	UUserWidgetBase* Hand3;
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
-	UUserWidget* Hand4;
+	UUserWidgetBase* Hand4;
 
 public:
 	// 생성자

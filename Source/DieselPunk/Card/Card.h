@@ -14,6 +14,7 @@ struct CardInfo
 	ECardType CardType;				//카드 타입
 	int32 Cost;						//카드 코스트
 	FDateTime GetTime;				//획득 시간
+	int32 Key;						//카드 키
 	TArray<FString> TexturePath;	//카드 텍스쳐
 };
 
@@ -23,7 +24,7 @@ protected:
 	TWeakObjectPtr<ACharacterPC> Owner;
 	CardInfo Info;
 public:
-	FCard(const FString& InCardName, TWeakObjectPtr<ACharacterPC> InOwner);
+	FCard(int32 InKey, const FString& InCardName, TWeakObjectPtr<ACharacterPC> InOwner);
 	virtual ~FCard();
 
 public:

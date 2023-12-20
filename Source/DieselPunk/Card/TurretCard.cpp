@@ -8,8 +8,8 @@
 #include "../Manager/ObjectManager.h"
 #include "../Character/CharacterTurret.h"
 
-FTurretCard::FTurretCard(const FString& InCardName, TWeakObjectPtr<ACharacterPC> InOwner)
-	: FCard(InCardName, InOwner)
+FTurretCard::FTurretCard(int32 InKey, const FString& InCardName, TWeakObjectPtr<ACharacterPC> InOwner)
+	: FCard(InKey, InCardName, InOwner)
 {
 	const FCardDataTable* data = FDataTableManager::GetInstance()->GetData<FCardDataTable>(EDataTableType::Card, Info.CardName);
 	Info.CardType = data->CardType;

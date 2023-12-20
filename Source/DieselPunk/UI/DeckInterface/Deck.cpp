@@ -5,8 +5,11 @@
 #include "DeckCardRow.h"
 #include "../../Handler/DeckHandler.h"
 #include "../../Card/Card.h"
+#include "../../Manager/UIManager.h"
 
 #include <Components/ScrollBox.h>
+
+#include "CardDetail.h"
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(Deck)
@@ -17,7 +20,8 @@
 // =============================================================
 void UDeck::OnCreated()
 {
-	Super::OnCreated();
+	Super::NativeConstruct();
+	CardDetail->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void UDeck::BeginDestroy()
@@ -56,7 +60,9 @@ void UDeck::RegisterCards(TArray<const FCard*> InCards)
 		if(i >= CardRows.Num())
 		{
 			FString widgetName = FString::Printf(TEXT("CardRow_%d"), i);
-			UDeckCardRow* row = Cast<UDeckCardRow>(CreateWidget(this, CardRowClass, *widgetName));
+			int32 key = FUIManager::GetInstance()->CreateWidgetBase(TEXT("DeckInterface/Blueprint/"), TEXT("WBP_DeckCardRow"), widgetName, this);
+			UDeckCardRow* row = Cast<UDeckCardRow>(FindWidgetBase(key)); 
+			row->SetDeck(this);
 			SBox->AddChild(row);
 			CardRows.Push(row);
 		}
@@ -84,4 +90,9 @@ void UDeck::RegisterCards(TArray<const FCard*> InCards)
 		CardRows[i]->SetIsEnabled(false);
 		CardRows[i]->SetVisibility(ESlateVisibility::Collapsed);
 	}
+}
+
+void UDeck::CreateCardDetail(int32 InKey)
+{
+	CardDetail->OpenCardDetail(InKey);
 }

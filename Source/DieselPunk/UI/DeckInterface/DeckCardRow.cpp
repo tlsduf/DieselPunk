@@ -8,6 +8,8 @@
 #include <Components/TextBlock.h>
 #include <Engine/Texture.h>
 
+#include "Deck.h"
+
 #include UE_INLINE_GENERATED_CPP_BY_NAME(DeckCardRow)
 
 
@@ -16,7 +18,8 @@
 // =============================================================
 void UDeckCardRow::OnCreated()
 {
-	Super::OnCreated();
+	Super::NativeConstruct();
+	CardKeys.SetNum(5);
 }
 
 // =============================================================
@@ -58,8 +61,34 @@ void UDeckCardRow::UnRegisterCard(int InIndex)
 		LOG_SCREEN(FColor::Red, TEXT("Invalid InIndex"))
 		return;
 	}
+	CardKeys[InIndex] = -1;
 	button->SetVisibility(ESlateVisibility::Hidden);
 	text->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void UDeckCardRow::ClickedCard0()
+{
+	Deck->CreateCardDetail(CardKeys[0]);
+}
+
+void UDeckCardRow::ClickedCard1()
+{
+	Deck->CreateCardDetail(CardKeys[1]);
+}
+
+void UDeckCardRow::ClickedCard2()
+{
+	Deck->CreateCardDetail(CardKeys[2]);
+}
+
+void UDeckCardRow::ClickedCard3()
+{
+	Deck->CreateCardDetail(CardKeys[3]);
+}
+
+void UDeckCardRow::ClickedCard4()
+{
+	Deck->CreateCardDetail(CardKeys[4]);
 }
 
 //카드를 등록합니다.
@@ -93,6 +122,8 @@ void UDeckCardRow::RegisterCard(int InIndex, const CardInfo* InCardInfo)
 		LOG_SCREEN(FColor::Red, TEXT("Invalid InIndex"))
 		return;
 	}
+
+	CardKeys[InIndex] = InCardInfo->Key;
 
 	button->SetVisibility(ESlateVisibility::Visible);
 	FButtonStyle style = button->GetStyle();

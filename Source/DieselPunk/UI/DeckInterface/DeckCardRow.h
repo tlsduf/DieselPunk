@@ -8,6 +8,7 @@
 
 class UTextBlock;
 class UButton;
+class UDeck;
 struct CardInfo;
 
 UCLASS()
@@ -27,6 +28,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
 	UButton* Card4;
 
+	TArray<int32> CardKeys;
+
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
 	UTextBlock* Text0;
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
@@ -37,6 +40,9 @@ protected:
 	UTextBlock* Text3;
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
 	UTextBlock* Text4;
+
+	UPROPERTY()
+	TWeakObjectPtr<UDeck> Deck;
 	
 public:
 	// 생성자
@@ -51,5 +57,13 @@ public:
 
 	//카드 등록을 해지합니다. SetVisibility를 Hidden으로 변경합니다.
 	void UnRegisterCard(int InIndex);
+
+	void SetDeck(UDeck* InDeck){Deck = InDeck;}
+
+	void ClickedCard0();
+	void ClickedCard1();
+	void ClickedCard2();
+	void ClickedCard3();
+	void ClickedCard4();
 };
 

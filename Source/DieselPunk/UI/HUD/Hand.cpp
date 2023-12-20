@@ -39,7 +39,7 @@ void UHand::RegisterHands(TArray<FCard*> InHands)
 //카드를 등록합니다.
 void UHand::RegisterHand(int InIndex, const CardInfo* InCardInfo)
 {
-	UUserWidget* card = nullptr;
+	UUserWidgetBase* card = nullptr;
 	switch(InIndex)
 	{
 	case 0:
@@ -61,7 +61,7 @@ void UHand::RegisterHand(int InIndex, const CardInfo* InCardInfo)
 		return;
 	}
 
-	UImage* image = Cast<UImage>(card->WidgetTree->FindWidget(TEXT("CardImage")));
+	UImage* image = Cast<UImage>((*card)[TEXT("CardImage")]);
 	if(image == nullptr)
 		return;
 
@@ -70,7 +70,7 @@ void UHand::RegisterHand(int InIndex, const CardInfo* InCardInfo)
 	brush.SetResourceObject(LoadObject<UTexture>(nullptr, *(InCardInfo->TexturePath[0])));
 	image->SetBrush(brush);
 
-	UTextBlock* text = Cast<UTextBlock>(card->WidgetTree->FindWidget(TEXT("CardName")));
+	UTextBlock* text = Cast<UTextBlock>((*card)[TEXT("CardName")]);
 	if(text == nullptr)
 		return;
 	text->SetText(FText::FromString(InCardInfo->CardName));
@@ -79,7 +79,7 @@ void UHand::RegisterHand(int InIndex, const CardInfo* InCardInfo)
 //카드 등록 해제합니다. Visibility를 Hidden으로 변경합니다.
 void UHand::UnRegisterHand(int InIndex)
 {
-	UUserWidget* card = nullptr;
+	UUserWidgetBase* card = nullptr;
 	switch(InIndex)
 	{
 	case 0:
@@ -106,7 +106,7 @@ void UHand::UnRegisterHand(int InIndex)
 //카드의 사이즈를 변경합니다.
 void UHand::ResizeHandCard(int InIndex, FVector2d InSize)
 {
-	UUserWidget* card = nullptr;
+	UUserWidgetBase* card = nullptr;
 	switch(InIndex)
 	{
 	case 0:
@@ -128,7 +128,7 @@ void UHand::ResizeHandCard(int InIndex, FVector2d InSize)
 		return;
 	}
 	
-	USizeBox* sizebox = Cast<USizeBox>(card->WidgetTree->FindWidget(TEXT("SizeBox")));
+	USizeBox* sizebox = Cast<USizeBox>((*card)[TEXT("SizeBox")]);
 	if(sizebox == nullptr)
 		return;
 	

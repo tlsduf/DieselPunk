@@ -7,6 +7,7 @@
 #include "../Data/CardDataTable.h"
 #include "../Manager/DatatableManager.h"
 
+int32 FDeckHandler::KeyIndex = 0;
 
 FDeckHandler::FDeckHandler(TWeakObjectPtr<ACharacterPC> InOwner)
 	: Owner(InOwner)
@@ -90,6 +91,23 @@ void FDeckHandler::GetDeckInterfaceCards(TArray<const FCard*>& OutCards, ECardFi
 	SortCard(OutCards, SortType);
 }
 
+const CardInfo* const FDeckHandler::FindCardInfo(int32 InKey, int& OutIndex)
+{
+	TArray<const FCard*> cards;
+	GetDeckInterfaceCards(cards);
+	
+	for(int i = 0; i < cards.Num(); ++i)
+	{
+		if(cards[i]->GetCardInfo().Key == InKey)
+		{
+			OutIndex = i;
+			break;
+		}
+	}
+
+	return &cards[OutIndex]->GetCardInfo();
+}
+
 //카드를 생성하고 추가합니다.
 void FDeckHandler::AddCard(FString InCardName)
 {
@@ -98,17 +116,18 @@ void FDeckHandler::AddCard(FString InCardName)
 		return;
 
 	FCard* card = nullptr;
+	int32 Key = KeyIndex++;
 	
 	switch (data->CardType)
 	{
 	case ECardType::Ability:
-		card = new FTurretCard(InCardName, Owner);
+		card = new FTurretCard(Key, InCardName, Owner);
 		break;
 	case ECardType::Turret:
-		card = new FTurretCard(InCardName, Owner);
+		card = new FTurretCard(Key, InCardName, Owner);
 		break;
 	case ECardType::Installation:
-		card = new FTurretCard(InCardName, Owner);
+		card = new FTurretCard(Key, InCardName, Owner);
 		break;
 	default:
 		LOG_SCREEN(FColor::Red, TEXT("FDeckHandler::AddCard() : 등록되지 않은 ECardType입니다."))

@@ -14,6 +14,7 @@ class ACharacterPC;
 class FCard;
 class UDeck;
 class UHand;
+class UUserWidgetBase;
 
 UCLASS()
 class DIESELPUNK_API APlayerControllerBase : public APlayerController
@@ -57,8 +58,8 @@ class DIESELPUNK_API APlayerControllerBase : public APlayerController
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP_Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction *InputM;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP_Input", meta = (AllowPrivateAccess = "true"))
-	UInputAction *InputB;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP_Input", meta = (AllowPrivateAccess = "true"))
+    UInputAction *InputB;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP_Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction *InputDeckInterface;
@@ -81,13 +82,13 @@ private:
 	UDeck* DeckInterface;
 	
 	UPROPERTY(EditAnywhere, Category="MYDP_UI")
-	TSubclassOf<UUserWidget> DeckInterfaceClass;
+	TSubclassOf<UUserWidgetBase> DeckInterfaceClass;
 	
 	UPROPERTY()
-	UUserWidget* HUD;
+	UUserWidgetBase* HUD;
 
 	UPROPERTY(EditAnywhere, Category="MYDP_UI")
-	TSubclassOf<UUserWidget> HUDClass;
+	TSubclassOf<UUserWidgetBase> HUDClass;
 
 	UPROPERTY()
 	UHand* Hand;
@@ -107,6 +108,7 @@ protected:
 	virtual void OnPossess(APawn *InPawn) override;
 
 private:
+
 	void Jump();
 	void StopJumping();
 
@@ -122,7 +124,7 @@ private:
 	void Look(const FInputActionValue &Value);
 
 	void WaveStart();
-	
+
 	// InputType에 맞춰 MappingContext을 적용하는 함수입니다.
 	UFUNCTION()
 	void SetMappingContextByInputType();
@@ -158,9 +160,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetUIControlOff();
-
-	//HUD를 반환합니다.
-	UUserWidget* GetHUD(){return HUD;}
 
 	//카드를 Activate한 후 처리를 담당합니다.
 	int32 PostActivateCard();

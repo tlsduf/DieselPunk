@@ -6,6 +6,7 @@
 #include "../UserWidgetBase.h"
 #include "Deck.generated.h"
 
+class UCardDetail;
 class UScrollBox;
 class FCard;
 class UDeckCardRow;
@@ -20,9 +21,15 @@ protected:
 	UScrollBox* SBox;
 
 	UPROPERTY(EditAnywhere, Category="MYDP_UI")
-	TSubclassOf<UUserWidget> CardRowClass;
+	TSubclassOf<UUserWidgetBase> CardRowClass;
+	
+	UPROPERTY(EditAnywhere, Category="MYDP_UI")
+	TSubclassOf<UUserWidgetBase> CardDetailClass;
 	
 	TArray<TWeakObjectPtr<UDeckCardRow>> CardRows;
+
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+	UCardDetail* CardDetail;
 
 public:
 	// 생성자
@@ -36,5 +43,7 @@ public:
 public:
 	//카드를 등록합니다.
 	void RegisterCards(TArray<const FCard*> InCards);
+
+	void CreateCardDetail(int32 InKey);
 };
 

@@ -3,6 +3,8 @@
 
 #include "UserWidgetBase.h"
 
+#include <Blueprint/WidgetTree.h>
+
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(UserWidgetBase)
 
@@ -12,6 +14,11 @@
 void UUserWidgetBase::OnCreated()
 {
 
+}
+
+UWidget* UUserWidgetBase::operator[](const TCHAR* InWidgetName)
+{
+	return WidgetTree->FindWidget(InWidgetName);
 }
 
 // =============================================================

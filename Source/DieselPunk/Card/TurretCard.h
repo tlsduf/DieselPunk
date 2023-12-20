@@ -14,7 +14,7 @@ class DIESELPUNK_API FTurretCard : public FCard
 	int32 ControlTurretId;
 	FString CharacterName;
 public:
-	FTurretCard(const FString& InCardName, TWeakObjectPtr<ACharacterPC> InOwner);
+	FTurretCard(int32 InKey, const FString& InCardName, TWeakObjectPtr<ACharacterPC> InOwner);
 	virtual ~FTurretCard() override;
 
 private:

@@ -48,6 +48,13 @@ namespace UtilPath
 		return FString::Printf(TEXT("/Script/Engine.Texture2D'/Game/DieselPunk/UI/Widgets/DeckInterface/Textures/%s.%s'"), InUIName, InUIName);
 	}
 
+	//UI Detail Path를 생성합니다.
+	inline FString GetUIDetailPath(const TCHAR* InAdditionalPath, const TCHAR* InUIName)
+	{
+		
+		return FString::Printf(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/DieselPunk/UI/Widgets/%s%s.%s_C'"), InAdditionalPath, InUIName, InUIName);
+	}
+
 	/*template<typename T>
 	T* CreateUI( const TCHAR* InPath )
 	{

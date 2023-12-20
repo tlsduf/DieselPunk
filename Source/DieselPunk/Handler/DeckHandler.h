@@ -9,6 +9,7 @@
 class FCard;
 class ACharacterPC;
 class UUserWidget;
+struct CardInfo;
 class FDeckHandler
 {
 	TArray<FCard*> Deck;
@@ -23,6 +24,7 @@ class FDeckHandler
 	
 public:
 	static constexpr int32 MaxHand = 5;
+	static int32 KeyIndex;
 public:
 	FDeckHandler(TWeakObjectPtr<ACharacterPC> InOwner);
 	~FDeckHandler();
@@ -43,6 +45,8 @@ public:
 
 	//덱 인터페이스에 출력하기 위한 카드를 반환합니다.
 	void GetDeckInterfaceCards(TArray<const FCard*>& OutCards, ECardFilterType InFilterType = ECardFilterType::None, ECardSortType InSortType = ECardSortType::None);
+
+	const CardInfo* const FindCardInfo(int32 InKey, int& OutIndex);
 public:
 //관리단계에서 카드를 관리하기 위한 함수입니다. 구매/판매/획득 시 사용합니다. 
 	//카드를 생성하고 추가합니다.
