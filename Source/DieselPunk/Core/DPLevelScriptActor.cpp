@@ -58,6 +58,27 @@ void ADPLevelScriptActor::GetMonsterSpawnerIdInWorld()
 			return true;
 		return false;
 	});
+	
+	// SpawnerNumber 중복되는지 판별
+	for(int32 i = 0; i < MonsterSpawnerIDs.Num(); ++i)
+	{
+		for(int32 j = 0; j < MonsterSpawnerIDs.Num(); ++j)
+		{
+			if(i == j)
+				continue;
+			if( Cast<AMonsterSpawner>(FObjectManager::GetInstance()->FindActor(MonsterSpawnerIDs[i]))->SpawnerNumber
+				== Cast<AMonsterSpawner>(FObjectManager::GetInstance()->FindActor(MonsterSpawnerIDs[j]))->SpawnerNumber)
+				LOG_SCREEN(FColor::Red, TEXT("스포너 Alert: 중복되는 SpawnerNumber가 존재합니다. SpanwerNumber : %d 를 확인하세요."), Cast<AMonsterSpawner>(FObjectManager::GetInstance()->FindActor(MonsterSpawnerIDs[j]))->SpawnerNumber);
+		}
+	}
+	
+	// SpawnerNumber 순으로 재정렬 (중복이 있어도 정렬함)
+	MonsterSpawnerIDs.Sort([](const int32& A, const int32& B)
+	{
+		 return Cast<AMonsterSpawner>(FObjectManager::GetInstance()->FindActor(A))->SpawnerNumber
+				< Cast<AMonsterSpawner>(FObjectManager::GetInstance()->FindActor(B))->SpawnerNumber;
+	});
+
 }
 
 // =============================================================
@@ -75,7 +96,7 @@ void ADPLevelScriptActor::SetStageWaveInfo()
 	for(const FStageWaveInfo& inStageInfo : StageWaveDataTable->StageWaveInfo)
 	{
 		FStageInfo info;
-		info.bDefconUse = inStageInfo.bDefconUse;
+		info.bDefconUse = inStageInfo.bDefconTimeUse;
 		info.DefconTime = inStageInfo.DefconTime;
 		info.WaveSetInfoID = inStageInfo.WaveSetInfoID;
 		info.SupplyInfo = inStageInfo.SupplyInfo;
@@ -85,7 +106,7 @@ void ADPLevelScriptActor::SetStageWaveInfo()
 }
 
 // =============================================================
-// 웨이브가 클리어됐는지 확인하고, 클리어되면 다음 웨이브를 실행합니다. [TODO] 현재는 틱에서 실현하지만, 캐릭터 Dead 이벤트에서 호출하게
+// 웨이브가 클리어됐는지 확인하고, 클리어되면 다음 웨이브를 실행합니다.
 // =============================================================
 void ADPLevelScriptActor::WaveClearEvent()
 {
@@ -100,20 +121,20 @@ void ADPLevelScriptActor::WaveClearEvent()
 		}
 	}
 
-	// 웨이브가 클리어되면 다음 웨이브 실행
+	// 웨이브가 클리어되면 다음 웨이브 바인딩
 	if(isWaveCleared)
 	{
 		WaveIndex++;
-		StartStageAndNextWave();
+		BindStartWave();
 	}
 	
 	LOG_SCREEN(FColor::Blue, TEXT("웨이브 클리어?  %hhd"), isWaveCleared);
 }
 
 // =============================================================
-// 스테이지의 웨이브를 실행합니다
+// 스테이지의 웨이브를 바인딩합니다
 // =============================================================
-void ADPLevelScriptActor::StartStageAndNextWave()
+void ADPLevelScriptActor::BindStartWave()
 {
 	//WaveIndex 가 StageInfo배열의 개수보다 크면 예외처리
 	if(StageInfo.Num() <= WaveIndex)
@@ -136,10 +157,22 @@ void ADPLevelScriptActor::StartStageAndNextWave()
 					thisPtr->StartWave();
 			},StageInfo[WaveIndex].DefconTime, false);
 	}
-	else
-	{
+}
+
+// =============================================================
+// 스테이지의 웨이브를 시작합니다
+// =============================================================
+void ADPLevelScriptActor::CallStartWave()
+{
+	//WaveIndex 가 StageInfo배열의 개수보다 크면 예외처리
+	if(StageInfo.Num() <= WaveIndex)
+		return;
+
+	if(bPlayingWave)
+		return;
+	
+	if( !StageInfo[WaveIndex].bDefconUse)
 		StartWave();
-	}
 }
 
 // =============================================================
@@ -151,12 +184,12 @@ void ADPLevelScriptActor::StartWave()
 		return;
 
 	LOG_SCREEN(FColor::Red, TEXT("!!! %d 번째 웨이브 시작 !!!"), WaveIndex + 1);
-	
-	for(int ID : MonsterSpawnerIDs)
+
+	for(int32 i = 0; i < MonsterSpawnerIDs.Num(); ++i)
 	{
-		AMonsterSpawner* monsterSpawner = Cast<AMonsterSpawner>(FObjectManager::GetInstance()->FindActor(ID));
+		AMonsterSpawner* monsterSpawner = Cast<AMonsterSpawner>(FObjectManager::GetInstance()->FindActor(MonsterSpawnerIDs[i]));
 		if(monsterSpawner && monsterSpawner->bSpawnComplete() && monsterSpawner->IsWaveCleared())
-			monsterSpawner->StartSpawn(StageInfo[WaveIndex].WaveSetInfoID);
+			monsterSpawner->StartSpawn(StageInfo[WaveIndex].WaveSetInfoID[i]);
 	}
 }
 

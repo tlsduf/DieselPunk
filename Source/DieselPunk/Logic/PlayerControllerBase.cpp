@@ -380,7 +380,10 @@ void APlayerControllerBase::WaveStart()
 {
 	if (PC.IsValid())
 		if(auto level = Cast<ADPLevelScriptActor>(PC->GetLevel()->GetLevelScriptActor()))
-			level->StartStageAndNextWave();
+		{
+			level->BindStartWave();
+			level->CallStartWave();
+		}
 }
 
 

@@ -35,7 +35,7 @@ class DIESELPUNK_API AMonsterSpawner : public AActor
 	// for info Management //
 public:
 	UPROPERTY(EditInstanceOnly, Category = "MYDP_Setting")
-	FString SpawnerName = TEXT("MonsterSpawner");			// 스포너 이름 (MonsterSpawner1, ''2, ''3 ~)
+	int32 SpawnerNumber = 0;					// 스포너 이름 디폴트 0 (1, 2, 3 ~)
 	
 protected:
 	int32 ObjectId = -1;					//오브젝트 ID

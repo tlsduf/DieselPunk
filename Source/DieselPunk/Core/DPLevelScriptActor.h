@@ -20,7 +20,7 @@ struct FStageInfo
 {
 	bool bDefconUse = false;		// 현 웨이브 데프콘 사용 유무
 	int32 DefconTime = 0;			// 현 웨이브 데프콘 시간
-	FString WaveSetInfoID;			// 웨이브 ID. DT_WaveSet 와 행 이름이 동일해야합니다.
+	TArray<FString> WaveSetInfoID;			// 웨이브 ID. DT_WaveSet 와 행 이름이 동일해야합니다.
 	bool SupplyInfo = false;		// 현 웨이브 서플라이 유무
 };
 
@@ -65,8 +65,11 @@ public:
 	// 웨이브가 클리어됐는지 확인하고, 클리어되면 다음 웨이브를 실행합니다.
 	void WaveClearEvent();
 	
-	// 스테이지의 웨이브를 실행합니다. // 다음 웨이브를 시작합니다.
-	void StartStageAndNextWave();
+	// 스테이지의 웨이브를 바인딩합니다. // 다음 웨이브를 바인딩합니다.
+	void BindStartWave();
+
+	// 스테이지의 웨이브를 시작합니다. // 다음 웨이브를 시작합니다.
+	void CallStartWave();
 
 private:
 	// 각 스포너들의 웨이브를 실행합니다.

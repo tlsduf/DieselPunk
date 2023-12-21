@@ -113,7 +113,7 @@ void AMonsterSpawner::_SetWaveSet(FString InWaveSetName)
 	const FWaveSetDataTable* WaveSetDataTable = FDataTableManager::GetInstance()->GetData<FWaveSetDataTable>(EDataTableType::WaveSet, InWaveSetName);
 	if(WaveSetDataTable == nullptr)
 	{
-		LOG_SCREEN(FColor::Red, TEXT("몬스터 스포너: %s의 변수 SpawnerName: %s에 해당하는 데이터가 없습니다. SpawnerName를 데이터 테이블에 맞게 설정해주세요"), *GetName(), *InWaveSetName)
+		LOG_SCREEN(FColor::Red, TEXT("몬스터 스포너: %s의 변수 SpawnerNumber: %s에 해당하는 데이터가 없습니다. SpawnerName를 데이터 테이블에 맞게 설정해주세요"), *GetName(), *InWaveSetName)
 		return;
 	}
 	
@@ -131,7 +131,7 @@ void AMonsterSpawner::_SetWaveModule(FString InWaveModuleName, float InAddStartD
 	const FWaveModuleDataTable* WaveModuleDataTable = FDataTableManager::GetInstance()->GetData<FWaveModuleDataTable>(EDataTableType::WaveModule, InWaveModuleName);
 	if(WaveModuleDataTable == nullptr)
 	{
-		LOG_SCREEN(FColor::Red, TEXT("몬스터 스포너: %s의 변수 SpawnerName: %s에 해당하는 데이터가 없습니다. SpawnerName를 데이터 테이블에 맞게 설정해주세요"), *GetName(), *InWaveModuleName)
+		LOG_SCREEN(FColor::Red, TEXT("몬스터 스포너: %s의 변수 SpawnerNumber: %s에 해당하는 데이터가 없습니다. SpawnerName를 데이터 테이블에 맞게 설정해주세요"), *GetName(), *InWaveModuleName)
 		return;
 	}
 	
@@ -208,7 +208,7 @@ void AMonsterSpawner::SpawnMonster(float InDeltaTime)
 
 			//몬스터 생성 검증
 			if(!FObjectManager::IsValidId(id))
-				LOG_SCREEN(FColor::Red, TEXT("스포너: %s에서 몬스터를 생성하지 못했습니다."), *SpawnerName)
+				LOG_SCREEN(FColor::Red, TEXT("스포너: %d에서 몬스터를 생성하지 못했습니다."), SpawnerNumber)
 			else
 				SpawnMonsterId.Add(id);
 
