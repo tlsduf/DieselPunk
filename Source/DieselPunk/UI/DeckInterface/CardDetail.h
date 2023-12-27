@@ -42,6 +42,7 @@ protected:
 	UButton* Exit;
 
 	int32 TierIndex;
+	int32 MaxTier;
 	int32 CurrentKey;
 public:
 	// 생성자
@@ -54,7 +55,15 @@ public:
 
 	void OpenCardDetail(int32 InKey);
 public:
+	UFUNCTION()
 	void PreviousCardButtonExecute();
+	UFUNCTION()
 	void NextCardButtonExecute();
+	UFUNCTION()
+	void PreviousTierButtonExecute();
+	UFUNCTION()
+	void NextTierButtonExecute();
+	UFUNCTION()
+	void ExitCardDetail();
 };
 

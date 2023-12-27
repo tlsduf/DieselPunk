@@ -21,6 +21,7 @@
 void UDeck::OnCreated()
 {
 	Super::NativeConstruct();
+	CardDetail->OnCreated();
 	CardDetail->SetVisibility(ESlateVisibility::Collapsed);
 }
 

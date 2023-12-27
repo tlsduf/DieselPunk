@@ -60,10 +60,15 @@ public:
 
 	void SetDeck(UDeck* InDeck){Deck = InDeck;}
 
+	UFUNCTION()
 	void ClickedCard0();
+	UFUNCTION()
 	void ClickedCard1();
+	UFUNCTION()
 	void ClickedCard2();
+	UFUNCTION()
 	void ClickedCard3();
+	UFUNCTION()
 	void ClickedCard4();
 };
 

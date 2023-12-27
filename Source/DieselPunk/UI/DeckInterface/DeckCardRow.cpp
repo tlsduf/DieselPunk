@@ -20,6 +20,11 @@ void UDeckCardRow::OnCreated()
 {
 	Super::NativeConstruct();
 	CardKeys.SetNum(5);
+	Card0->OnClicked.AddDynamic(this, &UDeckCardRow::ClickedCard0);
+	Card1->OnClicked.AddDynamic(this, &UDeckCardRow::ClickedCard1);
+	Card2->OnClicked.AddDynamic(this, &UDeckCardRow::ClickedCard2);
+	Card3->OnClicked.AddDynamic(this, &UDeckCardRow::ClickedCard3);
+	Card4->OnClicked.AddDynamic(this, &UDeckCardRow::ClickedCard4);
 }
 
 // =============================================================
