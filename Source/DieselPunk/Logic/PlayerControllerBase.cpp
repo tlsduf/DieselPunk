@@ -430,7 +430,8 @@ void APlayerControllerBase::SetUIControlOff()
 int32 APlayerControllerBase::PostActivateCard()
 {
 	Hand->ResizeHandCard(UseCardNum, FVector2d(1.0, 1.0));
-	Hand->UnRegisterHand(UseCardNum);
+	Hand->PlayHandToHangerAnimation(UseCardNum);
+	//Hand->UnRegisterHand(UseCardNum);
 	
 	return UseCardNum;
 }

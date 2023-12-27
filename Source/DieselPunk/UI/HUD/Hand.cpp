@@ -3,12 +3,14 @@
 
 #include "Hand.h"
 #include "../../Card/Card.h"
+#include "../../Character/CharacterPC.h"
+#include "../../Manager/ObjectManager.h"
 
 #include <Components/SizeBox.h>
 #include <Components/Image.h>
 #include <Components/TextBlock.h>
 #include <Blueprint/WidgetTree.h>
-
+#include <Animation/WidgetAnimation.h>
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(Hand)
 
@@ -101,8 +103,35 @@ void UHand::UnRegisterHand(int InIndex)
 		return;
 	}
 	card->SetVisibility(ESlateVisibility::Hidden);
+	FObjectManager::GetInstance()->GetPlayer()->DrawCard();
 }
 
+void UHand::PlayHandToHangerAnimation(int InIndex)
+{
+	UWidgetAnimation* anim = nullptr;
+	switch(InIndex)
+	{
+	case 0:
+		anim = Hand0ToHanger;
+		break;
+	case 1:
+		anim = Hand1ToHanger;
+		break;
+	case 2:
+		anim = Hand2ToHanger;
+		break;
+	case 3:
+		anim = Hand3ToHanger;
+		break;
+	case 4:
+		anim = Hand4ToHanger;
+		break;
+	default:
+		return;
+	}
+
+	PlayAnimation(anim, 0.0f, 1, EUMGSequencePlayMode::Forward, 1, true);
+}
 //카드의 사이즈를 변경합니다.
 void UHand::ResizeHandCard(int InIndex, FVector2d InSize)
 {

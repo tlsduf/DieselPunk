@@ -461,9 +461,6 @@ bool ACharacterPC::ExecuteCardActivate()
 	DeckHandler->UseCard(value);
 	LOG_SCREEN(FColor::White, TEXT("%d카드를 사용합니다."), value)
 	
-	if(DeckHandler->Draw())
-		controller->RenewHand();
-
 	DelegateCardActivate.Unbind();
 	return true;
 }
@@ -482,4 +479,15 @@ bool ACharacterPC::ExecuteCardComplete()
 
 	DelegateCardComplete.Unbind();
 	return true;
+}
+
+void ACharacterPC::DrawCard()
+{
+	APlayerControllerBase* controller = Cast<APlayerControllerBase>(GetController());
+
+	if(controller == nullptr)
+		return;
+	
+	if(DeckHandler->Draw())
+		controller->RenewHand();
 }

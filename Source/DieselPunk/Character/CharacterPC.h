@@ -188,6 +188,7 @@ public:
 	//카드 Complete를 실행합니다.
 	bool ExecuteCardComplete();
 
-	
+	//카드가 없다면 카드를 드로우합니다.
+	void DrawCard();
 };
 
