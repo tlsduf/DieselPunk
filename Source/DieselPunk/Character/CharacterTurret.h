@@ -34,14 +34,21 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	//터렛 생성
 	bool CompleteHousingTurret();
 
+	// AI 시작
 	void RunAi();
 
 	void ChangeMaterialByHousingEffect(bool InRenderHousingEffect);
 
 	void ChangeHousingMaterialParameterChange(bool InHousing);
 
+	// 터렛의 조건에 따라 타겟을 결정합니다.
+	void SetTurretTarget();
+
+	// inLocation이 유효 범위 안에 있으면 True 반환
+	bool InValidArea(FVector inLocation);
 protected:
 	virtual void BeginPlay() override;
 	

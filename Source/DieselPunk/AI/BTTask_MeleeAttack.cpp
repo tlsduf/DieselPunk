@@ -16,16 +16,12 @@ EBTNodeResult::Type UBTTask_MeleeAttack::ExecuteTask(UBehaviorTreeComponent &Own
     Super::ExecuteTask(OwnerComp, NodeMemory);
 
     if (OwnerComp.GetAIOwner() == nullptr)
-    {
         return EBTNodeResult::Failed;
-    }
-
+    
     OwnerCharacter = Cast<ACharacterNPC>(OwnerComp.GetAIOwner()->GetPawn());
     if (OwnerCharacter == nullptr)
-    {
         return EBTNodeResult::Failed;
-    }
-
+    
     //OwnerCharacter->DoMeleeAttack();
     OwnerCharacter->DoMeleeAttack();
 

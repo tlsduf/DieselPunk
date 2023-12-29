@@ -2,7 +2,7 @@
 
 
 #include "MonsterAnimInstace.h"
-#include "../Skill/SkillEnemy/MeleeAttack.h"
+#include "../Skill/SkillNPC/MeleeAttack.h"
 #include "../Character/CharacterNPC.h"
 
 #include <Animation/AnimMontage.h>

@@ -1,45 +1,40 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "CharacterNPC.h"
+#include "../Character/CharacterTurret.h"
+#include "../Manager/ObjectManager.h"
 #include "../Skill/SkillBase.h"
+#include "../Skill/SkillNPC/TargetAttack.h"
 #include "../UI/HUD/EnemyStatusUI.h"
 #include "../Manager/NavigationManager.h"
 
-#include <Components/StaticMeshComponent.h>
 #include <Components/WidgetComponent.h>
+#include <AIController.h>
 #include <GameFramework/CharacterMovementComponent.h>
 #include <NavigationSystem.h>
+#include <Navigation/PathFollowingComponent.h>
+#include <DrawDebugHelpers.h>
 
 
+
+
+// =============================================================
+// 생성자
+// =============================================================
 ACharacterNPC::ACharacterNPC()
 {
-	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Turret Mesh"));
-	if ( TurretMesh )
-	{
-		TurretMesh->SetupAttachment( GetRootComponent() );
-		TurretMesh->SetCollisionEnabled( ECollisionEnabled::Type::NoCollision );
-		TurretMesh->SetGenerateOverlapEvents( false );
-		TurretMesh->SetSimulatePhysics( false );
-	}
-
-	TurretTopMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Turret Top Mesh"));
-	if ( TurretTopMesh )
-	{
-		TurretTopMesh->SetupAttachment(TurretMesh);
-		TurretTopMesh->SetCollisionEnabled( ECollisionEnabled::Type::NoCollision );
-		TurretTopMesh->SetGenerateOverlapEvents( false );
-		TurretTopMesh->SetSimulatePhysics( false );
-	}
-	
-	//HousingActorComponent = CreateDefaultSubobject<UHousingActorComponent>(TEXT("Housing Actor Component"));
-
 	// AI possess
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
-	
+
+	// ActorComponent
 	MeleeAttack = CreateDefaultSubobject<USkillBase>(TEXT("MeleeAttack"));
 	ProjectileAttack = CreateDefaultSubobject<USkillBase>(TEXT("ProjectileAttack"));
+	TargetAttack = CreateDefaultSubobject<USkillBase>(TEXT("TargetAttack"));
 }
 
+// =============================================================
+// BeginPlay
+// =============================================================
 void ACharacterNPC::BeginPlay()
 {
 	Super::BeginPlay();
@@ -50,10 +45,17 @@ void ACharacterNPC::BeginPlay()
 	if(MeleeAttack != nullptr)
 		MeleeAttack->InitSkillStat();
 
-	if(MeleeAttack != nullptr)
+	if(ProjectileAttack != nullptr)
 		ProjectileAttack->InitSkillStat();
+
+	if(TargetAttack != nullptr)
+		TargetAttack->InitSkillStat();
+	
 }
 
+// =============================================================
+// Tick
+// =============================================================
 void ACharacterNPC::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -67,8 +69,21 @@ void ACharacterNPC::Tick(float DeltaTime)
 		WidgetComp->bHiddenInGame = 1;
 
 	//공격 대상이 사라졌다면 nullptr로 초기화
-	if(!AttackTarget.IsValid())
-		AttackTarget = nullptr;
+	if(!Target.IsValid())
+		Target = nullptr;
+
+	// 타겟 업데이트
+	if(NPCType == ENPCType::Enemy)
+		SetEnemyTarget();
+}
+
+// =============================================================
+// SetupPlayerInputComponent
+// =============================================================
+void ACharacterNPC::SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	check(PlayerInputComponent);
 }
 
 // =============================================================
@@ -109,12 +124,6 @@ void ACharacterNPC::CreateStatusUI()
 	
 	EnemyStatusUI->SetHPPercent(HpPercent);
 	EnemyStatusUI->SetHPPercentAfterImage(HpPercentAfterImage);
-}
-
-void ACharacterNPC::SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	check(PlayerInputComponent);
 }
 
 // =============================================================
@@ -166,8 +175,15 @@ void ACharacterNPC::DoMeleeAttack()
 
 void ACharacterNPC::DoProjectileAttack()
 {
-	if(MeleeAttack != nullptr)
+	if(ProjectileAttack != nullptr)
 		ProjectileAttack->AbilityStart();
+}
+
+void ACharacterNPC::DoTargetAttack()
+{
+	if(TargetAttack != nullptr)
+		if(auto TA = Cast<UTargetAttack>(TargetAttack))
+			TA->TargetAttack(Target.Get());
 }
 
 bool ACharacterNPC::FindShortestPath(const FVector& InEndLocation)
@@ -180,7 +196,7 @@ bool ACharacterNPC::SetAttackTarget(TWeakObjectPtr<AActor> InTarget, const TArra
 {
 	if(InTarget.IsValid() && InTarget != nullptr)
 	{
-		AttackTarget = InTarget;
+		Target = InTarget;
 
 		//Path중에 네비메쉬 안에 포함되는 지점 등록
 		UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
@@ -192,11 +208,84 @@ bool ACharacterNPC::SetAttackTarget(TWeakObjectPtr<AActor> InTarget, const TArra
 			if(navSys && !navSys->ProjectPointToNavigation(InPath[InIndex - i], projectedLocation, INVALID_NAVEXTENT, &agentProps))
 				continue;
 
-			AttackTargetLocation = InPath[InIndex - i];
+			TargetLocation = InPath[InIndex - i];
 			break;
 		}
 		
 		return true;
 	}
 	return false;
+}
+
+void ACharacterNPC::SetEnemyTarget()
+{
+	// Default 타겟은 넥서스
+	if(Target == nullptr)
+	{
+		Target = FObjectManager::GetInstance()->GetNexus();
+		return;
+	}
+	
+	// (최우선)플레이어가 근처에 있는가 혹은 조건에 일치하는가? 	// 일치한다면 타겟을 플레이어로 지정
+	/*if(bIsPlayerNear)
+	{
+		Target = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+		return;
+	}*/
+
+	// 타겟이 넥서스 일 때
+	// (우선)넥서스에 도달할 수 없는가? // 타겟을 포탑으로 설정 //TODO 터렛 설치 시, 한 번 호출
+	// AAIController > PathFollowingComponent > GetPath > GetGoalLocation
+	/*AAIController *AIController = Cast<AAIController>(GetController());
+	FVector lastPathPoint = FVector::ZeroVector;
+	if(AIController->GetPathFollowingComponent()->GetPath().IsValid())
+		lastPathPoint = AIController->GetPathFollowingComponent()->GetPath()->GetGoalLocation();
+	// lastPathPoint 가 넥서스 위치와 일치하는가? (z성분 제외)
+	bool bCanReach = ( FObjectManager::GetInstance()->GetNexus()->GetActorLocation().X == lastPathPoint.X) && ( FObjectManager::GetInstance()->GetNexus()->GetActorLocation().Y == lastPathPoint.Y);
+	if(!bCanReach)
+	{
+		//넥서스까지의 최단 경로 탐색(설치물에 방해받지 않고)
+		if(!FindShortestPath(FObjectManager::GetInstance()->GetNexus()->GetActorLocation()))
+			return;
+		const TArray<FVector>& path = GetShortestPath();
+		
+		//공격 대상 찾기
+		AActor* target = nullptr;
+		for(int point = 0 ; point < path.Num(); ++point)
+		{
+			DrawDebugPoint(GetWorld(), path[point], 5, FColor::Blue, false, -1);
+			DrawDebugSphere(GetWorld(), Target->GetActorLocation(), 150, 16, FColor::Red, false, -1);
+			
+			TArray<FOverlapResult> hitResult;
+			GetWorld()->OverlapMultiByChannel(hitResult, path[point], FQuat::Identity, ECC_WorldStatic,
+						FCollisionShape::MakeSphere(GetGridSize() * FNavigationManager::GridSize));
+
+			for(const FOverlapResult& result : hitResult)
+			{
+				if(Cast<ACharacterTurret>(result.GetActor()) != nullptr)
+				{
+					if(SetAttackTarget(result.GetActor(), path, point))
+					{
+						target = result.GetActor();
+						break;
+					}
+				}
+			}
+			if(target != nullptr)
+				break;
+		}
+		return;
+	}*/
+
+	AAIController *AIController = Cast<AAIController>(GetController());
+	FVector lastPathPoint = FVector::ZeroVector;
+	if(AIController->GetPathFollowingComponent()->GetPath().IsValid())
+		lastPathPoint = AIController->GetPathFollowingComponent()->GetPath()->GetGoalLocation();
+	// lastPathPoint 가 넥서스 위치와 일치하는가? (z성분 제외)
+	bool bCanReach = ( FObjectManager::GetInstance()->GetNexus()->GetActorLocation().X == lastPathPoint.X) && ( FObjectManager::GetInstance()->GetNexus()->GetActorLocation().Y == lastPathPoint.Y);
+	if(!bCanReach)
+		return;
+	
+	// Default 타겟은 넥서스
+	Target = FObjectManager::GetInstance()->GetNexus();
 }

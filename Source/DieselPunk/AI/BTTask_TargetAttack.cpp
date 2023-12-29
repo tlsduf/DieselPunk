@@ -1,19 +1,19 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BTTask_ProjectileAttack.h"
+#include "BTTask_TargetAttack.h"
 #include "..\Character\CharacterNPC.h"
 
 #include <AIController.h>
 
 
-UBTTask_ProjectileAttack::UBTTask_ProjectileAttack()
+UBTTask_TargetAttack::UBTTask_TargetAttack()
 {
-    NodeName = "ProjectileAttack";
+    NodeName = "TargetAttack";
     bCreateNodeInstance = true;
 }
 
-EBTNodeResult::Type UBTTask_ProjectileAttack::ExecuteTask(UBehaviorTreeComponent &OwnerComp, uint8 *NodeMemory)
+EBTNodeResult::Type UBTTask_TargetAttack::ExecuteTask(UBehaviorTreeComponent &OwnerComp, uint8 *NodeMemory)
 {
     EBTNodeResult::Type result = Super::ExecuteTask(OwnerComp, NodeMemory);
     
@@ -26,7 +26,7 @@ EBTNodeResult::Type UBTTask_ProjectileAttack::ExecuteTask(UBehaviorTreeComponent
     if (Character == nullptr)
         return EBTNodeResult::Failed;
     
-    Character->DoProjectileAttack();
+    Character->DoTargetAttack();
 
     return EBTNodeResult::Succeeded;
 

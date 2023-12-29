@@ -36,7 +36,7 @@ protected:
 	UPROPERTY()
 	AController* OwnerController = nullptr;		// 소유 컨트롤러
 
-	float Atk = 10.f;	// 캐릭터 스텟 공격력
+	float Atk = 10.f;							// 캐릭터 스텟 공격력
 
 	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
 	float AtkCoefficient = 1.f;					// 데미지 계수

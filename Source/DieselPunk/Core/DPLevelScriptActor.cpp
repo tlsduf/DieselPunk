@@ -32,7 +32,7 @@ void ADPLevelScriptActor::InitLevel()
 	// StageWaveDataTable 정보를 받아서 StageInfo 에 저장합니다.
 	/*
 	*	데프콘Info : 데프콘 정보(임시)
-	*	WaveInfo : 스폰 시작 함수 셋 	// TODO WaveInfo_Array : 배열 순서대로 스폰위치1, 2, 3 … 웨이브 세팅
+	*	WaveInfo_Array : 배열 순서대로 스폰위치1, 2, 3 … 웨이브 세팅
 	*	서플라이Info : 서플라이 정보(임시)
 	 */
 	SetStageWaveInfo();

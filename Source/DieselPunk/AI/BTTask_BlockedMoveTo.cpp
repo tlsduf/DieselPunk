@@ -30,14 +30,7 @@ EBTNodeResult::Type UBTTask_BlockedMoveTo::ExecuteTask(UBehaviorTreeComponent& O
 	if(OwnerCharacter == nullptr)
 		return EBTNodeResult::Failed;
 
-	int nexusID = FObjectManager::GetInstance()->FindActorByPredicate([](AActor* InActor)
-	{
-		if(ACharacterNPC* thisNPC = Cast<ACharacterNPC>(InActor))
-			if(thisNPC->NPCType == ENPCType::Nexus)
-				return true;
-		return false;
-	});
-
+	int nexusID = FObjectManager::GetInstance()->GetNexus()->GetObjectId();
 	if(nexusID == FObjectManager::GetInstance()->INVALID_OBJECTID)
 		return EBTNodeResult::Failed;
 
@@ -46,8 +39,8 @@ EBTNodeResult::Type UBTTask_BlockedMoveTo::ExecuteTask(UBehaviorTreeComponent& O
 		return EBTNodeResult::Failed;
 	const TArray<FVector>& path = OwnerCharacter->GetShortestPath();
 
-	//이미 타겟이 등록되어 있는 경우 수행안함.
-	if(OwnerCharacter->GetAttackTarget() != nullptr)
+	// 타겟이 넥서스가 아닐 경우 수행안함. = 타겟이 플레이어 일 경우 or 타겟이 터렛으로 등록 된 경우
+	if(OwnerCharacter->GetAttackTarget() != FObjectManager::GetInstance()->FindActor(nexusID))
 		return EBTNodeResult::Succeeded;
 	
 	UWorld* world = GetWorld();
@@ -71,7 +64,7 @@ EBTNodeResult::Type UBTTask_BlockedMoveTo::ExecuteTask(UBehaviorTreeComponent& O
 				if(OwnerCharacter->SetAttackTarget(result.GetActor(), path, point))
 				{
 					target = result.GetActor();
-					OwnerComp.GetBlackboardComponent()->SetValueAsVector(TEXT("Nexus"), OwnerCharacter->GetAttackTargetLocation());
+					OwnerComp.GetBlackboardComponent()->SetValueAsVector(TEXT("TargetLocation"), OwnerCharacter->GetAttackTargetLocation());
 					break;
 				}
 			}

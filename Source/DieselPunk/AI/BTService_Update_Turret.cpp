@@ -3,14 +3,10 @@
 #include "BTService_Update_Turret.h"
 #include "..\Logic\NPCAIController.h"
 #include "../Character/CharacterNPC.h"
-#include "../Animation/TurretAnimInstace.h"
-#include "../Manager/ObjectManager.h"
 
-#include <Components/CapsuleComponent.h>
 #include <BehaviorTree/BlackboardComponent.h>
 #include <Kismet/GameplayStatics.h>
 #include <AIController.h>
-#include <Components/SkeletalMeshComponent.h>
 
 
 UBTService_Update_Turret::UBTService_Update_Turret()
@@ -35,47 +31,11 @@ void UBTService_Update_Turret::TickNode(UBehaviorTreeComponent &OwnerComp, uint8
     AAIController *AIController = OwnerComp.GetAIOwner();
     auto AICharacter = Cast<ACharacterNPC>(AIController->GetPawn());
     
+    // 타겟 SET
+    OwnerComp.GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), AICharacter->GetAttackTarget().Get());
 
-    // * 터렛은 현재 목표가 없으면 탐색을 하여, 사거리가 유효한 가장 가까운 적을 목표로 삼는다.
-    // * 목표가 사거리에서 벗어나면 목표를 재탐색한다.
-        
-    // TODO 사거리 정보 받아오기
-    float attackRange = AICharacter->GetCapsuleComponent()->GetScaledCapsuleRadius() + 1000;
-        
-    if(!CurTarget.IsValid())
-    {
-        OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InRange"), false);
-        // 가장 가까운 적 탐색 후, 거리 계산
-        float distance = FLT_MAX;
-        if(SearchNearestEnemy(AICharacter) != nullptr)
-            distance = FVector::Dist(SearchNearestEnemy(AICharacter)->GetActorLocation(), AICharacter->GetActorLocation());
-        // 거리가 유효하면 타겟설정
-        if(distance < attackRange)
-        {
-            CurTarget = SearchNearestEnemy(AICharacter);
-            OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InRange"), true);
-            OwnerComp.GetBlackboardComponent()->SetValueAsObject(TEXT("NearestActor"), CurTarget.Get());
-        }
-    }
-    else
-    {
-        // 목표와의 거리 측정
-        float distance = FVector::Dist(CurTarget->GetActorLocation(), AICharacter->GetActorLocation());
-        // 거리가 유효하지 않으면 초기화
-        if(distance > attackRange)
-        {
-            CurTarget = nullptr;
-            OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InRange"), false);
-            OwnerComp.GetBlackboardComponent()->ClearValue(TEXT("NearestActor"));
-        }
-    }
-        
-    UTurretAnimInstace* Temp = Cast<UTurretAnimInstace>(AICharacter->GetMesh()->GetAnimInstance());
-    if(Temp != nullptr)
-        Temp->SetCurTarget(CurTarget);
-    
-    
 
+    
     // 죽음 시 블랙보드 제어
     if (AICharacter->IsDead())
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("IsLive"), false);
@@ -88,25 +48,6 @@ void UBTService_Update_Turret::TickNode(UBehaviorTreeComponent &OwnerComp, uint8
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("PlaySpawnAnim"), true);
     else
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("PlaySpawnAnim"), false);
-}
-
-// =============================================================
-// 현재 캐릭터로부터 가장 가까운 적을 반환한다. // TODO ObjectManager
-// =============================================================
-ACharacterNPC* UBTService_Update_Turret::SearchNearestEnemy(ACharacterNPC* inThisCharacter)
-{
-    TArray<int32> OutActors;
-    FObjectManager::GetInstance()->FindActorArrayByPredicate(OutActors, [](AActor* InActor)
-    {
-        if(ACharacterNPC* thisNPC = Cast<ACharacterNPC>(InActor))
-            if(thisNPC->NPCType == ENPCType::Enemy)
-                return true;
-        
-        return false;
-    });
-    
-    return Cast<ACharacterNPC>(FObjectManager::GetInstance()->FindActor(
-        FObjectManager::GetInstance()->GetNearestACtorByRangeAndIds(inThisCharacter->GetActorLocation(), OutActors)));
 }
 
 

@@ -52,7 +52,7 @@ void AMonsterSpawner::BeginPlay()
 		}
 		for(int i = 0; i < RandomLocation.Num(); i++)
 		{
-			DrawDebugPoint(GetWorld(), RandomLocation[i], 5, FColor::Red, true);
+			//DrawDebugPoint(GetWorld(), RandomLocation[i], 5, FColor::Red, true);
 		}
 	}
 }

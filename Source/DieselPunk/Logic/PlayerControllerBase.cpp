@@ -423,7 +423,7 @@ void APlayerControllerBase::SetUIControlOff()
 
 	// 마우스 커서 off //키보드 입력 on
 	bShowMouseCursor = false;
-	PC->CanCameraControl = true;
+	//PC->CanCameraControl = true;
 }
 
 //카드를 Activate한 후 처리를 담당합니다.

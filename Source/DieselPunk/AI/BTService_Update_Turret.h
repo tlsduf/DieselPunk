@@ -22,9 +22,4 @@ public:
 
 protected:
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8 *NodeMemory, float DeltaSeconds) override;
-
-private:
-	// 현재 캐릭터로부터 가장 가까운 적을 반환한다. // TODO ObjectManager
-	ACharacterNPC* SearchNearestEnemy(ACharacterNPC* inThisCharacter);
-
 };
