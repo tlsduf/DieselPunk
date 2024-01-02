@@ -37,9 +37,9 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
 
     // 타겟 SET
     if(AICharacter->GetAttackTarget().IsValid())
-        OwnerComp.GetBlackboardComponent()->SetValueAsVector(TEXT("TargetLocation"), AICharacter->GetAttackTarget()->GetActorLocation());
+        OwnerComp.GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), AICharacter->GetAttackTarget().Get());
     else
-        OwnerComp.GetBlackboardComponent()->SetValueAsVector(TEXT("TargetLocation"), AICharacter->GetActorLocation());
+        OwnerComp.GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), AICharacter);
     
 
     /*
