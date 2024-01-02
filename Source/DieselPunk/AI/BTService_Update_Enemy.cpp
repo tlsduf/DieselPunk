@@ -11,6 +11,8 @@
 #include <AIController.h>
 #include <Navigation/PathFollowingComponent.h>
 
+#include "Interfaces/ITargetDevice.h"
+
 
 UBTService_Update_Enemy::UBTService_Update_Enemy()
 {
@@ -34,7 +36,11 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
     auto AICharacter = Cast<ACharacterNPC>(AIController->GetPawn());
 
     // 타겟 SET
-    OwnerComp.GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), AICharacter->GetAttackTarget().Get());
+    if(AICharacter->GetAttackTarget().IsValid())
+        OwnerComp.GetBlackboardComponent()->SetValueAsVector(TEXT("TargetLocation"), AICharacter->GetAttackTarget()->GetActorLocation());
+    else
+        OwnerComp.GetBlackboardComponent()->SetValueAsVector(TEXT("TargetLocation"), AICharacter->GetActorLocation());
+    
 
     /*
     UWorld* world = GetWorld();
@@ -88,7 +94,7 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
     //float MeleeRange = AICharacter->GetCapsuleComponent()->GetScaledCapsuleRadius() + 200;
     FVector VRange = AICharacter->GetActorLocation() - AICharacter->GetAttackTarget()->GetActorLocation();
     float FRange = VRange.Size();
-    if (500 < FRange)
+    if (AICharacter->GetStat().GetStat(ECharacterStatType::AttackRange) < FRange)
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InRange"), false);
     else
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InRange"), true);

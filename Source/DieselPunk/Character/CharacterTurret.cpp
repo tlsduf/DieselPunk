@@ -191,7 +191,7 @@ void ACharacterTurret::SetTurretTarget()
         
 			return false;
 		});
-		//거리 조건에 맞는 액터 어레이 반환
+		//범위 조건에 맞는 액터 어레이 반환
 		TWeakObjectPtr<ACharacterTurret> thisPtr = this;
 		outActors.RemoveAll([thisPtr](int32 ID)
 		{

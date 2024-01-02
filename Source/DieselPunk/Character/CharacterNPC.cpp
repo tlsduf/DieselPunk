@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "CharacterNPC.h"
-#include "../Character/CharacterTurret.h"
 #include "../Manager/ObjectManager.h"
 #include "../Skill/SkillBase.h"
 #include "../Skill/SkillNPC/TargetAttack.h"
@@ -13,7 +12,6 @@
 #include <GameFramework/CharacterMovementComponent.h>
 #include <NavigationSystem.h>
 #include <Navigation/PathFollowingComponent.h>
-#include <DrawDebugHelpers.h>
 
 
 
@@ -208,7 +206,7 @@ bool ACharacterNPC::SetAttackTarget(TWeakObjectPtr<AActor> InTarget, const TArra
 			if(navSys && !navSys->ProjectPointToNavigation(InPath[InIndex - i], projectedLocation, INVALID_NAVEXTENT, &agentProps))
 				continue;
 
-			TargetLocation = InPath[InIndex - i];
+			BlockedTargetLocation = InPath[InIndex - i];
 			break;
 		}
 		

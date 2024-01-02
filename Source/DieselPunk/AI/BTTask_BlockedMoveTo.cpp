@@ -64,7 +64,7 @@ EBTNodeResult::Type UBTTask_BlockedMoveTo::ExecuteTask(UBehaviorTreeComponent& O
 				if(OwnerCharacter->SetAttackTarget(result.GetActor(), path, point))
 				{
 					target = result.GetActor();
-					OwnerComp.GetBlackboardComponent()->SetValueAsVector(TEXT("TargetLocation"), OwnerCharacter->GetAttackTargetLocation());
+					OwnerComp.GetBlackboardComponent()->SetValueAsVector(TEXT("BlockedTargetLocation"), OwnerCharacter->GetAttackTargetLocation());
 					break;
 				}
 			}

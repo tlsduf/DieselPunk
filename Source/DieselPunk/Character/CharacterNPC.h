@@ -52,7 +52,7 @@ public:
 	TArray<FVector> ShortestPath;	//최단거리
 
 	TWeakObjectPtr<AActor> Target = nullptr;		//공격할 타겟
-	FVector TargetLocation = FVector::ZeroVector;	//공격할 타겟 위치
+	FVector BlockedTargetLocation = FVector::ZeroVector;	//공격할 타겟 위치
 
 protected:
 	ACharacterNPC();
@@ -84,7 +84,7 @@ public:
 
 	bool SetAttackTarget(TWeakObjectPtr<AActor> InTarget, const TArray<FVector>& InPath = TArray<FVector>(), int InIndex = -1);
 	TWeakObjectPtr<AActor> GetAttackTarget() {return Target;}
-	FVector GetAttackTargetLocation() {return TargetLocation; }
+	FVector GetAttackTargetLocation() {return BlockedTargetLocation; }
 
 	void SetEnemyTarget();
 };
