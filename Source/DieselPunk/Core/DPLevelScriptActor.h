@@ -32,10 +32,12 @@ class DIESELPUNK_API ADPLevelScriptActor : public ALevelScriptActor
 	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
 	FString StageName = TEXT("DefaultStageName");			// 스테이지 이름 (임시)
 
-	TArray<FStageInfo> StageInfo;		// 스테이지 정보
+	TArray<FStageInfo> StageInfo;		// 스테이지 데이터테이블
 
-	TArray<int32> MonsterSpawnerIDs;	// 몬스터스포너 ID
+	TArray<int32> MonsterSpawnerIDs;	// 맵에 배치된 MonsterSpawner ID를 어레이에 담아서 관리
 
+	TArray<int32> PathRouterIDs;		// 맵에 배치된 PathRouter ID를 어레이에 담아서 관리
+	
 	FTimerHandle WaveTHandle;			// 웨이브 시작 타이머핸들
 
 	bool bPlayingWave = false;			// 웨이브가 진행 중인지

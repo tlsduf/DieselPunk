@@ -14,7 +14,7 @@ struct FWaveInfo
 
 	//스폰할 웨이브 모듈 이름입니다. DT_WaveModule와 행 이름과 동일해야합니다.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString WaveMoudleID;
+	FString WaveModuleID;
 
 	//웨이브 모듈 스폰 시작까지의 딜레이 시간입니다.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

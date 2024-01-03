@@ -85,10 +85,7 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
     }
     else
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("IsAbleAttack"), false);*/
-
-
-    if(AICharacter->GetAttackTarget() == nullptr)
-        return;
+    
 
     // 몬스터와 목표의 거리에 따른 조건 설정
     //float MeleeRange = AICharacter->GetCapsuleComponent()->GetScaledCapsuleRadius() + 200;
@@ -113,5 +110,4 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("PlaySpawnAnim"), true);
     else
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("PlaySpawnAnim"), false);
-    
 }

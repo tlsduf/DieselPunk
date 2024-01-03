@@ -38,12 +38,13 @@ void AMonsterSpawner::BeginPlay()
 		FObjectManager::GetInstance()->AddActor(this);
 
 	// RandomLocation을 세팅합니다.
+	MakeRectangleBySplinePoints();
 	GetRandomLocation();
 	
 	// 스플라인 디버그라인
 	if(bDrawDebug)
 	{
-		for(int i = 0; i < SplineComponent->GetNumberOfSplinePoints(); ++i)
+		/*for(int i = 0; i < SplineComponent->GetNumberOfSplinePoints(); ++i)
 		{
 			if(i == SplineComponent->GetNumberOfSplinePoints() - 1)
 				DrawDebugLine( GetWorld(),SplineComponent->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::World),SplineComponent->GetLocationAtSplinePoint(0, ESplineCoordinateSpace::World),FColor::Red, true);
@@ -52,8 +53,8 @@ void AMonsterSpawner::BeginPlay()
 		}
 		for(int i = 0; i < RandomLocation.Num(); i++)
 		{
-			//DrawDebugPoint(GetWorld(), RandomLocation[i], 5, FColor::Red, true);
-		}
+			DrawDebugPoint(GetWorld(), RandomLocation[i], 5, FColor::Red, true);
+		}*/
 	}
 }
 
@@ -113,13 +114,13 @@ void AMonsterSpawner::_SetWaveSet(FString InWaveSetName)
 	const FWaveSetDataTable* WaveSetDataTable = FDataTableManager::GetInstance()->GetData<FWaveSetDataTable>(EDataTableType::WaveSet, InWaveSetName);
 	if(WaveSetDataTable == nullptr)
 	{
-		LOG_SCREEN(FColor::Red, TEXT("몬스터 스포너: %s의 변수 SpawnerNumber: %s에 해당하는 데이터가 없습니다. SpawnerName를 데이터 테이블에 맞게 설정해주세요"), *GetName(), *InWaveSetName)
+		LOG_SCREEN(FColor::Red, TEXT("|| 스포너 : %s || 스포너Num : %d || 해당 스포너의 WaveSetInfoID가 비었습니다. DT_StageWave에서 확인바람."), *GetName(), SpawnerNumber)
 		return;
 	}
 	
 	for(const FWaveInfo& waveInfo : WaveSetDataTable->WaveSetInfo)
 	{
-		_SetWaveModule(waveInfo.WaveMoudleID, waveInfo.StartDelay);
+		_SetWaveModule(waveInfo.WaveModuleID, waveInfo.StartDelay);
 	}
 }
 
@@ -131,7 +132,7 @@ void AMonsterSpawner::_SetWaveModule(FString InWaveModuleName, float InAddStartD
 	const FWaveModuleDataTable* WaveModuleDataTable = FDataTableManager::GetInstance()->GetData<FWaveModuleDataTable>(EDataTableType::WaveModule, InWaveModuleName);
 	if(WaveModuleDataTable == nullptr)
 	{
-		LOG_SCREEN(FColor::Red, TEXT("몬스터 스포너: %s의 변수 SpawnerNumber: %s에 해당하는 데이터가 없습니다. SpawnerName를 데이터 테이블에 맞게 설정해주세요"), *GetName(), *InWaveModuleName)
+		LOG_SCREEN(FColor::Red, TEXT("|| 스포너 : %s || 스포너Num : %d || 해당 스포너의 WaveModuleID가 비었습니다. DT_WaveSet에서 확인바람."), *GetName(), SpawnerNumber)
 		return;
 	}
 	
@@ -224,17 +225,65 @@ void AMonsterSpawner::SpawnMonster(float InDeltaTime)
 }
 
 // =============================================================
+// 스플라인 포인트를 기반으로 직사각형의 점을 PolygonPoints에 담습니다.
+// =============================================================
+void AMonsterSpawner::MakeRectangleBySplinePoints()
+{
+	if(SplineComponent->GetNumberOfSplinePoints() < 3)
+		return;
+
+	FVector firstPoint, secondPoint, thirdPoint, fourthPoint;
+	
+	firstPoint = SplineComponent->GetLocationAtSplinePoint(0, ESplineCoordinateSpace::World);
+	secondPoint = SplineComponent->GetLocationAtSplinePoint(1, ESplineCoordinateSpace::World);
+	secondPoint = FVector(secondPoint.X, secondPoint.Y, firstPoint.Z);
+	FVector heightPoint = SplineComponent->GetLocationAtSplinePoint(2, ESplineCoordinateSpace::World);
+	heightPoint = FVector(heightPoint.X, heightPoint.Y, firstPoint.Z);
+
+	FVector ZupFirstPoint = firstPoint + FVector(0,0,100);
+	// 법선벡터
+	FVector norm = ((firstPoint - ZupFirstPoint).Cross(secondPoint - ZupFirstPoint)).GetSafeNormal();
+
+	// Get distance between (firstPoint-secondPoint)Line and heightPoint
+	double a = firstPoint.Y - secondPoint.Y;
+	double b = secondPoint.X - firstPoint.X;
+	double c = firstPoint.X * secondPoint.Y - secondPoint.X * firstPoint.Y;
+	float dist = abs((a * heightPoint.X) + (b * heightPoint.Y) + c) / sqrt((a * a) + (b * b));
+
+	thirdPoint = secondPoint + (norm * dist);
+	fourthPoint = firstPoint + (norm * dist);
+	
+	// Set PolygonPoints on Spline
+	RectanglePoints.Empty();
+	RectanglePoints.Add(firstPoint);
+	RectanglePoints.Add(secondPoint);
+	RectanglePoints.Add(thirdPoint);
+	RectanglePoints.Add(fourthPoint);
+
+	// Draw Debug
+	DrawDebugCylinder(GetWorld(), firstPoint, fourthPoint, 10, 4, FColor::Blue, true, -1, 0, 5);
+	DrawDebugLine(GetWorld(), firstPoint, secondPoint, FColor::Green, true, -1, 0, 5);
+	DrawDebugCylinder(GetWorld(), secondPoint, thirdPoint, 10, 4, FColor::Red, true, -1, 0, 5);
+	DrawDebugLine(GetWorld(), firstPoint, (firstPoint + secondPoint)/2 + (-norm * 150), FColor::Green, true, -1, 0, 5);
+	DrawDebugLine(GetWorld(), secondPoint, (firstPoint + secondPoint)/2 + (-norm * 150), FColor::Green, true, -1, 0, 5);
+	//DrawDebugCone(GetWorld(), (firstPoint + secondPoint)/2 + (-norm * 150), norm, 150, FMath::DegreesToRadians(20.f), FMath::DegreesToRadians(20.f), 16, FColor::Green, true, 0, 0, 5);
+	
+	for(int i = 0; i < RectanglePoints.Num(); ++i)
+	{
+		if(i == RectanglePoints.Num() - 1)
+			DrawDebugLine( GetWorld(),RectanglePoints[i],RectanglePoints[0],FColor::Green, true, -1, 0, 5);
+		else
+			DrawDebugLine( GetWorld(),RectanglePoints[i],RectanglePoints[i + 1],FColor::Green, true, -1, 0, 5);
+	}
+}
+
+// =============================================================
 // 스플라인 영역 안에 위치한 점을(점 사이의 거리 = DistanceDifference) RandomLocation 에 담습니다.
 // =============================================================
 void AMonsterSpawner::GetRandomLocation()
 {
-	// Set PolygonPoints on Spline
-	PolygonPoints.Empty();
-	for(int i = 0; i < SplineComponent->GetNumberOfSplinePoints(); ++i)
-		PolygonPoints.Add(SplineComponent->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::World));
-	
 	double minX = 0, minY = 0, maxX = 0, maxY = 0;
-	for(const FVector& polygonPoint : PolygonPoints)
+	for(const FVector& polygonPoint : RectanglePoints)
 	{
 		minX = minX > polygonPoint.X ? polygonPoint.X : minX;
 		minY = minY > polygonPoint.Y ? polygonPoint.Y : minY;
@@ -248,7 +297,7 @@ void AMonsterSpawner::GetRandomLocation()
 		{
 			if(IsInPolygon(x, y))
 			{
-				FVector location = FVector(x, y, PolygonPoints[0].Z);
+				FVector location = FVector(x, y, RectanglePoints[0].Z);
 				location.Z = UtilCollision::GetZTrace(location, -1).Location.Z;
 				RandomLocation.Add(location);
 			}
@@ -263,13 +312,13 @@ bool AMonsterSpawner::IsInPolygon(double InX, double InY)
 {
 	int cn = 0;    // the  crossing number counter
 	
-	for (int i = 0; i < PolygonPoints.Num(); i++)
+	for (int i = 0; i < RectanglePoints.Num(); i++)
 	{
-		int j = (i + 1) % PolygonPoints.Num();
-		if ((( PolygonPoints[i].Y <= InY ) && ( PolygonPoints[j].Y > InY )) || (( PolygonPoints[i].Y > InY ) && ( PolygonPoints[j].Y <=  InY )))
+		int j = (i + 1) % RectanglePoints.Num();
+		if ((( RectanglePoints[i].Y <= InY ) && ( RectanglePoints[j].Y > InY )) || (( RectanglePoints[i].Y > InY ) && ( RectanglePoints[j].Y <=  InY )))
 		{ 
-			float vt = (float)(InY  - PolygonPoints[i].Y) / (PolygonPoints[j].Y - PolygonPoints[i].Y);
-			if (InX <  PolygonPoints[i].X + vt * ( PolygonPoints[j].X - PolygonPoints[i].X )) 
+			float vt = (float)(InY  - RectanglePoints[i].Y) / (RectanglePoints[j].Y - RectanglePoints[i].Y);
+			if (InX <  RectanglePoints[i].X + vt * ( RectanglePoints[j].X - RectanglePoints[i].X )) 
 				++cn;  
 		}
 	}

@@ -78,7 +78,6 @@ void ADPLevelScriptActor::GetMonsterSpawnerIdInWorld()
 		 return Cast<AMonsterSpawner>(FObjectManager::GetInstance()->FindActor(A))->SpawnerNumber
 				< Cast<AMonsterSpawner>(FObjectManager::GetInstance()->FindActor(B))->SpawnerNumber;
 	});
-
 }
 
 // =============================================================

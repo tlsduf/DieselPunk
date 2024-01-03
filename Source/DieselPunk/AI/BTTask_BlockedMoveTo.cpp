@@ -51,7 +51,7 @@ EBTNodeResult::Type UBTTask_BlockedMoveTo::ExecuteTask(UBehaviorTreeComponent& O
 	AActor* target = nullptr;
 	for(int point = 0 ; point < path.Num(); ++point)
 	{
-		DrawDebugPoint(GetWorld(), path[point], 5, FColor::Blue, true);
+		DrawDebugPoint(GetWorld(), path[point], 5, FColor::Blue, false, -1);
 		
 		TArray<FOverlapResult> hitResult;
 		world->OverlapMultiByChannel(hitResult, path[point], FQuat::Identity, ECC_WorldStatic,

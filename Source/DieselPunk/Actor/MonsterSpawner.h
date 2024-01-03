@@ -34,6 +34,7 @@ class DIESELPUNK_API AMonsterSpawner : public AActor
 	/////////////////////////////////////////////////////////////////////
 	// for info Management //
 public:
+	
 	UPROPERTY(EditInstanceOnly, Category = "MYDP_Setting")
 	int32 SpawnerNumber = 0;					// 스포너 이름 디폴트 0 (1, 2, 3 ~)
 	
@@ -45,9 +46,9 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USplineComponent> SplineComponent;		// 영역을 만들 스플라인 컴포넌트
-	
-	TArray<FVector> PolygonPoints;			// 스플라인으로 만들어진 다각형의 꼭짓점을 담을 배열
-
+public:
+	TArray<FVector> RectanglePoints;			// 스플라인으로 만들어진 직사각형의 꼭짓점을 담을 배열
+protected:
 	TArray<FVector> RandomLocation;			// 다각형 안의 랜덤 위치값을 담을 배열
 
 
@@ -107,6 +108,9 @@ private:
 	void SpawnMonster(float InDeltaTime);
 
 private:
+	// 스플라인 포인트를 기반으로 직사각형의 점을 PolygonPoints에 담습니다.
+	void MakeRectangleBySplinePoints();
+	
 	// 스플라인 영역 안에 위치한 점을(점 사이의 거리 = DistanceDifference) RandomLocation 에 담습니다.
 	void GetRandomLocation();
 	
