@@ -41,6 +41,9 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
     else
         OwnerComp.GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), AICharacter);
     
+    // 목표위치 SET
+    OwnerComp.GetBlackboardComponent()->SetValueAsVector(TEXT("TargetLocation"), AICharacter->GetTargetLoc());
+    
 
     /*
     UWorld* world = GetWorld();

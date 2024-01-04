@@ -9,6 +9,12 @@ class UHousingActorComponent;
 class USkillBase;
 class UEnemyStatusUI;
 
+struct FProportion
+{
+	float Width = 0;
+	float Length = 0;
+};
+
 UCLASS()
 class DIESELPUNK_API ACharacterNPC : public ACharacterBase
 {
@@ -49,10 +55,16 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="MYDP_Setting", meta=(AllowPrivateAccess="true"))
 	int32 GridSize = 1;
 
+	FProportion Proportion;			//위치투영을 위한 스포너에서의 스폰위치 가로세로 비례
+	
+	TArray<FVector> TargetArray;	//도달할 타겟위치 배열
+	
 	TArray<FVector> ShortestPath;	//최단거리
 
+	int32 TargetLocNum = 0;							//도달할 타겟위치 순서
+	FVector TargetLoc = FVector::ZeroVector;		//도달할 타겟 위치
 	TWeakObjectPtr<AActor> Target = nullptr;		//공격할 타겟
-	FVector BlockedTargetLocation = FVector::ZeroVector;	//공격할 타겟 위치
+	FVector BlockedTargetLoc = FVector::ZeroVector;	//공격할 타겟 위치
 
 protected:
 	ACharacterNPC();
@@ -78,13 +90,19 @@ public:
 	void DoProjectileAttack();
 	void DoTargetAttack();
 
+	// 스폰시 '몬스터'의 Proportion을 설정합니다.
+	void SetProportion(TArray<FVector> inRectanglePoints);
+	// 스폰시 '몬스터'의 TargetArray를 설정합니다.
+	void SetTargetArray(int32 inSpawnerNumber);
+	// '몬스터'의 Target을 설정합니다.
+	void SetEnemyTarget();
+	
 	bool FindShortestPath(const FVector& InEndLocation);
 	const TArray<FVector>& GetShortestPath() {return ShortestPath;} 
 	int32 GetGridSize() const {return GridSize;}
 
 	bool SetAttackTarget(TWeakObjectPtr<AActor> InTarget, const TArray<FVector>& InPath = TArray<FVector>(), int InIndex = -1);
 	TWeakObjectPtr<AActor> GetAttackTarget() {return Target;}
-	FVector GetAttackTargetLocation() {return BlockedTargetLocation; }
-
-	void SetEnemyTarget();
+	FVector GetTargetLoc() { return TargetLoc; }
+	FVector GetAttackTargetLoc() { return BlockedTargetLoc; }
 };
