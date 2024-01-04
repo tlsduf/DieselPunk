@@ -59,10 +59,16 @@ public:
 private:
 	// 월드에 배치된 스포너들의 ID를 MonsterSpawnerIDs 에 저장합니다.
 	void GetMonsterSpawnerIdInWorld();
+
+	// 월드에 배치된 경유지들의 ID를 PathRouterIDs 에 저장합니다. (그냥 담기만 합니다. 정렬x)
+	void GetPathRouterIDInWorld();
 	
 	// StageWaveDataTable 정보를 받아서 StageInfo 에 저장합니다.
 	void SetStageWaveInfo();
 
+	// 각 스포너들의 웨이브를 실행합니다.
+	void StartWave();
+	
 public:
 	// 웨이브가 클리어됐는지 확인하고, 클리어되면 다음 웨이브를 실행합니다.
 	void WaveClearEvent();
@@ -73,7 +79,7 @@ public:
 	// 스테이지의 웨이브를 시작합니다. // 다음 웨이브를 시작합니다.
 	void CallStartWave();
 
-private:
-	// 각 스포너들의 웨이브를 실행합니다.
-	void StartWave();
+	TArray<int32> GetMonsterSpawnerIDs() { return MonsterSpawnerIDs; }
+	TArray<int32> GetPathRouterIDs() { return PathRouterIDs; }
+
 };

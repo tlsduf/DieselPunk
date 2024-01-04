@@ -37,8 +37,9 @@ void AMonsterSpawner::BeginPlay()
 	if(ObjectId == -1)
 		FObjectManager::GetInstance()->AddActor(this);
 
-	// RandomLocation을 세팅합니다.
+	// 스플라인으로 직사각형을 생성합니다.
 	MakeRectangleBySplinePoints();
+	// RandomLocation을 세팅합니다.
 	GetRandomLocation();
 	
 	// 스플라인 디버그라인
@@ -99,7 +100,7 @@ void AMonsterSpawner::StartSpawn(FString InWaveSetName)
 // =============================================================
 void AMonsterSpawner::RemoveDeadNPCFromArray()
 {
-	for(TArray<int32>::TIterator iterId{SpawnMonsterId.CreateIterator()}; iterId; ++iterId)
+	for(TArray<int32>::TIterator iterId{SpawnedMonsterID.CreateIterator()}; iterId; ++iterId)
 	{
 		if(FObjectManager::GetInstance()->FindActor(*iterId) == nullptr)
 			iterId.RemoveCurrent();
@@ -176,7 +177,7 @@ void AMonsterSpawner::_SetWaveModule(FString InWaveModuleName, float InAddStartD
 // =============================================================
 bool AMonsterSpawner::IsWaveCleared()
 {
-	return SpawnMonsterId.IsEmpty();
+	return SpawnedMonsterID.IsEmpty();
 }
 
 // =============================================================
@@ -211,7 +212,15 @@ void AMonsterSpawner::SpawnMonster(float InDeltaTime)
 			if(!FObjectManager::IsValidId(id))
 				LOG_SCREEN(FColor::Red, TEXT("스포너: %d에서 몬스터를 생성하지 못했습니다."), SpawnerNumber)
 			else
-				SpawnMonsterId.Add(id);
+			{
+				SpawnedMonsterID.Add(id);
+				// 몬스터 투영값 계산 // 몬스터 목표배열 설정
+				if(auto npc = Cast<ACharacterNPC>(FObjectManager::GetInstance()->FindActor(id)))
+				{
+					npc->SetProportion(RectanglePoints);
+					npc->SetTargetArray(SpawnerNumber);
+				}
+			}
 
 			//생성한 몬스터 정보 삭제
 			iterSpawnInfo.RemoveCurrent();
@@ -262,11 +271,9 @@ void AMonsterSpawner::MakeRectangleBySplinePoints()
 
 	// Draw Debug
 	DrawDebugCylinder(GetWorld(), firstPoint, fourthPoint, 10, 4, FColor::Blue, true, -1, 0, 5);
-	DrawDebugLine(GetWorld(), firstPoint, secondPoint, FColor::Green, true, -1, 0, 5);
 	DrawDebugCylinder(GetWorld(), secondPoint, thirdPoint, 10, 4, FColor::Red, true, -1, 0, 5);
 	DrawDebugLine(GetWorld(), firstPoint, (firstPoint + secondPoint)/2 + (-norm * 150), FColor::Green, true, -1, 0, 5);
 	DrawDebugLine(GetWorld(), secondPoint, (firstPoint + secondPoint)/2 + (-norm * 150), FColor::Green, true, -1, 0, 5);
-	//DrawDebugCone(GetWorld(), (firstPoint + secondPoint)/2 + (-norm * 150), norm, 150, FMath::DegreesToRadians(20.f), FMath::DegreesToRadians(20.f), 16, FColor::Green, true, 0, 0, 5);
 	
 	for(int i = 0; i < RectanglePoints.Num(); ++i)
 	{

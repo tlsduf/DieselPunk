@@ -28,10 +28,10 @@ public:
 	UPROPERTY(EditInstanceOnly, Category = "MYDP_Setting")
 	int32 PathRouterNumber = 0;				// 경유지 번호 디폴트 0 (1, 2, 3 ~)
 	
-protected:
 	UPROPERTY(EditInstanceOnly, Category = "MYDP_Setting")
 	int32 OriginSpawnerNumber = 0;			// 연결된 스포너 번호 디폴트 0 (1, 2, 3 ~)
-	
+
+protected:
 	int32 ObjectId = -1;					// 오브젝트 ID
 	
 	/////////////////////////////////////////////////////////////////////
@@ -39,6 +39,9 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USplineComponent> SplineComponent;		// 영역을 만들 스플라인 컴포넌트
+	
+	TArray<FVector> RectanglePoints;					// 스플라인으로 만들어진 직사각형의 꼭짓점을 담을 배열
+
 	
 public:	
 	// Sets default values for this actor's properties
@@ -59,4 +62,10 @@ public:
 
 	void SetObjectId(int32 InObjectId) { ObjectId = InObjectId; }
 
+private:
+	// 스플라인 포인트를 기반으로 직사각형의 점을 PolygonPoints에 담습니다.
+	void MakeRectangleBySplinePoints();
+
+public:
+	TArray<FVector> GetRectanglePoints() { return RectanglePoints; }
 };

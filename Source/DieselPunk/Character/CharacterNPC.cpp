@@ -6,14 +6,18 @@
 #include "../Skill/SkillNPC/TargetAttack.h"
 #include "../UI/HUD/EnemyStatusUI.h"
 #include "../Manager/NavigationManager.h"
+#include "../Actor/PathRouter.h"
+#include "../Core/DPLevelScriptActor.h"
 
 #include <Components/WidgetComponent.h>
 #include <AIController.h>
 #include <GameFramework/CharacterMovementComponent.h>
 #include <NavigationSystem.h>
 #include <Navigation/PathFollowingComponent.h>
+#include <Engine/Level.h>
 
-
+#include "DrawDebugHelpers.h"
+#include "Components/CapsuleComponent.h"
 
 
 // =============================================================
@@ -38,7 +42,7 @@ void ACharacterNPC::BeginPlay()
 	Super::BeginPlay();
 
 	GetCharacterMovement()->MaxWalkSpeed = Stat.GetStat(ECharacterStatType::MoveSpeed);
-
+	
 	// SKill Stat Initialize
 	if(MeleeAttack != nullptr)
 		MeleeAttack->InitSkillStat();
@@ -184,6 +188,126 @@ void ACharacterNPC::DoTargetAttack()
 			TA->TargetAttack(Target.Get());
 }
 
+// =============================================================
+// 스폰시 '몬스터'의 Proportion을 설정합니다. // 호출부 : MonsterSpanwer.cpp SpawnMonster()
+// =============================================================
+void ACharacterNPC::SetProportion(TArray<FVector> inRectanglePoints)
+{
+	if(inRectanglePoints.IsEmpty())
+		return;
+	
+	// Get distance between (firstPoint-secondPoint)Line and ThirdPoint
+	FVector firstPoint, secondPoint, thirdPoint;
+	double a, b, c;
+				
+	firstPoint = inRectanglePoints[0];
+	secondPoint = inRectanglePoints[3];
+	thirdPoint = GetActorLocation();
+	a = firstPoint.Y - secondPoint.Y;
+	b = secondPoint.X - firstPoint.X;
+	c = firstPoint.X * secondPoint.Y - secondPoint.X * firstPoint.Y;
+	float widthDist = abs((a * thirdPoint.X) + (b * thirdPoint.Y) + c) / sqrt((a * a) + (b * b));
+				
+	Proportion.Width = widthDist / FVector::Dist(inRectanglePoints[0], inRectanglePoints[1]);
+
+	firstPoint = inRectanglePoints[0];
+	secondPoint = inRectanglePoints[1];
+	thirdPoint = GetActorLocation();
+	a = firstPoint.Y - secondPoint.Y;
+	b = secondPoint.X - firstPoint.X;
+	c = firstPoint.X * secondPoint.Y - secondPoint.X * firstPoint.Y;
+	float lengthDist = abs((a * thirdPoint.X) + (b * thirdPoint.Y) + c) / sqrt((a * a) + (b * b));
+				
+	Proportion.Length = lengthDist / FVector::Dist(inRectanglePoints[0], inRectanglePoints[3]);
+}
+
+// =============================================================
+// 스폰시 '몬스터'의 TargetArray를 설정합니다. // 호출부 : MonsterSpanwer.cpp SpawnMonster()
+// =============================================================
+void ACharacterNPC::SetTargetArray(int32 inSpawnerNumber)
+{
+	auto DPLevelScriptActor = Cast<ADPLevelScriptActor>(GetLevel()->GetLevelScriptActor());
+	TArray<int32> PathRouterIDs = DPLevelScriptActor->GetPathRouterIDs();
+	// 다른 OriginSpawnerNumber를 가진 경유지 제거
+	PathRouterIDs.RemoveAll([inSpawnerNumber](int32 PathRouterID)
+	{
+		return Cast<APathRouter>(FObjectManager::GetInstance()->FindActor(PathRouterID))->OriginSpawnerNumber != inSpawnerNumber;
+	});
+	// PathRouterNumber 순으로 정렬
+	PathRouterIDs.Sort([](const int32 A, const int32 B)
+	{
+		return Cast<APathRouter>(FObjectManager::GetInstance()->FindActor(A))->PathRouterNumber
+		< Cast<APathRouter>(FObjectManager::GetInstance()->FindActor(B))->PathRouterNumber;
+	});
+	// TargetArray 설정
+	TargetArray.Empty();
+	for(const int32 ID : PathRouterIDs)
+	{
+		TArray<FVector> points = Cast<APathRouter>(FObjectManager::GetInstance()->FindActor(ID))->GetRectanglePoints();
+		FVector targetLoc = points[0];
+		targetLoc = targetLoc
+		+ ( Proportion.Width * (points[1] - points[0]).GetSafeNormal() * FVector::Dist(points[1], points[0]) )
+		+ ( Proportion.Length * (points[3] - points[0]).GetSafeNormal() * FVector::Dist(points[3], points[0]) );
+		
+		TargetArray.Add(targetLoc);
+	}
+	TargetArray.Add(FObjectManager::GetInstance()->GetNexus()->GetActorLocation());
+	
+	for(const FVector& targetLoc : TargetArray)
+	{
+		DrawDebugPoint(GetWorld(), targetLoc, 5, FColor::Red, true);
+	}
+	for(int i = 0; i < TargetArray.Num(); ++i)
+	{
+		if(i == TargetArray.Num() - 1)
+			continue;
+		DrawDebugLine( GetWorld(),TargetArray[i],TargetArray[i + 1], FColor::Magenta, true, -1, 0, 5);
+	}
+}
+
+// =============================================================
+// '몬스터'의 Target을 설정합니다. 
+// =============================================================
+void ACharacterNPC::SetEnemyTarget()
+{
+	// ======== Default 타겟은 넥서스
+	if(Target == nullptr)
+	{
+		Target = FObjectManager::GetInstance()->GetNexus();
+		TargetLoc =FObjectManager::GetInstance()->GetNexus()->GetActorLocation();
+		return;
+	}
+	
+	// ======== (최우선)플레이어가 근처에 있는가 혹은 조건에 일치하는가? 	// 일치한다면 타겟을 플레이어로 지정
+	/*if(bIsPlayerNear)
+	{
+		Target = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+		TargetLocation = UGameplayStatics::GetPlayerPawn(GetWorld(), 0).GetActorLocation();
+		return;
+	}*/
+
+	// 타겟이 TargetArray[i] 일 때
+	// ======== (우선)TargetArray[i]에 도달할 수 없는가? // 타겟을 포탑으로 설정하기위함
+	
+	// 1. AAIController > PathFollowingComponent > GetPath > GetGoalLocation
+	AAIController *AIController = Cast<AAIController>(GetController());
+	FVector lastPathPoint = FVector::ZeroVector;
+	if(AIController->GetPathFollowingComponent()->GetPath().IsValid())
+		lastPathPoint = AIController->GetPathFollowingComponent()->GetPath()->GetGoalLocation();
+	// 2. TargetLocation 업데이트
+	TargetLoc = TargetArray[TargetLocNum];
+	if(FVector::Dist(TargetLoc, GetActorLocation()) < (GetCapsuleComponent()->GetScaledCapsuleRadius() * 2.5))
+		TargetLocNum++;
+	// 3. lastPathPoint 가 목표 위치와 일치하는가? (z성분 제외)
+	bool bCanReach = ( TargetLoc.X == lastPathPoint.X) && ( TargetLoc.Y == lastPathPoint.Y);
+	// 4. 목표에 도달할 수 없다면 타겟을 업데이트하지 않음 // UBTTask_BlockedMoveTo에서 Target업데이트
+	if(!bCanReach)
+		return;
+	
+	// ======== Default 타겟은 넥서스
+	Target = FObjectManager::GetInstance()->GetNexus();
+}
+
 bool ACharacterNPC::FindShortestPath(const FVector& InEndLocation)
 {
 	ShortestPath = FNavigationManager::GetInstance()->PathFinding(GetActorLocation(), InEndLocation, GridSize);
@@ -206,7 +330,7 @@ bool ACharacterNPC::SetAttackTarget(TWeakObjectPtr<AActor> InTarget, const TArra
 			if(navSys && !navSys->ProjectPointToNavigation(InPath[InIndex - i], projectedLocation, INVALID_NAVEXTENT, &agentProps))
 				continue;
 
-			BlockedTargetLocation = InPath[InIndex - i];
+			BlockedTargetLoc = InPath[InIndex - i];
 			break;
 		}
 		
@@ -215,75 +339,4 @@ bool ACharacterNPC::SetAttackTarget(TWeakObjectPtr<AActor> InTarget, const TArra
 	return false;
 }
 
-void ACharacterNPC::SetEnemyTarget()
-{
-	// Default 타겟은 넥서스
-	if(Target == nullptr)
-	{
-		Target = FObjectManager::GetInstance()->GetNexus();
-		return;
-	}
-	
-	// (최우선)플레이어가 근처에 있는가 혹은 조건에 일치하는가? 	// 일치한다면 타겟을 플레이어로 지정
-	/*if(bIsPlayerNear)
-	{
-		Target = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-		return;
-	}*/
 
-	// 타겟이 넥서스 일 때
-	// (우선)넥서스에 도달할 수 없는가? // 타겟을 포탑으로 설정 //TODO 터렛 설치 시, 한 번 호출
-	// AAIController > PathFollowingComponent > GetPath > GetGoalLocation
-	/*AAIController *AIController = Cast<AAIController>(GetController());
-	FVector lastPathPoint = FVector::ZeroVector;
-	if(AIController->GetPathFollowingComponent()->GetPath().IsValid())
-		lastPathPoint = AIController->GetPathFollowingComponent()->GetPath()->GetGoalLocation();
-	// lastPathPoint 가 넥서스 위치와 일치하는가? (z성분 제외)
-	bool bCanReach = ( FObjectManager::GetInstance()->GetNexus()->GetActorLocation().X == lastPathPoint.X) && ( FObjectManager::GetInstance()->GetNexus()->GetActorLocation().Y == lastPathPoint.Y);
-	if(!bCanReach)
-	{
-		//넥서스까지의 최단 경로 탐색(설치물에 방해받지 않고)
-		if(!FindShortestPath(FObjectManager::GetInstance()->GetNexus()->GetActorLocation()))
-			return;
-		const TArray<FVector>& path = GetShortestPath();
-		
-		//공격 대상 찾기
-		AActor* target = nullptr;
-		for(int point = 0 ; point < path.Num(); ++point)
-		{
-			DrawDebugPoint(GetWorld(), path[point], 5, FColor::Blue, false, -1);
-			DrawDebugSphere(GetWorld(), Target->GetActorLocation(), 150, 16, FColor::Red, false, -1);
-			
-			TArray<FOverlapResult> hitResult;
-			GetWorld()->OverlapMultiByChannel(hitResult, path[point], FQuat::Identity, ECC_WorldStatic,
-						FCollisionShape::MakeSphere(GetGridSize() * FNavigationManager::GridSize));
-
-			for(const FOverlapResult& result : hitResult)
-			{
-				if(Cast<ACharacterTurret>(result.GetActor()) != nullptr)
-				{
-					if(SetAttackTarget(result.GetActor(), path, point))
-					{
-						target = result.GetActor();
-						break;
-					}
-				}
-			}
-			if(target != nullptr)
-				break;
-		}
-		return;
-	}*/
-
-	AAIController *AIController = Cast<AAIController>(GetController());
-	FVector lastPathPoint = FVector::ZeroVector;
-	if(AIController->GetPathFollowingComponent()->GetPath().IsValid())
-		lastPathPoint = AIController->GetPathFollowingComponent()->GetPath()->GetGoalLocation();
-	// lastPathPoint 가 넥서스 위치와 일치하는가? (z성분 제외)
-	bool bCanReach = ( FObjectManager::GetInstance()->GetNexus()->GetActorLocation().X == lastPathPoint.X) && ( FObjectManager::GetInstance()->GetNexus()->GetActorLocation().Y == lastPathPoint.Y);
-	if(!bCanReach)
-		return;
-	
-	// Default 타겟은 넥서스
-	Target = FObjectManager::GetInstance()->GetNexus();
-}

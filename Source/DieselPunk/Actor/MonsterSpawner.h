@@ -46,10 +46,10 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USplineComponent> SplineComponent;		// 영역을 만들 스플라인 컴포넌트
-public:
+
 	TArray<FVector> RectanglePoints;			// 스플라인으로 만들어진 직사각형의 꼭짓점을 담을 배열
-protected:
-	TArray<FVector> RandomLocation;			// 다각형 안의 랜덤 위치값을 담을 배열
+
+	TArray<FVector> RandomLocation;				// 다각형 안의 랜덤 위치값을 담을 배열
 
 
 	/////////////////////////////////////////////////////////////////////
@@ -61,7 +61,7 @@ protected:
 	
 	float SpawnerDeltaTime = 0.f;			//누적 시간
 	
-	TArray<int32> SpawnMonsterId;			//스폰한 몬스터 IDs
+	TArray<int32> SpawnedMonsterID;			//스폰한 몬스터 IDs
 
 	bool bDoSpawn = false;					//스폰해야하는지
 
