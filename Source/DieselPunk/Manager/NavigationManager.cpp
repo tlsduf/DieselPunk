@@ -288,7 +288,7 @@ bool FNavigationManager::_PathFinding(int32 InStartX, int32 InStartY, int32 InEn
 			NavMap[idx.Key][idx.Value].Parent = &NavMap[InStartX][InStartY];
 			return true;
 		}
-		if(NavMap[idx.Key][idx.Value].IsGoNodeState[InCharacterGridSize - 1] != ENavNodeState::Passable)
+		if(NavMap[idx.Key][idx.Value].IsGoNodeState[InCharacterGridSize - 1] == ENavNodeState::BlockedByNonBreakable)
 			continue;
 
 		//목적지 노드가 아니라면 OpenList에 보관
@@ -306,17 +306,31 @@ bool FNavigationManager::_PathFinding(int32 InStartX, int32 InStartY, int32 InEn
 	//휴리스틱 조사식으로 정렬
 	double firstStartX = StartX;
 	double firstStartY = StartY;
+
+	const TMap<int32, TMap<int32, FDpNavNode>>& map = NavMap;
 	
-	OpenList.Sort([&firstStartX, &firstStartY, &InEndX, &InEndY](const TPair<int32, int32>& lhsIdx, const TPair<int32, int32>& rhsIdx)
+	OpenList.Sort([&map, &InCharacterGridSize, &firstStartX, &firstStartY, &InEndX, &InEndY](const TPair<int32, int32>& lhsIdx, const TPair<int32, int32>& rhsIdx)
 	{
+		FDpNavNode* parent = map[lhsIdx.Key][lhsIdx.Value].Parent;
+		int countBlockedByBreakable = 0;
+		while(parent != nullptr)
+		{
+			if(parent->NavNodeState == ENavNodeState::BlockedByBreakable || parent->IsGoNodeState[InCharacterGridSize - 1] == ENavNodeState::BlockedByBreakable)
+				countBlockedByBreakable++;
+			parent = parent->Parent;
+		}
+
+		int countBlockedByBreakableLhs = map[lhsIdx.Key][lhsIdx.Value].NavNodeState == ENavNodeState::BlockedByBreakable? countBlockedByBreakable + 1: countBlockedByBreakable;
+		int countBlockedByBreakableRhs = map[rhsIdx.Key][rhsIdx.Value].NavNodeState == ENavNodeState::BlockedByBreakable? countBlockedByBreakable + 1: countBlockedByBreakable;
+		
 		double distStartCurrentLhs = DistanceIndex(firstStartX, firstStartY, lhsIdx.Key, lhsIdx.Value);
 		double distCurrentEndLhs = DistanceIndex(lhsIdx.Key, lhsIdx.Value, InEndX, InEndY);
 
 		double distStartCurrentRhs = DistanceIndex(firstStartX, firstStartY, rhsIdx.Key, rhsIdx.Value);
 		double distCurrentEndRhs = DistanceIndex(rhsIdx.Key, rhsIdx.Value, InEndX, InEndY);
 
-		//return distStartCurrentLhs + distCurrentEndLhs <= distStartCurrentRhs + distCurrentEndRhs;
-		return distCurrentEndLhs <= distCurrentEndRhs;
+		return distStartCurrentLhs + distCurrentEndLhs + countBlockedByBreakableLhs * 100 <= distStartCurrentRhs + distCurrentEndRhs + countBlockedByBreakableRhs * 100;
+		//return distCurrentEndLhs <= distCurrentEndRhs;
 	});
 
 	return _PathFinding(OpenList[0].Key, OpenList[0].Value, InEndX, InEndY, InCharacterGridSize);
