@@ -275,6 +275,10 @@ void APlayerControllerBase::OpenCloseDeckInterface()
 
 void APlayerControllerBase::UseCard(int32 InCardIndex)
 {
+	//현재 카드를 사용중일 경우 카드를 변경하지 못합니다.
+	if(IsCardActivate)
+		return;
+	
 	if(!PC.IsValid())
 		return;
 	if(InCardIndex >= FDeckHandler::MaxHand)
@@ -286,7 +290,7 @@ void APlayerControllerBase::UseCard(int32 InCardIndex)
 	if(handler->GetHands()[InCardIndex] == nullptr)
 		return;
 
-	LOG_SCREEN(FColor::White, TEXT("%d카드가 등록되었습니다."), InCardIndex)
+	LOG_SCREEN(FColor::White, TEXT("%d카드가 등록되었습니다. Key : %d"), InCardIndex, handler->GetHands()[InCardIndex]->GetCardInfo().Key)
 	
 	for(int i = 0; i < FDeckHandler::MaxHand; ++i)
 	{
@@ -432,6 +436,16 @@ int32 APlayerControllerBase::PostActivateCard()
 	Hand->ResizeHandCard(UseCardNum, FVector2d(1.0, 1.0));
 	Hand->PlayHandToHangerAnimation(UseCardNum);
 	//Hand->UnRegisterHand(UseCardNum);
+
+	IsCardActivate = true;
+	
+	return UseCardNum;
+}
+
+//카드를 Complete한 후 처리를 담당합니다.
+int32 APlayerControllerBase::PostCompleteCard()
+{
+	IsCardActivate = false;
 	
 	return UseCardNum;
 }

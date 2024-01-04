@@ -168,7 +168,7 @@ bool UHousingActorComponent::CompleteHousingTurret()
 		return false;
 	
 	location = owner->GetActorLocation();
-	if(FNavigationManager::GetInstance()->PlacementTurret(location, owner->GetGridSize(), NavIndex))
+	if(FNavigationManager::GetInstance()->PlacementTurret(location, owner->GetGridSize(), NavIndex, GetOwner()))
 	{
 		location.Z += owner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 		GetOwner()->SetActorLocation(location);

@@ -444,19 +444,17 @@ void ACharacterPC::LevelUpEvent()
 //카드 Activate를 실행합니다.
 bool ACharacterPC::ExecuteCardActivate()
 {
+	APlayerControllerBase* controller = Cast<APlayerControllerBase>(GetController());
+	if(controller == nullptr)
+		return false;
+	
 	bool IsSuccessActivate = false;
 	if(DelegateCardActivate.IsBound())
 		DelegateCardActivate.Execute(IsSuccessActivate);
 
 	if(!IsSuccessActivate)
 		return false;
-
-	APlayerControllerBase* controller = Cast<APlayerControllerBase>(GetController());
-
-	if(controller == nullptr)
-		return false;
-
-
+	
 	int32 value = controller->PostActivateCard();
 	DeckHandler->UseCard(value);
 	LOG_SCREEN(FColor::White, TEXT("%d카드를 사용합니다."), value)
@@ -468,12 +466,18 @@ bool ACharacterPC::ExecuteCardActivate()
 //카드 Complete를 실행합니다.
 bool ACharacterPC::ExecuteCardComplete()
 {
+	APlayerControllerBase* controller = Cast<APlayerControllerBase>(GetController());
+	if(controller == nullptr)
+		return false;
+	
 	bool IsSuccessComplete = false;
 	if(DelegateCardComplete.IsBound())
 		DelegateCardComplete.Execute(IsSuccessComplete);
 
 	if(!IsSuccessComplete)
 		return false;
+
+	int32 value = controller->PostCompleteCard();
 
 	LOG_SCREEN(FColor::White, TEXT("사용 완료"))
 

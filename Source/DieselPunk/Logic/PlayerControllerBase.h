@@ -96,6 +96,9 @@ private:
 	bool DeckInterfaceOpen = false;
 
 	int32 UseCardNum = -1;
+
+	//카드가 액티베이트 되어있는 동안 카드를 변경하지 못합니다.
+	bool IsCardActivate = false;
 	
 protected:
 	APlayerControllerBase();
@@ -163,6 +166,9 @@ public:
 
 	//카드를 Activate한 후 처리를 담당합니다.
 	int32 PostActivateCard();
+
+	//카드를 Complete한 후 처리를 담당합니다.
+	int32 PostCompleteCard();
 
 	//드로우 한 후 카드 정보를 갱신합니다.
 	void RenewHand();

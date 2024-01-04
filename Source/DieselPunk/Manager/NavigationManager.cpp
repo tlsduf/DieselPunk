@@ -164,8 +164,6 @@ void FNavigationManager::BuildNavMap(TWeakObjectPtr<AFloorStaticMeshActor> InFlo
 					{
 						for(int k = -i; k <= i; ++k)
 						{
-							if(!IsInCircle(0, 0, i, j, k))
-								continue;
 							FDpNavNode& otherNavNode = NavMap.FindOrAdd(node.Value.X + j).FindOrAdd(node.Value.Y + k);
 							if(otherNavNode.IsGoNodeState.Num() != Character_MaxHalfGrid)
 								otherNavNode.IsGoNodeState.SetNum(Character_MaxHalfGrid);
@@ -351,23 +349,23 @@ TArray<FDpNavNode*> FNavigationManager::CreatePath(int32 InStartX, int32 InStart
 }
 
 //포탑이 설치될 때 IsGoNodeState갱신
-void FNavigationManager::SetBlockedByBreakableIsGoNodeState(int32 InX, int32 InY)
+void FNavigationManager::SetBlockedByBreakableIsGoNodeState(int32 InMinX, int32 InMaxX, int32 InMinY, int32 InMaxY)
 {
 	for(int i = 0; i < Character_MaxHalfGrid; ++i)
 	{
-		for(int j = -i; j <= i; ++j)
+		for(int j = InMinX - i; j <= InMaxX + i; ++j)
 		{
-			for(int k = -i; k <= i; ++k)
+			if(NavMap.Find(j) == nullptr)
+				continue;
+			
+			for(int k = InMinY - i; k <= InMaxY +i; ++k)
 			{
-				if(!IsInCircle(0, 0, i, j, k))
+				if(NavMap[j].Find(k) == nullptr)
 					continue;
-				
-				if(NavMap.Find(InX) != nullptr && NavMap.Find(InX)->Find(InY) != nullptr)
-				{
-					if(NavMap.Find(InX)->Find(InY)->IsGoNodeState[i] == ENavNodeState::Passable)
-						NavMap.Find(InX)->Find(InY)->IsGoNodeState[i] = ENavNodeState::BlockedByBreakable;
-				}
-			}			
+
+				//if(NavMap[j][k].IsGoNodeState[i] == ENavNodeState::Passable)
+					NavMap[j][k].IsGoNodeState[i] = ENavNodeState::BlockedByBreakable;
+			}
 		}
 	}
 }
@@ -377,7 +375,7 @@ bool FNavigationManager::IsInCircle(double InMiddleX, double InMiddleY, double I
 	return DistanceIndex(InMiddleX, InMiddleY, InX, InY) <= InRadius;
 }
 
-void FNavigationManager::DrawDebugNavNode(int32 InX, int32 InY)
+void FNavigationManager::DrawDebugNavNode(int32 InX, int32 InY, FColor InColor)
 {
 	UWorld* world = FObjectManager::GetInstance()->GetWorld();
 	if(world == nullptr)
@@ -395,14 +393,17 @@ void FNavigationManager::DrawDebugNavNode(int32 InX, int32 InY)
 
 	for(int i = 0; i < locations.Num(); ++i)
 	{
-		FColor color = FColor::Green;
-		if(NavMap[InX][InY].NavNodeState == ENavNodeState::Passable)
-			color = FColor::Green;
-		else if (NavMap[InX][InY].NavNodeState == ENavNodeState::BlockedByNonBreakable)
-			color = FColor::Red;
-		else if (NavMap[InX][InY].NavNodeState == ENavNodeState::BlockedByBreakable)
-			color = FColor::Yellow;
-					
+		FColor color = InColor;
+		if(InColor == FColor::White)
+		{
+			if(NavMap[InX][InY].NavNodeState == ENavNodeState::Passable)
+				color = FColor::Green;
+			else if (NavMap[InX][InY].NavNodeState == ENavNodeState::BlockedByNonBreakable)
+				color = FColor::Red;
+			else if (NavMap[InX][InY].NavNodeState == ENavNodeState::BlockedByBreakable)
+				color = FColor::Yellow;
+		}
+		
 		DrawDebugLine(world, locations[i], locations[(i + 1) % locations.Num()], color, true, -1, 0, 2);
 	}
 }
@@ -434,6 +435,36 @@ void FNavigationManager::DrawNonPassableNavNode(int32 InGridSize)
 				continue;
 			for(int i = 0; i < locations.Num(); ++i)
 				DrawDebugLine(world, locations[i], locations[(i + 1) % locations.Num()], color, false, 1, 0, 2);
+		}
+	}
+}
+
+void FNavigationManager::DrawDebugAllNavNode_IsGoNodeState()
+{
+	UWorld* world = FObjectManager::GetInstance()->GetWorld();
+	if(world == nullptr)
+		return;
+	
+	for(const TPair<int32, TMap<int32, FDpNavNode>>& nodes : NavMap)
+	{
+		for(const TPair<int32, FDpNavNode>& node : nodes.Value)
+		{
+			for(int i = Character_MaxHalfGrid - 1; i >= 0; --i)
+			{
+				if(node.Value.IsGoNodeState[i] != ENavNodeState::BlockedByBreakable)
+					continue;
+				TArray<FVector> locations;
+				locations.Reserve(4);
+				locations.Add(node.Value.Location - FVector(GridSize * 0.5, -GridSize * 0.5, -(3 - i) * 5));
+				locations.Add(node.Value.Location - FVector(GridSize * 0.5, GridSize * 0.5, -(3 - i) * 5));
+				locations.Add(node.Value.Location - FVector(-GridSize * 0.5, GridSize * 0.5, -(3 - i) * 5));
+				locations.Add(node.Value.Location - FVector(-GridSize * 0.5, -GridSize * 0.5, -(3 - i) * 5));
+
+				FColor color = FColor((i + 1) * (255 / 3), 0, (3 - i) * (255 / 3), 1.f);
+				
+				for(int j = 0; j < locations.Num(); ++j)
+					DrawDebugLine(world, locations[j], locations[(j + 1) % locations.Num()], color, false, 10, 0, 2);
+			}
 		}
 	}
 }
@@ -571,7 +602,7 @@ bool FNavigationManager::IsPlacementTurret(FVector InLocation, int32 InGridSize)
 }
 
 //터렛 설치
-bool FNavigationManager::PlacementTurret(FVector& InOutLocation, int32 InGridSize, TArray<TPair<int32, int32>>& OutIndex)
+bool FNavigationManager::PlacementTurret(FVector& InOutLocation, int32 InGridSize, TArray<TPair<int32, int32>>& OutIndex, TWeakObjectPtr<AActor> InTurret)
 {
 	FVector outLocation = FVector::ZeroVector;
 
@@ -623,16 +654,20 @@ bool FNavigationManager::PlacementTurret(FVector& InOutLocation, int32 InGridSiz
 		for(int32 y : yIndex)
 		{
 			NavMap[x][y].NavNodeState = ENavNodeState::BlockedByBreakable;
+			NavMap[x][y].BuildActor = InTurret;
 			OutIndex.Add({x, y});
-			//SetBlockedByBreakableIsGoNodeState(x, y);
-			DrawDebugNavNode(x, y);
+			//DrawDebugNavNode(x, y);
 		}
+
+	SetBlockedByBreakableIsGoNodeState(xIndex[0], xIndex[xIndex.Num() - 1], yIndex[0], yIndex[yIndex.Num() - 1]);
+	DrawDebugAllNavNode_IsGoNodeState();
 
 	return true;
 }
 
 void FNavigationManager::RestoreNavNodeByDestructedTurret(const TArray<TPair<int32, int32>>& InIndex)
 {
+	int32 minX = MAX_int32, minY = MAX_int32, maxX = MIN_int32, maxY = MIN_int32;
 	for(const TPair<int32, int32>& idx : InIndex)
 	{
 		if(NavMap.Find(idx.Key) == nullptr || NavMap.Find(idx.Key)->Find(idx.Value) == nullptr)
@@ -641,5 +676,46 @@ void FNavigationManager::RestoreNavNodeByDestructedTurret(const TArray<TPair<int
 			continue;
 		}
 		NavMap[idx.Key][idx.Value].NavNodeState = ENavNodeState::Passable;
+		NavMap[idx.Key][idx.Value].BuildActor = nullptr;
+
+		minX = minX > idx.Key ? idx.Key : minX;
+		minY = minY > idx.Value ? idx.Value : minY;
+		maxX = maxX < idx.Key ? idx.Key : maxX;
+		maxY = maxY < idx.Value ? idx.Value : maxY;
 	}
+
+	for(int i = minX; i <= maxX; ++i)
+	{
+		for(int j = minY; j <= maxY; ++j)
+		{
+			for(int k = 0; k < Character_MaxHalfGrid; ++k)
+			{
+				if(!IsInBlockedInRange(i, j, k))
+					NavMap[i][j].IsGoNodeState[k] = ENavNodeState::Passable;
+			}
+		}
+	}
+}
+
+bool FNavigationManager::IsInBlockedInRange(int32 InX, int32 InY, int32 InRange)
+{
+	if(InRange >= Character_MaxHalfGrid)
+		return false;
+
+	for(int i = InX - InRange; i <= InX + InRange; ++i)
+	{
+		if(NavMap.Find(i) == nullptr)
+			continue;
+		
+		for(int j = InY - InRange; j <= InY + InRange; ++j)
+		{
+			if(NavMap[i].Find(j) == nullptr)
+				continue;
+
+			if(NavMap[i][j].NavNodeState != ENavNodeState::Passable)
+				return true;
+		}
+	}
+
+	return false;
 }

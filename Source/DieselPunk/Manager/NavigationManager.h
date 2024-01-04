@@ -19,6 +19,7 @@ struct FDpNavNode
 	ENavNodeState			NavNodeState = ENavNodeState::Passable;
 	TArray<ENavNodeState>	IsGoNodeState;
 	FDpNavNode*				Parent = nullptr;
+	TWeakObjectPtr<AActor>	BuildActor = nullptr;
 	TArray<TPair<int32, int32>> Road;
 };
 
@@ -63,15 +64,16 @@ private:
 	TArray<FDpNavNode*> CreatePath(int32 InStartX, int32 InStartY, int32 InEndX, int32 InEndY);
 
 	//포탑이 설치될 때 IsGoNodeState갱신
-	void SetBlockedByBreakableIsGoNodeState(int32 InX, int32 InY);
+	void SetBlockedByBreakableIsGoNodeState(int32 InMinX, int32 InMaxX, int32 InMinY, int32 InMaxY);
 
 	//원 안에 있는 지 판별
 	bool IsInCircle(double InMiddleX, double InMiddleY, double InRadius, double InX, double InY);
 public:
 	//디버그용 네비 맵 Draw 
 	void DrawDebugNavMap();
-	void DrawDebugNavNode(int32 InX, int32 InY);
+	void DrawDebugNavNode(int32 InX, int32 InY, FColor InColor = FColor::White);
 	void DrawNonPassableNavNode(int32 InGridSize);
+	void DrawDebugAllNavNode_IsGoNodeState();
 	
 	//네비 노드 생성
 	void BuildNavMap(TWeakObjectPtr<AFloorStaticMeshActor> InFloorStaticMeshActor, TArray<FDpBox> InBoxes);
@@ -83,9 +85,12 @@ public:
 	bool IsPlacementTurret(FVector InLocation, int32 InGridSize);
 
 	//터렛 설치
-	bool PlacementTurret(FVector& InOutLocation, int32 InGridSize, TArray<TPair<int32, int32>>& OutIndex);
+	bool PlacementTurret(FVector& InOutLocation, int32 InGridSize, TArray<TPair<int32, int32>>& OutIndex, TWeakObjectPtr<AActor> InTurret);
 
 	//터렛 부서질 때 노드 복구
 	void RestoreNavNodeByDestructedTurret(const TArray<TPair<int32, int32>>& InIndex);
+
+	//해당 인덱스가 범위 내에 Blocked노드가 있는지 판별
+	bool IsInBlockedInRange(int32 InX, int32 InY, int32 InRange);
 };
 
