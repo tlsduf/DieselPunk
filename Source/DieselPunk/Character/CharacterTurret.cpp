@@ -89,7 +89,8 @@ void ACharacterTurret::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	SetTurretTarget();
+	if(NPCType == ENPCType::Alliance)
+		SetTurretTarget();
 
 	// 애니메이션 타겟 SET
 	UTurretAnimInstace* TurretAnimInstace = Cast<UTurretAnimInstace>(GetMesh()->GetAnimInstance());

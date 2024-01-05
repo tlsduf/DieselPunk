@@ -270,11 +270,9 @@ void ACharacterNPC::SetTargetArray(int32 inSpawnerNumber)
 // =============================================================
 void ACharacterNPC::SetEnemyTarget()
 {
-	// ======== Default 타겟은 넥서스
 	if(Target == nullptr)
 	{
 		Target = FObjectManager::GetInstance()->GetNexus();
-		TargetLoc =FObjectManager::GetInstance()->GetNexus()->GetActorLocation();
 		return;
 	}
 	
@@ -297,12 +295,15 @@ void ACharacterNPC::SetEnemyTarget()
 	// 2. TargetLocation 업데이트
 	TargetLoc = TargetArray[TargetLocNum];
 	if(FVector::Dist(TargetLoc, GetActorLocation()) < (GetCapsuleComponent()->GetScaledCapsuleRadius() * 2.5))
-		TargetLocNum++;
+		TargetLocNum = (TargetLocNum == TargetArray.Num() - 1) ? TargetLocNum : TargetLocNum + 1;
 	// 3. lastPathPoint 가 목표 위치와 일치하는가? (z성분 제외)
 	bool bCanReach = ( TargetLoc.X == lastPathPoint.X) && ( TargetLoc.Y == lastPathPoint.Y);
 	// 4. 목표에 도달할 수 없다면 타겟을 업데이트하지 않음 // UBTTask_BlockedMoveTo에서 Target업데이트
 	if(!bCanReach)
 		return;
+
+	// 기본 상태는 Nullptr
+	//Target.Reset();
 	
 	// ======== Default 타겟은 넥서스
 	Target = FObjectManager::GetInstance()->GetNexus();

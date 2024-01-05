@@ -39,7 +39,7 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
     if(AICharacter->GetAttackTarget().IsValid())
         OwnerComp.GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), AICharacter->GetAttackTarget().Get());
     else
-        OwnerComp.GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), AICharacter);
+        OwnerComp.GetBlackboardComponent()->ClearValue(TEXT("Target"));
     
     // 목표위치 SET
     OwnerComp.GetBlackboardComponent()->SetValueAsVector(TEXT("TargetLocation"), AICharacter->GetTargetLoc());
@@ -92,13 +92,19 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
 
     // 몬스터와 목표의 거리에 따른 조건 설정
     //float MeleeRange = AICharacter->GetCapsuleComponent()->GetScaledCapsuleRadius() + 200;
-    FVector VRange = AICharacter->GetActorLocation() - AICharacter->GetAttackTarget()->GetActorLocation();
-    float FRange = VRange.Size();
-    if (AICharacter->GetStat().GetStat(ECharacterStatType::AttackRange) < FRange)
-        OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InRange"), false);
+    if(AICharacter->GetAttackTarget().IsValid())
+    {
+        FVector VRange = AICharacter->GetActorLocation() - AICharacter->GetAttackTarget()->GetActorLocation();
+        float FRange = VRange.Size();
+        if (AICharacter->GetStat().GetStat(ECharacterStatType::AttackRange) < FRange)
+            OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InRange"), false);
+        else
+            OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InRange"), true);
+    }
     else
-        OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InRange"), true);
-
+    {
+        OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InRange"), false);
+    }
 
     
     // 죽음 시 블랙보드 제어

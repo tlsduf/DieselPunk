@@ -30,6 +30,9 @@ EBTNodeResult::Type UBTTask_BlockedMoveTo::ExecuteTask(UBehaviorTreeComponent& O
 	if(OwnerCharacter == nullptr)
 		return EBTNodeResult::Failed;
 
+	if(FObjectManager::GetInstance()->GetNexus() == nullptr)
+		return EBTNodeResult::Failed;
+	
 	int nexusID = FObjectManager::GetInstance()->GetNexus()->GetObjectId();
 	if(nexusID == FObjectManager::GetInstance()->INVALID_OBJECTID)
 		return EBTNodeResult::Failed;
