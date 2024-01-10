@@ -42,8 +42,8 @@ EBTNodeResult::Type UBTTask_BlockedMoveTo::ExecuteTask(UBehaviorTreeComponent& O
 		return EBTNodeResult::Failed;
 	const TArray<FVector>& path = OwnerCharacter->GetShortestPath();
 
-	// 타겟이 넥서스가 아닐 경우 수행안함. = 타겟이 플레이어 일 경우 or 타겟이 터렛으로 등록 된 경우
-	if(OwnerCharacter->GetAttackTarget() != FObjectManager::GetInstance()->FindActor(nexusID))
+	// 타겟이 터렛일 경우 수행안함.
+	if(Cast<ACharacterTurret>(OwnerCharacter->GetAttackTarget()))
 		return EBTNodeResult::Succeeded;
 	
 	UWorld* world = GetWorld();

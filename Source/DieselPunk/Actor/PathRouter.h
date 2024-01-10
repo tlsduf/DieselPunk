@@ -3,7 +3,7 @@
 #pragma once
 
 /*
-*	스플라인으로 구성한 영역안의 랜덤 위치에서 몬스터를 소환하는 액터입니다.
+*	박스로 구성한 영역안의 랜덤 위치에서 몬스터를 소환하는 액터입니다.
 *	
 */
 
@@ -11,37 +11,41 @@
 #include "PathRouter.generated.h"
 
 class USplineComponent;
-
+class UBoxComponent;
 
 UCLASS()
 class DIESELPUNK_API APathRouter : public AActor
 {
 	GENERATED_BODY()
 
-
+	UPROPERTY()
+	USceneComponent* SceneRoot = nullptr;
+	
+	UPROPERTY(EditDefaultsOnly)
+	UStaticMeshComponent *Mesh;
+	
 	UPROPERTY(EditInstanceOnly, Category = "MYDP_Setting")
 	bool bDrawDebug = false;	
 
 	/////////////////////////////////////////////////////////////////////
 	// for info Management //
-public:
-	UPROPERTY(EditInstanceOnly, Category = "MYDP_Setting")
-	int32 PathRouterNumber = 0;				// 경유지 번호 디폴트 0 (1, 2, 3 ~)
-	
-	UPROPERTY(EditInstanceOnly, Category = "MYDP_Setting")
-	int32 OriginSpawnerNumber = 0;			// 연결된 스포너 번호 디폴트 0 (1, 2, 3 ~)
 
-protected:
+	UPROPERTY(EditInstanceOnly, Category = "MYDP_Setting")
+	TObjectPtr<APathRouter> NextPathRouter;
+
+	UPROPERTY(VisibleInstanceOnly, Category = "MYDP_Setting")
+	int32 PathRouterNum = 0;				// n번째 PathRouter 노드
+	
 	int32 ObjectId = -1;					// 오브젝트 ID
 	
 	/////////////////////////////////////////////////////////////////////
-	// for Spline , Poligon , MakeRandLoc //
-	
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<USplineComponent> SplineComponent;		// 영역을 만들 스플라인 컴포넌트
-	
-	TArray<FVector> RectanglePoints;					// 스플라인으로 만들어진 직사각형의 꼭짓점을 담을 배열
+	// for Box , Poligon , MakeRandLoc //
 
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UBoxComponent> BoxComponent;		// 영역을 만들 박스 컴포넌트
+	
+	TArray<FVector> RectanglePoints;			// 박스의 꼭짓점을 담을 배열
+	
 	
 public:	
 	// Sets default values for this actor's properties
@@ -55,9 +59,6 @@ protected:
 	virtual void OnConstruction(const FTransform& InTransform)override;
 	
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 	const int32 GetObjectId() const { return ObjectId; }
 
 	void SetObjectId(int32 InObjectId) { ObjectId = InObjectId; }
@@ -67,5 +68,11 @@ private:
 	void MakeRectangleBySplinePoints();
 
 public:
-	TArray<FVector> GetRectanglePoints() { return RectanglePoints; }
+	// 연결된 PathRouter를 모두 등록합니다.
+	void RegistPathRouter(TMap<int32, TObjectPtr<APathRouter>>& inPathRouterNodes, int32& inPathRouterNodeNum);
+
+	// 투영값을 통해 위치를 반환합니다.
+	FVector MakeGoalLocByProportion(FVector2D inProportion);
+
+	int32 GetPathRouterNumber() { return PathRouterNum; }
 };

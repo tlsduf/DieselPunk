@@ -59,9 +59,6 @@ public:
 private:
 	// 월드에 배치된 스포너들의 ID를 MonsterSpawnerIDs 에 저장합니다.
 	void GetMonsterSpawnerIdInWorld();
-
-	// 월드에 배치된 경유지들의 ID를 PathRouterIDs 에 저장합니다. (그냥 담기만 합니다. 정렬x)
-	void GetPathRouterIDInWorld();
 	
 	// StageWaveDataTable 정보를 받아서 StageInfo 에 저장합니다.
 	void SetStageWaveInfo();

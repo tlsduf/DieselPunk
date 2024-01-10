@@ -3,8 +3,8 @@
 #pragma once
 
 #include <Components/SplineComponent.h>
-#include "Components/ActorComponent.h"
-#include "SplineGrinder.generated.h"
+#include <Components/ActorComponent.h>
+#include "SplineGrinderComponent.generated.h"
 
 /*
  * Rail 태그를 가지고 있는 스플라인을 밟으면 라인을 따라 미끄러집니다.
@@ -13,7 +13,7 @@
 class USplineComponent;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class DIESELPUNK_API USplineGrinder : public UActorComponent
+class DIESELPUNK_API USplineGrinderComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
@@ -28,7 +28,7 @@ class DIESELPUNK_API USplineGrinder : public UActorComponent
 
 public:	
 	// Sets default values for this component's properties
-	USplineGrinder();
+	USplineGrinderComponent();
 
 protected:
 	// Called when the game starts

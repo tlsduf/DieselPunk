@@ -8,9 +8,12 @@
 #include "../Data/CharacterDataTable.h"
 #include "../Character/CharacterNPC.h"
 #include "../Manager/ObjectManager.h"
+#include "../Actor/PathRouter.h"
 
-#include <Components/SplineComponent.h>
+#include <Components/BoxComponent.h>
+#include <Components/StaticMeshComponent.h>
 #include <DrawDebugHelpers.h>
+
 
 
 // =============================================================
@@ -21,10 +24,19 @@ AMonsterSpawner::AMonsterSpawner()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	SplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
-	SetRootComponent(SplineComponent);
-	SplineComponent->SetClosedLoop(true);
-	SplineComponent->PrimaryComponentTick.bCanEverTick = false;
+	SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("Scene Root"));
+	SetRootComponent(SceneRoot);
+	
+	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
+	BoxComponent->SetupAttachment(SceneRoot);
+	BoxComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	BoxComponent->PrimaryComponentTick.bCanEverTick = false;
+
+	// StaticMesh Set // 스태틱메쉬 설정
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	Mesh->SetupAttachment(SceneRoot);
+	Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	Mesh->PrimaryComponentTick.bCanEverTick = false;
 }
 
 // =============================================================
@@ -36,11 +48,30 @@ void AMonsterSpawner::BeginPlay()
 
 	if(ObjectId == -1)
 		FObjectManager::GetInstance()->AddActor(this);
-
-	// 스플라인으로 직사각형을 생성합니다.
-	MakeRectangleBySplinePoints();
-	// RandomLocation을 세팅합니다.
-	GetRandomLocation();
+	
+	RegistPathRouter(PathRouterNodes);	// 스포너와 연결된 PathRouter를 모두 등록합니다.
+	DrawDebugLine(GetWorld(), GetActorLocation(), PathRouterNodes[1]->GetActorLocation(), FColor::Green, true, -1, 0, 5);
+	for(int i = 1; i < PathRouterNodeNum; i++ )
+	{
+		DrawDebugLine(GetWorld(), PathRouterNodes[i]->GetActorLocation(), PathRouterNodes[i+1]->GetActorLocation(), FColor::Green, true, -1, 0, 5);
+	}
+	MakeRectangleBySplinePoints();			// 직사각형을 생성합니다.
+	GetRandomLocation();					// RandomLocation을 세팅합니다
+	// 랜덤위치를 Key로 하는 TMap PathMap을 세팅합니다.
+	if(!RandomLocation.IsEmpty())
+	{
+		for(const FVector& location : RandomLocation)
+		{
+			GoalLocArray.Empty();
+			for(auto& pathRouter : PathRouterNodes)
+			{
+				GoalLocArray.Add( pathRouter.Value->MakeGoalLocByProportion( SetProportion(location) ) );
+			}
+			//SetTargetArrayFromNextPathRouter(GoalLocArray, SetProportion(location));
+			PathMap.Add(location, GoalLocArray);
+		}
+	}
+	
 	
 	// 스플라인 디버그라인
 	if(bDrawDebug)
@@ -65,10 +96,6 @@ void AMonsterSpawner::BeginPlay()
 void AMonsterSpawner::OnConstruction(const FTransform& InTransform)
 {
 	Super::OnConstruction(InTransform);
-
-	// Set All Spline Point Type "Linear"
-	for(int i = 0; i < SplineComponent->GetNumberOfSplinePoints(); ++i)
-		SplineComponent->SetSplinePointType(i, ESplinePointType::Linear, true);
 }
 
 // =============================================================
@@ -217,8 +244,9 @@ void AMonsterSpawner::SpawnMonster(float InDeltaTime)
 				// 몬스터 투영값 계산 // 몬스터 목표배열 설정
 				if(auto npc = Cast<ACharacterNPC>(FObjectManager::GetInstance()->FindActor(id)))
 				{
-					npc->SetProportion(RectanglePoints);
-					npc->SetTargetArray(SpawnerNumber);
+					//npc->SetProportion(RectanglePoints);
+					//npc->SetTargetArray(SpawnerNumber);
+					npc->SetTargetArray(PathMap[spawnParam.Location]);
 				}
 			}
 
@@ -234,33 +262,71 @@ void AMonsterSpawner::SpawnMonster(float InDeltaTime)
 }
 
 // =============================================================
+// 연결된 PathRouter를 모두 번호를 부여하며 등록합니다.
+// =============================================================
+void AMonsterSpawner::RegistPathRouter(TMap<int32, TObjectPtr<APathRouter>>& inPathRouterNodes)
+{
+	if(NextPathRouter)
+	{
+		PathRouterNodeNum++;
+		inPathRouterNodes.Add(PathRouterNodeNum, NextPathRouter);
+		NextPathRouter->RegistPathRouter(inPathRouterNodes, PathRouterNodeNum);
+	}
+}
+
+// =============================================================
+// 스폰시 해당'몬스터'의 Proportion을 설정합니다.
+// =============================================================
+FVector2D AMonsterSpawner::SetProportion(FVector inLoc)
+{
+	// Get distance between (firstPoint-secondPoint)Line and ThirdPoint
+	FVector firstPoint, secondPoint, thirdPoint;
+	double a, b, c;
+				
+	firstPoint = RectanglePoints[0];
+	secondPoint = RectanglePoints[3];
+	thirdPoint = inLoc;
+	a = firstPoint.Y - secondPoint.Y;
+	b = secondPoint.X - firstPoint.X;
+	c = firstPoint.X * secondPoint.Y - secondPoint.X * firstPoint.Y;
+	float widthDist = abs((a * thirdPoint.X) + (b * thirdPoint.Y) + c) / sqrt((a * a) + (b * b));
+	
+	double X = widthDist / FVector::Dist(RectanglePoints[0], RectanglePoints[1]);
+
+	firstPoint = RectanglePoints[0];
+	secondPoint = RectanglePoints[1];
+	thirdPoint = inLoc;
+	a = firstPoint.Y - secondPoint.Y;
+	b = secondPoint.X - firstPoint.X;
+	c = firstPoint.X * secondPoint.Y - secondPoint.X * firstPoint.Y;
+	float lengthDist = abs((a * thirdPoint.X) + (b * thirdPoint.Y) + c) / sqrt((a * a) + (b * b));
+				
+	double Y = lengthDist / FVector::Dist(RectanglePoints[0], RectanglePoints[3]);
+
+	return FVector2D(X, Y); 
+}
+
+// =============================================================
 // 스플라인 포인트를 기반으로 직사각형의 점을 PolygonPoints에 담습니다.
 // =============================================================
 void AMonsterSpawner::MakeRectangleBySplinePoints()
 {
-	if(SplineComponent->GetNumberOfSplinePoints() < 3)
-		return;
-
 	FVector firstPoint, secondPoint, thirdPoint, fourthPoint;
-	
-	firstPoint = SplineComponent->GetLocationAtSplinePoint(0, ESplineCoordinateSpace::World);
-	secondPoint = SplineComponent->GetLocationAtSplinePoint(1, ESplineCoordinateSpace::World);
-	secondPoint = FVector(secondPoint.X, secondPoint.Y, firstPoint.Z);
-	FVector heightPoint = SplineComponent->GetLocationAtSplinePoint(2, ESplineCoordinateSpace::World);
-	heightPoint = FVector(heightPoint.X, heightPoint.Y, firstPoint.Z);
 
-	FVector ZupFirstPoint = firstPoint + FVector(0,0,100);
-	// 법선벡터
-	FVector norm = ((firstPoint - ZupFirstPoint).Cross(secondPoint - ZupFirstPoint)).GetSafeNormal();
-
-	// Get distance between (firstPoint-secondPoint)Line and heightPoint
-	double a = firstPoint.Y - secondPoint.Y;
-	double b = secondPoint.X - firstPoint.X;
-	double c = firstPoint.X * secondPoint.Y - secondPoint.X * firstPoint.Y;
-	float dist = abs((a * heightPoint.X) + (b * heightPoint.Y) + c) / sqrt((a * a) + (b * b));
-
-	thirdPoint = secondPoint + (norm * dist);
-	fourthPoint = firstPoint + (norm * dist);
+	FVector scale = GetActorScale3D();
+	double BoxScale = 150;
+	firstPoint = BoxComponent->Bounds.Origin
+	+ GetActorRotation().Vector().GetSafeNormal() * BoxScale * scale.X
+	+ (GetActorRotation() + FRotator(0,-90,0)).Clamp().Vector().GetSafeNormal() * BoxScale * scale.Y;
+	secondPoint = BoxComponent->Bounds.Origin
+	+ GetActorRotation().Vector().GetSafeNormal() * BoxScale * scale.X
+	+ (GetActorRotation() + FRotator(0,90,0)).Vector().GetSafeNormal() * BoxScale * scale.Y;
+	thirdPoint = BoxComponent->Bounds.Origin
+	- GetActorRotation().Vector().GetSafeNormal() * BoxScale * scale.X
+	+ (GetActorRotation() + FRotator(0,90,0)).Vector().GetSafeNormal() * BoxScale * scale.Y;
+	fourthPoint = BoxComponent->Bounds.Origin
+	- GetActorRotation().Vector().GetSafeNormal() * BoxScale * scale.X
+	+ (GetActorRotation() + FRotator(0,-90,0)).Vector().GetSafeNormal() * BoxScale * scale.Y;
 	
 	// Set PolygonPoints on Spline
 	RectanglePoints.Empty();
@@ -272,8 +338,8 @@ void AMonsterSpawner::MakeRectangleBySplinePoints()
 	// Draw Debug
 	DrawDebugCylinder(GetWorld(), firstPoint, fourthPoint, 10, 4, FColor::Blue, true, -1, 0, 5);
 	DrawDebugCylinder(GetWorld(), secondPoint, thirdPoint, 10, 4, FColor::Red, true, -1, 0, 5);
-	DrawDebugLine(GetWorld(), firstPoint, (firstPoint + secondPoint)/2 + (-norm * 150), FColor::Green, true, -1, 0, 5);
-	DrawDebugLine(GetWorld(), secondPoint, (firstPoint + secondPoint)/2 + (-norm * 150), FColor::Green, true, -1, 0, 5);
+	DrawDebugLine(GetWorld(), firstPoint, (firstPoint + secondPoint)/2 + (GetActorRotation().Vector().GetSafeNormal() * 150), FColor::Green, true, -1, 0, 5);
+	DrawDebugLine(GetWorld(), secondPoint, (firstPoint + secondPoint)/2 + (GetActorRotation().Vector().GetSafeNormal() * 150), FColor::Green, true, -1, 0, 5);
 	
 	for(int i = 0; i < RectanglePoints.Num(); ++i)
 	{
@@ -331,4 +397,7 @@ bool AMonsterSpawner::IsInPolygon(double InX, double InY)
 	}
 	return ( cn & 1 );    // 0 if even (out), and 1 if  odd (in)
 }
+
+
+
 

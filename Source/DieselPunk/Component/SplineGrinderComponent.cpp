@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "../Component/SplineGrinder.h"
+#include "SplineGrinderComponent.h"
 #include "../Character/CharacterPC.h"
 #include "../Animation/DPAnimInstance.h"
 
@@ -9,20 +9,20 @@
 #include <Components/SkeletalMeshComponent.h>
 
 
-USplineGrinder::USplineGrinder()
+USplineGrinderComponent::USplineGrinderComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-void USplineGrinder::BeginPlay()
+void USplineGrinderComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	Cast<ACharacterPC>(GetOwner())->DelegateLandAction.BindDynamic(this, &USplineGrinder::GrindAction);
-	Cast<ACharacterPC>(GetOwner())->DelegateJumpAction.BindDynamic(this, &USplineGrinder::JumpAction);
+	Cast<ACharacterPC>(GetOwner())->DelegateLandAction.BindDynamic(this, &USplineGrinderComponent::GrindAction);
+	Cast<ACharacterPC>(GetOwner())->DelegateJumpAction.BindDynamic(this, &USplineGrinderComponent::JumpAction);
 }
 
-void USplineGrinder::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void USplineGrinderComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
@@ -31,7 +31,7 @@ void USplineGrinder::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 // Character 클래스의 LandedDelegate 에 바인드되어 호출될 함수입니다.
 // 착지 시, Spline을 타기위한 Setting 을 합니다.
-void USplineGrinder::GrindAction(const FHitResult& Hit)
+void USplineGrinderComponent::GrindAction(const FHitResult& Hit)
 {
 	// 착지한 컴포넌트 태그 Rail 확인
 	if(Hit.Component->ComponentHasTag("Rail") && !bOnRail)
@@ -55,7 +55,7 @@ void USplineGrinder::GrindAction(const FHitResult& Hit)
 		param.EndValue = bForwardDir ? SplineComponent->GetSplineLength() : 0;
 		param.DurationTime = bForwardDir ? ((SplineComponent->GetSplineLength() - distanceFromStart) / 1500) : (distanceFromStart / 1500);
 		param.AnimType = EAnimType::Linear;
-		TWeakObjectPtr<USplineGrinder> thisPtr = this;
+		TWeakObjectPtr<USplineGrinderComponent> thisPtr = this;
 		param.DurationFunc = [thisPtr](float InCurValue)
 		{
 			if(thisPtr.IsValid())
@@ -86,7 +86,7 @@ void USplineGrinder::GrindAction(const FHitResult& Hit)
 
 // CharacterPC 클래스의 DelegateJumpAction 에 바인드되어 호출될 함수입니다.
 // 점프 시, Spline을 탈출하기위한 Setting 을 합니다.
-void USplineGrinder::JumpAction()
+void USplineGrinderComponent::JumpAction()
 {
 	Animator.Stop();
 	bOnRail = false;

@@ -30,7 +30,7 @@ void ADPLevelScriptActor::InitLevel()
 	// 월드에 배치된 스포너들의 ID를 MonsterSpawnerIDs 에 저장합니다.
 	GetMonsterSpawnerIdInWorld();
 	// 월드에 배치된 경유지들의 ID를 PathRouterIDs 에 저장합니다. (그냥 담기만 합니다. 정렬x)
-	GetPathRouterIDInWorld();
+	//GetPathRouterIDInWorld();
 	
 	// StageWaveDataTable 정보를 받아서 StageInfo 에 저장합니다.
 	/*
@@ -81,34 +81,6 @@ void ADPLevelScriptActor::GetMonsterSpawnerIdInWorld()
 		 return Cast<AMonsterSpawner>(FObjectManager::GetInstance()->FindActor(A))->SpawnerNumber
 				< Cast<AMonsterSpawner>(FObjectManager::GetInstance()->FindActor(B))->SpawnerNumber;
 	});
-}
-
-// =============================================================
-// 월드에 배치된 경유지들의 ID를 PathRouterIDs 에 저장합니다. (그냥 담기만 합니다. 정렬x)
-// =============================================================
-void ADPLevelScriptActor::GetPathRouterIDInWorld()
-{
-	FObjectManager::GetInstance()->FindActorArrayByPredicate(PathRouterIDs, [](AActor* InActor)
-	{
-		if(Cast<APathRouter>(InActor))
-			return true;
-		return false;
-	});
-	
-	// SpawnerNumber 중복되는지 판별
-	for(int32 i = 0; i < PathRouterIDs.Num(); ++i)
-	{
-		for(int32 j = 0; j < PathRouterIDs.Num(); ++j)
-		{
-			if(i == j)
-				continue;
-			
-			auto a = Cast<APathRouter>(FObjectManager::GetInstance()->FindActor(PathRouterIDs[i]));
-			auto b = Cast<APathRouter>(FObjectManager::GetInstance()->FindActor(PathRouterIDs[j]));
-			if( a->PathRouterNumber == b->PathRouterNumber && a->OriginSpawnerNumber == b->OriginSpawnerNumber)
-				LOG_SCREEN(FColor::Red, TEXT("경유지 Alert: 스포너%d 와 연결된 경유지 중, 중복되는 PathRouterNumber가 존재합니다. PathRouterNumber : %d 를 확인하세요."), a->OriginSpawnerNumber, a->PathRouterNumber);
-		}
-	}
 }
 
 // =============================================================

@@ -3,7 +3,7 @@
 #pragma once
 
 /*
-*	스플라인으로 구성한 영역안의 랜덤 위치에서 몬스터를 소환하는 액터입니다.
+*	박스로 구성한 영역안의 랜덤 위치에서 몬스터를 소환하는 액터입니다.
 *	
 */
 
@@ -11,6 +11,8 @@
 #include "MonsterSpawner.generated.h"
 
 class USplineComponent;
+class UBoxComponent;
+class APathRouter;
 
 struct FWaveModuleInfo;
 struct FWaveInfo;
@@ -27,13 +29,30 @@ class DIESELPUNK_API AMonsterSpawner : public AActor
 {
 	GENERATED_BODY()
 
-
+	UPROPERTY()
+	USceneComponent* SceneRoot = nullptr;
+	
+	UPROPERTY(EditDefaultsOnly)
+	UStaticMeshComponent *Mesh;
+	
 	UPROPERTY(EditInstanceOnly, Category = "MYDP_Setting")
 	bool bDrawDebug = false;	
 
 	/////////////////////////////////////////////////////////////////////
 	// for info Management //
 public:
+	TMap<FVector, TArray<FVector>> PathMap;		//몬스터가 스폰될 위치를 Key로 하여, 목표위치배열을 담습니다.
+	
+	TArray<FVector> GoalLocArray;				//도달할 목표위치 배열
+	
+	UPROPERTY(EditInstanceOnly, Category = "MYDP_Setting")
+	TObjectPtr<APathRouter> NextPathRouter;		//연결된 라우터(다음 경로)
+
+	TMap<int32, TObjectPtr<APathRouter>> PathRouterNodes;	// 연결된 라우터를 모두 등록합니다.
+	int32 PathRouterNodeNum = 0;							// 연결된 라우터의 순서입니다. 이것을 Key로 하여 PathRouterNodes에 등록합니다.
+	
+	UPROPERTY(EditInstanceOnly, Category = "MYDP_Setting")
+	FColor PathColor;							//경로색깔
 	
 	UPROPERTY(EditInstanceOnly, Category = "MYDP_Setting")
 	int32 SpawnerNumber = 0;					// 스포너 이름 디폴트 0 (1, 2, 3 ~)
@@ -42,14 +61,14 @@ protected:
 	int32 ObjectId = -1;					//오브젝트 ID
 	
 	/////////////////////////////////////////////////////////////////////
-	// for Spline , Poligon , MakeRandLoc //
-	
+	// for box , Poligon , MakeRandLoc //
+
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<USplineComponent> SplineComponent;		// 영역을 만들 스플라인 컴포넌트
+	TObjectPtr<UBoxComponent> BoxComponent;		// 영역을 만들 박스 컴포넌트
 
-	TArray<FVector> RectanglePoints;			// 스플라인으로 만들어진 직사각형의 꼭짓점을 담을 배열
+	TArray<FVector> RectanglePoints;			// 박스의 꼭짓점을 담을 배열
 
-	TArray<FVector> RandomLocation;				// 다각형 안의 랜덤 위치값을 담을 배열
+	TArray<FVector> RandomLocation;				// 박스 안의 랜덤 위치값을 담을 배열
 
 
 	/////////////////////////////////////////////////////////////////////
@@ -97,6 +116,7 @@ public:
 
 	// 몬스터를 다 소환했는지 반환합니다.
 	bool bSpawnComplete() const { return SpawnInfo.IsEmpty(); };
+	
 private:
 	// InWaveSetName에 해당하는 데이터테이블의 정보를 읽어 SpawnInfo를 세팅합니다.
 	void _SetWaveSet(FString InWaveSetName);
@@ -106,6 +126,13 @@ private:
 	
 	// SpawnInfo에 담긴 정보대로 몬스터를 스폰합니다.
 	void SpawnMonster(float InDeltaTime);
+
+private:
+	// 연결된 PathRouter를 모두 번호를 부여하며 등록합니다.
+	void RegistPathRouter(TMap<int32, TObjectPtr<APathRouter>>& inPathRouterNodes);
+	
+	// 스폰시 해당'몬스터'의 Proportion을 설정합니다.
+	FVector2D SetProportion(FVector inLoc);
 
 private:
 	// 스플라인 포인트를 기반으로 직사각형의 점을 PolygonPoints에 담습니다.

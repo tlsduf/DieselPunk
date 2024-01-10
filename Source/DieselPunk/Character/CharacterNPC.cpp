@@ -18,6 +18,7 @@
 
 #include "DrawDebugHelpers.h"
 #include "Components/CapsuleComponent.h"
+#include "Elements/Interfaces/TypedElementSelectionInterface.h"
 
 
 // =============================================================
@@ -189,79 +190,26 @@ void ACharacterNPC::DoTargetAttack()
 }
 
 // =============================================================
-// 스폰시 '몬스터'의 Proportion을 설정합니다. // 호출부 : MonsterSpanwer.cpp SpawnMonster()
+// 스폰시 '몬스터'의 TargetArray를 설정합니다.
 // =============================================================
-void ACharacterNPC::SetProportion(TArray<FVector> inRectanglePoints)
+void ACharacterNPC::SetTargetArray(TArray<FVector> inTargetArray)
 {
-	if(inRectanglePoints.IsEmpty())
-		return;
-	
-	// Get distance between (firstPoint-secondPoint)Line and ThirdPoint
-	FVector firstPoint, secondPoint, thirdPoint;
-	double a, b, c;
-				
-	firstPoint = inRectanglePoints[0];
-	secondPoint = inRectanglePoints[3];
-	thirdPoint = GetActorLocation();
-	a = firstPoint.Y - secondPoint.Y;
-	b = secondPoint.X - firstPoint.X;
-	c = firstPoint.X * secondPoint.Y - secondPoint.X * firstPoint.Y;
-	float widthDist = abs((a * thirdPoint.X) + (b * thirdPoint.Y) + c) / sqrt((a * a) + (b * b));
-				
-	Proportion.Width = widthDist / FVector::Dist(inRectanglePoints[0], inRectanglePoints[1]);
+	// 몬스터스포너에서 생성된 경로
+	GoalLocArray = inTargetArray;
+	// 마지막 목표지점은 넥서스 위치
+	GoalLocArray.Add(FObjectManager::GetInstance()->GetNexus()->GetActorLocation());
 
-	firstPoint = inRectanglePoints[0];
-	secondPoint = inRectanglePoints[1];
-	thirdPoint = GetActorLocation();
-	a = firstPoint.Y - secondPoint.Y;
-	b = secondPoint.X - firstPoint.X;
-	c = firstPoint.X * secondPoint.Y - secondPoint.X * firstPoint.Y;
-	float lengthDist = abs((a * thirdPoint.X) + (b * thirdPoint.Y) + c) / sqrt((a * a) + (b * b));
-				
-	Proportion.Length = lengthDist / FVector::Dist(inRectanglePoints[0], inRectanglePoints[3]);
-}
-
-// =============================================================
-// 스폰시 '몬스터'의 TargetArray를 설정합니다. // 호출부 : MonsterSpanwer.cpp SpawnMonster()
-// =============================================================
-void ACharacterNPC::SetTargetArray(int32 inSpawnerNumber)
-{
-	auto DPLevelScriptActor = Cast<ADPLevelScriptActor>(GetLevel()->GetLevelScriptActor());
-	TArray<int32> PathRouterIDs = DPLevelScriptActor->GetPathRouterIDs();
-	// 다른 OriginSpawnerNumber를 가진 경유지 제거
-	PathRouterIDs.RemoveAll([inSpawnerNumber](int32 PathRouterID)
-	{
-		return Cast<APathRouter>(FObjectManager::GetInstance()->FindActor(PathRouterID))->OriginSpawnerNumber != inSpawnerNumber;
-	});
-	// PathRouterNumber 순으로 정렬
-	PathRouterIDs.Sort([](const int32 A, const int32 B)
-	{
-		return Cast<APathRouter>(FObjectManager::GetInstance()->FindActor(A))->PathRouterNumber
-		< Cast<APathRouter>(FObjectManager::GetInstance()->FindActor(B))->PathRouterNumber;
-	});
-	// TargetArray 설정
-	TargetArray.Empty();
-	for(const int32 ID : PathRouterIDs)
-	{
-		TArray<FVector> points = Cast<APathRouter>(FObjectManager::GetInstance()->FindActor(ID))->GetRectanglePoints();
-		FVector targetLoc = points[0];
-		targetLoc = targetLoc
-		+ ( Proportion.Width * (points[1] - points[0]).GetSafeNormal() * FVector::Dist(points[1], points[0]) )
-		+ ( Proportion.Length * (points[3] - points[0]).GetSafeNormal() * FVector::Dist(points[3], points[0]) );
-		
-		TargetArray.Add(targetLoc);
-	}
-	TargetArray.Add(FObjectManager::GetInstance()->GetNexus()->GetActorLocation());
-	
-	for(const FVector& targetLoc : TargetArray)
+	// 드로우디버그
+	DrawDebugLine( GetWorld(),GetActorLocation(),GoalLocArray[0], FColor::Magenta, true, -1, 0, 5);
+	for(const FVector& targetLoc : GoalLocArray)
 	{
 		DrawDebugPoint(GetWorld(), targetLoc, 5, FColor::Red, true);
 	}
-	for(int i = 0; i < TargetArray.Num(); ++i)
+	for(int i = 0; i < GoalLocArray.Num(); ++i)
 	{
-		if(i == TargetArray.Num() - 1)
+		if(i == GoalLocArray.Num() - 1)
 			continue;
-		DrawDebugLine( GetWorld(),TargetArray[i],TargetArray[i + 1], FColor::Magenta, true, -1, 0, 5);
+		DrawDebugLine( GetWorld(),GoalLocArray[i],GoalLocArray[i + 1], FColor::Magenta, true, -1, 0, 5);
 	}
 }
 
@@ -270,12 +218,6 @@ void ACharacterNPC::SetTargetArray(int32 inSpawnerNumber)
 // =============================================================
 void ACharacterNPC::SetEnemyTarget()
 {
-	if(Target == nullptr)
-	{
-		Target = FObjectManager::GetInstance()->GetNexus();
-		return;
-	}
-	
 	// ======== (최우선)플레이어가 근처에 있는가 혹은 조건에 일치하는가? 	// 일치한다면 타겟을 플레이어로 지정
 	/*if(bIsPlayerNear)
 	{
@@ -293,20 +235,21 @@ void ACharacterNPC::SetEnemyTarget()
 	if(AIController->GetPathFollowingComponent()->GetPath().IsValid())
 		lastPathPoint = AIController->GetPathFollowingComponent()->GetPath()->GetGoalLocation();
 	// 2. TargetLocation 업데이트
-	TargetLoc = TargetArray[TargetLocNum];
-	if(FVector::Dist(TargetLoc, GetActorLocation()) < (GetCapsuleComponent()->GetScaledCapsuleRadius() * 2.5))
-		TargetLocNum = (TargetLocNum == TargetArray.Num() - 1) ? TargetLocNum : TargetLocNum + 1;
+	GoalLoc = GoalLocArray[GoalLocNum];
+	if(FVector::Dist(GoalLoc, GetActorLocation()) < (GetCapsuleComponent()->GetScaledCapsuleRadius() * 2.5))
+		GoalLocNum = (GoalLocNum == GoalLocArray.Num() - 1) ? GoalLocNum : GoalLocNum + 1;
 	// 3. lastPathPoint 가 목표 위치와 일치하는가? (z성분 제외)
-	bool bCanReach = ( TargetLoc.X == lastPathPoint.X) && ( TargetLoc.Y == lastPathPoint.Y);
+	bool bCanReach = ( GoalLoc.X == lastPathPoint.X) && ( GoalLoc.Y == lastPathPoint.Y);
 	// 4. 목표에 도달할 수 없다면 타겟을 업데이트하지 않음 // UBTTask_BlockedMoveTo에서 Target업데이트
 	if(!bCanReach)
 		return;
 
-	// 기본 상태는 Nullptr
-	//Target.Reset();
-	
-	// ======== Default 타겟은 넥서스
-	Target = FObjectManager::GetInstance()->GetNexus();
+	// 기본 상태는 Nullptr // 넥서스가 공격범위 안이면 Nexus
+	float distance = FVector::Dist(GetActorLocation(), FObjectManager::GetInstance()->GetNexus()->GetActorLocation());
+	if(distance > GetStat().GetStat(ECharacterStatType::AttackRange))
+		Target = nullptr;
+	else
+		Target = FObjectManager::GetInstance()->GetNexus();
 }
 
 bool ACharacterNPC::FindShortestPath(const FVector& InEndLocation)
