@@ -50,10 +50,13 @@ void AMonsterSpawner::BeginPlay()
 		FObjectManager::GetInstance()->AddActor(this);
 	
 	RegistPathRouter(PathRouterNodes);	// 스포너와 연결된 PathRouter를 모두 등록합니다.
-	DrawDebugLine(GetWorld(), GetActorLocation(), PathRouterNodes[1]->GetActorLocation(), FColor::Green, true, -1, 0, 5);
-	for(int i = 1; i < PathRouterNodeNum; i++ )
+	if(!PathRouterNodes.IsEmpty())
 	{
-		DrawDebugLine(GetWorld(), PathRouterNodes[i]->GetActorLocation(), PathRouterNodes[i+1]->GetActorLocation(), FColor::Green, true, -1, 0, 5);
+		DrawDebugLine(GetWorld(), GetActorLocation(), PathRouterNodes[1]->GetActorLocation(), FColor::Green, true, -1, 0, 5);
+		for(int i = 1; i < PathRouterNodeNum; i++ )
+		{
+			DrawDebugLine(GetWorld(), PathRouterNodes[i]->GetActorLocation(), PathRouterNodes[i+1]->GetActorLocation(), FColor::Green, true, -1, 0, 5);
+		}
 	}
 	MakeRectangleBySplinePoints();			// 직사각형을 생성합니다.
 	GetRandomLocation();					// RandomLocation을 세팅합니다
