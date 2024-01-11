@@ -6,8 +6,11 @@
 #include "../UserWidgetBase.h"
 #include "Hand.generated.h"
 
+class UTextBlock;
+class ACharacterBase;
 class UHorizontalBox;
 class FCard;
+class ACharacterPC;
 struct CardInfo;
 UCLASS()
 class DIESELPUNK_API UHand : public UUserWidgetBase
@@ -40,9 +43,16 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidgetAnim), Transient)
 	UWidgetAnimation* Hand4ToHanger;
 
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+	UTextBlock* TextCost;
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+	UTextBlock* TextDeckCount;
+
+	int32 Cost;
+
 public:
 	// 생성자
-	virtual void OnCreated() override;
+	virtual void OnCreated() override; 
 
 	// 틱
 	virtual void NativeTick( const FGeometry& MyGeometry, float InDeltaTime ) override;
@@ -63,5 +73,11 @@ public:
 
 	//카드의 사이즈를 변경합니다.
 	void ResizeHandCard(int InIndex, FVector2d InSize);
+
+	UFUNCTION()
+	void ChangeCredit(TWeakObjectPtr<ACharacterBase> InCharacter, ECharacterStatType InStatType, int32 InValue);
+
+	UFUNCTION()
+	void ChangeDeckCount(int32 InValue);
 };
 

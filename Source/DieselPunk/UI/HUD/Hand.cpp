@@ -5,12 +5,15 @@
 #include "../../Card/Card.h"
 #include "../../Character/CharacterPC.h"
 #include "../../Manager/ObjectManager.h"
+#include "../../Character/CharacterPC.h"
 
 #include <Components/SizeBox.h>
 #include <Components/Image.h>
 #include <Components/TextBlock.h>
 #include <Blueprint/WidgetTree.h>
 #include <Animation/WidgetAnimation.h>
+
+#include "DieselPunk/Handler/DeckHandler.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(Hand)
 
@@ -21,6 +24,10 @@
 void UHand::OnCreated()
 {
 	Super::OnCreated();
+
+	ACharacterPC* player = FObjectManager::GetInstance()->GetPlayer();
+	player->GetStat().GetChangeStatDelegate().AddUObject(this, &UHand::ChangeCredit);
+	player->GetDelegateChangeDeckCount().AddUObject(this, &UHand::ChangeDeckCount);
 }
 
 // =============================================================
@@ -162,4 +169,19 @@ void UHand::ResizeHandCard(int InIndex, FVector2d InSize)
 		return;
 	
 	sizebox->SetRenderScale(InSize);
+}
+
+void UHand::ChangeCredit(TWeakObjectPtr<ACharacterBase> InCharacter, ECharacterStatType InStatType, int32 InValue)
+{
+	if(InStatType != ECharacterStatType::Cost)
+		return;
+
+	Cost += InValue;
+
+	TextCost->SetText(FText::FromString(FString::Printf(TEXT("%d"), Cost)));
+}
+
+void UHand::ChangeDeckCount(int32 InValue)
+{
+	TextDeckCount->SetText(FText::FromString(FString::Printf(TEXT("%d"), InValue)));
 }

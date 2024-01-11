@@ -87,6 +87,7 @@ enum class ECharacterStatType : uint8
 	Luck				UMETA( ToolTip = "행운" ),
 	CoolDown			UMETA( ToolTip = "스킬 쿨타임 감소" ),
 	AttackRange			UMETA( ToolTip = "사거리" ),
+	Cost				UMETA( ToolTip = "코스트")
 };
 
 // 네비 노드 상태

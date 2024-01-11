@@ -35,7 +35,7 @@ public:
 	void SetStat(ECharacterStatType InStatType, int32 InValue);
 
 public:
-	const FChangeStatDelegate& GetChangeStatDelegate() const
+	FChangeStatDelegate& GetChangeStatDelegate()
 	{
 		return ChangeStatDelegate;
 	}

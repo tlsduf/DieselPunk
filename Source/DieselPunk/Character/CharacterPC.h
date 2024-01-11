@@ -9,8 +9,10 @@
 DECLARE_DYNAMIC_DELEGATE(FDelegateInteractTask);
 DECLARE_DYNAMIC_DELEGATE(FDelegateJumpAction);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FDelegateLandAction, const FHitResult&, Hit);
+DECLARE_MULTICAST_DELEGATE_OneParam(FDelegate_ChangeDeckCount, int32)
 DECLARE_DELEGATE_OneParam(FDelegate_CardActivate, bool&)
 DECLARE_DELEGATE_OneParam(FDelegate_CardComplete, bool&)
+
 
 class UPlayerSkill;
 class FDeckHandler;
@@ -33,6 +35,7 @@ class ACharacterPC : public ACharacterBase
 
 	FDelegate_CardActivate DelegateCardActivate;
 	FDelegate_CardComplete DelegateCardComplete;
+	FDelegate_ChangeDeckCount DelegateChangeDeckCount;
 
 public:
 	/////////////////////////////////////////////////////////////////////
@@ -190,5 +193,8 @@ public:
 
 	//카드가 없다면 카드를 드로우합니다.
 	void DrawCard();
+
+	// 카드 덱 카운트 변경 델리게이트를 반환합니다.
+	FDelegate_ChangeDeckCount& GetDelegateChangeDeckCount(){return DelegateChangeDeckCount;}
 };
 

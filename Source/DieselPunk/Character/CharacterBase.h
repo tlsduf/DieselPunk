@@ -93,7 +93,7 @@ public:
 	void SetObjectId(int32 InObjectId) { ObjectId = InObjectId; }
 
 	// [Stat] 스탯을 가져옵니다.
-	const FStat& GetStat() const { return Stat; }
+	FStat& GetStat() { return Stat; }
 
 	// [Stat] 스탯을 변화합니다. 인게임에서 진행도중 스탯을 변경하려면 이 함수를 사용하세요. Stat[InStatType] = Stat[InStatType] + InValue; 로 적용됩니다.
 	void ChangeStat(ECharacterStatType InStatType, int32 InValue);

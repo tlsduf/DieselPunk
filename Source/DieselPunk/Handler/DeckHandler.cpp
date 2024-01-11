@@ -6,6 +6,7 @@
 #include "../Card/TurretCard.h"
 #include "../Data/CardDataTable.h"
 #include "../Manager/DatatableManager.h"
+#include "../Character/CharacterPC.h"
 
 int32 FDeckHandler::KeyIndex = 0;
 
@@ -169,6 +170,9 @@ bool FDeckHandler::Draw()
 		
 		Hand[i] = Deck.Pop();
 	}
+
+	Owner->GetDelegateChangeDeckCount().Broadcast(Deck.Num());
+	
 	return true;
 }
 

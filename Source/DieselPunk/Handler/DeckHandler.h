@@ -10,6 +10,7 @@ class FCard;
 class ACharacterPC;
 class UUserWidget;
 struct CardInfo;
+
 class FDeckHandler
 {
 	TArray<FCard*> Deck;
