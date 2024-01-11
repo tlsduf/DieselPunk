@@ -252,13 +252,19 @@ void ACharacterNPC::SetEnemyTarget()
 		Target = FObjectManager::GetInstance()->GetNexus();
 }
 
+// =============================================================
+// 길이 막혔을 때, 파괴시 진행할 수 있는 포탑의 위치를 찾습니다.
+// =============================================================
 bool ACharacterNPC::FindShortestPath(const FVector& InEndLocation)
 {
 	ShortestPath = FNavigationManager::GetInstance()->PathFinding(GetActorLocation(), InEndLocation, GridSize);
 	return !ShortestPath.IsEmpty();
 }
 
-bool ACharacterNPC::SetAttackTarget(TWeakObjectPtr<AActor> InTarget, const TArray<FVector>& InPath, int InIndex)
+// =============================================================
+// 길이 막혔을 때, '몬스터'의 타겟을 지정합니다.
+// =============================================================
+bool ACharacterNPC::SetBlockedAttackTarget(TWeakObjectPtr<AActor> InTarget, const TArray<FVector>& InPath, int InIndex)
 {
 	if(InTarget.IsValid() && InTarget != nullptr)
 	{
@@ -283,4 +289,83 @@ bool ACharacterNPC::SetAttackTarget(TWeakObjectPtr<AActor> InTarget, const TArra
 	return false;
 }
 
+
+/*// =============================================================
+// Navigation
+// =============================================================
+void ACharacterNPC::UpdateNavData()
+{
+	if (!MyNavData && GetWorld() && GetWorld()->GetNavigationSystem())
+	{
+		UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+		if (NavSys)
+			MyNavData = NavSys->GetNavDataForProps(GetNavAgentPropertiesRef(), GetActorLocation());
+	}
+}
+
+void ACharacterNPC::SearchPathTo(FVector inLocation)
+{
+	UpdateNavData();
+	if (inLocation == NULL) 
+		return;#2#
+	UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+	if (NavSys == nullptr)
+		return;
+	ANavigationData* NavData = Cast<ANavigationData>(NavSys->GetNavDataForActor(*this));
+	if (NavData == nullptr)
+		return;
+
+	const double StartTime = FPlatformTime::Seconds();
+
+	FPathFindingQuery Query = BuildPathFindingQuery(inLocation);
+
+	if (bBacktracking)
+	{
+		FSharedConstNavQueryFilter NavQueryFilter = Query.QueryFilter ? Query.QueryFilter : NavData->GetDefaultQueryFilter();
+		FSharedNavQueryFilter NavigationFilterCopy = NavQueryFilter->GetCopy();
+		NavigationFilterCopy->SetBacktrackingEnabled(true);
+		Query.QueryFilter = NavigationFilterCopy;
+	}
+	
+	//Apply cost limit factor
+	FSharedConstNavQueryFilter NavQueryFilter = Query.QueryFilter ? Query.QueryFilter : NavData->GetDefaultQueryFilter();
+	const float HeuristicScale = NavQueryFilter->GetHeuristicScale();
+	Query.CostLimit = FPathFindingQuery::ComputeCostLimitFromHeuristic(Query.StartLocation, Query.EndLocation, HeuristicScale, CostLimitFactor, MinimumCostLimit);
+
+	EPathFindingMode::Type Mode = bUseHierarchicalPathfinding ? EPathFindingMode::Hierarchical : EPathFindingMode::Regular;
+	FPathFindingResult Result = NavSys->FindPathSync(NavAgentProps, Query, Mode);
+
+	const double EndTime = FPlatformTime::Seconds();
+	const double Duration = (EndTime - StartTime);
+	PathfindingTime = static_cast<float>(Duration * 1000000.);			// in micro seconds [us]
+	bPathIsPartial = Result.IsPartial();
+	bPathExist = Result.IsSuccessful();
+	bPathSearchOutOfNodes = bPathExist ? Result.Path->DidSearchReachedLimit() : false;
+	LastPath = Result.Path;
+	PathCost = bPathExist ? Result.Path->GetCost() : 0.;
+	
+	if (bPathExist)
+	{
+		LastPath->AddObserver(PathObserver);
+
+		if (OffsetFromCornersDistance > 0.0f)
+		{
+			((FNavMeshPath*)LastPath.Get())->OffsetFromCorners(OffsetFromCornersDistance);
+		}
+	}
+}
+
+FPathFindingQuery ACharacterNPC::BuildPathFindingQuery(const FVector inLocation) const
+{
+	if (MyNavData)
+	{
+		constexpr float DefaultCostLimit = FLT_MAX;
+		const FNavPathSharedPtr NoSharedPath = nullptr;
+		return FPathFindingQuery(
+			this,
+			*MyNavData, GetNavAgentLocation(), UtilCollision::GetZTrace(inLocation, -1), UNavigationQueryFilter::GetQueryFilter(*MyNavData, this, nullptr), NoSharedPath, DefaultCostLimit, bRequireNavigableEndLocation);
+	}
+	
+	return FPathFindingQuery();
+}*/
 

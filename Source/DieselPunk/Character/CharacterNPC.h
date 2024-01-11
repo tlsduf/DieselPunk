@@ -92,14 +92,27 @@ public:
 	void SetTargetArray(TArray<FVector> inTargetArray);
 	// '몬스터'의 Target을 설정합니다.
 	void SetEnemyTarget();
-	
-	bool FindShortestPath(const FVector& InEndLocation);
-	const TArray<FVector>& GetShortestPath() {return ShortestPath;} 
-	int32 GetGridSize() const {return GridSize;}
-
-	bool SetAttackTarget(TWeakObjectPtr<AActor> InTarget, const TArray<FVector>& InPath = TArray<FVector>(), int InIndex = -1);
-	TWeakObjectPtr<AActor> GetAttackTarget() {return Target;}
 	FVector GetTargetLoc() { return GoalLoc; }
-	FVector GetAttackTargetLoc() { return BlockedTargetLoc; }
+	TWeakObjectPtr<AActor> GetAttackTarget() { return Target; }
 
+	
+	// 길이 막혔을 때, 파괴시 진행할 수 있는 포탑의 위치를 찾습니다.
+	bool FindShortestPath(const FVector& InEndLocation);
+	const TArray<FVector>& GetShortestPath() { return ShortestPath; } 
+	int32 GetGridSize() const { return GridSize; }
+
+	// 길이 막혔을 때, '몬스터'의 타겟을 지정합니다.
+	bool SetBlockedAttackTarget(TWeakObjectPtr<AActor> InTarget, const TArray<FVector>& InPath = TArray<FVector>(), int InIndex = -1);
+	FVector GetBlockedAttackTargetLoc() { return BlockedTargetLoc; }
+	
+
+
+	// Navigation
+public:
+	/*UPROPERTY(transient)
+	TObjectPtr<ANavigationData> MyNavData;
+
+	NAVIGATIONSYSTEM_API void UpdateNavData();
+	NAVIGATIONSYSTEM_API void SearchPathTo(FVector inLocation);
+	NAVIGATIONSYSTEM_API FPathFindingQuery BuildPathFindingQuery(const FVector inLocation) const;*/
 };
