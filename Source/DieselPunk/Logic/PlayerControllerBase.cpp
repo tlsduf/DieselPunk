@@ -455,6 +455,7 @@ void APlayerControllerBase::RenewHand()
 {
 	TArray<FCard*> hand = PC->GetDeckHandler()->GetHands();
 	Hand->RegisterHands(hand);
+	Hand->PlayDrawAnimation();
 }
 
 void APlayerControllerBase::RegisterHands(TArray<FCard*> InCard)

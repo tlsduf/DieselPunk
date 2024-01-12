@@ -139,6 +139,13 @@ void UHand::PlayHandToHangerAnimation(int InIndex)
 
 	PlayAnimation(anim, 0.0f, 1, EUMGSequencePlayMode::Forward, 1, true);
 }
+
+//드로우 애니메이션을 재생합니다.
+void UHand::PlayDrawAnimation()
+{
+	PlayAnimation(DrawAnimation);
+}
+
 //카드의 사이즈를 변경합니다.
 void UHand::ResizeHandCard(int InIndex, FVector2d InSize)
 {

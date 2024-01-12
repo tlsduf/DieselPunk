@@ -450,13 +450,15 @@ bool ACharacterPC::ExecuteCardActivate()
 	
 	bool IsSuccessActivate = false;
 	if(DelegateCardActivate.IsBound())
-		DelegateCardActivate.Execute(IsSuccessActivate);
+		DelegateCardActivate.Execute(IsSuccessActivate, Stat.GetStat(ECharacterStatType::Cost));
 
 	if(!IsSuccessActivate)
 		return false;
 	
 	int32 value = controller->PostActivateCard();
+	Stat.ChangeStat(ECharacterStatType::Cost, -DeckHandler->GetHands()[value]->GetCardInfo().Cost);
 	DeckHandler->UseCard(value);
+	
 	LOG_SCREEN(FColor::White, TEXT("%d카드를 사용합니다."), value)
 	
 	DelegateCardActivate.Unbind();

@@ -34,7 +34,7 @@ public:
 	void BindCardComplete();
 
 	//바인딩을 위한 카드 사용 함수
-	void Activate(bool& OutSuccess);
+	void Activate(bool& OutSuccess, int32 InCost);
 	//바인딩을 위한 카드 사용 완료 함수
 	void Complete(bool& OutSuccess);
 
@@ -43,7 +43,7 @@ public:
 
 private:
 	//카드 사용 함수
-	virtual void _Activate(bool& OutSuccess){}
+	virtual void _Activate(bool& OutSuccess, int32 InCost){}
 	//카드 사용 완료 함수
 	virtual void _Complete(bool& OutSuccess){}
 	

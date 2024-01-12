@@ -44,9 +44,9 @@ void FCard::BindCardComplete()
 }
 
 //바인딩을 위한 카드 사용 함수
-void FCard::Activate(bool& OutSuccess)
+void FCard::Activate(bool& OutSuccess, int32 InCost)
 {
-	_Activate(OutSuccess);
+	_Activate(OutSuccess, InCost);
 }
 
 //바인딩을 위한 카드 사용 완료 함수

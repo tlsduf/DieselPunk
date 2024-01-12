@@ -42,6 +42,8 @@ protected:
 	UWidgetAnimation* Hand3ToHanger;
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidgetAnim), Transient)
 	UWidgetAnimation* Hand4ToHanger;
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidgetAnim), Transient)
+	UWidgetAnimation* DrawAnimation;
 
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
 	UTextBlock* TextCost;
@@ -70,6 +72,9 @@ public:
 
 	//핸드에서 행거로 이동하는 애니메이션을 재생합니다.
 	void PlayHandToHangerAnimation(int InIndex);
+
+	//드로우 애니메이션을 재생합니다.
+	void PlayDrawAnimation();
 
 	//카드의 사이즈를 변경합니다.
 	void ResizeHandCard(int InIndex, FVector2d InSize);

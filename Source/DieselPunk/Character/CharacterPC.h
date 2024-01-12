@@ -10,7 +10,7 @@ DECLARE_DYNAMIC_DELEGATE(FDelegateInteractTask);
 DECLARE_DYNAMIC_DELEGATE(FDelegateJumpAction);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FDelegateLandAction, const FHitResult&, Hit);
 DECLARE_MULTICAST_DELEGATE_OneParam(FDelegate_ChangeDeckCount, int32)
-DECLARE_DELEGATE_OneParam(FDelegate_CardActivate, bool&)
+DECLARE_DELEGATE_TwoParams(FDelegate_CardActivate, bool&, int32)
 DECLARE_DELEGATE_OneParam(FDelegate_CardComplete, bool&)
 
 
