@@ -25,9 +25,9 @@ void ANPCAIController::Tick(float DeltaTime)
     // PathPoint 경로 DrawDebug
     TArray<FNavPathPoint> pathPoints = GetPathFollowingComponent()->GetPath()->GetPathPoints();
     FVector beforePoint = pathPoints[0].Location;
-    for(FNavPathPoint i:pathPoints)
+    for(FNavPathPoint i : pathPoints)
     {
-        DrawDebugLine(GetWorld(),beforePoint, i.Location, FColor::Red);
+        DrawDebugLine(GetWorld(),beforePoint, i.Location, FColor::Red, false, -1);
         DrawDebugPoint(GetWorld(), i.Location, 10, FColor::Red, false, -1);
         beforePoint = i.Location;
     }

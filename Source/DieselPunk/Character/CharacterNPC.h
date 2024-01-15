@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CharacterPC.h"
+#include "NavigationData.h"
+#include "DieselPunk/AI/BTTask_ProjectileAttack.h"
 #include "CharacterNPC.generated.h"
 
 class UHousingActorComponent;
@@ -106,13 +108,23 @@ public:
 	FVector GetBlockedAttackTargetLoc() { return BlockedTargetLoc; }
 	
 
-
+	/////////////////////////////////////////////////////////////////////
 	// Navigation
 public:
-	/*UPROPERTY(transient)
+	// =========================================
+	// NavigationTestingActor를 참고한 코드입니다.
+	UPROPERTY(transient)
 	TObjectPtr<ANavigationData> MyNavData;
 
-	NAVIGATIONSYSTEM_API void UpdateNavData();
-	NAVIGATIONSYSTEM_API void SearchPathTo(FVector inLocation);
-	NAVIGATIONSYSTEM_API FPathFindingQuery BuildPathFindingQuery(const FVector inLocation) const;*/
+	// inStartLoc to inEndLoc 경로탐색 // 기존의 경로탐색 로직을 그대로 따라합니다.(아마도)
+	FNavPathSharedPtr SearchPathTo(const FVector inStartLoc, const FVector inEndLoc);
+	
+	// FPathFindingQuery Set
+	FPathFindingQuery BuildPathFindingQuery(const FVector inStartLoc, const FVector inEndLoc) const;
+	// =========================================
+
+	TArray<FVector> MyPathPoints;	// 몬스터의 전체경로를 담을 배열
+	
+	// 전체 경로를 탐색합니다. // 몬스터 스폰시, 포탑 설치/파괴시, Target이 Nexus로 업데이트될 때 호출합니다.
+	void UpdatePath();
 };

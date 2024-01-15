@@ -6,19 +6,16 @@
 #include "../Skill/SkillNPC/TargetAttack.h"
 #include "../UI/HUD/EnemyStatusUI.h"
 #include "../Manager/NavigationManager.h"
-#include "../Actor/PathRouter.h"
-#include "../Core/DPLevelScriptActor.h"
 
 #include <Components/WidgetComponent.h>
 #include <AIController.h>
 #include <GameFramework/CharacterMovementComponent.h>
 #include <NavigationSystem.h>
 #include <Navigation/PathFollowingComponent.h>
-#include <Engine/Level.h>
+#include "NavigationData.h"
 
 #include "DrawDebugHelpers.h"
 #include "Components/CapsuleComponent.h"
-#include "Elements/Interfaces/TypedElementSelectionInterface.h"
 
 
 // =============================================================
@@ -53,7 +50,6 @@ void ACharacterNPC::BeginPlay()
 
 	if(TargetAttack != nullptr)
 		TargetAttack->InitSkillStat();
-	
 }
 
 // =============================================================
@@ -78,6 +74,23 @@ void ACharacterNPC::Tick(float DeltaTime)
 	// 타겟 업데이트
 	if(NPCType == ENPCType::Enemy)
 		SetEnemyTarget();
+	
+	if(NPCType == ENPCType::Enemy)
+	{
+		UpdatePath();
+		if(MyPathPoints.IsValidIndex(0))
+		{
+			auto beforePoint = MyPathPoints[0];
+			DrawDebugPoint(GetWorld(), beforePoint, 25, FColor::Green, false, -1);
+			for(auto& point : MyPathPoints)
+			{
+				DrawDebugLine(GetWorld(),beforePoint, point, FColor::Red, false, -1);
+				DrawDebugPoint(GetWorld(), point, 10, FColor::Red, false, -1);
+				beforePoint = point;
+			}
+			DrawDebugPoint(GetWorld(), MyPathPoints.Last(), 25, FColor::Blue, false, -1);
+		}
+	}
 }
 
 // =============================================================
@@ -234,8 +247,11 @@ void ACharacterNPC::SetEnemyTarget()
 	FVector lastPathPoint = FVector::ZeroVector;
 	if(AIController->GetPathFollowingComponent()->GetPath().IsValid())
 		lastPathPoint = AIController->GetPathFollowingComponent()->GetPath()->GetGoalLocation();
-	// 2. TargetLocation 업데이트
-	GoalLoc = GoalLocArray[GoalLocNum];
+	// 2. GoalLoc 업데이트
+	if(!GoalLocArray.IsEmpty())
+		GoalLoc = GoalLocArray[GoalLocNum];
+	else
+		GoalLoc = FObjectManager::GetInstance()->GetNexus()->GetActorLocation();
 	if(FVector::Dist(GoalLoc, GetActorLocation()) < (GetCapsuleComponent()->GetScaledCapsuleRadius() * 2.5))
 		GoalLocNum = (GoalLocNum == GoalLocArray.Num() - 1) ? GoalLocNum : GoalLocNum + 1;
 	// 3. lastPathPoint 가 목표 위치와 일치하는가? (z성분 제외)
@@ -290,82 +306,81 @@ bool ACharacterNPC::SetBlockedAttackTarget(TWeakObjectPtr<AActor> InTarget, cons
 }
 
 
-/*// =============================================================
+// =============================================================
 // Navigation
 // =============================================================
-void ACharacterNPC::UpdateNavData()
-{
-	if (!MyNavData && GetWorld() && GetWorld()->GetNavigationSystem())
-	{
-		UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
-		if (NavSys)
-			MyNavData = NavSys->GetNavDataForProps(GetNavAgentPropertiesRef(), GetActorLocation());
-	}
-}
 
-void ACharacterNPC::SearchPathTo(FVector inLocation)
+// inStartLoc to inEndLoc 경로탐색 // 기존의 경로탐색 로직을 그대로 따라합니다.(아마도)
+FNavPathSharedPtr ACharacterNPC::SearchPathTo(const FVector inStartLoc, const FVector inEndLoc)
 {
-	UpdateNavData();
-	if (inLocation == NULL) 
-		return;#2#
+	if (inEndLoc == GetActorLocation()) 
+		return nullptr;
 	UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
 	if (NavSys == nullptr)
-		return;
+		return nullptr;
 	ANavigationData* NavData = Cast<ANavigationData>(NavSys->GetNavDataForActor(*this));
 	if (NavData == nullptr)
-		return;
+		return nullptr;
 
-	const double StartTime = FPlatformTime::Seconds();
+	if (!MyNavData && GetWorld() && GetWorld()->GetNavigationSystem())
+		MyNavData = NavSys->GetNavDataForProps(GetNavAgentPropertiesRef(), GetActorLocation());
 
-	FPathFindingQuery Query = BuildPathFindingQuery(inLocation);
-
-	if (bBacktracking)
-	{
-		FSharedConstNavQueryFilter NavQueryFilter = Query.QueryFilter ? Query.QueryFilter : NavData->GetDefaultQueryFilter();
-		FSharedNavQueryFilter NavigationFilterCopy = NavQueryFilter->GetCopy();
-		NavigationFilterCopy->SetBacktrackingEnabled(true);
-		Query.QueryFilter = NavigationFilterCopy;
-	}
+	FPathFindingQuery Query = BuildPathFindingQuery(inStartLoc, inEndLoc);
 	
 	//Apply cost limit factor
 	FSharedConstNavQueryFilter NavQueryFilter = Query.QueryFilter ? Query.QueryFilter : NavData->GetDefaultQueryFilter();
 	const float HeuristicScale = NavQueryFilter->GetHeuristicScale();
+	float CostLimitFactor = FLT_MAX;
+	float MinimumCostLimit = 0.f;
 	Query.CostLimit = FPathFindingQuery::ComputeCostLimitFromHeuristic(Query.StartLocation, Query.EndLocation, HeuristicScale, CostLimitFactor, MinimumCostLimit);
 
-	EPathFindingMode::Type Mode = bUseHierarchicalPathfinding ? EPathFindingMode::Hierarchical : EPathFindingMode::Regular;
-	FPathFindingResult Result = NavSys->FindPathSync(NavAgentProps, Query, Mode);
-
-	const double EndTime = FPlatformTime::Seconds();
-	const double Duration = (EndTime - StartTime);
-	PathfindingTime = static_cast<float>(Duration * 1000000.);			// in micro seconds [us]
-	bPathIsPartial = Result.IsPartial();
-	bPathExist = Result.IsSuccessful();
-	bPathSearchOutOfNodes = bPathExist ? Result.Path->DidSearchReachedLimit() : false;
-	LastPath = Result.Path;
-	PathCost = bPathExist ? Result.Path->GetCost() : 0.;
+	EPathFindingMode::Type Mode = EPathFindingMode::Regular;
+	FPathFindingResult Result = NavSys->FindPathSync(GetNavAgentPropertiesRef(), Query, Mode);
 	
-	if (bPathExist)
-	{
-		LastPath->AddObserver(PathObserver);
-
-		if (OffsetFromCornersDistance > 0.0f)
-		{
-			((FNavMeshPath*)LastPath.Get())->OffsetFromCorners(OffsetFromCornersDistance);
-		}
-	}
+	return Result.Path;
 }
 
-FPathFindingQuery ACharacterNPC::BuildPathFindingQuery(const FVector inLocation) const
+// FPathFindingQuery Set
+FPathFindingQuery ACharacterNPC::BuildPathFindingQuery(const FVector inStartLoc, const FVector inEndLoc) const
 {
 	if (MyNavData)
 	{
 		constexpr float DefaultCostLimit = FLT_MAX;
 		const FNavPathSharedPtr NoSharedPath = nullptr;
-		return FPathFindingQuery(
-			this,
-			*MyNavData, GetNavAgentLocation(), UtilCollision::GetZTrace(inLocation, -1), UNavigationQueryFilter::GetQueryFilter(*MyNavData, this, nullptr), NoSharedPath, DefaultCostLimit, bRequireNavigableEndLocation);
+		return FPathFindingQuery(this,
+			*MyNavData,
+			UtilCollision::GetZTrace(inStartLoc, -1).Location,
+			UtilCollision::GetZTrace(inEndLoc, -1).Location,
+			UNavigationQueryFilter::GetQueryFilter(*MyNavData, this, nullptr),
+			NoSharedPath, DefaultCostLimit, true);
 	}
-	
 	return FPathFindingQuery();
-}*/
+}
+
+// 전체 경로를 탐색합니다. // 몬스터 스폰시, 포탑 설치/파괴시, Target이 Nexus로 업데이트될 때 호출합니다.
+void ACharacterNPC::UpdatePath()
+{
+	MyPathPoints.Empty();
+	
+	// 액터와 첫 목적지 까지의 경로를 담습니다.
+	TArray<FNavPathPoint> pathPoints = SearchPathTo(GetActorLocation(), GoalLoc)->GetPathPoints();
+	for(int i = 0; i < pathPoints.Num(); i++)
+	{
+		MyPathPoints.Add(pathPoints[i]);
+	}
+
+	// 목적지 부터 다음 목적지 까지의 경로를 담습니다.
+	int32 index;
+	GoalLocArray.Find(GoalLoc, index);
+	for(int i = index; i < GoalLocArray.Num() ; i++)
+	{
+		if(!GoalLocArray.IsValidIndex(i + 1))
+			return;
+		TArray<FNavPathPoint> pathPoints1 = SearchPathTo(GoalLocArray[i], GoalLocArray[i + 1])->GetPathPoints();
+		for(int j = 1; j < pathPoints1.Num(); j++)
+		{
+			MyPathPoints.Add(pathPoints1[j]);
+		}
+	}
+}
 
