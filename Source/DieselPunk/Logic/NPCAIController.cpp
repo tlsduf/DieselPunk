@@ -18,7 +18,7 @@ void ANPCAIController::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
     
-    // PathPoint 받아서 표시
+    /*// PathPoint 받아서 표시
     if(!GetPathFollowingComponent()->GetPath().IsValid())
         return;
 
@@ -31,7 +31,7 @@ void ANPCAIController::Tick(float DeltaTime)
         DrawDebugPoint(GetWorld(), i.Location, 10, FColor::Red, false, -1);
         beforePoint = i.Location;
     }
-    DrawDebugPoint(GetWorld(), pathPoints[pathPoints.Num()-1].Location, 25, FColor::Blue, false, -1);
+    DrawDebugPoint(GetWorld(), pathPoints[pathPoints.Num()-1].Location, 25, FColor::Blue, false, -1);*/
 }
 
 void ANPCAIController::OnPossess(APawn* InPawn)

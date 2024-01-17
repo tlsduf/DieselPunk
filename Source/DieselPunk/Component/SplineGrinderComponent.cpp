@@ -17,9 +17,12 @@ USplineGrinderComponent::USplineGrinderComponent()
 void USplineGrinderComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	Cast<ACharacterPC>(GetOwner())->DelegateLandAction.BindDynamic(this, &USplineGrinderComponent::GrindAction);
-	Cast<ACharacterPC>(GetOwner())->DelegateJumpAction.BindDynamic(this, &USplineGrinderComponent::JumpAction);
+
+	if(Cast<ACharacterPC>(GetOwner()))
+	{
+		Cast<ACharacterPC>(GetOwner())->DelegateLandAction.BindDynamic(this, &USplineGrinderComponent::GrindAction);
+		Cast<ACharacterPC>(GetOwner())->DelegateJumpAction.BindDynamic(this, &USplineGrinderComponent::JumpAction);
+	}
 }
 
 void USplineGrinderComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

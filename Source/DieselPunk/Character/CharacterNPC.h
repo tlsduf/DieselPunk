@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CharacterPC.h"
-#include "NavigationData.h"
 #include "DieselPunk/AI/BTTask_ProjectileAttack.h"
 #include "CharacterNPC.generated.h"
 
 class UHousingActorComponent;
 class USkillBase;
+class UPathFindingComponent;
 class UEnemyStatusUI;
 
 struct FProportion
@@ -66,6 +66,10 @@ public:
 	TWeakObjectPtr<AActor> Target = nullptr;		//공격할 타겟
 	FVector BlockedTargetLoc = FVector::ZeroVector;	//공격할 타겟 위치
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MYDP_Skill")
+	UPathFindingComponent *PathFindingComponent;
+
+	
 protected:
 	ACharacterNPC();
 	
@@ -96,7 +100,6 @@ public:
 	void SetEnemyTarget();
 	FVector GetTargetLoc() { return GoalLoc; }
 	TWeakObjectPtr<AActor> GetAttackTarget() { return Target; }
-
 	
 	// 길이 막혔을 때, 파괴시 진행할 수 있는 포탑의 위치를 찾습니다.
 	bool FindShortestPath(const FVector& InEndLocation);
@@ -106,25 +109,4 @@ public:
 	// 길이 막혔을 때, '몬스터'의 타겟을 지정합니다.
 	bool SetBlockedAttackTarget(TWeakObjectPtr<AActor> InTarget, const TArray<FVector>& InPath = TArray<FVector>(), int InIndex = -1);
 	FVector GetBlockedAttackTargetLoc() { return BlockedTargetLoc; }
-	
-
-	/////////////////////////////////////////////////////////////////////
-	// Navigation
-public:
-	// =========================================
-	// NavigationTestingActor를 참고한 코드입니다.
-	UPROPERTY(transient)
-	TObjectPtr<ANavigationData> MyNavData;
-
-	// inStartLoc to inEndLoc 경로탐색 // 기존의 경로탐색 로직을 그대로 따라합니다.(아마도)
-	FNavPathSharedPtr SearchPathTo(const FVector inStartLoc, const FVector inEndLoc);
-	
-	// FPathFindingQuery Set
-	FPathFindingQuery BuildPathFindingQuery(const FVector inStartLoc, const FVector inEndLoc) const;
-	// =========================================
-
-	TArray<FVector> MyPathPoints;	// 몬스터의 전체경로를 담을 배열
-	
-	// 전체 경로를 탐색합니다. // 몬스터 스폰시, 포탑 설치/파괴시, Target이 Nexus로 업데이트될 때 호출합니다.
-	void UpdatePath();
 };

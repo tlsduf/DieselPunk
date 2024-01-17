@@ -6,13 +6,13 @@
 #include "../Skill/SkillNPC/TargetAttack.h"
 #include "../UI/HUD/EnemyStatusUI.h"
 #include "../Manager/NavigationManager.h"
+#include "../Component/PathFindingComponent.h"
 
 #include <Components/WidgetComponent.h>
 #include <AIController.h>
 #include <GameFramework/CharacterMovementComponent.h>
 #include <NavigationSystem.h>
 #include <Navigation/PathFollowingComponent.h>
-#include "NavigationData.h"
 
 #include "DrawDebugHelpers.h"
 #include "Components/CapsuleComponent.h"
@@ -30,6 +30,8 @@ ACharacterNPC::ACharacterNPC()
 	MeleeAttack = CreateDefaultSubobject<USkillBase>(TEXT("MeleeAttack"));
 	ProjectileAttack = CreateDefaultSubobject<USkillBase>(TEXT("ProjectileAttack"));
 	TargetAttack = CreateDefaultSubobject<USkillBase>(TEXT("TargetAttack"));
+
+	PathFindingComponent = CreateDefaultSubobject<UPathFindingComponent>(TEXT("PathFindingComponent"));
 }
 
 // =============================================================
@@ -77,18 +79,11 @@ void ACharacterNPC::Tick(float DeltaTime)
 	
 	if(NPCType == ENPCType::Enemy)
 	{
-		UpdatePath();
-		if(MyPathPoints.IsValidIndex(0))
+		if(PathFindingComponent != nullptr)
 		{
-			auto beforePoint = MyPathPoints[0];
-			DrawDebugPoint(GetWorld(), beforePoint, 25, FColor::Green, false, -1);
-			for(auto& point : MyPathPoints)
-			{
-				DrawDebugLine(GetWorld(),beforePoint, point, FColor::Red, false, -1);
-				DrawDebugPoint(GetWorld(), point, 10, FColor::Red, false, -1);
-				beforePoint = point;
-			}
-			DrawDebugPoint(GetWorld(), MyPathPoints.Last(), 25, FColor::Blue, false, -1);
+			PathFindingComponent->UpdatePath(GoalLoc, GoalLocArray);
+			PathFindingComponent->MakeSplinePath();
+			PathFindingComponent->DrawDebugSpline();
 		}
 	}
 }
@@ -304,83 +299,3 @@ bool ACharacterNPC::SetBlockedAttackTarget(TWeakObjectPtr<AActor> InTarget, cons
 	}
 	return false;
 }
-
-
-// =============================================================
-// Navigation
-// =============================================================
-
-// inStartLoc to inEndLoc 경로탐색 // 기존의 경로탐색 로직을 그대로 따라합니다.(아마도)
-FNavPathSharedPtr ACharacterNPC::SearchPathTo(const FVector inStartLoc, const FVector inEndLoc)
-{
-	if (inEndLoc == GetActorLocation()) 
-		return nullptr;
-	UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
-	if (NavSys == nullptr)
-		return nullptr;
-	ANavigationData* NavData = Cast<ANavigationData>(NavSys->GetNavDataForActor(*this));
-	if (NavData == nullptr)
-		return nullptr;
-
-	if (!MyNavData && GetWorld() && GetWorld()->GetNavigationSystem())
-		MyNavData = NavSys->GetNavDataForProps(GetNavAgentPropertiesRef(), GetActorLocation());
-
-	FPathFindingQuery Query = BuildPathFindingQuery(inStartLoc, inEndLoc);
-	
-	//Apply cost limit factor
-	FSharedConstNavQueryFilter NavQueryFilter = Query.QueryFilter ? Query.QueryFilter : NavData->GetDefaultQueryFilter();
-	const float HeuristicScale = NavQueryFilter->GetHeuristicScale();
-	float CostLimitFactor = FLT_MAX;
-	float MinimumCostLimit = 0.f;
-	Query.CostLimit = FPathFindingQuery::ComputeCostLimitFromHeuristic(Query.StartLocation, Query.EndLocation, HeuristicScale, CostLimitFactor, MinimumCostLimit);
-
-	EPathFindingMode::Type Mode = EPathFindingMode::Regular;
-	FPathFindingResult Result = NavSys->FindPathSync(GetNavAgentPropertiesRef(), Query, Mode);
-	
-	return Result.Path;
-}
-
-// FPathFindingQuery Set
-FPathFindingQuery ACharacterNPC::BuildPathFindingQuery(const FVector inStartLoc, const FVector inEndLoc) const
-{
-	if (MyNavData)
-	{
-		constexpr float DefaultCostLimit = FLT_MAX;
-		const FNavPathSharedPtr NoSharedPath = nullptr;
-		return FPathFindingQuery(this,
-			*MyNavData,
-			UtilCollision::GetZTrace(inStartLoc, -1).Location,
-			UtilCollision::GetZTrace(inEndLoc, -1).Location,
-			UNavigationQueryFilter::GetQueryFilter(*MyNavData, this, nullptr),
-			NoSharedPath, DefaultCostLimit, true);
-	}
-	return FPathFindingQuery();
-}
-
-// 전체 경로를 탐색합니다. // 몬스터 스폰시, 포탑 설치/파괴시, Target이 Nexus로 업데이트될 때 호출합니다.
-void ACharacterNPC::UpdatePath()
-{
-	MyPathPoints.Empty();
-	
-	// 액터와 첫 목적지 까지의 경로를 담습니다.
-	TArray<FNavPathPoint> pathPoints = SearchPathTo(GetActorLocation(), GoalLoc)->GetPathPoints();
-	for(int i = 0; i < pathPoints.Num(); i++)
-	{
-		MyPathPoints.Add(pathPoints[i]);
-	}
-
-	// 목적지 부터 다음 목적지 까지의 경로를 담습니다.
-	int32 index;
-	GoalLocArray.Find(GoalLoc, index);
-	for(int i = index; i < GoalLocArray.Num() ; i++)
-	{
-		if(!GoalLocArray.IsValidIndex(i + 1))
-			return;
-		TArray<FNavPathPoint> pathPoints1 = SearchPathTo(GoalLocArray[i], GoalLocArray[i + 1])->GetPathPoints();
-		for(int j = 1; j < pathPoints1.Num(); j++)
-		{
-			MyPathPoints.Add(pathPoints1[j]);
-		}
-	}
-}
-
