@@ -38,4 +38,7 @@ namespace UtilCollision
 
 	// inStartLocation 으로부터 z방향의 트레이스 히트를 반환한다. inUpDown = 1 > Z  / inUpDown = -1 > -Z
 	FHitResult GetZTrace(FVector inStartLocation, int8 inUpDown);
+
+	// 화면 중앙 지점으로부터 바라보는 방향 히트를 반환
+	bool GetViewMiddle(UWorld* InWorld, APlayerController* InController, FHitResult& OutHitResult, int32 InRange = 99999, TArray<const AActor*> InIgnoreActor = TArray<const AActor*>());
 }

@@ -6,6 +6,7 @@
 #include "InputActionValue.h"
 #include "CharacterPC.generated.h"
 
+class ACharacterTurret;
 DECLARE_DYNAMIC_DELEGATE(FDelegateInteractTask);
 DECLARE_DYNAMIC_DELEGATE(FDelegateJumpAction);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FDelegateLandAction, const FHitResult&, Hit);
@@ -36,6 +37,8 @@ class ACharacterPC : public ACharacterBase
 	FDelegate_CardActivate DelegateCardActivate;
 	FDelegate_CardComplete DelegateCardComplete;
 	FDelegate_ChangeDeckCount DelegateChangeDeckCount;
+
+	TWeakObjectPtr<ACharacterTurret> SelectInstallation;
 
 public:
 	/////////////////////////////////////////////////////////////////////
@@ -196,5 +199,8 @@ public:
 
 	// 카드 덱 카운트 변경 델리게이트를 반환합니다.
 	FDelegate_ChangeDeckCount& GetDelegateChangeDeckCount(){return DelegateChangeDeckCount;}
+
+	void SetSelectInstallation(TWeakObjectPtr<ACharacterTurret> InInstallation);
+	const ACharacterTurret* GetSelectInstallation() const {return SelectInstallation.Get();}
 };
 

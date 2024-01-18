@@ -167,3 +167,40 @@ FHitResult UtilCollision::GetZTrace(FVector inStartLocation, int8 inUpDown)
 
 	return hit;
 }
+
+bool UtilCollision::GetViewMiddle(UWorld* InWorld, APlayerController* InController, FHitResult& OutHitResult, int32 InRange, TArray<const AActor*> InIgnoreActor)
+{
+	FHitResult hit;
+
+	//뷰 사이즈 획득
+	int32 viewX, viewY;
+	InController->GetViewportSize(viewX, viewY);
+
+	viewX /= 2;
+	viewY /= 2;
+
+	FRotator cameraRotation = InController->PlayerCameraManager->GetCameraRotation();
+	FVector cameraDirection = cameraRotation.Vector().GetSafeNormal();
+
+	//스크린 스페이스 위치와 카메라 디렉션을 바탕으로 트레이싱 Start, End 획득
+	FVector traceStartLocation, traceEndLocation;
+	InController->DeprojectScreenPositionToWorld(viewX, viewY, traceStartLocation, cameraDirection);
+	traceEndLocation = traceStartLocation + InRange * cameraDirection;
+
+	//플레이어 충돌범위 제외
+	FCollisionQueryParams params;
+	for(const AActor* ignore : InIgnoreActor)
+		params.AddIgnoredActor(ignore);
+
+	//라인 충돌
+	bool hasHit = InWorld->LineTraceSingleByChannel(
+		hit,
+		traceStartLocation,
+		traceEndLocation,
+		ECollisionChannel::ECC_WorldStatic,
+		params);
+
+	OutHitResult = hit;
+
+	return hasHit;
+}

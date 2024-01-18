@@ -17,6 +17,7 @@ enum class EAbilityType : uint8
 	SkillQ			UMETA( ToolTip = "Q 스킬"),
 	SkillE			UMETA( ToolTip = "E 스킬"),
 	SkillR			UMETA( ToolTip = "R 스킬"),
+	Interact		UMETA( ToolTip = "설치물 인터렉션"),
 	None			UMETA( ToolTip = "지정되지 않음"),
 };
 ENUM_RANGE_BY_COUNT( EAbilityType, EAbilityType::None );

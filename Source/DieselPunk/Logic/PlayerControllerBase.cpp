@@ -88,7 +88,7 @@ void APlayerControllerBase::SetupInputComponent()
         EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerControllerBase::Move);
         EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerControllerBase::Look);
 
-    	EnhancedInputComponent->BindAction(InputF, ETriggerEvent::Started, this, &APlayerControllerBase::Interaction);
+    	//EnhancedInputComponent->BindAction(InputF, ETriggerEvent::Started, this, &APlayerControllerBase::Interaction);
     	EnhancedInputComponent->BindAction(InputM, ETriggerEvent::Started, this, &APlayerControllerBase::Pause);
     	EnhancedInputComponent->BindAction(InputB, ETriggerEvent::Started, this, &APlayerControllerBase::WaveStart);
 
@@ -172,6 +172,9 @@ const EAbilityType APlayerControllerBase::GetAbilityKeyFromAction(const FInputAc
 		
 		else if (inputAction->GetName().Contains(TEXT("IA_InputR")))
 			return EAbilityType::SkillR;
+
+		else if (inputAction->GetName().Contains(TEXT("IA_InputF")))
+			return EAbilityType::Interact;
 	}
 	return EAbilityType::None;
 }

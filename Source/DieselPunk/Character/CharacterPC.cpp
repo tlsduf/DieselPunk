@@ -18,6 +18,7 @@
 #include <GameFramework/Controller.h>
 #include <EnhancedInputComponent.h>
 
+#include "CharacterTurret.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
@@ -496,4 +497,17 @@ void ACharacterPC::DrawCard()
 	
 	if(DeckHandler->Draw())
 		controller->RenewHand();
+}
+
+void ACharacterPC::SetSelectInstallation(TWeakObjectPtr<ACharacterTurret> InInstallation)
+{
+	SelectInstallation = InInstallation;
+	if(InInstallation == nullptr)
+		LOG_SCREEN(FColor::Emerald, TEXT("nullptr"))
+	else
+	{
+		FString str = TEXT("Select ");
+		str += InInstallation->GetName();
+		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Emerald, str);
+	}
 }
