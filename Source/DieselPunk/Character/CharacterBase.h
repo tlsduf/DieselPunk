@@ -21,6 +21,8 @@ protected:
 	int32 ObjectId = -1;			//오브젝트 ID
 	FStat Stat;						//스탯
 	
+	FDateTime CreateTime;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "MYDP")
 	FString CharacterName = "";		//캐릭터 정보를 가져오기 위한 이름
 	
@@ -136,5 +138,8 @@ public:
 	
 	// 전투상태 핸들링 함수 // 전투상태 돌입 5초 후, 전투상태 자동 해제. // 해제 전 갱신 시, 5초갱신.
 	void HandleCombatState();
-	
+
+	const FDateTime& GetCreateTime() const {return CreateTime;}
+
+	const FString& GetCharacterName() const {return CharacterName;}
 };

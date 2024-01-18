@@ -3,6 +3,9 @@
 #include "SkillInteractInstallation.h"
 #include "../../Character/CharacterPC.h"
 #include "../../Character/CharacterTurret.h"
+#include "../../Data/CardDataTable.h"
+#include "../../Manager/DatatableManager.h"
+#include "../../Manager/ObjectManager.h"
 
 #include <GameFramework/PlayerController.h>
 
@@ -91,11 +94,25 @@ void USkillInteractInstallation::SkillTriggered()
 	{
 		//포탑 수리
 		LOG_SCREEN(FColor::Yellow, TEXT("Fix Turret"))
+
+		//최대 체력으로 복구
+		int32 hp = InteractiveInstallation->GetStat().GetStat(ECharacterStatType::MaxHp) - InteractiveInstallation->GetStat().GetStat(ECharacterStatType::Hp);
+		InteractiveInstallation->ChangeStat(ECharacterStatType::Hp, hp);
 	}
 	else
 	{
 		//포탑 판매
 		LOG_SCREEN(FColor::Yellow, TEXT("Sold Turret"))
+
+		//ToDo: 포탑 판매 시 일정 금액 돌려받기
+		const FCardDataTable* data = FDataTableManager::GetInstance()->GetData<FCardDataTable>(EDataTableType::Card, InteractiveInstallation->GetCharacterName());
+		if(data == nullptr)
+			return;
+		int32 cost = data->Cost * 0.7f;
+		OwnerCharacterPC->ChangeStat(ECharacterStatType::Cost, cost);
+		
+		//포탑 삭제
+		FObjectManager::GetInstance()->DestroyActor(InteractiveInstallation->GetObjectId());
 	}
 }
 
@@ -138,6 +155,46 @@ void USkillInteractInstallation::SkillCanceled()
 	{
 		//포탑 강화
 		LOG_SCREEN(FColor::Yellow, TEXT("Upgrade Turret"))
+
+		//터렛 가져오기
+		TArray<int32> ids;
+		FObjectManager::GetInstance()->FindActorArrayByPredicate(ids, [](AActor* actor)
+		{
+			return Cast<ACharacterTurret>(actor) != nullptr;
+		});
+
+		TArray<ACharacterTurret*> turrets;
+		for(int32 id : ids)
+		{
+			//자기자신 제외
+			if(InteractiveInstallation->GetObjectId() == id)
+				continue;
+			ACharacterTurret* installation = Cast<ACharacterTurret>(FObjectManager::GetInstance()->FindActor(id));
+			
+			//같은 포탑 종류 추가
+			if(InteractiveInstallation->GetCharacterName() == installation->GetCharacterName())
+				turrets.Add(installation);
+		}
+
+		//포탑 갯수 확인
+		if(turrets.Num() < 2)
+		{
+			LOG_SCREEN(FColor::Yellow, TEXT("포탑 강화에 필요한 포탑 갯수가 부족합니다."))
+			return;
+		}
+
+		//가장 먼저 설치된 순으로 정렬
+		turrets.Sort([](ACharacterTurret& lhs, ACharacterTurret& rhs)
+		{
+			return lhs.GetCreateTime() < rhs.GetCreateTime();
+		});
+
+		//재료 포탑 제거
+		FObjectManager::GetInstance()->DestroyActor(turrets[0]->GetObjectId());
+		FObjectManager::GetInstance()->DestroyActor(turrets[1]->GetObjectId());
+
+		//포탑 업그레이드
+		InteractiveInstallation->UpgradeTurret();
 	}
 }
 

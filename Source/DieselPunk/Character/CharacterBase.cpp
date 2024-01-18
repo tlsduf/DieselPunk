@@ -44,6 +44,8 @@ void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	CreateTime = FDateTime::Now();
+
 	if(ObjectId == -1)
 		FObjectManager::GetInstance()->AddActor(this);
 
@@ -81,6 +83,12 @@ void ACharacterBase::Tick(float InDeltaTime)
 void ACharacterBase::SetupPlayerInputComponent(UInputComponent* InPlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(InPlayerInputComponent);
+}
+
+// [Stat] 스탯을 변화합니다. 인게임에서 진행도중 스탯을 변경하려면 이 함수를 사용하세요. Stat[InStatType] = Stat[InStatType] + InValue; 로 적용됩니다.
+void ACharacterBase::ChangeStat(ECharacterStatType InStatType, int32 InValue)
+{
+	Stat.ChangeStat(InStatType, InValue);
 }
 
 //================================================================

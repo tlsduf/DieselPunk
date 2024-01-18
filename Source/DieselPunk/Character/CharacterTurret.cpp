@@ -239,3 +239,9 @@ bool ACharacterTurret::InValidArea(FVector inLocation)
 	
 	return inMaxDistance && inMinDistance && inDegree;
 }
+
+// 터렛 업그레이드시 처리
+void ACharacterTurret::UpgradeTurret()
+{
+	LOG_SCREEN(FColor::Yellow, TEXT("Upgrade Complete!"))
+}

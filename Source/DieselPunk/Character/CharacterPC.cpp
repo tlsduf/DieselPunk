@@ -75,6 +75,8 @@ void ACharacterPC::BeginPlay()
 	{
 		int idx = FMath::Floor(FMath::SRand() * 9);
 		FString cardName = FString::Printf(TEXT("TestSmall%d"), idx + 1);
+		if(cardName == TEXT("TestSmall1"))
+			cardName = TEXT("TurretSmall");
 		DeckHandler->AddCard(cardName);
 	}
 	DeckHandler->BeginPlayStage();

@@ -49,6 +49,9 @@ public:
 
 	// inLocation이 유효 범위 안에 있으면 True 반환
 	bool InValidArea(FVector inLocation);
+
+	// 터렛 업그레이드시 처리
+	void UpgradeTurret();
 protected:
 	virtual void BeginPlay() override;
 	
