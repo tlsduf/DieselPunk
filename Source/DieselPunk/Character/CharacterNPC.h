@@ -8,7 +8,7 @@
 
 class UHousingActorComponent;
 class USkillBase;
-class UPathFindingComponent;
+class UDPNavigationComponent;
 class UEnemyStatusUI;
 
 struct FProportion
@@ -67,7 +67,7 @@ public:
 	FVector BlockedTargetLoc = FVector::ZeroVector;	//공격할 타겟 위치
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MYDP_Skill")
-	UPathFindingComponent *PathFindingComponent;
+	UDPNavigationComponent *DPNavigationComponent;
 
 	
 protected:
@@ -94,8 +94,8 @@ public:
 	void DoProjectileAttack();
 	void DoTargetAttack();
 	
-	// 스폰시 '몬스터'의 TargetArray를 설정합니다.
-	void SetTargetArray(TArray<FVector> inTargetArray);
+	// 스폰시 '몬스터'의 GoalArray 설정합니다.
+	void SetGoalArray(TArray<FVector> inGoalArray);
 	// '몬스터'의 Target을 설정합니다.
 	void SetEnemyTarget();
 	FVector GetTargetLoc() { return GoalLoc; }
@@ -109,4 +109,7 @@ public:
 	// 길이 막혔을 때, '몬스터'의 타겟을 지정합니다.
 	bool SetBlockedAttackTarget(TWeakObjectPtr<AActor> InTarget, const TArray<FVector>& InPath = TArray<FVector>(), int InIndex = -1);
 	FVector GetBlockedAttackTargetLoc() { return BlockedTargetLoc; }
+
+	// CurveSpline으로 된 경로를 생성합니다.
+	void SetUpdateSplinePath();
 };

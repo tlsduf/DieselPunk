@@ -6,7 +6,7 @@
 #include "../Skill/SkillNPC/TargetAttack.h"
 #include "../UI/HUD/EnemyStatusUI.h"
 #include "../Manager/NavigationManager.h"
-#include "../Component/PathFindingComponent.h"
+#include "..\Component\DPNavigationComponent.h"
 
 #include <Components/WidgetComponent.h>
 #include <AIController.h>
@@ -31,7 +31,7 @@ ACharacterNPC::ACharacterNPC()
 	ProjectileAttack = CreateDefaultSubobject<USkillBase>(TEXT("ProjectileAttack"));
 	TargetAttack = CreateDefaultSubobject<USkillBase>(TEXT("TargetAttack"));
 
-	PathFindingComponent = CreateDefaultSubobject<UPathFindingComponent>(TEXT("PathFindingComponent"));
+	DPNavigationComponent = CreateDefaultSubobject<UDPNavigationComponent>(TEXT("PathFindingComponent"));
 }
 
 // =============================================================
@@ -79,11 +79,12 @@ void ACharacterNPC::Tick(float DeltaTime)
 	
 	if(NPCType == ENPCType::Enemy)
 	{
-		if(PathFindingComponent != nullptr)
+		if(DPNavigationComponent != nullptr)
 		{
-			PathFindingComponent->UpdatePath(GoalLoc, GoalLocArray);
-			PathFindingComponent->MakeSplinePath();
-			PathFindingComponent->DrawDebugSpline();
+			//DPNavigationComponent->UpdatePath(GoalLoc, GoalLocArray);
+			//DPNavigationComponent->MakeSplinePath();
+			DPNavigationComponent->AddForceAlongSplinePath();
+			DPNavigationComponent->DrawDebugSpline();
 		}
 	}
 }
@@ -198,12 +199,12 @@ void ACharacterNPC::DoTargetAttack()
 }
 
 // =============================================================
-// 스폰시 '몬스터'의 TargetArray를 설정합니다.
+// 스폰시 '몬스터'의 GoalArray를 설정합니다.
 // =============================================================
-void ACharacterNPC::SetTargetArray(TArray<FVector> inTargetArray)
+void ACharacterNPC::SetGoalArray(TArray<FVector> inGoalArray)
 {
 	// 몬스터스포너에서 생성된 경로
-	GoalLocArray = inTargetArray;
+	GoalLocArray = inGoalArray;
 	// 마지막 목표지점은 넥서스 위치
 	GoalLocArray.Add(FObjectManager::GetInstance()->GetNexus()->GetActorLocation());
 
@@ -298,4 +299,17 @@ bool ACharacterNPC::SetBlockedAttackTarget(TWeakObjectPtr<AActor> InTarget, cons
 		return true;
 	}
 	return false;
+}
+
+void ACharacterNPC::SetUpdateSplinePath()
+{
+	if(NPCType == ENPCType::Enemy)
+	{
+		if(DPNavigationComponent != nullptr)
+		{
+			SetEnemyTarget();
+			DPNavigationComponent->UpdatePath(GoalLoc, GoalLocArray);
+			DPNavigationComponent->MakeSplinePath();
+		}
+	}
 }

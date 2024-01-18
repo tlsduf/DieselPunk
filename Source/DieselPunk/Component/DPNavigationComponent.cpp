@@ -1,12 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "PathFindingComponent.h"
+#include "DPNavigationComponent.h"
 #include "../Character/CharacterBase.h"
 
 #include <NavigationSystem.h>
+#include <GameFramework/PawnMovementComponent.h>
+#include <DrawDebugHelpers.h>
 
-#include "DrawDebugHelpers.h"
+#include "AIController.h"
 
 
 //===================================================================
@@ -93,40 +95,72 @@ FRotator FSplinePath::GetRotationAtDistanceAlongSpline(float Distance)
 	return Rot.Rotator();
 }
 
+// 주어진 월드 위치(InWorldLocation)로부터 가장 가까운 Spline Distance 리턴
+float FSplinePath::GetDistanceClosestToWorldLocation(const FVector& InWorldLocation) const
+{
+	const FVector LocalLocation = Transform.InverseTransformPosition(InWorldLocation);
+	float Dummy;
+	float&& InputKey = Path.Position.FindNearest(LocalLocation, Dummy);
+
+	const int32 NumPoints = Path.Position.Points.Num();
+	const int32 NumSegments = NumPoints - 1;
+
+	if ((InputKey >= 0) && (InputKey < NumSegments))
+	{
+		const int32 PointIndex = FMath::FloorToInt(InputKey);
+		const float Fraction = InputKey - PointIndex;
+		const int32 ReparamPointIndex = PointIndex * s_ReparamStepsPerSegment;
+		const float Distance = Path.ReparamTable.Points[ReparamPointIndex].InVal;
+		return Distance + Path.GetSegmentLength(PointIndex, Fraction);
+	}
+	else if (InputKey >= NumSegments)
+	{
+		return Path.GetSplineLength();
+	}
+
+	return 0.0f;
+}
+
 #pragma endregion 
 //===================================================================
 
 
 
 
-UPathFindingComponent::UPathFindingComponent()
+UDPNavigationComponent::UDPNavigationComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+
+	if(Cast<ACharacterBase>(GetOwner()))
+		Owner = Cast<ACharacterBase>(GetOwner());
 }
 
-void UPathFindingComponent::BeginPlay()
+void UDPNavigationComponent::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-void UPathFindingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UDPNavigationComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
 // inStartLoc to inEndLoc 경로탐색 // 기존의 경로탐색 로직을 그대로 따라합니다.(아마도)
-FNavPathSharedPtr UPathFindingComponent::SearchPathTo(const FVector inStartLoc, const FVector inEndLoc)
+FNavPathSharedPtr UDPNavigationComponent::SearchPathTo(const FVector inStartLoc, const FVector inEndLoc)
 {
+	if(!Owner.IsValid())
+		return nullptr;
+	
 	UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
 	if (NavSys == nullptr)
 		return nullptr;
 	
-	ANavigationData* NavData = Cast<ANavigationData>(NavSys->GetNavDataForActor(*GetOwner()));
+	ANavigationData* NavData = Cast<ANavigationData>(NavSys->GetNavDataForActor(*Owner));
 	if (NavData == nullptr)
 		return nullptr;
 
 	if (!MyNavData && GetWorld() && GetWorld()->GetNavigationSystem())
-		MyNavData = NavSys->GetNavDataForProps(Cast<ACharacterBase>(GetOwner())->GetNavAgentPropertiesRef(), GetOwner()->GetActorLocation());
+		MyNavData = NavSys->GetNavDataForProps(Owner->GetNavAgentPropertiesRef(), Owner->GetActorLocation());
 
 	FPathFindingQuery Query = BuildPathFindingQuery(inStartLoc, inEndLoc);
 	
@@ -138,13 +172,13 @@ FNavPathSharedPtr UPathFindingComponent::SearchPathTo(const FVector inStartLoc, 
 	Query.CostLimit = FPathFindingQuery::ComputeCostLimitFromHeuristic(Query.StartLocation, Query.EndLocation, HeuristicScale, CostLimitFactor, MinimumCostLimit);
 
 	EPathFindingMode::Type Mode = EPathFindingMode::Regular;
-	FPathFindingResult Result = NavSys->FindPathSync(Cast<ACharacterBase>(GetOwner())->GetNavAgentPropertiesRef(), Query, Mode);
+	FPathFindingResult Result = NavSys->FindPathSync(Owner->GetNavAgentPropertiesRef(), Query, Mode);
 	
 	return Result.Path;
 }
 
 // FPathFindingQuery Set
-FPathFindingQuery UPathFindingComponent::BuildPathFindingQuery(const FVector inStartLoc, const FVector inEndLoc) const
+FPathFindingQuery UDPNavigationComponent::BuildPathFindingQuery(const FVector inStartLoc, const FVector inEndLoc) const
 {
 	if (MyNavData)
 	{
@@ -161,13 +195,16 @@ FPathFindingQuery UPathFindingComponent::BuildPathFindingQuery(const FVector inS
 }
 
 // 전체 경로를 탐색하여 Location을 MyPathPoints배열에 담습니다. // 몬스터 스폰완료시, 포탑 설치/파괴시, Target이 Nexus로 업데이트될 때 호출합니다.
-void UPathFindingComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGoalLocArray)
+void UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGoalLocArray)
 {
+	if(!Owner.IsValid())
+		return;
+	
 	// 경로 초기화
 	MyPathPoints.Empty();
 	
 	// 액터와 첫 목적지 까지의 경로를 담습니다.
-	TArray<FNavPathPoint> pathPoints = SearchPathTo(GetOwner()->GetActorLocation(), inGoalLoc)->GetPathPoints();
+	TArray<FNavPathPoint> pathPoints = SearchPathTo(Owner->GetActorLocation(), inGoalLoc)->GetPathPoints();
 	for(int i = 0; i < pathPoints.Num(); i++)
 	{
 		MyPathPoints.Add(pathPoints[i]);
@@ -189,27 +226,74 @@ void UPathFindingComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGoal
 }
 
 // MyPathPoints를 기반으로 곡선경로 스플라인을 생성합니다.
-void UPathFindingComponent::MakeSplinePath()
+void UDPNavigationComponent::MakeSplinePath()
 {
 	if(MyPathPoints.IsEmpty())
 		return;
-	
+
+	// MyPathPoints 배열에 담긴 Loc 정보로 SplinePath를 구성합니다.
 	SplinePath.ClearSplinePoints();
 	for(const FVector& pathPoint : MyPathPoints)
 	{
 		SplinePath.AddSplinePoint(pathPoint, ESplineCoordinateSpace::World, ESplinePointType::Curve);
 	}
 	SplinePath.UpdateSpline();
+
+	// Set clamp tangent
+	FSplineCurves& path = SplinePath.Path;
+	int32&& numPoints = path.Position.Points.Num();
+	for (int32 pointIdx = 0; pointIdx < numPoints; ++pointIdx)
+	{
+		const FVector& currentPointLoc = path.Position.Points[pointIdx].OutVal;
+
+		// clamp leave tangent
+		const int32 nextPointIndex = pointIdx + 1;
+		if (nextPointIndex < numPoints)
+		{
+			const FVector& nextPointLoc = path.Position.Points[nextPointIndex].OutVal;
+			const float distToNext = FVector::Distance(nextPointLoc, currentPointLoc);
+			path.Position.Points[pointIdx].LeaveTangent = path.Position.Points[pointIdx].LeaveTangent.GetClampedToMaxSize(distToNext);
+		}
+		
+		// clamp arrive tangent
+		const int32 prevPointIndex = pointIdx - 1;
+		if (prevPointIndex >= 0)
+		{
+			const FVector& prevPointLoc = path.Position.Points[prevPointIndex].OutVal;
+			const float distToPrev = FVector::Distance(prevPointLoc, currentPointLoc);
+			path.Position.Points[pointIdx].ArriveTangent = path.Position.Points[pointIdx].ArriveTangent.GetClampedToMaxSize(distToPrev);
+		}
+		
+		path.Position.Points[pointIdx].InterpMode = CIM_CurveUser;
+	}
+	SplinePath.UpdateSpline();
 }
 
 // 스플라인 경로를 따라가게 AddForce 해줍니다.
-void UPathFindingComponent::AddForceToSplinePath()
+void UDPNavigationComponent::AddForceAlongSplinePath()
 {
+	if(!Owner.IsValid())
+		return;
+
+	if(!SplinePath.IsValid())
+		return;
 	
+	float distOwnerToSplinePath = SplinePath.GetDistanceClosestToWorldLocation(Owner->GetActorLocation());
+	FVector nearestSplineLocation = SplinePath.GetLocationAtDistanceAlongSpline(distOwnerToSplinePath);
+	FRotator nearestSplineRotation = SplinePath.GetRotationAtDistanceAlongSpline(distOwnerToSplinePath);
+
+	FVector toSplineDir = (nearestSplineLocation - Owner->GetActorLocation()).GetSafeNormal();
+	
+	FVector addForceDir = nearestSplineRotation.Vector().GetSafeNormal();
+	
+	if( 10 < FVector::Dist(nearestSplineLocation, Owner->GetActorLocation()) )
+		addForceDir = (addForceDir + toSplineDir).GetSafeNormal();
+		
+	Owner->AddMovementInput(addForceDir, 100);
 }
 
 // 경로 DrawDebug
-void UPathFindingComponent::DrawDebugSpline()
+void UDPNavigationComponent::DrawDebugSpline()
 {
 	if(MyPathPoints.IsEmpty())
 		return;

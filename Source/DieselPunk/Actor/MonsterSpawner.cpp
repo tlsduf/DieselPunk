@@ -249,7 +249,8 @@ void AMonsterSpawner::SpawnMonster(float InDeltaTime)
 				{
 					//npc->SetProportion(RectanglePoints);
 					//npc->SetTargetArray(SpawnerNumber);
-					npc->SetTargetArray(PathMap[spawnParam.Location]);
+					npc->SetGoalArray(PathMap[spawnParam.Location]);
+					npc->SetUpdateSplinePath();
 				}
 			}
 
