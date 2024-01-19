@@ -93,6 +93,8 @@ private:
 	UPROPERTY()
 	UHand* Hand;
 
+	int32 HUDId;
+	
 	bool DeckInterfaceOpen = false;
 
 	int32 UseCardNum = -1;
@@ -175,4 +177,7 @@ public:
 
 	//패에 카드를 등록합니다.
 	void RegisterHands(TArray<FCard*> InCard);
+
+	//HUD Id를 반환합니다.
+	int32 GetHUDId(){return HUDId;}
 };

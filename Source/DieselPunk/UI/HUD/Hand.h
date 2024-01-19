@@ -54,7 +54,9 @@ protected:
 
 public:
 	// 생성자
-	virtual void OnCreated() override; 
+	virtual void OnCreated() override;
+
+	void Initailize(ACharacterPC* InPlayer);
 
 	// 틱
 	virtual void NativeTick( const FGeometry& MyGeometry, float InDeltaTime ) override;

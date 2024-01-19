@@ -24,10 +24,12 @@
 void UHand::OnCreated()
 {
 	Super::OnCreated();
+}
 
-	ACharacterPC* player = FObjectManager::GetInstance()->GetPlayer();
-	player->GetStat().GetChangeStatDelegate().AddUObject(this, &UHand::ChangeCredit);
-	player->GetDelegateChangeDeckCount().AddUObject(this, &UHand::ChangeDeckCount);
+void UHand::Initailize(ACharacterPC* InPlayer)
+{
+	InPlayer->GetStat().GetChangeStatDelegate().AddUObject(this, &UHand::ChangeCredit);
+	InPlayer->GetDelegateChangeDeckCount().AddUObject(this, &UHand::ChangeDeckCount);
 }
 
 // =============================================================

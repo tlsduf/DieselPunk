@@ -22,6 +22,9 @@
 #include "Blueprint/WidgetTree.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "../Manager/UIManager.h"
+#include "../UI/UserWidgetBase.h"
+#include "../UI/HUD/Hand.h"
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(CharacterPC)
@@ -65,7 +68,17 @@ ACharacterPC::ACharacterPC()
 
 void ACharacterPC::BeginPlay()
 {
+	//스탯이 초기화 되기 전 델리게이트를 위한 함수호출입니다. Super::BeginPlay를 호출하기 전에 실행합니다.
+	//핸드UI를 초기화합니다
+	TWeakObjectPtr<UUserWidgetBase> hud = FindWidgetBase(Cast<APlayerControllerBase>(Controller)->GetHUDId());
+	if(hud.IsValid())
+	{
+		UHand* handUi = Cast<UHand>((*hud)[TEXT("WBP_Hand")]);
+		handUi->Initailize(this);
+	}
+	
 	Super::BeginPlay();
+	
 	DeckHandler = new FDeckHandler(this);
 	
 	DeckHandler->BeginPlay();

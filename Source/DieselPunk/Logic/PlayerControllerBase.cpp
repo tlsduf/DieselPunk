@@ -56,16 +56,19 @@ void APlayerControllerBase::BeginPlay()
 	
 	// HUD 생성
 	if(HUDClass)
-		HUD = FindWidgetBase(FUIManager::GetInstance()->CreateWidgetBase(HUDClass, TEXT("HUD"))).Get();
+	{
+		HUDId = FUIManager::GetInstance()->CreateWidgetBase(HUDClass, TEXT("HUD"));
+		HUD = FindWidgetBase(HUDId).Get();
+	}
 	if (HUD)
 		HUD->AddToViewport();
 	Hand = Cast<UHand>((*HUD)[TEXT("WBP_Hand")]);
-	Hand->OnCreated();
 	if(Hand == nullptr)
 	{
 		LOG_SCREEN(FColor::Red, TEXT("APlayerControllerBase::BeginPlay(): WBP_Hand에 해당하는 위젯을 찾지 못했습니다."))
 		return;
 	}
+	Hand->OnCreated();
 
 	DeckInterfaceOpen = false;
 }
