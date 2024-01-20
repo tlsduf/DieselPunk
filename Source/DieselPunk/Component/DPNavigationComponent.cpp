@@ -3,12 +3,14 @@
 
 #include "DPNavigationComponent.h"
 #include "../Character/CharacterBase.h"
+#include "../Character/CharacterNPC.h"
+#include "../Character/CharacterTurret.h"
+#include "../Manager/ObjectManager.h"
 
 #include <NavigationSystem.h>
-#include <GameFramework/PawnMovementComponent.h>
 #include <DrawDebugHelpers.h>
 
-#include "AIController.h"
+
 
 
 //===================================================================
@@ -223,6 +225,70 @@ void UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGoa
 			MyPathPoints.Add(pathPoints1[j]);
 		}
 	}
+}
+
+// 생성된 경로(곡선경로 아님 MyPathPoints) 위에 포탑이 있는지 확인합니다.
+// 포탑이 있다면, 경로의 주인(몬스터)와 가장 가까운 포탑의 ID를 반환하고,
+// MyPathPoints를 포탑이 최종목적지가 되도록 포탑의 위치를 추가하고, 뒤의 value들을 제거합니다.
+// index 0부터 순차적으로 탐색하고, 첫 포탑 반환시 탐색을 종료합니다.
+int32 UDPNavigationComponent::GetTurretIdOnPath()
+{
+	int32 turretID = FObjectManager::INVALID_OBJECTID;
+	
+	if(MyPathPoints.IsEmpty())
+		return turretID;
+	
+	TArray<FHitResult> hit;
+	FCollisionQueryParams params;
+
+	// 모든 몬스터들을 IgnoredActor에 등록합니다.
+	TArray<int32> monstersIDs;
+	FObjectManager::GetInstance()->FindActorArrayByPredicate(monstersIDs, [](AActor* InActor)
+	{
+		if(auto npc = Cast<ACharacterNPC>(InActor))
+			if(npc->NPCType == ENPCType::Enemy)
+				return true;
+		return false;
+	});
+	for(const int32& ID : monstersIDs)
+	{
+		params.AddIgnoredActor(FObjectManager::GetInstance()->FindActor(ID));
+	}
+
+	// 순차적으로 점과 점 사이를 검사합니다.
+	for(int32 i = 0 ; i < (MyPathPoints.Num() - 1) ; i++)
+	{
+		FVector startPoint = MyPathPoints[i] + FVector(0,0,100);
+		FVector endPoint = MyPathPoints[i+1] + FVector(0,0,100);
+		// Warning 터렛이 탐색이 안 될 경우 트레이스채널 확인
+		bool hasHit = GetWorld()->LineTraceMultiByChannel(hit, startPoint, endPoint, ECollisionChannel::ECC_EngineTraceChannel5, params);
+		if(hasHit)
+		{
+			TArray<int32> turretIDs;
+			for(const FHitResult& hitResult : hit)
+			{
+				// 탑색된 액터가 터렛이라면 turretIDs 등록
+				if(auto turret = Cast<ACharacterTurret>(hitResult.GetActor()))
+					turretIDs.Add(turret->GetObjectId());
+			}
+			if(!turretIDs.IsEmpty())
+			{
+				// turretArray 의 value 중 Owner의 위치와 가장 가까운 turret 반환
+				turretID = FObjectManager::GetInstance()->GetNearestACtorByRangeAndIds(Owner->GetActorLocation(), turretIDs);
+				// MyPathPoints 의 i+1의 인덱스부터 끝 인덱스까지 삭제
+				int32 num = MyPathPoints.Num();
+				for(int32 j = i+1 ; j < num ; j++)
+				{
+					MyPathPoints.RemoveAt(i+1);
+				}
+				// turret 위치를 MyPathPoints에 추가
+				MyPathPoints.Add(FObjectManager::GetInstance()->FindActor(turretID)->GetActorLocation());
+				// for문 종료
+				break;
+			}
+		}
+	}
+	return turretID;
 }
 
 // MyPathPoints를 기반으로 곡선경로 스플라인을 생성합니다.

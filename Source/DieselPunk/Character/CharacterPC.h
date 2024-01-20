@@ -66,9 +66,10 @@ public:
 	
 	/////////////////////////////////////////////////////////////////////
 	// for Skill //
-	
+
+	// 스킬을 할당받기 위한 배열입니다. (BP에서도 받을 수 있도록 TSubClassOf로 하였습니다)
 	UPROPERTY(EditAnywhere, Category = "MYDP_Skill")
-	TMap<EAbilityType, TSubclassOf<UPlayerSkill>> SkillInfos;		// 스킬을 할당받기 위한 배열입니다. (BP에서도 받을 수 있도록 TSubClassOf로 하였습니다)
+	TMap<EAbilityType, TSubclassOf<UPlayerSkill>> SkillInfos;		
 	
 	UPROPERTY()
 	TMap<EAbilityType, TObjectPtr<UPlayerSkill>> Skills;			// 런타임에 인스턴스화된 스킬들을 담는 배열입니다. (실제로 이 배열에 담긴 스킬들을 호출)

@@ -2,6 +2,7 @@
 
 
 #include "CharacterBase.h"
+#include "CharacterTurret.h"
 #include "../Actor/DamageUIActor.h"
 #include "../Core/DpGameMode.h"
 #include "../Manager/ObjectManager.h"
@@ -138,6 +139,10 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 			
 			Destroy();
 
+			// 포탑 파괴시 모든 적의 경로를 재탐색합니다.
+			if(auto turret = Cast<ACharacterTurret>(this))
+				turret->UpdateSplinePathAll();
+			
 			// 레벨관리
 			if(ADPLevelScriptActor* level = Cast<ADPLevelScriptActor>(this->GetLevel()->GetLevelScriptActor()))
 				level->WaveClearEvent();

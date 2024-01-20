@@ -35,8 +35,8 @@ class DIESELPUNK_API AMonsterSpawner : public AActor
 	UPROPERTY(EditDefaultsOnly)
 	UStaticMeshComponent *Mesh;
 	
-	UPROPERTY(EditInstanceOnly, Category = "MYDP_Setting")
-	bool bDrawDebug = false;	
+	UPROPERTY(EditDefaultsOnly, Category = "MYDP_Setting")
+	bool DebugOnOff = false;	
 
 	/////////////////////////////////////////////////////////////////////
 	// for info Management //
@@ -44,18 +44,21 @@ public:
 	TMap<FVector, TArray<FVector>> PathMap;		//몬스터가 스폰될 위치를 Key로 하여, 목표위치배열을 담습니다.
 	
 	TArray<FVector> GoalLocArray;				//도달할 목표위치 배열
-	
+
+	//연결된 라우터(다음 경로)
 	UPROPERTY(EditInstanceOnly, Category = "MYDP_Setting")
-	TObjectPtr<APathRouter> NextPathRouter;		//연결된 라우터(다음 경로)
+	TObjectPtr<APathRouter> NextPathRouter;		
 
 	TMap<int32, TObjectPtr<APathRouter>> PathRouterNodes;	// 연결된 라우터를 모두 등록합니다.
 	int32 PathRouterNodeNum = 0;							// 연결된 라우터의 순서입니다. 이것을 Key로 하여 PathRouterNodes에 등록합니다.
-	
+
+	//경로색깔
 	UPROPERTY(EditInstanceOnly, Category = "MYDP_Setting")
-	FColor PathColor;							//경로색깔
-	
+	FColor PathColor;							
+
+	// 스포너 이름 디폴트 0 (1, 2, 3 ~)
 	UPROPERTY(EditInstanceOnly, Category = "MYDP_Setting")
-	int32 SpawnerNumber = 0;					// 스포너 이름 디폴트 0 (1, 2, 3 ~)
+	int32 SpawnerNumber = 0;					
 	
 protected:
 	int32 ObjectId = -1;					//오브젝트 ID

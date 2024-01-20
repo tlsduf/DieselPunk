@@ -22,15 +22,17 @@ protected:
 	FStat Stat;						//스탯
 	
 	FDateTime CreateTime;
-	
+
+	//캐릭터 정보를 가져오기 위한 이름
 	UPROPERTY(EditDefaultsOnly, Category = "MYDP")
-	FString CharacterName = "";		//캐릭터 정보를 가져오기 위한 이름
+	FString CharacterName = "";		
 	
 	/////////////////////////////////////////////////////////////////////
 	// for UI //
-	
+
+	// 위젯 컴포넌트
 	UPROPERTY( EditAnywhere )
-	UWidgetComponent* WidgetComp;			// 위젯 컴포넌트
+	UWidgetComponent* WidgetComp;			
 	
 	UPROPERTY()
 	class ADamageUIActor *DamageUIActor;	// 데미지 UI 액터
@@ -43,8 +45,9 @@ protected:
 	/////////////////////////////////////////////////////////////////////
 	// for Animation //
 	
+	// 데미지 받는 애니메이션 출력을 위한 ABP에서 활용되는 변수입니다.
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	bool TakeDamageAnim = false;			// 데미지 받는 애니메이션 출력을 위한 ABP에서 활용되는 변수입니다.
+	bool TakeDamageAnim = false;			
 
 	bool CanTakeDamageAnim = true;
 	FTimerHandle TakeDamageHandle;
@@ -53,19 +56,22 @@ protected:
 	// for State //
 
 public:
+	// InCombat이 True 면 전투상태
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	bool InCombat = false;					// InCombat이 True 면 전투상태
+	bool InCombat = false;					
 
 	FTimerHandle CombatStateTHandle;		// 전투상태 진입 5초 후, 비전투상태로 회귀
 
 	/////////////////////////////////////////////////////////////////////
 	// for Utility //
-	
+
+	// DamageImmunity 가 True 면 데미지를 안 입게 했습니다. TakeDamage 함수에서 활용합니다.
 	UPROPERTY(EditAnywhere, Category = "MYDP_Combat")
-	bool DamageImmunity = false;			// DamageImmunity 가 True 면 데미지를 안 입게 했습니다. TakeDamage 함수에서 활용합니다.
-	
+	bool DamageImmunity = false;			
+
+	// 디버그on/off
 	UPROPERTY(EditAnywhere, Category = "MYDP_Util")
-	bool DebugOnOff = false;				// 디버그on/off
+	bool DebugOnOff = false;				
 	
 public:
 	//생성자

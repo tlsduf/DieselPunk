@@ -43,7 +43,7 @@ void APathRouter::BeginPlay()
 		FObjectManager::GetInstance()->AddActor(this);
 	
 	// 스플라인 디버그라인
-	if(bDrawDebug)
+	if(DebugOnOff)
 	{
 
 	}
@@ -87,18 +87,21 @@ void APathRouter::MakeRectangleBySplinePoints()
 	RectanglePoints.Add(fourthPoint);
 
 	// Draw Debug
-	DrawDebugCylinder(GetWorld(), firstPoint, fourthPoint, 10, 4, FColor::Blue, true, -1, 0, 5);
-	DrawDebugCylinder(GetWorld(), secondPoint, thirdPoint, 10, 4, FColor::Red, true, -1, 0, 5);
-	DrawDebugLine(GetWorld(), firstPoint, (firstPoint + secondPoint)/2 + (GetActorRotation().Vector().GetSafeNormal() * 150), FColor::Green, true, -1, 0, 5);
-	DrawDebugLine(GetWorld(), secondPoint, (firstPoint + secondPoint)/2 + (GetActorRotation().Vector().GetSafeNormal() * 150), FColor::Green, true, -1, 0, 5);
-	//DrawDebugCone(GetWorld(), (firstPoint + secondPoint)/2 + (GetActorRotation().Vector().GetSafeNormal() * 150), -GetActorRotation().Vector().GetSafeNormal(), 150, FMath::DegreesToRadians(20.f), FMath::DegreesToRadians(20.f), 16, FColor::Green, true, 0, 0, 5);
-	
-	for(int i = 0; i < RectanglePoints.Num(); ++i)
+	if(DebugOnOff)
 	{
-		if(i == RectanglePoints.Num() - 1)
-			DrawDebugLine( GetWorld(),RectanglePoints[i],RectanglePoints[0],FColor::Green, true, -1, 0, 5);
-		else
-			DrawDebugLine( GetWorld(),RectanglePoints[i],RectanglePoints[i + 1],FColor::Green, true, -1, 0, 5);
+		DrawDebugCylinder(GetWorld(), firstPoint, fourthPoint, 10, 4, FColor::Blue, true, -1, 0, 5);
+		DrawDebugCylinder(GetWorld(), secondPoint, thirdPoint, 10, 4, FColor::Red, true, -1, 0, 5);
+		DrawDebugLine(GetWorld(), firstPoint, (firstPoint + secondPoint)/2 + (GetActorRotation().Vector().GetSafeNormal() * 150), FColor::Green, true, -1, 0, 5);
+		DrawDebugLine(GetWorld(), secondPoint, (firstPoint + secondPoint)/2 + (GetActorRotation().Vector().GetSafeNormal() * 150), FColor::Green, true, -1, 0, 5);
+		//DrawDebugCone(GetWorld(), (firstPoint + secondPoint)/2 + (GetActorRotation().Vector().GetSafeNormal() * 150), -GetActorRotation().Vector().GetSafeNormal(), 150, FMath::DegreesToRadians(20.f), FMath::DegreesToRadians(20.f), 16, FColor::Green, true, 0, 0, 5);
+	
+		for(int i = 0; i < RectanglePoints.Num(); ++i)
+		{
+			if(i == RectanglePoints.Num() - 1)
+				DrawDebugLine( GetWorld(),RectanglePoints[i],RectanglePoints[0],FColor::Green, true, -1, 0, 5);
+			else
+				DrawDebugLine( GetWorld(),RectanglePoints[i],RectanglePoints[i + 1],FColor::Green, true, -1, 0, 5);
+		}
 	}
 }
 
@@ -108,7 +111,9 @@ void APathRouter::MakeRectangleBySplinePoints()
 void APathRouter::RegistPathRouter(TMap<int32, TObjectPtr<APathRouter>>& inPathRouterNodes, int32& inPathRouterNodeNum)
 {
 	PathRouterNum = inPathRouterNodeNum;			// 현 라우터의 번호를 맵에 등록된 key값으로 업데이트 해줍니다.
-	DrawDebugString(GetWorld(), GetActorLocation() + FVector(0,0,30), FString::FromInt(PathRouterNum), nullptr, FColor::Green, -1);
+	
+	if(DebugOnOff)
+		DrawDebugString(GetWorld(), GetActorLocation() + FVector(0,0,30), FString::FromInt(PathRouterNum), nullptr, FColor::Green, -1);
 	
 	// 연결된 PathRouter가 있다면
 	if(NextPathRouter)

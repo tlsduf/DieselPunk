@@ -6,7 +6,6 @@
 
 #include <Components/StaticMeshComponent.h>
 #include <Components/BoxComponent.h>
-#include <DrawDebugHelpers.h>
 
 // Sets default values
 AFloorStaticMeshActor::AFloorStaticMeshActor()

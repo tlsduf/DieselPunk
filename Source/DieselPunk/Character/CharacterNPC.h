@@ -36,8 +36,9 @@ public:
 	/////////////////////////////////////////////////////////////////////
 	// for Character info Management //
 	
+	// NPC 타입
 	UPROPERTY(EditAnywhere, Category = "MYDP_info")
-	ENPCType NPCType = ENPCType::Enemy;						// NPC 타입
+	ENPCType NPCType = ENPCType::Enemy;						
 
 	
 	/////////////////////////////////////////////////////////////////////
@@ -58,16 +59,22 @@ public:
 	int32 GridSize = 1;
 
 	
-	TArray<FVector> GoalLocArray;	//도달할 목표위치 배열
-	int32 GoalLocNum = 0;			//도달할 목표위치 순서
-
-	TArray<FVector> ShortestPath;	//최단거리
-	FVector GoalLoc = FVector::ZeroVector;			//도달할 타겟 위치
-	TWeakObjectPtr<AActor> Target = nullptr;		//공격할 타겟
-	FVector BlockedTargetLoc = FVector::ZeroVector;	//공격할 타겟 위치
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MYDP_Skill")
 	UDPNavigationComponent *DPNavigationComponent;
+	
+	FVector NowGoalLoc = FVector::ZeroVector;	// 처음으로 도달할 목표 위치 // 처음으로 도달할 경유지점 위치
+	TArray<FVector> GoalLocArray;			// 도달할 목표위치 배열 // 경유지점 위치 배열
+	int32 GoalLocNum = 0;					// 도달할 목표위치 순서 // 경유지점 순서
+	
+	TWeakObjectPtr<AActor> Target = nullptr;	// 공격할 타겟
+	int32 TargetedTurretID = -9997;				// 공격할 터렛 ID
+
+	bool InRange = false;		// 타겟이 범위 안에 있으면 true
+
+	
+	TArray<FVector> ShortestPath;	//최단거리
+	FVector BlockedTargetLoc = FVector::ZeroVector;	// 공격할 타겟 위치
+
 
 	
 protected:
@@ -94,12 +101,17 @@ public:
 	void DoProjectileAttack();
 	void DoTargetAttack();
 	
-	// 스폰시 '몬스터'의 GoalArray 설정합니다.
+	// 스폰시 '몬스터'의 GoalArray를 설정합니다.
 	void SetGoalArray(TArray<FVector> inGoalArray);
+	
 	// '몬스터'의 Target을 설정합니다.
 	void SetEnemyTarget();
-	FVector GetTargetLoc() { return GoalLoc; }
+	void UpdateEnemyTarget();
 	TWeakObjectPtr<AActor> GetAttackTarget() { return Target; }
+	
+	// '몬스터'의 GoalLoc를 설정합니다. // GoalLoc는 경유지점입니다.
+	void UpdateEnemyGoalLoc();
+	FVector GetTargetLoc() { return NowGoalLoc; }
 	
 	// 길이 막혔을 때, 파괴시 진행할 수 있는 포탑의 위치를 찾습니다.
 	bool FindShortestPath(const FVector& InEndLocation);
@@ -110,6 +122,10 @@ public:
 	bool SetBlockedAttackTarget(TWeakObjectPtr<AActor> InTarget, const TArray<FVector>& InPath = TArray<FVector>(), int InIndex = -1);
 	FVector GetBlockedAttackTargetLoc() { return BlockedTargetLoc; }
 
-	// CurveSpline으로 된 경로를 생성합니다.
-	void SetUpdateSplinePath();
+	// Curved Spline으로 된 경로를 생성합니다.
+	// 몬스터 스폰완료시, 포탑 설치/파괴시, Target이 Nexus로 업데이트될 때 호출합니다.
+	void UpdateSplinePath();
+
+	// Enemy 타입을 가진 모든 NPC들의 경로를 재탐색 합니다.
+	void UpdateSplinePathAll();
 };

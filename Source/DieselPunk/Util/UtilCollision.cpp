@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "UtilCollision.h"
-#include "DieselPunk/Character/CharacterBase.h"
 
 #include <CollisionShape.h>
 #include <DrawDebugHelpers.h>

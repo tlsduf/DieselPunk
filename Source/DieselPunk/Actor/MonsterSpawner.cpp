@@ -50,16 +50,21 @@ void AMonsterSpawner::BeginPlay()
 		FObjectManager::GetInstance()->AddActor(this);
 	
 	RegistPathRouter(PathRouterNodes);	// 스포너와 연결된 PathRouter를 모두 등록합니다.
-	if(!PathRouterNodes.IsEmpty())
+	if(DebugOnOff)
 	{
-		DrawDebugLine(GetWorld(), GetActorLocation(), PathRouterNodes[1]->GetActorLocation(), FColor::Green, true, -1, 0, 5);
-		for(int i = 1; i < PathRouterNodeNum; i++ )
+		if(!PathRouterNodes.IsEmpty())
 		{
-			DrawDebugLine(GetWorld(), PathRouterNodes[i]->GetActorLocation(), PathRouterNodes[i+1]->GetActorLocation(), FColor::Green, true, -1, 0, 5);
+			DrawDebugLine(GetWorld(), GetActorLocation(), PathRouterNodes[1]->GetActorLocation(), FColor::Green, true, -1, 0, 5);
+			for(int i = 1; i < PathRouterNodeNum; i++ )
+			{
+				DrawDebugLine(GetWorld(), PathRouterNodes[i]->GetActorLocation(), PathRouterNodes[i+1]->GetActorLocation(), FColor::Green, true, -1, 0, 5);
+			}
 		}
 	}
-	MakeRectangleBySplinePoints();			// 직사각형을 생성합니다.
+	
+	MakeRectangleBySplinePoints();			// 직사각형의 영역을 생성합니다.
 	GetRandomLocation();					// RandomLocation을 세팅합니다
+	
 	// 랜덤위치를 Key로 하는 TMap PathMap을 세팅합니다.
 	if(!RandomLocation.IsEmpty())
 	{
@@ -73,23 +78,6 @@ void AMonsterSpawner::BeginPlay()
 			//SetTargetArrayFromNextPathRouter(GoalLocArray, SetProportion(location));
 			PathMap.Add(location, GoalLocArray);
 		}
-	}
-	
-	
-	// 스플라인 디버그라인
-	if(bDrawDebug)
-	{
-		/*for(int i = 0; i < SplineComponent->GetNumberOfSplinePoints(); ++i)
-		{
-			if(i == SplineComponent->GetNumberOfSplinePoints() - 1)
-				DrawDebugLine( GetWorld(),SplineComponent->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::World),SplineComponent->GetLocationAtSplinePoint(0, ESplineCoordinateSpace::World),FColor::Red, true);
-			else
-				DrawDebugLine( GetWorld(),SplineComponent->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::World),SplineComponent->GetLocationAtSplinePoint(i + 1, ESplineCoordinateSpace::World),FColor::Red, true);
-		}
-		for(int i = 0; i < RandomLocation.Num(); i++)
-		{
-			DrawDebugPoint(GetWorld(), RandomLocation[i], 5, FColor::Red, true);
-		}*/
 	}
 }
 
@@ -247,10 +235,8 @@ void AMonsterSpawner::SpawnMonster(float InDeltaTime)
 				// 몬스터 투영값 계산 // 몬스터 목표배열 설정
 				if(auto npc = Cast<ACharacterNPC>(FObjectManager::GetInstance()->FindActor(id)))
 				{
-					//npc->SetProportion(RectanglePoints);
-					//npc->SetTargetArray(SpawnerNumber);
 					npc->SetGoalArray(PathMap[spawnParam.Location]);
-					npc->SetUpdateSplinePath();
+					npc->UpdateSplinePath();
 				}
 			}
 
@@ -340,17 +326,20 @@ void AMonsterSpawner::MakeRectangleBySplinePoints()
 	RectanglePoints.Add(fourthPoint);
 
 	// Draw Debug
-	DrawDebugCylinder(GetWorld(), firstPoint, fourthPoint, 10, 4, FColor::Blue, true, -1, 0, 5);
-	DrawDebugCylinder(GetWorld(), secondPoint, thirdPoint, 10, 4, FColor::Red, true, -1, 0, 5);
-	DrawDebugLine(GetWorld(), firstPoint, (firstPoint + secondPoint)/2 + (GetActorRotation().Vector().GetSafeNormal() * 150), FColor::Green, true, -1, 0, 5);
-	DrawDebugLine(GetWorld(), secondPoint, (firstPoint + secondPoint)/2 + (GetActorRotation().Vector().GetSafeNormal() * 150), FColor::Green, true, -1, 0, 5);
-	
-	for(int i = 0; i < RectanglePoints.Num(); ++i)
+	if(DebugOnOff)
 	{
-		if(i == RectanglePoints.Num() - 1)
-			DrawDebugLine( GetWorld(),RectanglePoints[i],RectanglePoints[0],FColor::Green, true, -1, 0, 5);
-		else
-			DrawDebugLine( GetWorld(),RectanglePoints[i],RectanglePoints[i + 1],FColor::Green, true, -1, 0, 5);
+		DrawDebugCylinder(GetWorld(), firstPoint, fourthPoint, 10, 4, FColor::Blue, true, -1, 0, 5);
+		DrawDebugCylinder(GetWorld(), secondPoint, thirdPoint, 10, 4, FColor::Red, true, -1, 0, 5);
+		DrawDebugLine(GetWorld(), firstPoint, (firstPoint + secondPoint)/2 + (GetActorRotation().Vector().GetSafeNormal() * 150), FColor::Green, true, -1, 0, 5);
+		DrawDebugLine(GetWorld(), secondPoint, (firstPoint + secondPoint)/2 + (GetActorRotation().Vector().GetSafeNormal() * 150), FColor::Green, true, -1, 0, 5);
+	
+		for(int i = 0; i < RectanglePoints.Num(); ++i)
+		{
+			if(i == RectanglePoints.Num() - 1)
+				DrawDebugLine( GetWorld(),RectanglePoints[i],RectanglePoints[0],FColor::Green, true, -1, 0, 5);
+			else
+				DrawDebugLine( GetWorld(),RectanglePoints[i],RectanglePoints[i + 1],FColor::Green, true, -1, 0, 5);
+		}
 	}
 }
 

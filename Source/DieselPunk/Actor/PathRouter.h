@@ -24,8 +24,8 @@ class DIESELPUNK_API APathRouter : public AActor
 	UPROPERTY(EditDefaultsOnly)
 	UStaticMeshComponent *Mesh;
 	
-	UPROPERTY(EditInstanceOnly, Category = "MYDP_Setting")
-	bool bDrawDebug = false;	
+	UPROPERTY(EditDefaultsOnly, Category = "MYDP_Setting")
+	bool DebugOnOff = false;	
 
 	/////////////////////////////////////////////////////////////////////
 	// for info Management //
@@ -33,16 +33,18 @@ class DIESELPUNK_API APathRouter : public AActor
 	UPROPERTY(EditInstanceOnly, Category = "MYDP_Setting")
 	TObjectPtr<APathRouter> NextPathRouter;
 
+	// n번째 PathRouter 노드
 	UPROPERTY(VisibleInstanceOnly, Category = "MYDP_Setting")
-	int32 PathRouterNum = 0;				// n번째 PathRouter 노드
+	int32 PathRouterNum = 0;				
 	
 	int32 ObjectId = -1;					// 오브젝트 ID
 	
 	/////////////////////////////////////////////////////////////////////
 	// for Box , Poligon , MakeRandLoc //
 
+	// 영역을 만들 박스 컴포넌트
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UBoxComponent> BoxComponent;		// 영역을 만들 박스 컴포넌트
+	TObjectPtr<UBoxComponent> BoxComponent;		
 	
 	TArray<FVector> RectanglePoints;			// 박스의 꼭짓점을 담을 배열
 	

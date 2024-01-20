@@ -45,7 +45,7 @@ void UMeleeAttack::Attack()
 	TArray<FHitResult> sweepResults;
 	FVector startLocation = ownerPawn->GetActorLocation() + ownerPawn->GetActorForwardVector() * AttackStartPoint;
 	FVector endLocation = startLocation + ownerPawn->GetActorForwardVector() * AttackRange;
-	UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, EProjectileOwnerType::Enemy, DebugOnOff);
+	UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, EProjectileOwnerType::Enemy, ownerPawn->DebugOnOff);
 
 	// 데미지 결정
 	float damage = Atk * AtkCoefficient;

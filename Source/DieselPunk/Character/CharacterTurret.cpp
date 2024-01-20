@@ -70,6 +70,7 @@ void ACharacterTurret::BeginPlay()
 			Box->SetGenerateOverlapEvents(false);
 			Box->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 			Box->SetCanEverAffectNavigation(false);
+			Box->SetBoxExtent(FVector(GetGridSize() * 50, GetGridSize() * 50, GetGridSize() * 50));
 		}
 	}
 }
@@ -122,8 +123,11 @@ bool ACharacterTurret::CompleteHousingTurret()
 		Box->SetGenerateOverlapEvents(true);
 		Box->SetCollisionResponseToChannel(ECC_EngineTraceChannel5, ECR_Block);
 		Box->SetCanEverAffectNavigation(true);
-
-
+		Box->SetBoxExtent(FVector(GetGridSize() * 50, GetGridSize() * 50, GetGridSize() * 50));
+		
+		// 포탑 생성완료시 모든 적의 경로를 재탐색합니다.
+		UpdateSplinePathAll();
+		
 		return true;
 	}
 	return false;
@@ -181,7 +185,7 @@ void ACharacterTurret::SetTurretTarget()
 	//현재 타겟이 유효한가 //유효하지 않다면 탐색 // 유효하다면 타겟 추적
 	if(!Target.IsValid())
 	{
-		//1 베이스 스캐닝 플로우 : 
+		//1 기본 탐색 흐름 : 
 		//타입 조건에 맞는(Enemy) 액터 어레이 반환(ObjectManager)
 		TArray<int32> outActors;
 		FObjectManager::GetInstance()->FindActorArrayByPredicate(outActors, [](AActor* InActor)
