@@ -64,19 +64,17 @@ void AMonsterSpawner::BeginPlay()
 	
 	MakeRectangleBySplinePoints();			// 직사각형의 영역을 생성합니다.
 	GetRandomLocation();					// RandomLocation을 세팅합니다
-	
 	// 랜덤위치를 Key로 하는 TMap PathMap을 세팅합니다.
 	if(!RandomLocation.IsEmpty())
 	{
 		for(const FVector& location : RandomLocation)
 		{
-			GoalLocArray.Empty();
+			TArray<FVector> goalLocArray;
 			for(auto& pathRouter : PathRouterNodes)
 			{
-				GoalLocArray.Add( pathRouter.Value->MakeGoalLocByProportion( SetProportion(location) ) );
+				goalLocArray.Add( pathRouter.Value->MakeGoalLocByProportion( SetProportion(location) ) );
 			}
-			//SetTargetArrayFromNextPathRouter(GoalLocArray, SetProportion(location));
-			PathMap.Add(location, GoalLocArray);
+			PathMap.Add(location, goalLocArray);
 		}
 	}
 }
@@ -235,7 +233,12 @@ void AMonsterSpawner::SpawnMonster(float InDeltaTime)
 				// 몬스터 투영값 계산 // 몬스터 목표배열 설정
 				if(auto npc = Cast<ACharacterNPC>(FObjectManager::GetInstance()->FindActor(id)))
 				{
-					npc->SetGoalArray(PathMap[spawnParam.Location]);
+					npc->AddEnemyRoutingLines(PathMap[spawnParam.Location][0], GetActorLocation(), PathRouterNodes[1]->GetActorLocation());
+					for(int i = 1; i < PathRouterNodeNum; i++ )
+					{
+						npc->AddEnemyRoutingLines(PathMap[spawnParam.Location][i], PathRouterNodes[i]->GetActorLocation(), PathRouterNodes[i+1]->GetActorLocation());
+					}
+					npc->AddEnemyRoutingLines(FObjectManager::GetInstance()->GetNexus()->GetActorLocation(), PathRouterNodes[PathRouterNodeNum]->GetActorLocation(), FObjectManager::GetInstance()->GetNexus()->GetActorLocation());
 					npc->UpdateSplinePath();
 				}
 			}

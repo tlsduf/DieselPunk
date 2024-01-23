@@ -12,10 +12,8 @@
 #include <AIController.h>
 #include <GameFramework/CharacterMovementComponent.h>
 #include <NavigationSystem.h>
-#include <Navigation/PathFollowingComponent.h>
 
 #include "DrawDebugHelpers.h"
-#include "Components/CapsuleComponent.h"
 
 
 // =============================================================
@@ -97,6 +95,9 @@ void ACharacterNPC::Tick(float DeltaTime)
 			if(DebugOnOff)
 				DPNavigationComponent->DrawDebugSpline();
 		}
+
+		if(DebugOnOff)
+			DrawDebugPoint(GetWorld(), GetTargetLoc(), 30, FColor::Orange, false);
 	}
 }
 
@@ -212,70 +213,14 @@ void ACharacterNPC::DoTargetAttack()
 // =============================================================
 // 스폰시 '몬스터'의 GoalArray를 설정합니다.
 // =============================================================
-void ACharacterNPC::SetGoalArray(TArray<FVector> inGoalArray)
+TArray<FVector> ACharacterNPC::GetGoalLocArrayFromRoutingLines()
 {
-	// 몬스터스포너에서 생성된 경로
-	GoalLocArray = inGoalArray;
-	// 마지막 목표지점은 넥서스 위치
-	GoalLocArray.Add(FObjectManager::GetInstance()->GetNexus()->GetActorLocation());
-
-	// 드로우디버그
-	if(DebugOnOff)
+	TArray<FVector> goalLocArray;
+	for(auto& routingLine : RoutingLines)
 	{
-		DrawDebugLine( GetWorld(),GetActorLocation(),GoalLocArray[0], FColor::Magenta, true, -1, 0, 5);
-		for(const FVector& targetLoc : GoalLocArray)
-		{
-			DrawDebugPoint(GetWorld(), targetLoc, 5, FColor::Red, true);
-		}
-		for(int i = 0; i < GoalLocArray.Num(); ++i)
-		{
-			if(i == GoalLocArray.Num() - 1)
-				continue;
-			DrawDebugLine( GetWorld(),GoalLocArray[i],GoalLocArray[i + 1], FColor::Magenta, true, -1, 0, 5);
-		}
+		goalLocArray.Add(routingLine.Key);
 	}
-}
-
-// =============================================================
-// '몬스터'의 Target을 설정합니다. 
-// =============================================================
-void ACharacterNPC::SetEnemyTarget()
-{
-	// ======== (최우선)플레이어가 근처에 있는가 혹은 조건에 일치하는가? 	// 일치한다면 타겟을 플레이어로 지정
-	/*if(bIsPlayerNear)
-	{
-		Target = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-		TargetLocation = UGameplayStatics::GetPlayerPawn(GetWorld(), 0).GetActorLocation();
-		return;
-	}*/
-
-	// 타겟이 GoalArray[i] 일 때
-	// ======== (우선)GoalArray[i]에 도달할 수 없는가? // 타겟을 포탑으로 설정하기위함
-	
-	// 1. AAIController > PathFollowingComponent > GetPath > GetGoalLocation
-	AAIController *AIController = Cast<AAIController>(GetController());
-	FVector lastPathPoint = FVector::ZeroVector;
-	if(AIController->GetPathFollowingComponent()->GetPath().IsValid())
-		lastPathPoint = AIController->GetPathFollowingComponent()->GetPath()->GetGoalLocation();
-	// 2. GoalLoc 업데이트
-	if(!GoalLocArray.IsEmpty())
-		NowGoalLoc = GoalLocArray[GoalLocNum];
-	else
-		NowGoalLoc = FObjectManager::GetInstance()->GetNexus()->GetActorLocation();
-	if(FVector::Dist(NowGoalLoc, GetActorLocation()) < (GetCapsuleComponent()->GetScaledCapsuleRadius() * 2.5))
-		GoalLocNum = (GoalLocNum == GoalLocArray.Num() - 1) ? GoalLocNum : GoalLocNum + 1;
-	// 3. lastPathPoint 가 목표 위치와 일치하는가? (z성분 제외)
-	bool bCanReach = ( NowGoalLoc.X == lastPathPoint.X) && ( NowGoalLoc.Y == lastPathPoint.Y);
-	// 4. 목표에 도달할 수 없다면 타겟을 업데이트하지 않음 // UBTTask_BlockedMoveTo에서 Target업데이트
-	if(!bCanReach)
-		return;
-
-	// 기본 상태는 Nullptr // 넥서스가 공격범위 안이면 Nexus
-	float distance = FVector::Dist(GetActorLocation(), FObjectManager::GetInstance()->GetNexus()->GetActorLocation());
-	if(distance > GetStat().GetStat(ECharacterStatType::AttackRange))
-		Target = nullptr;
-	else
-		Target = FObjectManager::GetInstance()->GetNexus();
+	return goalLocArray;
 }
 
 // =============================================================
@@ -326,16 +271,72 @@ void ACharacterNPC::UpdateEnemyTarget()
 }
 
 // =============================================================
-// '몬스터'의 GoalLoc를 설정합니다. // GoalLoc는 경유지점입니다.
+// 몬스터의 RoutingLines배열에 값을 추가합니다.
+// =============================================================
+void ACharacterNPC::AddEnemyRoutingLines(FVector inGoalLoc, FVector inStart, FVector inEnd)
+{
+	FRoutingLine routingLine(inStart, inEnd);
+	RoutingLines.Add(inGoalLoc, routingLine);
+
+	if(DebugOnOff)
+	{
+		FVector dir = inEnd - inStart;
+		dir.Normalize();
+		DrawDebugLine(GetWorld(), inStart + FVector(0,0,50), inEnd - (dir * 600) + FVector(0,0,50), FColor::Cyan, true, -1, 0, 5);
+	}
+}
+
+// =============================================================
+// self와 선분사이의 거리를 반환합니다. (z축 무시)
+// =============================================================
+float ACharacterNPC::DistanceSegmentToSelf(FVector inStart, FVector inEnd)
+{
+	FVector2D A = FVector2D(inStart.X, inStart.Y);
+	FVector2D B = FVector2D(inEnd.X, inEnd.Y);
+	FVector2D P = FVector2D(GetActorLocation().X, GetActorLocation().Y);
+
+	FVector2D dir = B - A;
+	dir.Normalize();
+	FVector2D B2 = B - (dir * 600);
+	
+	FVector2D AB2 = B2 - A;
+	FVector2D AP = P - A;
+	float lengthSqrAB = AB2.X * AB2.X + AB2.Y * AB2.Y;
+	float t = (AP.X * AB2.X + AP.Y * AB2.Y) / lengthSqrAB;
+
+	if(t < 0)
+		t = 0;
+	if(t > 1)
+		t = 1;
+
+	FVector2D closestPointOnLine = A + (t * AB2);
+
+	return FVector2D::Distance(P, closestPointOnLine);
+}
+
+// =============================================================
+// '몬스터'의 GoalLoc를 갱신합니다. // GoalLoc는 경유지점입니다.
 // =============================================================
 void ACharacterNPC::UpdateEnemyGoalLoc()
 {
-	if(!GoalLocArray.IsEmpty())
-		NowGoalLoc = GoalLocArray[GoalLocNum];
-	else
-		NowGoalLoc = FObjectManager::GetInstance()->GetNexus()->GetActorLocation();
-	if(FVector::Dist(NowGoalLoc, GetActorLocation()) < (GetCapsuleComponent()->GetScaledCapsuleRadius() * 2.5))
-		GoalLocNum = (GoalLocNum == GoalLocArray.Num() - 1) ? GoalLocNum : GoalLocNum + 1;
+	if(RoutingLines.IsEmpty())
+	{
+		NowGoalLoc = GetActorLocation();
+		return;
+	}
+
+	double dist = MAX_dbl;
+	FVector goalLoc;
+	for(auto& routingLine : RoutingLines)
+	{
+		double curDist = DistanceSegmentToSelf(routingLine.Value.Start, routingLine.Value.End);
+		if(curDist < dist)
+		{
+			dist = curDist;
+			goalLoc = routingLine.Key;
+		}
+	}
+	NowGoalLoc = goalLoc;
 }
 
 // =============================================================
@@ -384,10 +385,19 @@ void ACharacterNPC::UpdateSplinePath()
 		return;
 	if(DPNavigationComponent == nullptr)
 		return;
-	
-	//UpdateEnemyTarget();
+
+	// 내비메쉬 업데이트가 FindPathSync호출 보다 느려서 간격을 두고 호출합니다.
+	TWeakObjectPtr<ACharacterNPC> thisPtr = this;
+	GetWorld()->GetTimerManager().SetTimer(TakeDamageHandle, [thisPtr](){
+			if(thisPtr.IsValid())
+				thisPtr->_UpdateSplinePath();
+		},0.075f, false);
+}
+
+void ACharacterNPC::_UpdateSplinePath()
+{
 	UpdateEnemyGoalLoc();
-	DPNavigationComponent->UpdatePath(NowGoalLoc, GoalLocArray);
+	DPNavigationComponent->UpdatePath(NowGoalLoc, GetGoalLocArrayFromRoutingLines());
 	TargetedTurretID = DPNavigationComponent->GetTurretIdOnPath();
 	DPNavigationComponent->MakeSplinePath();
 }

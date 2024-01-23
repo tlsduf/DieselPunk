@@ -145,7 +145,7 @@ FHitResult UtilCollision::GetUnderCursor()
 }
 
 // =============================================================
-// inStartLocation 으로부터 z방향의 트레이스 히트를 반환한다. inUpDown = 1 > Z  / inUpDown = -1 > -Z
+// inStartLocation 으로부터 z방향의 트레이스 히트를 반환한다. inUpDown : 1 => Z  / inUpDown : -1 => -Z
 // =============================================================
 FHitResult UtilCollision::GetZTrace(FVector inStartLocation, int8 inUpDown)
 {
@@ -161,7 +161,7 @@ FHitResult UtilCollision::GetZTrace(FVector inStartLocation, int8 inUpDown)
 	hit,
 	inStartLocation,
 	FVector(inStartLocation.X, inStartLocation.Y,inStartLocation.Z + (1000 * inUpDown)),
-	ECollisionChannel::ECC_Visibility,
+	ECollisionChannel::ECC_GameTraceChannel5,
 	params);
 
 	return hit;

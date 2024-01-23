@@ -42,8 +42,6 @@ class DIESELPUNK_API AMonsterSpawner : public AActor
 	// for info Management //
 public:
 	TMap<FVector, TArray<FVector>> PathMap;		//몬스터가 스폰될 위치를 Key로 하여, 목표위치배열을 담습니다.
-	
-	TArray<FVector> GoalLocArray;				//도달할 목표위치 배열
 
 	//연결된 라우터(다음 경로)
 	UPROPERTY(EditInstanceOnly, Category = "MYDP_Setting")

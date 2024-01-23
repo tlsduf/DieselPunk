@@ -156,6 +156,9 @@ FNavPathSharedPtr UDPNavigationComponent::SearchPathTo(const FVector inStartLoc,
 	UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
 	if (NavSys == nullptr)
 		return nullptr;
+
+	// 내비게이션 리빌드
+	//NavSys->Build();
 	
 	ANavigationData* NavData = Cast<ANavigationData>(NavSys->GetNavDataForActor(*Owner));
 	if (NavData == nullptr)
@@ -201,25 +204,51 @@ void UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGoa
 {
 	if(!Owner.IsValid())
 		return;
+
+	//UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+	//if (NavSys != nullptr)
+		//NavSys->Build();
 	
 	// 경로 초기화
 	MyPathPoints.Empty();
 	
+	// 처음 도달할 목적지 이전의 목적지를 제거합니다.
+	int32 index;
+	TArray<FVector> goalLocArray = inGoalLocArray;
+	goalLocArray.Find(inGoalLoc, index);
+	for(int i = 0; i < index ; i++)
+	{
+		goalLocArray.RemoveAt(0);
+	}
+	
+	// 목적지 위에 포탑이 설치 되어 있을 경우, 해당 목적지를 제거(Remove)합니다.
+	goalLocArray.RemoveAll([this](FVector goalLoc)
+	{
+		TArray<FHitResult> hits;
+		FCollisionQueryParams params;
+		Owner->GetWorld()->LineTraceMultiByChannel(hits, goalLoc, goalLoc + FVector(0,0,500), ECollisionChannel::ECC_GameTraceChannel5, params);
+		bool bTurret = false;
+		for(auto hit : hits)
+		{
+			if(Cast<ACharacterTurret>(hit.GetActor()))
+				bTurret = true;
+		}
+		return bTurret;
+	});
+	
 	// 액터와 첫 목적지 까지의 경로를 담습니다.
-	TArray<FNavPathPoint> pathPoints = SearchPathTo(Owner->GetActorLocation(), inGoalLoc)->GetPathPoints();
+	TArray<FNavPathPoint> pathPoints = SearchPathTo(Owner->GetActorLocation(), goalLocArray[0])->GetPathPoints();
 	for(int i = 0; i < pathPoints.Num(); i++)
 	{
 		MyPathPoints.Add(pathPoints[i]);
 	}
-
+		
 	// 목적지 부터 다음 목적지 까지의 경로를 담습니다.
-	int32 index;
-	inGoalLocArray.Find(inGoalLoc, index);
-	for(int i = index; i < inGoalLocArray.Num() ; i++)
+	for(int i = 0; i < goalLocArray.Num() ; i++)
 	{
-		if(!inGoalLocArray.IsValidIndex(i + 1))
-			return;
-		TArray<FNavPathPoint> pathPoints1 = SearchPathTo(inGoalLocArray[i], inGoalLocArray[i + 1])->GetPathPoints();
+		if(!goalLocArray.IsValidIndex(i + 1))
+			break;
+		TArray<FNavPathPoint> pathPoints1 = SearchPathTo(goalLocArray[i], goalLocArray[i + 1])->GetPathPoints();
 		for(int j = 1; j < pathPoints1.Num(); j++)
 		{
 			MyPathPoints.Add(pathPoints1[j]);
@@ -261,7 +290,7 @@ int32 UDPNavigationComponent::GetTurretIdOnPath()
 		FVector startPoint = MyPathPoints[i] + FVector(0,0,100);
 		FVector endPoint = MyPathPoints[i+1] + FVector(0,0,100);
 		// Warning 터렛이 탐색이 안 될 경우 트레이스채널 확인
-		bool hasHit = GetWorld()->LineTraceMultiByChannel(hit, startPoint, endPoint, ECollisionChannel::ECC_EngineTraceChannel5, params);
+		bool hasHit = GetWorld()->LineTraceMultiByChannel(hit, startPoint, endPoint, ECollisionChannel::ECC_GameTraceChannel5, params);
 		if(hasHit)
 		{
 			TArray<int32> turretIDs;

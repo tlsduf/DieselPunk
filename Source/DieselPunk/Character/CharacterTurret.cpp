@@ -121,7 +121,7 @@ bool ACharacterTurret::CompleteHousingTurret()
 		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Block);
 
 		Box->SetGenerateOverlapEvents(true);
-		Box->SetCollisionResponseToChannel(ECC_EngineTraceChannel5, ECR_Block);
+		Box->SetCollisionResponseToChannel(ECC_GameTraceChannel5, ECR_Block);
 		Box->SetCanEverAffectNavigation(true);
 		Box->SetBoxExtent(FVector(GetGridSize() * 50, GetGridSize() * 50, GetGridSize() * 50));
 		
