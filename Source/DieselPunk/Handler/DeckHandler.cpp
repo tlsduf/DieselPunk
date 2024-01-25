@@ -76,6 +76,18 @@ void FDeckHandler::SortCard(TArray<const FCard*>& OutCards, ECardSortType InSort
 	}
 }
 
+const TArray<int32> FDeckHandler::GetActivateHandIndex() const
+{
+	TArray<int32> out;
+	for(int i = 0; i < MaxHand; ++i)
+	{
+		if(Hand[i] != nullptr)
+			out.Add(i);
+	}
+
+	return out;
+}
+
 //덱 인터페이스에 출력하기 위한 카드를 반환합니다.
 void FDeckHandler::GetDeckInterfaceCards(TArray<const FCard*>& OutCards, ECardFilterType InFilterType, ECardSortType InSortType)
 {

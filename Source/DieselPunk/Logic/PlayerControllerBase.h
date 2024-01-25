@@ -123,6 +123,9 @@ private:
 	void SetZoomInProp();
 	void SetZoomOutProp();
 
+	void WheelUpCardSelect();
+	void WheelDownCardSelect();
+
 	void Interaction();
 	
 	void Move(const FInputActionValue &Value);
@@ -149,6 +152,7 @@ private:
 	
 	//카드 사용 준비
 	void UseCard(int32 InCardIndex);
+	void UnUseCard();
 public:
 
 	//필터 변경 시 블루프린트 호출

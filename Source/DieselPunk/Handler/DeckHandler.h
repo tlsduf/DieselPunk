@@ -43,6 +43,7 @@ public:
 	//가지고 있는 카드를 반환합니다.
 	const TArray<FCard*>& GetAllCards() const {return Manager;}
 	const TArray<FCard*>& GetHands() const {return Hand;}
+	const TArray<int32> GetActivateHandIndex() const;
 
 	//덱 인터페이스에 출력하기 위한 카드를 반환합니다.
 	void GetDeckInterfaceCards(TArray<const FCard*>& OutCards, ECardFilterType InFilterType = ECardFilterType::None, ECardSortType InSortType = ECardSortType::None);

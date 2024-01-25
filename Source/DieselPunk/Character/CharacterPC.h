@@ -69,10 +69,19 @@ public:
 
 	// 스킬을 할당받기 위한 배열입니다. (BP에서도 받을 수 있도록 TSubClassOf로 하였습니다)
 	UPROPERTY(EditAnywhere, Category = "MYDP_Skill")
-	TMap<EAbilityType, TSubclassOf<UPlayerSkill>> SkillInfos;		
+	TMap<EAbilityType, TSubclassOf<UPlayerSkill>> SkillInfos;
+
+	// 카드 사용을 위한 스킬입니다.
+	UPROPERTY(EditAnywhere, Category = "MYDP_Skill")
+	TSubclassOf<UPlayerSkill> CardSkillInfo;	
 	
 	UPROPERTY()
 	TMap<EAbilityType, TObjectPtr<UPlayerSkill>> Skills;			// 런타임에 인스턴스화된 스킬들을 담는 배열입니다. (실제로 이 배열에 담긴 스킬들을 호출)
+
+	TMap<EAbilityType, TObjectPtr<UPlayerSkill>> CachedSkills;
+
+	UPROPERTY()
+	TObjectPtr<UPlayerSkill> CardSkill;
 	
 	TMap<EAbilityType, bool> SkillActivating;						// 각 스킬이 작동중인지 확인하는 티맵. Key(EAbilityType)의 값이 1이면 작동중입니다.
 	
@@ -203,5 +212,8 @@ public:
 
 	void SetSelectInstallation(TWeakObjectPtr<ACharacterTurret> InInstallation);
 	const ACharacterTurret* GetSelectInstallation() const {return SelectInstallation.Get();}
+
+	void BindSkillUseCard();
+	void UnBindSkillUseCard();
 };
 

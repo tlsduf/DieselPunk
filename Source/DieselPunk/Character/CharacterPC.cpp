@@ -372,6 +372,13 @@ void ACharacterPC::InitSkills()
 			Skills[ability.Key]->RegisterComponent(); // 빈 스킬을 등록합니다.
 		}
 	}
+	CachedSkills = Skills;
+
+	if(CardSkillInfo != nullptr)
+	{
+		CardSkill = NewObject<UPlayerSkill>(this, CardSkillInfo);
+		CardSkill->RegisterComponent();
+	}
 
 	if(SkillActivating.Num() < 0)
 		SkillActivating.Empty();
@@ -500,6 +507,8 @@ bool ACharacterPC::ExecuteCardComplete()
 	LOG_SCREEN(FColor::White, TEXT("사용 완료"))
 
 	DelegateCardComplete.Unbind();
+
+	UnBindSkillUseCard();
 	return true;
 }
 
@@ -525,4 +534,18 @@ void ACharacterPC::SetSelectInstallation(TWeakObjectPtr<ACharacterTurret> InInst
 		str += InInstallation->GetName();
 		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Emerald, str);
 	}
+}
+
+void ACharacterPC::BindSkillUseCard()
+{
+	Skills[EAbilityType::MouseLM] = CardSkill;
+}
+
+void ACharacterPC::UnBindSkillUseCard()
+{
+	Skills[EAbilityType::MouseLM] = CachedSkills[EAbilityType::MouseLM];
+	if(DelegateCardActivate.IsBound())
+		DelegateCardActivate.Unbind();
+	if(DelegateCardComplete.IsBound())
+		DelegateCardComplete.Unbind();
 }

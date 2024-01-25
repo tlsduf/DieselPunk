@@ -85,8 +85,10 @@ void APlayerControllerBase::SetupInputComponent()
         EnhancedInputComponent->BindAction(InputC, ETriggerEvent::Started, this, &APlayerControllerBase::StartJog);
         EnhancedInputComponent->BindAction(InputC, ETriggerEvent::Completed, this, &APlayerControllerBase::StopJog);
 
-        EnhancedInputComponent->BindAction(MouseWheelUp, ETriggerEvent::Started, this, &APlayerControllerBase::SetZoomInProp);
-        EnhancedInputComponent->BindAction(MouseWheelDown, ETriggerEvent::Started, this, &APlayerControllerBase::SetZoomOutProp);
+        //EnhancedInputComponent->BindAction(MouseWheelUp, ETriggerEvent::Started, this, &APlayerControllerBase::SetZoomInProp);
+        //EnhancedInputComponent->BindAction(MouseWheelDown, ETriggerEvent::Started, this, &APlayerControllerBase::SetZoomOutProp);
+    	EnhancedInputComponent->BindAction(MouseWheelUp, ETriggerEvent::Triggered, this, &APlayerControllerBase::WheelUpCardSelect);
+    	EnhancedInputComponent->BindAction(MouseWheelDown, ETriggerEvent::Triggered, this, &APlayerControllerBase::WheelDownCardSelect);
 
         EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerControllerBase::Move);
         EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerControllerBase::Look);
@@ -306,9 +308,39 @@ void APlayerControllerBase::UseCard(int32 InCardIndex)
 			Hand->ResizeHandCard(i, FVector2d(1.0, 1.0));
 	}
 	UseCardNum = InCardIndex;
+
+	PC->BindSkillUseCard();
+	if (UEnhancedInputComponent *EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent))
+	{
+		EnhancedInputComponent->BindAction(SkillInputActions[EAbilityType::MouseRM], ETriggerEvent::Triggered, this, &APlayerControllerBase::UnUseCard);
+	}
 	
 	handler->GetHands()[InCardIndex]->BindCardActivate();
 	handler->GetHands()[InCardIndex]->BindCardComplete();
+}
+
+void APlayerControllerBase::UnUseCard()
+{
+	if(IsCardActivate)
+		return;
+	
+	if(!PC.IsValid())
+		return;
+
+	const FDeckHandler* handler = PC->GetDeckHandler();
+	if(handler == nullptr)
+		return;
+
+	for(int i = 0; i < FDeckHandler::MaxHand; ++i)
+		Hand->ResizeHandCard(i, FVector2d(1.0, 1.0));
+	
+	UseCardNum = -1;
+
+	PC->UnBindSkillUseCard();
+	if (UEnhancedInputComponent *EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent))
+	{
+		EnhancedInputComponent->BindAction(SkillInputActions[EAbilityType::MouseRM], ETriggerEvent::Triggered, this, &APlayerControllerBase::OnInputSkillStarted);
+	}
 }
 
 //필터 변경 시 블루프린트 호출
@@ -363,6 +395,56 @@ void APlayerControllerBase::SetZoomOutProp()
 {
 	if (PC.IsValid())
 		PC->SetZoomOutProp();
+}
+
+void APlayerControllerBase::WheelUpCardSelect()
+{
+	const FDeckHandler* handler = PC->GetDeckHandler();
+	if(handler == nullptr)
+		return;
+
+	TArray<int32> indices = handler->GetActivateHandIndex();
+	int index = -1;
+	
+	if(UseCardNum == -1)
+		index = 0;
+	else
+	{
+		int count = 0;
+		for(count; count < indices.Num(); ++count)
+			if(indices[count] == UseCardNum)
+				break;
+
+		index = (count + 1) % indices.Num();
+	}
+	UseCardNum = indices[index];
+	UseCard(UseCardNum);
+}
+
+void APlayerControllerBase::WheelDownCardSelect()
+{
+	const FDeckHandler* handler = PC->GetDeckHandler();
+	if(handler == nullptr)
+		return;
+
+	TArray<int32> indices = handler->GetActivateHandIndex();
+	int index = -1;
+	
+	if(UseCardNum == -1)
+		index = indices.Num() - 1;
+	else
+	{
+		int count = 0;
+		for(count; count < indices.Num(); ++count)
+			if(indices[count] == UseCardNum)
+				break;
+
+		index = count - 1;
+		if(index < 0)
+			index += indices.Num();
+	}
+	UseCardNum = indices[index];
+	UseCard(UseCardNum);
 }
 
 void APlayerControllerBase::Interaction()
@@ -452,8 +534,12 @@ int32 APlayerControllerBase::PostActivateCard()
 int32 APlayerControllerBase::PostCompleteCard()
 {
 	IsCardActivate = false;
+
+	int returnUseCardNum = UseCardNum;
+
+	UseCardNum = -1;
 	
-	return UseCardNum;
+	return returnUseCardNum;
 }
 
 //드로우 한 후 카드 정보를 갱신합니다.
