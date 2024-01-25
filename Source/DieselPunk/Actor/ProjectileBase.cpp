@@ -59,7 +59,7 @@ void AProjectileBase::BeginPlay()
 	// 생성 후 즉시 효과 적용 및 파괴
 	if(bUseOneTick)
 		OneTickTask();
-
+	
 	// OnHit Event Bind
 	if(CollisionResponses == ECollisionResponsesType::OnHit)
 		CapsuleComponent->OnComponentHit.AddDynamic(this, &AProjectileBase::OnHit);

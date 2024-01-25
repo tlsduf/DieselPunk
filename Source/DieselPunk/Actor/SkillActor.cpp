@@ -41,5 +41,5 @@ void ASkillActor::Tick(float DeltaTime)
 
 void ASkillActor::InitTransformOffset()
 {
-	AddActorWorldTransform(OffsetTransform);
+	AddActorLocalTransform(OffsetTransform);
 }

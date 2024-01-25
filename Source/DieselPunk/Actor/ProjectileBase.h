@@ -48,7 +48,7 @@ protected:
 	// UProjectileMovementComponent 투사체의 움직임을 제어해주는 엔진함수
 	UPROPERTY(EditAnywhere)
 	class UProjectileMovementComponent *ProjectileMovementComponent;
-
+	
 	// CollisionResponsesType : OnHit or Overlap // 콜리전 반응 타입
 	UPROPERTY(EditAnywhere, Category = "MYDP_CollisionType")
 	ECollisionResponsesType CollisionResponses = ECollisionResponsesType::Overlap;

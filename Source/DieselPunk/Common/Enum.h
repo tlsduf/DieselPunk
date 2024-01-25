@@ -134,8 +134,8 @@ enum class ECardFilterType : uint8
 UENUM( BlueprintType )
 enum class EAbilityCardType : uint8
 {
-	Projectile		UMETA( ToolTip = "발사체" ),
-	Mine			UMETA( ToolTip = "지뢰" ),
-	StatBuff		UMETA( ToolTip = "스탯 강화" ),
+	Projectile	UMETA( ToolTip = "공격" ),
+	Mine		UMETA( ToolTip = "지뢰" ),
+	StatBuff	UMETA( ToolTip = "스탯 강화" ),
 	None,
 };

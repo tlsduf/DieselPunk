@@ -16,7 +16,8 @@ FTurretCard::FTurretCard(int32 InKey, const FString& InCardName, TWeakObjectPtr<
 	Info.Cost = data->Cost;
 	MaxTier = data->MaxTier;
 	CurrentTier = 1;
-	CharacterName = data->Name;
+	if(!data->Names.IsEmpty())
+		CharacterName = data->Names[0];
 }
 
 FTurretCard::~FTurretCard()

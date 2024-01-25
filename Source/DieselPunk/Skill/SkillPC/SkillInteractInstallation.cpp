@@ -113,7 +113,7 @@ void USkillInteractInstallation::SkillTriggered()
 		FCardDataTable* findRow = nullptr;
 		for(FCardDataTable* row : rows)
 		{
-			if(row->Name == InteractiveInstallation->GetCharacterName())
+			if(row->Names[0] == InteractiveInstallation->GetCharacterName())
 			{
 				findRow = row;
 				break;
