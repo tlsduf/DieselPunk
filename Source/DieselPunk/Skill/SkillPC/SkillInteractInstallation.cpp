@@ -105,10 +105,25 @@ void USkillInteractInstallation::SkillTriggered()
 		LOG_SCREEN(FColor::Yellow, TEXT("Sold Turret"))
 
 		//ToDo: 포탑 판매 시 일정 금액 돌려받기
-		const FCardDataTable* data = FDataTableManager::GetInstance()->GetData<FCardDataTable>(EDataTableType::Card, InteractiveInstallation->GetCharacterName());
-		if(data == nullptr)
+		UDataTable* table = FDataTableManager::GetInstance()->GetDataRow(EDataTableType::Card);
+
+		TArray<FCardDataTable*> rows;
+		table->GetAllRows<FCardDataTable>(TEXT("FCardDataTable"), rows);
+
+		FCardDataTable* findRow = nullptr;
+		for(FCardDataTable* row : rows)
+		{
+			if(row->Name == InteractiveInstallation->GetCharacterName())
+			{
+				findRow = row;
+				break;
+			}
+		}
+
+		if(findRow == nullptr)
 			return;
-		int32 cost = data->Cost * 0.7f;
+		
+		int32 cost = findRow->Cost * 0.7f;
 		OwnerCharacterPC->ChangeStat(ECharacterStatType::Cost, cost);
 		
 		//포탑 삭제

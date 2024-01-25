@@ -7,6 +7,9 @@
 #include "../Manager/DatatableManager.h"
 #include "../Manager/ObjectManager.h"
 #include "../Character/CharacterTurret.h"
+#include "DieselPunk/Actor/ProjectileBase.h"
+#include "DieselPunk/Actor/SkillActor.h"
+#include "GameFramework/PlayerController.h"
 
 FAbilityCard::FAbilityCard(int32 InKey, const FString& InCardName, TWeakObjectPtr<ACharacterPC> InOwner)
 	: FCard(InKey, InCardName, InOwner)
@@ -15,6 +18,7 @@ FAbilityCard::FAbilityCard(int32 InKey, const FString& InCardName, TWeakObjectPt
 	Info.CardType = data->CardType;
 	Info.Cost = data->Cost;
 	AbilityCardType = data->AbilityCardType;
+	BlueprintName = data->Name;
 }
 
 FAbilityCard::~FAbilityCard()
@@ -30,53 +34,43 @@ void FAbilityCard::_Activate(bool& OutSuccess, int32 InCost)
 		OutSuccess = false;
 		return;
 	}
-	/*
-	//터렛 스몰에 해당하는 경로 탐색을 위한 데이터 테이블 서치
-	const FCharacterDataTable* dataTable = FDataTableManager::GetInstance()->GetData<FCharacterDataTable>(EDataTableType::Character, CharacterName);
-	if(!dataTable)
-	{
-		LOG_SCREEN(FColor::Red, TEXT("TurretSmall에 해당하는 데이터테이블 정보가 존재하지 않습니다."))
-		OutSuccess = false;
-		return;
-	}
 
-	//터렛 생성
-	UClass* TurretClass = LoadClass<ACharacterTurret>( NULL, *UtilPath::GetCharacterBlueprintPath(*dataTable->BluePrintPath));
-	if(TurretClass)
-	{
-		FVector traceStartLocation = Owner->GetActorLocation() + (Owner->GetActorForwardVector() * 500) + FVector(0,0,300);
-		FVector spawnLocation = UtilCollision::GetZTrace(traceStartLocation , -1).Location;
-			
-		FSpawnParam spawnParam;
-		spawnParam.Rotation = FRotator::ZeroRotator;
-		spawnParam.Location = spawnLocation;
-		spawnParam.CallBackSpawn = nullptr;
-			
-		ControlTurretId = FObjectManager::GetInstance()->CreateActor<ACharacterTurret>(TurretClass, spawnParam);
-		OutSuccess = true;
-	}
-	*/
+	OutSuccess = true;
 }
 
 //카드 사용 완료 함수
 void FAbilityCard::_Complete(bool& OutSuccess)
 {
-	/*
-	ACharacterTurret* controlTurret = Cast<ACharacterTurret>(FObjectManager::GetInstance()->FindActor(ControlTurretId));
-	if(!controlTurret)
-	{
-		LOG_SCREEN(FColor::Red, TEXT("ControlTurretId: %d에 해당하는 Turret이 존재하지 않습니다."), ControlTurretId)
-		OutSuccess = false;
-		return;
-	}
+	UClass* uclass = nullptr;
 
-	//터렛이 생성될 수 있다면 터렛 생성
-	if(!controlTurret->CompleteHousingTurret())
+	if(AbilityCardType == EAbilityCardType::Projectile)
+		uclass = LoadClass<AProjectileBase>( NULL, *UtilPath::GetAbilityBlueprintPath(*UtilPath::EnumToString(AbilityCardType), *BlueprintName));
+	
+	if(uclass)
 	{
-		LOG_SCREEN(FColor::Yellow, TEXT("ControlTurretId: %d에 해당하는 Turret이 설치될 수 없습니다.."), ControlTurretId)
-		OutSuccess = false;
-		return;
+		TArray<const AActor*> ignore;
+		ignore.Add(FObjectManager::GetInstance()->GetPlayer());
+		FHitResult result;
+		if(!UtilCollision::GetViewMiddle(FObjectManager::GetInstance()->GetWorld(), Cast<APlayerController>(FObjectManager::GetInstance()->GetPlayer()->GetController()),
+			result, 99999, ignore))
+		{
+			OutSuccess = false;
+			return;
+		}
+			
+		FSpawnParam spawnParam;
+		spawnParam.Rotation = FRotator::ZeroRotator;
+		spawnParam.Location = result.Location;
+		spawnParam.CallBackSpawn = nullptr;
+
+		int32 id = FObjectManager::INVALID_OBJECTID;
+		if(AbilityCardType == EAbilityCardType::Projectile)
+			id = FObjectManager::GetInstance()->CreateActor<AProjectileBase>(uclass, spawnParam);
+
+		if(FObjectManager::GetInstance()->IsValidId(id))
+		{
+			Cast<ASkillActor>(FObjectManager::GetInstance()->FindActor(id))->InitTransformOffset();
+			OutSuccess = true;
+		}
 	}
-	OutSuccess = true;
-	*/
 }

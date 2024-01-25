@@ -51,10 +51,15 @@ namespace UtilPath
 	//UI Detail Path를 생성합니다.
 	inline FString GetUIDetailPath(const TCHAR* InAdditionalPath, const TCHAR* InUIName)
 	{
-		
 		return FString::Printf(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/DieselPunk/UI/Widgets/%s%s.%s_C'"), InAdditionalPath, InUIName, InUIName);
 	}
 
+	//Ability 블루프린트 Path를 생성합니다.
+	inline FString GetAbilityBlueprintPath(const TCHAR* InAbilityType, const TCHAR* InBlueprintName)
+	{
+		return FString::Printf(TEXT("/Script/Engine.Blueprint'/Game/DieselPunk/Blueprints/Skill/SkillActor/%s/%s.%s_C'"), InAbilityType, InBlueprintName, InBlueprintName);
+	}
+	
 	/*template<typename T>
 	T* CreateUI( const TCHAR* InPath )
 	{

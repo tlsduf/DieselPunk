@@ -20,22 +20,15 @@
 // =========================================
 
 
-#include "GameFramework/Actor.h"
+#include "SkillActor.h"
 #include "ProjectileBase.generated.h"
 
 class AProjectilePathingSpline;
-class ACharacterBase;
 
 UCLASS()
-class DIESELPUNK_API AProjectileBase : public AActor
+class DIESELPUNK_API AProjectileBase : public ASkillActor
 {
 	GENERATED_BODY()
-
-	UPROPERTY()
-	ACharacterBase* OwnerCharacter = nullptr;	// 소유자
-	
-	UPROPERTY()
-	AController* OwnerController = nullptr;		// 소유 컨트롤러
 	
 	FTimerHandle DestroyTimeHandler;
 

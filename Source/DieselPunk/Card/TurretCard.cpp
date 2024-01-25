@@ -16,7 +16,7 @@ FTurretCard::FTurretCard(int32 InKey, const FString& InCardName, TWeakObjectPtr<
 	Info.Cost = data->Cost;
 	MaxTier = data->MaxTier;
 	CurrentTier = 1;
-	CharacterName = data->CharacterName;
+	CharacterName = data->Name;
 }
 
 FTurretCard::~FTurretCard()

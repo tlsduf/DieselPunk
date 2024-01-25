@@ -29,9 +29,9 @@ struct DIESELPUNK_API FCardDataTable : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 MaxTier = 1;
 
-	//설치할 포탑, 설치물 이름. 어빌리티 카드의 경우 공란으로 두시면 됩니다. FCharacterData에 등록한 이름으로 등록하면 됩니다.
+	//설치할 포탑, 설치물 이름.FCharacterData에 등록한 이름으로 등록하면 됩니다.(어빌리티 카드의 경우 생성할 블루프린트의 이름을 넣으면 됩니다.) 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString CharacterName = "";
+	FString Name = "";
 
 	//어빌리티 타입을 설정합니다. 어빌리티 카드가 아닌 경우 None으로 두시면 됩니다.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

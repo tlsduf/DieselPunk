@@ -39,12 +39,6 @@ AProjectileBase::AProjectileBase()
 void AProjectileBase::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if(GetOwner() != nullptr)
-	{
-		OwnerCharacter = Cast<ACharacterBase>(GetOwner());
-		OwnerController = OwnerCharacter->GetController();
-	}
 	
 	// 콜리전 반응 설정
 	SetCapsuleCollisionResponses();

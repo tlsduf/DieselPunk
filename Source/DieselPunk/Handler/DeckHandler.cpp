@@ -4,6 +4,7 @@
 #include "DeckHandler.h"
 
 #include "../Card/TurretCard.h"
+#include "../Card/AbilityCard.h"
 #include "../Data/CardDataTable.h"
 #include "../Manager/DatatableManager.h"
 #include "../Character/CharacterPC.h"
@@ -134,7 +135,7 @@ void FDeckHandler::AddCard(FString InCardName)
 	switch (data->CardType)
 	{
 	case ECardType::Ability:
-		card = new FTurretCard(Key, InCardName, Owner);
+		card = new FAbilityCard(Key, InCardName, Owner);
 		break;
 	case ECardType::Turret:
 		card = new FTurretCard(Key, InCardName, Owner);

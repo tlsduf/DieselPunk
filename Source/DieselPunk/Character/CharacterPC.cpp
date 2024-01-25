@@ -84,13 +84,10 @@ void ACharacterPC::BeginPlay()
 	DeckHandler->BeginPlay();
 
 	//테스트를 위한 패를 추가합니다.
-	for(int i = 0; i < 48; ++i)
+	for(const TPair<FString, int32>& initCard : InitHaveCard)
 	{
-		int idx = FMath::Floor(FMath::SRand() * 9);
-		FString cardName = FString::Printf(TEXT("TestSmall%d"), idx + 1);
-		if(cardName == TEXT("TestSmall1"))
-			cardName = TEXT("TurretSmall");
-		DeckHandler->AddCard(cardName);
+		for(int i = 0; i < initCard.Value; ++i)
+			DeckHandler->AddCard(initCard.Key);
 	}
 	DeckHandler->BeginPlayStage();
 

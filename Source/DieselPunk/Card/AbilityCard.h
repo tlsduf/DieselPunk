@@ -10,6 +10,7 @@ class ACharacterPC;
 class DIESELPUNK_API FAbilityCard : public FCard
 {
 	EAbilityCardType AbilityCardType;
+	FString BlueprintName;
 public:
 	FAbilityCard(int32 InKey, const FString& InCardName, TWeakObjectPtr<ACharacterPC> InOwner);
 	virtual ~FAbilityCard() override;
