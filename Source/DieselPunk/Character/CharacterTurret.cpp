@@ -34,6 +34,7 @@ ACharacterTurret::ACharacterTurret()
 void ACharacterTurret::BeginPlay()
 {
 	Super::BeginPlay();
+	CharacterType = ECharacterType::Turret;
 
 	//Material Instance Dynamic 생성
 	HousingDynamicMaterial = UMaterialInstanceDynamic::Create(HousingMaterial.Get(), this);

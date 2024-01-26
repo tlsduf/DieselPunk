@@ -25,7 +25,9 @@ protected:
 
 	//캐릭터 정보를 가져오기 위한 이름
 	UPROPERTY(EditDefaultsOnly, Category = "MYDP")
-	FString CharacterName = "";		
+	FString CharacterName = "";
+
+	ECharacterType CharacterType = ECharacterType::None;
 	
 	/////////////////////////////////////////////////////////////////////
 	// for UI //
@@ -148,4 +150,6 @@ public:
 	const FDateTime& GetCreateTime() const {return CreateTime;}
 
 	const FString& GetCharacterName() const {return CharacterName;}
+
+	const ECharacterType& GetCharacterType() const {return CharacterType;}
 };

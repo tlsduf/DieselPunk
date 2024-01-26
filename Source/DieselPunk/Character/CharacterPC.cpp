@@ -78,6 +78,7 @@ void ACharacterPC::BeginPlay()
 	}
 	
 	Super::BeginPlay();
+	CharacterType = ECharacterType::Player;
 	
 	DeckHandler = new FDeckHandler(this);
 	

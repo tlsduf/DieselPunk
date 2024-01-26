@@ -38,6 +38,7 @@ ACharacterNPC::ACharacterNPC()
 void ACharacterNPC::BeginPlay()
 {
 	Super::BeginPlay();
+	CharacterType = ECharacterType::Monster;
 
 	GetCharacterMovement()->MaxWalkSpeed = Stat.GetStat(ECharacterStatType::MoveSpeed);
 	

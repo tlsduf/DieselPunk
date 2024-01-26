@@ -139,3 +139,24 @@ enum class EAbilityCardType : uint8
 	StatBuff	UMETA( ToolTip = "스탯 강화" ),
 	None,
 };
+
+// 어빌리티 카드 타입
+UENUM( BlueprintType )
+enum class EEffectPlayType : uint8
+{
+	Start	UMETA( ToolTip = "시작 시" ),
+	Tick	UMETA( ToolTip = "적용 시 스탯버프 액터에" ),
+	Hit		UMETA( ToolTip = "적용 시 타겟에" ),
+	End		UMETA( ToolTip = "종료 시" ),
+	None,
+};
+
+// 스탯 버프 대상 타입
+UENUM( BlueprintType )
+enum class ECharacterType : uint8
+{
+	None = 0,
+	Player = 1	UMETA( ToolTip = "플레이어" ),
+	Monster = 2	UMETA( ToolTip = "몬스터" ),
+	Turret = 4	UMETA( ToolTip = "터렛" ),
+};

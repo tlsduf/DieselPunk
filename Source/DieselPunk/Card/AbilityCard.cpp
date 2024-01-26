@@ -7,10 +7,11 @@
 #include "../Manager/DatatableManager.h"
 #include "../Manager/ObjectManager.h"
 #include "../Character/CharacterTurret.h"
-#include "DieselPunk/Actor/MineBase.h"
-#include "DieselPunk/Actor/ProjectileBase.h"
-#include "DieselPunk/Actor/SkillActor.h"
-#include "GameFramework/PlayerController.h"
+#include "../Actor/MineBase.h"
+#include "../Actor/ProjectileBase.h"
+#include "../Actor/SkillActor.h"
+#include "../Actor/StatBuff.h"
+#include <GameFramework/PlayerController.h>
 
 FAbilityCard::FAbilityCard(int32 InKey, const FString& InCardName, TWeakObjectPtr<ACharacterPC> InOwner)
 	: FCard(InKey, InCardName, InOwner)
@@ -50,6 +51,8 @@ void FAbilityCard::_Complete(bool& OutSuccess)
 			uclass = LoadClass<AProjectileBase>( NULL, *UtilPath::GetAbilityBlueprintPath(*UtilPath::EnumToString(AbilityCardType), *blueprintName));
 		else if(AbilityCardType == EAbilityCardType::Mine)
 			uclass = LoadClass<AMineBase>( NULL, *UtilPath::GetAbilityBlueprintPath(*UtilPath::EnumToString(AbilityCardType), *blueprintName));
+		else if(AbilityCardType == EAbilityCardType::StatBuff)
+			uclass = LoadClass<AStatBuff>( NULL, *UtilPath::GetAbilityBlueprintPath(*UtilPath::EnumToString(AbilityCardType), *blueprintName));
 	
 		if(uclass)
 		{
@@ -73,6 +76,8 @@ void FAbilityCard::_Complete(bool& OutSuccess)
 				id = FObjectManager::GetInstance()->CreateActor<AProjectileBase>(uclass, spawnParam);
 			else if(AbilityCardType == EAbilityCardType::Mine)
 				id = FObjectManager::GetInstance()->CreateActor<AMineBase>(uclass, spawnParam);
+			else if(AbilityCardType == EAbilityCardType::StatBuff)
+				id = FObjectManager::GetInstance()->CreateActor<AStatBuff>(uclass, spawnParam);
 
 			if(FObjectManager::GetInstance()->IsValidId(id))
 			{
