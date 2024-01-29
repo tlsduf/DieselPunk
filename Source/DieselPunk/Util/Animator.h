@@ -39,9 +39,11 @@ enum class EAnimType : uint8
 	QuadIn,				// Quadratic ease in
 	QuadOut,			// Quadratic ease out
 	QuadInOut,			// Quadratic ease in, quadratic ease out
+	QuadOutIn,			
 	CubicIn,			// Cubic ease in
 	CubicOut,			// Cubic ease out
 	CubicInOut,			// Cubic ease in, cubic ease out
+	CubicOutIn
 };
 
 typedef std::function<void( float )> CallbackType;

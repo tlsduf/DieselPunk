@@ -36,7 +36,7 @@ private:
 	float AttackRadius = 50.f;
 
 public:
-	virtual void AbilityStart() override;
+	virtual void AbilityStart(AActor* inTarget) override;
 
 	float PlayAnim();
 	

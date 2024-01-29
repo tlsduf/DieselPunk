@@ -99,7 +99,7 @@ void ACharacterPC::BeginPlay()
 	//Skill Stat Set
 	for(const auto& It : Skills)
 	{
-		It.Value->InitSkillStat();
+		It.Value->InitSkill();
 	}
 }
 

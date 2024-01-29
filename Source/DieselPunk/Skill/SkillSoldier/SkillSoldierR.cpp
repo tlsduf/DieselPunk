@@ -88,7 +88,7 @@ void USkillSoldierR::AfterLogic()
 		if(ProjectileClass)
 		{
 			FTransform spawnTransform( FRotator(0,0, 0), hitResult.Location);
-			Projectile = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileClass, spawnTransform, GetOwner());
+			AProjectileBase *Projectile = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileClass, spawnTransform, GetOwner());
 			Projectile->FinishSpawning(spawnTransform);
 		}
 	}

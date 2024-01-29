@@ -30,9 +30,6 @@ void USkillSoldierLM::SkillTriggered()
 	
 	// 쿨타임
 	CoolTimeHandler->SetCoolTime(CoolTime);
-
-	// 데미지 결정
-	float damage = Atk * AtkCoefficient;
 	
 	// 라인트레이스로 최종경로설정
 	FVector lineTraceLocation;
@@ -56,16 +53,16 @@ void USkillSoldierLM::SkillTriggered()
 		//FString resourcePath = UtilPath::GetSkillPath( TEXT("SkillActor/BP_ProjectileBullet") );
 		//ProjectileClass = LoadClass<ASoldierProjectile>( NULL, *resourcePath );
 		FTransform spawnTransform( shotRotation, shotLocation);
-		Projectile = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileClass, spawnTransform, GetOwner());
-		Projectile->Damage = damage;
+		AProjectileBase *Projectile = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileClass, spawnTransform, GetOwner());
+		Projectile->Damage = Damage;
 		Projectile->FinishSpawning(spawnTransform);
 	}
 	// * or if EBuffOn is true
 	if(ProjectileEBuffClass && EBuffOn)
 	{
 		FTransform spawnTransform( shotRotation, shotLocation);
-		Projectile = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileEBuffClass, spawnTransform, GetOwner());
-		Projectile->Damage = damage * 1.5;
+		AProjectileBase *Projectile = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileEBuffClass, spawnTransform, GetOwner());
+		Projectile->Damage = Damage * 1.5;
 		Projectile->FinishSpawning(spawnTransform);
 		--Magazine;
 

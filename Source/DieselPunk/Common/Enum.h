@@ -28,6 +28,7 @@ enum class ECollisionResponsesType : uint8
 {
 	OnHit		UMETA( ToolTip = "온힛 이벤트 전용" ),
 	Overlap		UMETA( ToolTip = "오버랩 이벤트 전용" ),
+	None		UMETA( ToolTip = "n초 뒤 파괴" )
 };
 
 // 투사체 종류 Player or Enemy

@@ -21,9 +21,9 @@ void UHitscanFire::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UHitscanFire::AbilityStart()
+void UHitscanFire::AbilityStart(AActor* inTarget)
 {
-	Super::AbilityStart();
+	Super::AbilityStart(inTarget);
 
 	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
 
@@ -32,7 +32,7 @@ void UHitscanFire::AbilityStart()
 	AActor *hitActor = hit.GetActor();
 
 	// 데미지 결정
-	float damage = Atk * AtkCoefficient;
+	float damage = CharacterStatAtk * AtkCoefficient;
 	
 	// 데미지 정보 전달
 	if (hitActor != nullptr && hitActor != ownerPawn)

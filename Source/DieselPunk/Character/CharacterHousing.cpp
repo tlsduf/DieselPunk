@@ -26,6 +26,13 @@ ACharacterHousing::ACharacterHousing()
 	static ConstructorHelpers::FObjectFinder<UMaterialInterface> material(TEXT("/Script/Engine.Material'/Game/DieselPunk/Material/M_Housing.M_Housing'"));
 	if(material.Succeeded())
 		HousingMaterial = material.Object;
+
+	Box = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
+	/*Box->bDynamicObstacle = true;
+	FString inPath = FString::Printf(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/DieselPunk/AI/BP_NavArea_High.BP_NavArea_High_C'"));
+	UClass* NavArea = ConstructorHelpersInternal::FindOrLoadClass(inPath, UNavAreaBase::StaticClass() );
+	Box->SetAreaClassOverride(NavArea);*/
+	Box->SetupAttachment(GetCapsuleComponent());
 }
 
 // =============================================================

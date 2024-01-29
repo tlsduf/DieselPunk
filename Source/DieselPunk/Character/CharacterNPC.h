@@ -117,7 +117,7 @@ public:
 	float DistanceSegmentToSelf(FVector inStart, FVector inEnd);
 	// '몬스터'의 GoalLoc를 갱신합니다. // GoalLoc는 경유지점입니다. // Tick , 조건
 	void UpdateEnemyGoalLoc();
-	FVector GetTargetLoc() { return NowGoalLoc; }
+	FVector GetNowGoalLoc() { return NowGoalLoc; }
 	
 	// 길이 막혔을 때, 파괴시 진행할 수 있는 포탑의 위치를 찾습니다.
 	bool FindShortestPath(const FVector& InEndLocation);

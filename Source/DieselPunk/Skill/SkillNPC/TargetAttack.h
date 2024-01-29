@@ -14,7 +14,7 @@ UCLASS()
 class DIESELPUNK_API UTargetAttack : public USkillBase
 {
 	GENERATED_BODY()
-
+	
 	UPROPERTY(EditAnywhere, Category = "MYDP_Effect")
 	class UNiagaraSystem *N_ShotEffect;
 	
@@ -42,7 +42,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	virtual void AbilityStart() override;
+	virtual void AbilityStart(AActor* inTarget) override;
 	
 	void TargetAttack(AActor* inTarget);
 	

@@ -35,5 +35,5 @@ private:
 	FEffectTransform HitEffectFTransform = FEffectTransform();
 	
 public:
-	virtual void AbilityStart() override;
+	virtual void AbilityStart(AActor* inTarget) override;
 };

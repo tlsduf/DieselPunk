@@ -6,6 +6,8 @@
 #include <Kismet/GameplayStatics.h>
 #include <Components/SkeletalMeshComponent.h>
 
+#include "DrawDebugHelpers.h"
+
 UTargetAttack::UTargetAttack() : Super()
 {
 	PrimaryComponentTick.bCanEverTick = false; // 일단 Tick은 OFF 해두었습니다.
@@ -16,15 +18,13 @@ void UTargetAttack::BeginPlay()
 	Super::BeginPlay();
 }
 
-void UTargetAttack::AbilityStart()
+void UTargetAttack::AbilityStart(AActor* inTarget)
 {
-	Super::AbilityStart();
+	Super::AbilityStart(inTarget);
 
-	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
-}
-
-void UTargetAttack::TargetAttack(AActor* inTarget)
-{
+	if(AtkCoefficient <= 0)
+		return;
+	
 	if(inTarget == nullptr)
 	{
 		LOG_SCREEN(FColor::Red, TEXT("타겟정보 NULL"));
@@ -33,6 +33,10 @@ void UTargetAttack::TargetAttack(AActor* inTarget)
 	
 	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
 
+	// Draw Debug
+	if(ownerPawn->DebugOnOff)
+		DrawDebugLine(GetWorld(), ownerPawn->GetActorLocation(), inTarget->GetActorLocation(), FColor::Black, false, 1, 0, 5);
+	
 	
 	// Shot Effect
 	FEffectTransform shotET;
@@ -55,7 +59,5 @@ void UTargetAttack::TargetAttack(AActor* inTarget)
 		UtilEffect::SpawnParticleEffect(GetWorld(), HitEffect, hitET);
 
 	
-	// 데미지 결정
-	float damage = Atk * AtkCoefficient;
-	UGameplayStatics::ApplyDamage(inTarget, damage, OwnerController, ownerPawn, nullptr);
+	UGameplayStatics::ApplyDamage(inTarget, Damage, OwnerController, ownerPawn, nullptr);
 }

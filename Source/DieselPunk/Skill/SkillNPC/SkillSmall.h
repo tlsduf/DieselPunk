@@ -24,7 +24,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	virtual void AbilityStart() override;
+	virtual void AbilityStart(AActor* inTarget) override;
 	
 	float CaptureDamage;	// 람다함수 캡쳐용 변수
 
@@ -34,15 +34,6 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
 	TSubclassOf<AProjectileBase> ProjectileBaseClass;
-
-	UPROPERTY()
-	AProjectileBase *ProjectileBase1;
-	UPROPERTY()
-	AProjectileBase *ProjectileBase2;
-	UPROPERTY()
-	AProjectileBase *ProjectileBase3;
-	UPROPERTY()
-	AProjectileBase *ProjectileBase4;
 
 	FTimerHandle FireHandle2;
 	FTimerHandle FireHandle3;

@@ -21,9 +21,6 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
 	TSubclassOf<AProjectileBase> ProjectileClass;
-
-	UPROPERTY()
-	AProjectileBase *Projectile;
 	
 public:
 	// 생성자

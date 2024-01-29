@@ -20,9 +20,6 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "MYDP_Setting")
 	TSubclassOf<AProjectileBase> ProjectileEBuffClass;
-	
-	UPROPERTY()
-	AProjectileBase *Projectile;
 public:
 
 	bool EBuffOn = false;		//SkillE 활성화상태

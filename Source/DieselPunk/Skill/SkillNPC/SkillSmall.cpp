@@ -19,14 +19,14 @@ void USkillSmall::BeginPlay()
 	Super::BeginPlay();
 }
 
-void USkillSmall::AbilityStart()
+void USkillSmall::AbilityStart(AActor* inTarget)
 {
-	Super::AbilityStart();
+	Super::AbilityStart(inTarget);
 
 	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
 
-	// 데미지 결정
-	CaptureDamage = Atk * AtkCoefficient;
+	// 람다함수 캡쳐용 변수
+	CaptureDamage = Damage;
 	
 	ShotRotation = OwnerController->GetControlRotation();
 	
@@ -35,7 +35,7 @@ void USkillSmall::AbilityStart()
 	{
 		ShotLocation = ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket");
 		FTransform SpawnTransform = FTransform( ShotRotation, ShotLocation);
-		ProjectileBase1 = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileBaseClass, SpawnTransform, GetOwner());
+		AProjectileBase *ProjectileBase1 = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileBaseClass, SpawnTransform, GetOwner());
 		ProjectileBase1->Damage = CaptureDamage;
 		ProjectileBase1->FinishSpawning(SpawnTransform);
 
@@ -46,9 +46,9 @@ void USkillSmall::AbilityStart()
 			if(thisPtr.IsValid())
 			{
 				FTransform SpawnTransform = FTransform( thisPtr->ShotRotation, thisPtr->ShotLocation);
-				thisPtr->ProjectileBase2 = thisPtr->GetWorld()->SpawnActorDeferred<AProjectileBase>(thisPtr->ProjectileBaseClass, SpawnTransform, thisPtr->GetOwner());
-				thisPtr->ProjectileBase2->Damage = thisPtr->CaptureDamage;
-				thisPtr->ProjectileBase2->FinishSpawning(SpawnTransform);
+				AProjectileBase *ProjectileBase2 = thisPtr->GetWorld()->SpawnActorDeferred<AProjectileBase>(thisPtr->ProjectileBaseClass, SpawnTransform, thisPtr->GetOwner());
+				ProjectileBase2->Damage = thisPtr->CaptureDamage;
+				ProjectileBase2->FinishSpawning(SpawnTransform);
 			}
 		},0.1f, false);
 
@@ -58,9 +58,9 @@ void USkillSmall::AbilityStart()
 			if(thisPtr.IsValid())
 			{
 				FTransform SpawnTransform = FTransform( thisPtr->ShotRotation, thisPtr->ShotLocation);
-				thisPtr->ProjectileBase3 = thisPtr->GetWorld()->SpawnActorDeferred<AProjectileBase>(thisPtr->ProjectileBaseClass, SpawnTransform, thisPtr->GetOwner());
-				thisPtr->ProjectileBase3->Damage = thisPtr->CaptureDamage;
-				thisPtr->ProjectileBase3->FinishSpawning(SpawnTransform);
+				AProjectileBase *ProjectileBase3 = thisPtr->GetWorld()->SpawnActorDeferred<AProjectileBase>(thisPtr->ProjectileBaseClass, SpawnTransform, thisPtr->GetOwner());
+				ProjectileBase3->Damage = thisPtr->CaptureDamage;
+				ProjectileBase3->FinishSpawning(SpawnTransform);
 			}
 		},0.2f, false);
 
@@ -70,9 +70,9 @@ void USkillSmall::AbilityStart()
 			if(thisPtr.IsValid())
 			{
 				FTransform SpawnTransform = FTransform( thisPtr->ShotRotation, thisPtr->ShotLocation);
-				thisPtr->ProjectileBase4 = thisPtr->GetWorld()->SpawnActorDeferred<AProjectileBase>(thisPtr->ProjectileBaseClass, SpawnTransform, thisPtr->GetOwner());
-				thisPtr->ProjectileBase4->Damage = thisPtr->CaptureDamage;
-				thisPtr->ProjectileBase4->FinishSpawning(SpawnTransform);
+				AProjectileBase *ProjectileBase4 = thisPtr->GetWorld()->SpawnActorDeferred<AProjectileBase>(thisPtr->ProjectileBaseClass, SpawnTransform, thisPtr->GetOwner());
+				ProjectileBase4->Damage = thisPtr->CaptureDamage;
+				ProjectileBase4->FinishSpawning(SpawnTransform);
 			}
 		},0.3f, false);
 	}

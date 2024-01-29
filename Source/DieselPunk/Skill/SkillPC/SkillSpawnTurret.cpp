@@ -72,7 +72,6 @@ void USkillSpawnTurret::SkillStarted()
 			return;
 		}
 		*/
-		
 	}
 }
 

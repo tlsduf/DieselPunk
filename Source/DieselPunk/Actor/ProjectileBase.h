@@ -11,7 +11,7 @@
  *	2. 발사 후 OnHit or Overlap 이벤트
  *	3. 발사 후 n초 뒤 자동 파괴
  *
- *  * 투사체는 2가지의 상태를 가집니다.
+ *  * 투사체는 3지의 상태를 가집니다.
  *  1. ECollisionResponsesType	: 캡슐 콜리전 반응Type // OnHit , Overlap
  *		콜리전반응Type 에 따라 투사체 캡슐콜리전 Set
  *  2. EProjectileOwnerType		: 소유자Type // Player , Enemy
@@ -21,9 +21,8 @@
 
 
 #include "SkillActor.h"
+#include "../Util/SplineConstructor.h"
 #include "ProjectileBase.generated.h"
-
-class AProjectilePathingSpline;
 
 UCLASS()
 class DIESELPUNK_API AProjectileBase : public ASkillActor
@@ -69,22 +68,30 @@ public:
 	// 한 틱만 사용
 	UPROPERTY(EditAnywhere, Category = "MYDP_Combat")
 	bool bUseOneTick = false;
+
+	// TimeToDestroy 뒤에 파괴
+	float TimeToDestroy = 3.f;
 	
+	FSplinePath SplinePath;					// 곡사궤도
+	float SplineLength = 0;					// 스플라인의 길이
+	float Alpha;							// 투사체 스플라인 위치 알파
+	Animator AlphaAnimator;					// 투사체의 스플라인 위치를 애니메이팅 합니다.
+
+	
+	// 범위공격을 할 것인지 (구)
 	UPROPERTY(EditAnywhere, Category = "MYDP_Combat")
 	bool DoRadialDamage = false;
-	
-	// 소유한 액터의 위치와 캡슐이 스윕을 시작하는 위치 사이의 거리
-	UPROPERTY(EditAnywhere, Category = "MYDP_Combat")
-	float AttackStartPoint = 0.f;
 
-	// 스윕이 시작하는 위치와 스윕이 끝나는 위치 사이의 거리
-	UPROPERTY(EditAnywhere, Category = "MYDP_Combat")
-	float AttackRange = 50.f;
-
-	// 캡슐의 반지름
+	// 구의 반지름
 	UPROPERTY(EditAnywhere, Category = "MYDP_Combat")
 	float AttackRadius = 100.f;
 
+	
+	// 관통여부 (0이면 비관통, n 이면 n번 관통)
+	UPROPERTY(EditAnywhere, Category = "MYDP_Combat")
+	int32 bPiercing = 0;
+
+	int32 PiercedTime = 0;
 	
 	// =================================================================================================
 	// 유틸 및 이펙트
@@ -134,7 +141,13 @@ public:
 	
 protected:
 	// 생성 후 즉시 효과 적용 및 파괴
-	virtual void OneTickTask();
+	virtual void DestroyEvent();
+
+	// 생성 후 n초 뒤 파괴 바인드
+	void BindDestroyOnTime();
+
+	// Projectile 궤도 애니메이터
+	void StartAnimator();
 	
 	// 히트시 호출해서 데미지 적용, 투사체 파괴 등을 수행
 	UFUNCTION()

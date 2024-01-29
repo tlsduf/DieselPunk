@@ -94,6 +94,9 @@ void ACharacterTurret::SetTurretTarget()
 				return !thisPtr->InValidArea(FObjectManager::GetInstance()->FindActor(ID)->GetActorLocation());
 			return true;
 		});
+		//타겟을 공격할 수 있는 조건(벽에 막히거나)
+		//TODO
+		
 		//기준점(대게 this)에 가장 가까운(또는 다른 조건) 액터(또는 어레이) 반환
 		TWeakObjectPtr<AActor> tempTarget = Cast<ACharacterNPC>(FObjectManager::GetInstance()->FindActor(
 			FObjectManager::GetInstance()->GetNearestACtorByRangeAndIds(GetActorLocation(), outActors)));
@@ -102,8 +105,6 @@ void ACharacterTurret::SetTurretTarget()
 		//현재 타겟이 유효한가
 		if(!tempTarget.IsValid())
 			return;
-		//타겟을 공격할 수 있는가(벽에 막히거나)
-		//TODO
 		
 		//3 타겟 등록(NPC 프롭) : 위 조건에 맞는 타겟 등록
 		Target = tempTarget;
@@ -111,9 +112,8 @@ void ACharacterTurret::SetTurretTarget()
 	else
 	{
 		// 유효하다면 타겟 추적
-		// 목표와의 거리 측정 // 거리가 유효하지 않으면 초기화
-		float distance = FVector::Dist(GetActorLocation(), Target->GetActorLocation());
-		if(distance > GetStat().GetStat(ECharacterStatType::AttackRange))
+		// 타겟이 범위안에 있는지 탐색 // 유효하지 않으면 타겟 초기화
+		if(!InValidArea(Target->GetActorLocation()))
 			Target = nullptr;
 	}
 }

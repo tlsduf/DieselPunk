@@ -44,13 +44,13 @@ void ACharacterNPC::BeginPlay()
 	
 	// SKill Stat Initialize
 	if(MeleeAttack != nullptr)
-		MeleeAttack->InitSkillStat();
+		MeleeAttack->InitSkill();
 
 	if(ProjectileAttack != nullptr)
-		ProjectileAttack->InitSkillStat();
+		ProjectileAttack->InitSkill();
 
 	if(TargetAttack != nullptr)
-		TargetAttack->InitSkillStat();
+		TargetAttack->InitSkill();
 }
 
 // =============================================================
@@ -98,7 +98,7 @@ void ACharacterNPC::Tick(float DeltaTime)
 		}
 
 		if(DebugOnOff)
-			DrawDebugPoint(GetWorld(), GetTargetLoc(), 30, FColor::Orange, false);
+			DrawDebugPoint(GetWorld(), GetNowGoalLoc(), 30, FColor::Orange, false);
 	}
 }
 
@@ -194,21 +194,20 @@ void ACharacterNPC::HandleStatusUI()
 // =============================================================
 void ACharacterNPC::DoMeleeAttack()
 {
-	if(MeleeAttack != nullptr)
-		MeleeAttack->AbilityStart();
+	//if(MeleeAttack != nullptr)
+		//MeleeAttack->AbilityStart();
 }
 
 void ACharacterNPC::DoProjectileAttack()
 {
 	if(ProjectileAttack != nullptr)
-		ProjectileAttack->AbilityStart();
+		ProjectileAttack->AbilityStart(Target.Get());
 }
 
 void ACharacterNPC::DoTargetAttack()
 {
 	if(TargetAttack != nullptr)
-		if(auto TA = Cast<UTargetAttack>(TargetAttack))
-			TA->TargetAttack(Target.Get());
+		TargetAttack->AbilityStart(Target.Get());
 }
 
 // =============================================================

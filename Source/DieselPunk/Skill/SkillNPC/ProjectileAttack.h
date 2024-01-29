@@ -3,11 +3,10 @@
 #pragma once
 
 #include "../SkillBase.h"
+#include "../../Util/SplineConstructor.h"
 #include "ProjectileAttack.generated.h"
 
-/**
- *
- */
+
 class AProjectileBase;
 
 
@@ -24,12 +23,22 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	virtual void AbilityStart() override;
+	virtual void AbilityStart(AActor* inTarget) override;
+
+	// 설정된 Transform으로 투사체를 생성합니다.
+	void Fire(AActor* inTarget);
+
+	// Target의 위치를 기반으로 곡사궤도를 생성하고, Projectile에 Spline정보를 줍니다.
+	FSplinePath MakeSplinePath(AActor* inTarget);
+
+	// 경로 DrawDebug
+	void DrawDebugSpline(FSplinePath inSpline);
 
 private:
+	// 체크하면 곡사로 쏩니다.
+	UPROPERTY(EditAnywhere, Category = "MYDP_Combat")
+	bool bHowitzer = false;
+	
 	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
 	TSubclassOf<AProjectileBase> ProjectileBaseClass;
-
-	UPROPERTY()
-	AProjectileBase *ProjectileBase;
 };

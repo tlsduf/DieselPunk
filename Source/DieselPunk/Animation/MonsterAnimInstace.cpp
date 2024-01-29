@@ -77,7 +77,7 @@ void UMonsterAnimInstace::AnimNotify_NotifyMeleeAttack() const
 		MA = Cast<UMeleeAttack>(ownerPawn->MeleeAttack);
 	
 	if(MA != nullptr)
-		MA->AbilityStart();
+		MA->AbilityStart(nullptr);
 }
 
 // 공중몹 프로펠러 회전

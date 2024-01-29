@@ -42,7 +42,7 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
         OwnerComp.GetBlackboardComponent()->ClearValue(TEXT("Target"));
     
     // 목표위치 SET
-    OwnerComp.GetBlackboardComponent()->SetValueAsVector(TEXT("TargetLocation"), AICharacter->GetTargetLoc());
+    OwnerComp.GetBlackboardComponent()->SetValueAsVector(TEXT("TargetLocation"), AICharacter->GetNowGoalLoc());
 
     // 타겟이 플레이어 일 경우
     if(AICharacter->GetAttackTarget() == PlayerPawn)

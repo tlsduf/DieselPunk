@@ -14,7 +14,7 @@
 // =============================================================
 AProjectileBase::AProjectileBase()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	// CapsuleComponent Set // 캡슐 컴포넌트 설정
 	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
@@ -58,7 +58,7 @@ void AProjectileBase::BeginPlay()
 	
 	// 생성 후 즉시 효과 적용 및 파괴
 	if(bUseOneTick)
-		OneTickTask();
+		DestroyEvent();
 	
 	// OnHit Event Bind
 	if(CollisionResponses == ECollisionResponsesType::OnHit)
@@ -66,13 +66,19 @@ void AProjectileBase::BeginPlay()
 	// Overlap Event Bind
 	if(CollisionResponses == ECollisionResponsesType::Overlap)
 		CapsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &AProjectileBase::BeginOverlapEvent);
+	// CollisionResponses이 None이면 아무것도 바인드 하지 않음 >> n초 뒤 자동파괴
+
+
+	// 투사체 궤도 애니메이터
+	if(SplinePath.IsValid())
+	{
+		SplineLength = SplinePath.GetSplineLength();
+		TimeToDestroy = SplineLength / ProjectileMovementComponent->GetMaxSpeed();
+		StartAnimator();
+	}
 	
-	// 투사체 5초 뒤 자동 파괴
-	TWeakObjectPtr<AProjectileBase> thisPtr = this;
-	GetWorld()->GetTimerManager().SetTimer(DestroyTimeHandler,[thisPtr](){
-			if(thisPtr.IsValid())
-				thisPtr->Destroy();
-		}, 5, false);
+	// 투사체 TimeToDestroy 뒤 자동 파괴
+	BindDestroyOnTime();
 }
 
 // =============================================================
@@ -81,12 +87,20 @@ void AProjectileBase::BeginPlay()
 void AProjectileBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if(SplineLength > 0)
+	{
+		// 투사체의 위치와 방향을 궤도를 따라 움직이도록 합니다.
+		AlphaAnimator.Update(DeltaTime);
+		SetActorLocation(SplinePath.GetLocationAtDistanceAlongSpline(Alpha * SplineLength));
+		SetActorRotation(SplinePath.GetRotationAtDistanceAlongSpline(Alpha * SplineLength));
+	}
 }
 
 // =============================================================
-// 생성 후 즉시 효과 적용 및 파괴
+// 파괴 시 이펙트 및 효과 적용
 // =============================================================
-void AProjectileBase::OneTickTask()
+void AProjectileBase::DestroyEvent()
 {
 	// Effect
 	HitEffectFTransform.Location = HitEffectFTransform.Location + GetActorLocation();
@@ -99,19 +113,57 @@ void AProjectileBase::OneTickTask()
 	if (HitSound)
 		UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetActorLocation());
 	
-	TArray<FHitResult> sweepResults;
-	FVector startLocation = GetActorLocation() + GetActorForwardVector() * AttackStartPoint;
-	FVector endLocation = startLocation + GetActorForwardVector() * AttackRange;
-	UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, ProjectileOwnerType, DebugOnOff);
-	if(!sweepResults.IsEmpty())
+	if(DoRadialDamage)
 	{
-		for (auto It = sweepResults.CreateIterator(); It; It++)
+		TArray<FHitResult> sweepResults;
+		FVector startLocation = GetActorLocation();
+		FVector endLocation = startLocation;
+		if(OwnerCharacter->DebugOnOff)
+			DrawDebugSphere(GetWorld(), startLocation, AttackRadius, 32, FColor::Red, false, 3, 0, 5);
+		UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, ProjectileOwnerType, DebugOnOff);
+		if(!sweepResults.IsEmpty())
 		{
-			UGameplayStatics::ApplyDamage(It->GetActor(), Damage, OwnerController, OwnerCharacter, nullptr);
+			for (auto It = sweepResults.CreateIterator(); It; It++)
+			{
+				UGameplayStatics::ApplyDamage(It->GetActor(), Damage, OwnerController, OwnerCharacter, nullptr);
+			}
 		}
 	}
 
 	Destroy();
+}
+
+// =============================================================
+// 생성 후 n초 뒤 파괴 바인드
+// =============================================================
+void AProjectileBase::BindDestroyOnTime()
+{
+	TWeakObjectPtr<AProjectileBase> thisPtr = this;
+	GetWorld()->GetTimerManager().SetTimer(DestroyTimeHandler,[thisPtr](){
+			if(thisPtr.IsValid())
+				thisPtr->DestroyEvent();
+		}, TimeToDestroy, false);
+}
+
+// =============================================================
+// Projectile 궤도 애니메이터
+// =============================================================
+void AProjectileBase::StartAnimator()
+{
+	TWeakObjectPtr<AProjectileBase> thisPtr = this;
+	
+	AnimatorParam param;
+	param.StartValue = 0.f;
+	param.EndValue = 1.f;
+	param.DurationTime = SplineLength / ProjectileMovementComponent->GetMaxSpeed();
+	param.AnimType = EAnimType::Linear;	
+	param.DurationFunc = [thisPtr](float InCurValue)
+	{
+		if(thisPtr.IsValid())
+			thisPtr->Alpha = InCurValue;
+	};
+	AlphaAnimator.SetParam(param);
+	AlphaAnimator.Start();
 }
 
 // =============================================================
@@ -128,13 +180,15 @@ void AProjectileBase::OnHit(UPrimitiveComponent* InHitComp, AActor* InOtherActor
 void AProjectileBase::_OnHit(UPrimitiveComponent* InHitComp, AActor* InOtherActor, UPrimitiveComponent* InOtherComp, FVector InNormalImpulse, const FHitResult& InHitResult)
 {
 	// Effect
-	HitEffectFTransform.Location = HitEffectFTransform.Location + GetActorLocation();
-	HitEffectFTransform.Rotation = HitEffectFTransform.Rotation + GetActorRotation();
+	FEffectTransform hitEffectFTransform;
+	hitEffectFTransform.Location = HitEffectFTransform.Location + GetActorLocation();
+	hitEffectFTransform.Rotation = HitEffectFTransform.Rotation + GetActorRotation();
+	hitEffectFTransform.Scale = HitEffectFTransform.Scale;
 
 	if (N_HitEffect)
-		UtilEffect::SpawnNiagaraEffect(GetWorld(), N_HitEffect, HitEffectFTransform);
+		UtilEffect::SpawnNiagaraEffect(GetWorld(), N_HitEffect, hitEffectFTransform);
 	if (HitEffect)
-		UtilEffect::SpawnParticleEffect(GetWorld(), HitEffect, HitEffectFTransform);
+		UtilEffect::SpawnParticleEffect(GetWorld(), HitEffect, hitEffectFTransform);
 	if (HitSound)
 		UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetActorLocation());
 
@@ -144,8 +198,8 @@ void AProjectileBase::_OnHit(UPrimitiveComponent* InHitComp, AActor* InOtherActo
 		if(DoRadialDamage)
 		{
 			TArray<FHitResult> sweepResults;
-			FVector startLocation = GetActorLocation() + GetActorForwardVector() * AttackStartPoint;
-			FVector endLocation = startLocation + GetActorForwardVector() * AttackRange;
+			FVector startLocation = GetActorLocation();
+			FVector endLocation = startLocation;
 			UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, ProjectileOwnerType, DebugOnOff);
 			if(!sweepResults.IsEmpty())
 			{
@@ -183,24 +237,26 @@ void AProjectileBase::_BeginOverlapEvent(UPrimitiveComponent* InOverlappedCompon
 	bool InbFromSweep, const FHitResult & InSweepResult)
 {
 	// Effect
-	HitEffectFTransform.Location = HitEffectFTransform.Location + GetActorLocation();
-	HitEffectFTransform.Rotation = HitEffectFTransform.Rotation + GetActorRotation();
+	FEffectTransform hitEffectFTransform;
+	hitEffectFTransform.Location = HitEffectFTransform.Location + GetActorLocation();
+	hitEffectFTransform.Rotation = HitEffectFTransform.Rotation + GetActorRotation();
+	hitEffectFTransform.Scale = HitEffectFTransform.Scale;
 
 	if (N_HitEffect)
-		UtilEffect::SpawnNiagaraEffect(GetWorld(), N_HitEffect, HitEffectFTransform);
+		UtilEffect::SpawnNiagaraEffect(GetWorld(), N_HitEffect, hitEffectFTransform);
 	if (HitEffect)
-		UtilEffect::SpawnParticleEffect(GetWorld(), HitEffect, HitEffectFTransform);
+		UtilEffect::SpawnParticleEffect(GetWorld(), HitEffect, hitEffectFTransform);
 	if (HitSound)
 		UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetActorLocation());
 
 	// 데미지 전달
-	if (InOtherActor != nullptr && InOtherActor != OwnerCharacter)
+	if (InOtherActor && InOtherActor != this && InOtherActor != GetOwner())
 	{
 		if(DoRadialDamage)
 		{
 			TArray<FHitResult> sweepResults;
-			FVector startLocation = GetActorLocation() + GetActorForwardVector() * AttackStartPoint;
-			FVector endLocation = startLocation + GetActorForwardVector() * AttackRange;
+			FVector startLocation = GetActorLocation();
+			FVector endLocation = startLocation;
 			UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, ProjectileOwnerType, DebugOnOff);
 			if(!sweepResults.IsEmpty())
 			{
@@ -218,7 +274,12 @@ void AProjectileBase::_BeginOverlapEvent(UPrimitiveComponent* InOverlappedCompon
 	}
 
 	// Projectile 파괴
-	Destroy();
+	if(bPiercing <= 0)
+		Destroy();
+
+	PiercedTime++;
+	if(bPiercing <= PiercedTime)
+		Destroy();
 }
 
 void AProjectileBase::SetCapsuleCollisionResponses()

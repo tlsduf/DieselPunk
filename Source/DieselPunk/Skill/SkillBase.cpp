@@ -38,14 +38,17 @@ void USkillBase::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 }
 
 // 몬스터클래스가 오버라이드하여 사용합니다.
-void USkillBase::AbilityStart()
+void USkillBase::AbilityStart(AActor* inTarget)
 {
+	if(inTarget == nullptr)
+		return;
 }
 
 // CharacterBase의 Stat.Initialize 후 호출
-void USkillBase::InitSkillStat()
+void USkillBase::InitSkill()
 {
 	if(OwnerCharacter)
-		Atk = static_cast<float>(OwnerCharacter->GetStat().GetStat(ECharacterStatType::Atk));
+		CharacterStatAtk = static_cast<float>(OwnerCharacter->GetStat().GetStat(ECharacterStatType::Atk));
+	Damage = CharacterStatAtk * AtkCoefficient;
 }
 

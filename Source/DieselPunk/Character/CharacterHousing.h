@@ -27,7 +27,8 @@ class DIESELPUNK_API ACharacterHousing : public ACharacterNPC
 	//기존 머터리얼
 	TMap<TWeakObjectPtr<UMeshComponent>, TArray<TWeakObjectPtr<UMaterialInterface>>> OriginalMaterials;
 
-	TWeakObjectPtr<UBoxComponent> Box;
+	UPROPERTY(EditAnywhere)
+	UBoxComponent* Box;
 	
 public:
 	ACharacterHousing();

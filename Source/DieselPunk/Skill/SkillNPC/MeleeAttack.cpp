@@ -18,9 +18,9 @@ void UMeleeAttack::BeginPlay()
 	Super::BeginPlay();
 }
 
-void UMeleeAttack::AbilityStart()
+void UMeleeAttack::AbilityStart(AActor* inTarget)
 {
-	Super::AbilityStart();
+	Super::AbilityStart(inTarget);
 
 	Attack();
 }
@@ -46,9 +46,6 @@ void UMeleeAttack::Attack()
 	FVector startLocation = ownerPawn->GetActorLocation() + ownerPawn->GetActorForwardVector() * AttackStartPoint;
 	FVector endLocation = startLocation + ownerPawn->GetActorForwardVector() * AttackRange;
 	UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, EProjectileOwnerType::Enemy, ownerPawn->DebugOnOff);
-
-	// 데미지 결정
-	float damage = Atk * AtkCoefficient;
 	
 	// 데미지 전달
 	if(!sweepResults.IsEmpty())
@@ -57,7 +54,7 @@ void UMeleeAttack::Attack()
 		for (auto It = sweepResults.CreateIterator(); It; It++)
 		{
 			hitActor = It->GetActor();
-			UGameplayStatics::ApplyDamage(hitActor, damage, OwnerController, ownerPawn, nullptr);
+			UGameplayStatics::ApplyDamage(hitActor, Damage, OwnerController, ownerPawn, nullptr);
 		}
 	}
 }
