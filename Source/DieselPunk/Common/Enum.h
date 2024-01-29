@@ -28,7 +28,7 @@ enum class ECollisionResponsesType : uint8
 {
 	OnHit		UMETA( ToolTip = "온힛 이벤트 전용" ),
 	Overlap		UMETA( ToolTip = "오버랩 이벤트 전용" ),
-	None		UMETA( ToolTip = "n초 뒤 파괴" )
+	None        UMETA( ToolTip = "n초 뒤 파괴" )
 };
 
 // 투사체 종류 Player or Enemy
@@ -157,7 +157,8 @@ UENUM( BlueprintType )
 enum class ECharacterType : uint8
 {
 	None = 0,
-	Player = 1	UMETA( ToolTip = "플레이어" ),
-	Monster = 2	UMETA( ToolTip = "몬스터" ),
-	Turret = 4	UMETA( ToolTip = "터렛" ),
+	Player = 1			UMETA( ToolTip = "플레이어" ),
+	Monster = 2			UMETA( ToolTip = "몬스터" ),
+	Turret = 4			UMETA( ToolTip = "터렛" ),
+	Installation = 8	UMETA( ToolTip = "설치물" ),
 };

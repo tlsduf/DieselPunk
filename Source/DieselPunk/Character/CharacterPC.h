@@ -6,7 +6,6 @@
 #include "InputActionValue.h"
 #include "CharacterPC.generated.h"
 
-class ACharacterTurret;
 DECLARE_DYNAMIC_DELEGATE(FDelegateInteractTask);
 DECLARE_DYNAMIC_DELEGATE(FDelegateJumpAction);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FDelegateLandAction, const FHitResult&, Hit);
@@ -17,6 +16,7 @@ DECLARE_DELEGATE_OneParam(FDelegate_CardComplete, bool&)
 
 class UPlayerSkill;
 class FDeckHandler;
+class ACharacterHousing;
 enum class EAbilityType : uint8;
 
 UCLASS(config = Game)
@@ -38,7 +38,7 @@ class ACharacterPC : public ACharacterBase
 	FDelegate_CardComplete DelegateCardComplete;
 	FDelegate_ChangeDeckCount DelegateChangeDeckCount;
 
-	TWeakObjectPtr<ACharacterTurret> SelectInstallation;
+	TWeakObjectPtr<ACharacterHousing> SelectInstallation;
 
 public:
 	/////////////////////////////////////////////////////////////////////
@@ -212,8 +212,8 @@ public:
 	// 카드 덱 카운트 변경 델리게이트를 반환합니다.
 	FDelegate_ChangeDeckCount& GetDelegateChangeDeckCount(){return DelegateChangeDeckCount;}
 
-	void SetSelectInstallation(TWeakObjectPtr<ACharacterTurret> InInstallation);
-	const ACharacterTurret* GetSelectInstallation() const {return SelectInstallation.Get();}
+	void SetSelectInstallation(TWeakObjectPtr<ACharacterHousing> InInstallation);
+	const ACharacterHousing* GetSelectInstallation() const {return SelectInstallation.Get();}
 
 	void BindSkillUseCard();
 	void UnBindSkillUseCard();

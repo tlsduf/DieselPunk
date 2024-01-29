@@ -7,6 +7,7 @@
 #include "../Manager/DatatableManager.h"
 #include "../Manager/ObjectManager.h"
 #include "../Character/CharacterTurret.h"
+#include "../Character/CharacterInstallation.h"
 
 FTurretCard::FTurretCard(int32 InKey, const FString& InCardName, TWeakObjectPtr<ACharacterPC> InOwner)
 	: FCard(InKey, InCardName, InOwner)
@@ -16,6 +17,7 @@ FTurretCard::FTurretCard(int32 InKey, const FString& InCardName, TWeakObjectPtr<
 	Info.Cost = data->Cost;
 	MaxTier = data->MaxTier;
 	CurrentTier = 1;
+	ControlTurretId = -1;
 	if(!data->Names.IsEmpty())
 		CharacterName = data->Names[0];
 }
@@ -44,7 +46,12 @@ void FTurretCard::_Activate(bool& OutSuccess, int32 InCost)
 	}
 
 	//터렛 생성
-	UClass* TurretClass = LoadClass<ACharacterTurret>( NULL, *UtilPath::GetCharacterBlueprintPath(*dataTable->BluePrintPath));
+	UClass* TurretClass = nullptr;
+	if(Info.CardType == ECardType::Turret)
+		TurretClass = LoadClass<ACharacterTurret>( NULL, *UtilPath::GetCharacterBlueprintPath(*dataTable->BluePrintPath));
+	else if(Info.CardType == ECardType::Installation)
+		TurretClass = LoadClass<ACharacterInstallation>( NULL, *UtilPath::GetCharacterBlueprintPath(*dataTable->BluePrintPath));
+	
 	if(TurretClass)
 	{
 		FVector traceStartLocation = Owner->GetActorLocation() + (Owner->GetActorForwardVector() * 500) + FVector(0,0,300);
@@ -54,8 +61,12 @@ void FTurretCard::_Activate(bool& OutSuccess, int32 InCost)
 		spawnParam.Rotation = FRotator::ZeroRotator;
 		spawnParam.Location = spawnLocation;
 		spawnParam.CallBackSpawn = nullptr;
-			
-		ControlTurretId = FObjectManager::GetInstance()->CreateActor<ACharacterTurret>(TurretClass, spawnParam);
+
+		if(Info.CardType == ECardType::Turret)
+			ControlTurretId = FObjectManager::GetInstance()->CreateActor<ACharacterTurret>(TurretClass, spawnParam);
+		else if(Info.CardType == ECardType::Installation)
+			ControlTurretId = FObjectManager::GetInstance()->CreateActor<ACharacterInstallation>(TurretClass, spawnParam);
+		
 		OutSuccess = true;
 	}
 }
@@ -63,7 +74,7 @@ void FTurretCard::_Activate(bool& OutSuccess, int32 InCost)
 //카드 사용 완료 함수
 void FTurretCard::_Complete(bool& OutSuccess)
 {
-	ACharacterTurret* controlTurret = Cast<ACharacterTurret>(FObjectManager::GetInstance()->FindActor(ControlTurretId));
+	ACharacterHousing* controlTurret = Cast<ACharacterHousing>(FObjectManager::GetInstance()->FindActor(ControlTurretId));
 	if(!controlTurret)
 	{
 		LOG_SCREEN(FColor::Red, TEXT("ControlTurretId: %d에 해당하는 Turret이 존재하지 않습니다."), ControlTurretId)

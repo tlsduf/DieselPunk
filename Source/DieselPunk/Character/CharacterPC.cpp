@@ -521,7 +521,7 @@ void ACharacterPC::DrawCard()
 		controller->RenewHand();
 }
 
-void ACharacterPC::SetSelectInstallation(TWeakObjectPtr<ACharacterTurret> InInstallation)
+void ACharacterPC::SetSelectInstallation(TWeakObjectPtr<ACharacterHousing> InInstallation)
 {
 	SelectInstallation = InInstallation;
 	if(InInstallation == nullptr)

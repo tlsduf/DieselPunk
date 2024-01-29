@@ -21,12 +21,15 @@
 // =============================================================
 ACharacterHousing::ACharacterHousing()
 {
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = false;
 	HousingActorComponent = CreateDefaultSubobject<UHousingActorComponent>(TEXT("Housing Actor Component"));
 
 	static ConstructorHelpers::FObjectFinder<UMaterialInterface> material(TEXT("/Script/Engine.Material'/Game/DieselPunk/Material/M_Housing.M_Housing'"));
 	if(material.Succeeded())
 		HousingMaterial = material.Object;
 
+	
 	Box = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
 	/*Box->bDynamicObstacle = true;
 	FString inPath = FString::Printf(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/DieselPunk/AI/BP_NavArea_High.BP_NavArea_High_C'"));
@@ -119,11 +122,13 @@ bool ACharacterHousing::CompleteHousingTurret()
 		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel3, ECollisionResponse::ECR_Block);
 		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Block);
 
-		Box->SetGenerateOverlapEvents(true);
-		Box->SetCollisionResponseToChannel(ECC_GameTraceChannel5, ECR_Block);
-		Box->SetCanEverAffectNavigation(true);
-		Box->SetBoxExtent(FVector(GetGridSize() * 50, GetGridSize() * 50, GetGridSize() * 50));
-		
+		if(Box != nullptr)
+		{
+			Box->SetGenerateOverlapEvents(true);
+			Box->SetCollisionResponseToChannel(ECC_GameTraceChannel5, ECR_Block);
+			Box->SetCanEverAffectNavigation(true);
+			Box->SetBoxExtent(FVector(GetGridSize() * 50, GetGridSize() * 50, GetGridSize() * 50));
+		}
 		// 포탑 생성완료시 모든 적의 경로를 재탐색합니다.
 		UpdateSplinePathAll();
 		

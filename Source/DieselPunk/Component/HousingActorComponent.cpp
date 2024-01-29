@@ -4,7 +4,7 @@
 #include "HousingActorComponent.h"
 
 #include "../Character/CharacterPc.h"
-#include "../Character/CharacterTurret.h"
+#include "../Character/CharacterHousing.h"
 #include "../Manager/ObjectManager.h"
 #include "../Manager/NavigationManager.h"
 
@@ -94,7 +94,7 @@ void UHousingActorComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	//바닥과 충돌 됐다면
 	if(hasHit)
 	{
-		int32 turretGridSize = Cast<ACharacterTurret>(GetOwner())->GetGridSize();
+		int32 turretGridSize = Cast<ACharacterHousing>(GetOwner())->GetGridSize();
 		//그리드에 맞춘 위치 탐색
 		FVector newLocation;
 		if(turretGridSize & 1)
@@ -121,14 +121,14 @@ void UHousingActorComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		DrawDebugBox(world->World(), boxLocation, boxExtend, FColor::Red, false, -1 , 0, 2);
 
 		//설치가 가능하면 시안 색으로 머터리얼 변경
-		ACharacterTurret* owner = Cast<ACharacterTurret>(GetOwner());
+		ACharacterHousing* owner = Cast<ACharacterHousing>(GetOwner());
 		owner->ChangeHousingMaterialParameterChange(IsArrangeTurret());
 	}
 }
 
 bool UHousingActorComponent::IsArrangeTurret()
 {
-	ACharacterTurret* owner = Cast<ACharacterTurret>(GetOwner());
+	ACharacterHousing* owner = Cast<ACharacterHousing>(GetOwner());
 	if(owner == nullptr)
 		return false;
 
@@ -149,7 +149,7 @@ bool UHousingActorComponent::IsArrangeTurret()
 
 bool UHousingActorComponent::CompleteHousingTurret()
 {
-	ACharacterTurret* owner = Cast<ACharacterTurret>(GetOwner());
+	ACharacterHousing* owner = Cast<ACharacterHousing>(GetOwner());
 	if(owner == nullptr)
 		return false;
 

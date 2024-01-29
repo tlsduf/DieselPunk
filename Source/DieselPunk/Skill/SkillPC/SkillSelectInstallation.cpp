@@ -27,14 +27,14 @@ void USkillSelectInstallation::SkillTriggered()
 	if(UtilCollision::GetViewMiddle(GetWorld(), Cast<APlayerController>(OwnerController), hit, 99999, ignore))
 	{
 		//선택한 액터가 터렛이 아닐 경우 리턴
-		if(Cast<ACharacterTurret>(hit.GetActor()) == nullptr)
+		if(Cast<ACharacterHousing>(hit.GetActor()) == nullptr)
 		{
 			OwnerCharacterPC->SetSelectInstallation(nullptr);
 			return;
 		}
 		
 		//선택 동작
-		const ACharacterTurret* oldInstallation = OwnerCharacterPC->GetSelectInstallation();
+		const ACharacterHousing* oldInstallation = OwnerCharacterPC->GetSelectInstallation();
 
 		//이미 선택된 설치물에 E를 누름
 		if(oldInstallation == hit.GetActor())
@@ -45,7 +45,7 @@ void USkillSelectInstallation::SkillTriggered()
 		else
 		{
 			//새롭게 선택한 설치물 등록
-			OwnerCharacterPC->SetSelectInstallation(Cast<ACharacterTurret>(hit.GetActor()));
+			OwnerCharacterPC->SetSelectInstallation(Cast<ACharacterHousing>(hit.GetActor()));
 		}
 	}
 	else
