@@ -9,14 +9,14 @@
  *
  */
 
-class ACharacterTurret;
+class ACharacterHousing;
 
 UCLASS()
 class DIESELPUNK_API USkillInteractInstallation : public UPlayerSkill
 {
 	GENERATED_BODY()
 
-	TWeakObjectPtr<ACharacterTurret> InteractiveInstallation;
+	TWeakObjectPtr<ACharacterHousing> InteractiveInstallation;
 	float Distance;
 	bool IsValid;
 

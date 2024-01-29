@@ -29,9 +29,9 @@ void USkillInteractInstallation::SkillStarted()
 	
 	if(CheckInteractive(hit, 99999, ignore))
 	{
-		if(Cast<ACharacterTurret>(hit.GetActor()) == nullptr)
+		if(Cast<ACharacterHousing>(hit.GetActor()) == nullptr)
 			return;
-		InteractiveInstallation = Cast<ACharacterTurret>(hit.GetActor());
+		InteractiveInstallation = Cast<ACharacterHousing>(hit.GetActor());
 		Distance = hit.Distance;
 		IsValid = true;
 	}
@@ -48,7 +48,7 @@ void USkillInteractInstallation::SkillOngoing()
 	
 	if(CheckInteractive(hit, 99999, ignore))
 	{
-		if(Cast<ACharacterTurret>(hit.GetActor()) == nullptr)
+		if(Cast<ACharacterHousing>(hit.GetActor()) == nullptr)
 			return;
 
 		if(InteractiveInstallation != hit.GetActor())
@@ -70,7 +70,7 @@ void USkillInteractInstallation::SkillTriggered()
 	
 	if(CheckInteractive(hit, 99999, ignore))
 	{
-		if(Cast<ACharacterTurret>(hit.GetActor()) == nullptr)
+		if(Cast<ACharacterHousing>(hit.GetActor()) == nullptr)
 			return;
 
 		if(InteractiveInstallation != hit.GetActor())
@@ -141,7 +141,7 @@ void USkillInteractInstallation::SkillCanceled()
 	
 	if(CheckInteractive(hit, 99999, ignore))
 	{
-		if(Cast<ACharacterTurret>(hit.GetActor()) == nullptr)
+		if(Cast<ACharacterHousing>(hit.GetActor()) == nullptr)
 			return;
 
 		if(InteractiveInstallation != hit.GetActor())
@@ -178,13 +178,13 @@ void USkillInteractInstallation::SkillCanceled()
 			return Cast<ACharacterTurret>(actor) != nullptr;
 		});
 
-		TArray<ACharacterTurret*> turrets;
+		TArray<ACharacterHousing*> turrets;
 		for(int32 id : ids)
 		{
 			//자기자신 제외
 			if(InteractiveInstallation->GetObjectId() == id)
 				continue;
-			ACharacterTurret* installation = Cast<ACharacterTurret>(FObjectManager::GetInstance()->FindActor(id));
+			ACharacterHousing* installation = Cast<ACharacterHousing>(FObjectManager::GetInstance()->FindActor(id));
 			
 			//같은 포탑 종류 추가
 			if(InteractiveInstallation->GetCharacterName() == installation->GetCharacterName())
@@ -199,7 +199,7 @@ void USkillInteractInstallation::SkillCanceled()
 		}
 
 		//가장 먼저 설치된 순으로 정렬
-		turrets.Sort([](ACharacterTurret& lhs, ACharacterTurret& rhs)
+		turrets.Sort([](ACharacterHousing& lhs, ACharacterHousing& rhs)
 		{
 			return lhs.GetCreateTime() < rhs.GetCreateTime();
 		});
@@ -209,7 +209,7 @@ void USkillInteractInstallation::SkillCanceled()
 		FObjectManager::GetInstance()->DestroyActor(turrets[1]->GetObjectId());
 
 		//포탑 업그레이드
-		InteractiveInstallation->UpgradeTurret();
+		InteractiveInstallation->UpgradeInstallation();
 	}
 }
 

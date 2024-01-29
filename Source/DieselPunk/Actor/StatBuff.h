@@ -41,8 +41,6 @@ struct FEffectData
 	USoundBase* Sound;
 };
 
-class AProjectilePathingSpline;
-
 UCLASS()
 class DIESELPUNK_API AStatBuff : public ASkillActor
 {
