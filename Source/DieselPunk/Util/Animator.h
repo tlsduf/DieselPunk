@@ -32,7 +32,6 @@
 
 
 // 애니메이션 타입
-// 엔진에서 제공하는 ECurveEaseFunction 와 같은 구조. #include <Animation/CurveHandle.h> 에 정의됨.
 enum class EAnimType : uint8
 {
 	Linear,				// Linear interpolation, with no easing
@@ -97,6 +96,5 @@ public:
 	void Stop();
 
 	// 시간, 애니메이션 타입에 따라 애니메이팅
-	// 엔진에서 제공하는 ApplyEasing 와 같은 구조. #include <Animation/CurveHandle.h> 에 정의됨.
-	static float ApplyEasing(float inTime, EAnimType EaseType);
+	static float ApplyEasing(EAnimType EaseType, float InAccTime, float InStartValue, float InDiffValue, float InEndTime);
 };

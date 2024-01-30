@@ -13,7 +13,7 @@ public:
 	
 	int32 s_ReparamStepsPerSegment = 10;	// Spline path options
 
-	public:
+public:
 	// 생성자
 	FSplinePath();
 

@@ -233,15 +233,20 @@ void AMonsterSpawner::SpawnMonster(float InDeltaTime)
 				// 몬스터 투영값 계산 // 몬스터 목표배열 설정
 				if(auto npc = Cast<ACharacterNPC>(FObjectManager::GetInstance()->FindActor(id)))
 				{
-					npc->AddEnemyRoutingLines(PathMap[spawnParam.Location][0], GetActorLocation(), PathRouterNodes[1]->GetActorLocation());
-					for(int i = 1; i < PathRouterNodeNum; i++ )
+					if(!PathRouterNodes.IsEmpty())
 					{
-						npc->AddEnemyRoutingLines(PathMap[spawnParam.Location][i], PathRouterNodes[i]->GetActorLocation(), PathRouterNodes[i+1]->GetActorLocation());
+						npc->AddEnemyRoutingLines(PathMap[spawnParam.Location][0], GetActorLocation(), PathRouterNodes[1]->GetActorLocation());
+						for(int i = 1; i < PathRouterNodeNum; i++ )
+						{
+							npc->AddEnemyRoutingLines(PathMap[spawnParam.Location][i], PathRouterNodes[i]->GetActorLocation(), PathRouterNodes[i+1]->GetActorLocation());
+						}
 					}
-					npc->AddEnemyRoutingLines(FObjectManager::GetInstance()->GetNexus()->GetActorLocation(), PathRouterNodes[PathRouterNodeNum]->GetActorLocation(), FObjectManager::GetInstance()->GetNexus()->GetActorLocation());
+					if(FObjectManager::GetInstance()->GetNexus() != nullptr)
+						npc->AddEnemyRoutingLines(FObjectManager::GetInstance()->GetNexus()->GetActorLocation(), PathRouterNodes[PathRouterNodeNum]->GetActorLocation(), FObjectManager::GetInstance()->GetNexus()->GetActorLocation());
 					npc->UpdateSplinePath();
 				}
 			}
+		
 
 			//생성한 몬스터 정보 삭제
 			iterSpawnInfo.RemoveCurrent();
@@ -300,7 +305,7 @@ FVector2D AMonsterSpawner::SetProportion(FVector inLoc)
 }
 
 // =============================================================
-// 스플라인 포인트를 기반으로 직사각형의 점을 PolygonPoints에 담습니다.
+// 박스 컴포넌트를 기반으로 직사각형의 점을 PolygonPoints에 담습니다.
 // =============================================================
 void AMonsterSpawner::MakeRectangleBySplinePoints()
 {
@@ -321,7 +326,7 @@ void AMonsterSpawner::MakeRectangleBySplinePoints()
 	- GetActorRotation().Vector().GetSafeNormal() * BoxScale * scale.X
 	+ (GetActorRotation() + FRotator(0,-90,0)).Vector().GetSafeNormal() * BoxScale * scale.Y;
 	
-	// Set PolygonPoints on Spline
+	// Set RectanglePoints
 	RectanglePoints.Empty();
 	RectanglePoints.Add(firstPoint);
 	RectanglePoints.Add(secondPoint);
@@ -347,7 +352,7 @@ void AMonsterSpawner::MakeRectangleBySplinePoints()
 }
 
 // =============================================================
-// 스플라인 영역 안에 위치한 점을(점 사이의 거리 = DistanceDifference) RandomLocation 에 담습니다.
+// 사각 영역 안에 위치한 점을(점 사이의 거리 = DistanceDifference) RandomLocation 에 담습니다.
 // =============================================================
 void AMonsterSpawner::GetRandomLocation()
 {
@@ -375,7 +380,7 @@ void AMonsterSpawner::GetRandomLocation()
 }
 
 // =============================================================
-// 스플라인 내부에 점이 위치하는지 확인합니다. // Point in polygon algorithm
+// 사각 내부에 점이 위치하는지 확인합니다. // Point in polygon algorithm
 // =============================================================
 bool AMonsterSpawner::IsInPolygon(double InX, double InY)
 {

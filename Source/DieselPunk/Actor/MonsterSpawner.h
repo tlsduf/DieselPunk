@@ -136,12 +136,12 @@ private:
 	FVector2D SetProportion(FVector inLoc);
 
 private:
-	// 스플라인 포인트를 기반으로 직사각형의 점을 PolygonPoints에 담습니다.
+	// 박스컴포넌트를 기반으로 직사각형의 점을 PolygonPoints에 담습니다.
 	void MakeRectangleBySplinePoints();
 	
-	// 스플라인 영역 안에 위치한 점을(점 사이의 거리 = DistanceDifference) RandomLocation 에 담습니다.
+	// 사각 영역 안에 위치한 점을(점 사이의 거리 = DistanceDifference) RandomLocation 에 담습니다.
 	void GetRandomLocation();
 	
-	// 스플라인 내부에 점이 위치하는지 확인합니다. // Point in polygon algorithm
+	// 사각 내부에 점이 위치하는지 확인합니다. // Point in polygon algorithm
 	bool IsInPolygon(double InX, double InY);
 };

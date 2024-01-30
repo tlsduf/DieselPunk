@@ -1,11 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "CharacterHousing.h"
+#include "CharacterTurret.h"
 
 #include "../Component/HousingActorComponent.h"
-#include "..\Logic\NPCAIController.h"
-#include "../Animation/TurretAnimInstace.h"
-#include "../Manager/ObjectManager.h"
 
 #include <Components/SkeletalMeshComponent.h>
 #include <Components/StaticMeshComponent.h>
@@ -22,7 +20,7 @@
 ACharacterHousing::ACharacterHousing()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bStartWithTickEnabled = false;
+	//PrimaryActorTick.bStartWithTickEnabled = false;
 	HousingActorComponent = CreateDefaultSubobject<UHousingActorComponent>(TEXT("Housing Actor Component"));
 
 	static ConstructorHelpers::FObjectFinder<UMaterialInterface> material(TEXT("/Script/Engine.Material'/Game/DieselPunk/Material/M_Housing.M_Housing'"));
@@ -131,6 +129,10 @@ bool ACharacterHousing::CompleteHousingTurret()
 		}
 		// 포탑 생성완료시 모든 적의 경로를 재탐색합니다.
 		UpdateSplinePathAll();
+		// 포탑 생성완료시 사거리를 생성합니다.
+		if(auto turret = Cast<ACharacterTurret>(this))
+			if(turret->TurretSearchAreaType == ESearchAreaType::Rectangle)
+				turret->MakeSearchArea();
 		
 		return true;
 	}

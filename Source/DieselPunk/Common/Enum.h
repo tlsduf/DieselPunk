@@ -162,3 +162,12 @@ enum class ECharacterType : uint8
 	Turret = 4			UMETA( ToolTip = "터렛" ),
 	Installation = 8	UMETA( ToolTip = "설치물" ),
 };
+
+// 총괄 범위타입 원 파생, 사각형 파생
+// 원 파생 : 원, 도넛, 피자, 도넛 피자
+UENUM( BlueprintType )
+enum class ESearchAreaType : uint8
+{
+	Circle			UMETA( ToolTip = "원 파생 범위" ),
+	Rectangle		UMETA( ToolTip = "사각형 파생 범위 " ),
+};

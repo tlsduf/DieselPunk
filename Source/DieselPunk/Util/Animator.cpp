@@ -67,10 +67,10 @@ void Animator::Update(float InDeltaTime)
 			Param.CompleteFunc( CurValue );
 		return;
 	}
+
+	float elapsedTime = DurationTime < AccTime ? DurationTime : AccTime;
 	
-	const float Time = FMath::Clamp(AccTime / DurationTime, 0.0f, 1.0f);
-	
-	CurValue = StartValue + ((EndValue - StartValue) * ApplyEasing(Time, Param.AnimType));
+	CurValue = ApplyEasing(Param.AnimType, elapsedTime * 1000.f, StartValue, EndValue - StartValue, DurationTime * 1000.f);
 
 	if( Param.DurationFunc )
 		Param.DurationFunc( CurValue );
@@ -98,7 +98,7 @@ void Animator::Stop()
 // =============================================================
 // 시간, 애니메이션 타입에 따라 애니메이팅
 // =============================================================
-float Animator::ApplyEasing( float inTime, EAnimType inEaseFunction )
+float Animator::ApplyEasing(EAnimType EaseType, float InAccTime, float InStartValue, float InDiffValue, float InEndTime)
 {
 	// Currently we always use normalized distances
 	const float Distance = 1.0f;
@@ -107,60 +107,90 @@ float Animator::ApplyEasing( float inTime, EAnimType inEaseFunction )
 	const float Start = 0.0f;
 	float CurveValue = 0.0f;
 
-	switch( inEaseFunction )
+	switch( EaseType )
 	{
 	case EAnimType::Linear:
-		CurveValue = Start + Distance * inTime;
-		break;
+		return InDiffValue * InAccTime / InEndTime + InStartValue;
 
 	case EAnimType::QuadIn:
-		CurveValue = Start + Distance * inTime * inTime;
-		break;
+		InAccTime /= InEndTime;
+		return InDiffValue * InAccTime * InAccTime + InStartValue;
 
 	case EAnimType::QuadOut:
-		CurveValue = Start + -Distance * inTime * (inTime - 2.0f);
-		break;
+		InAccTime /= InEndTime;
+		return -InDiffValue * InAccTime * (InAccTime - 2.f) + InStartValue;
 
 	case EAnimType::QuadInOut:
+		InAccTime /= InEndTime / 2.f;
+		if (InAccTime < 1.f)
 		{
-			if( inTime < 0.5f )
-			{
-				const float Scaled = inTime * 2.0f;
-				CurveValue = Start + Distance * 0.5f * Scaled * Scaled;
-			}
-			else
-			{
-				const float Scaled = (inTime - 0.5f) * 2.0f;
-				CurveValue = Start + -Distance * 0.5f * (Scaled * (Scaled - 2.0f) - 1.0f);
-			}
+			return InDiffValue / 2.f * InAccTime * InAccTime + InStartValue;
 		}
-		break;
+		else
+		{
+			InAccTime--;
+			return -InDiffValue / 2.f * (InAccTime * (InAccTime - 2.f) - 1.f) + InStartValue;
+		}
 
+	case EAnimType::QuadOutIn:
+		if (InAccTime < InEndTime / 2)
+		{
+			float accTime = InAccTime * 2.f;
+			float startValue = InStartValue;
+			float diffValue = InDiffValue / 2.f;
+			float endValue = InEndTime;
+			accTime /= endValue;
+			return -diffValue * accTime * (accTime - 2.f) + startValue;
+		}
+		else
+		{
+			float accTime = (InAccTime * 2.f) - InEndTime;
+			float startValue = InStartValue + InDiffValue / 2.f;
+			float diffValue = InDiffValue / 2.f;
+			float endValue = InEndTime;
+			accTime /= endValue;
+			return diffValue * accTime * accTime + startValue;
+		}
+		
 	case EAnimType::CubicIn:
-		CurveValue = Start + Distance * inTime * inTime * inTime;
-		break;
-
+		InAccTime /= InEndTime;
+		return InDiffValue * InAccTime * InAccTime * InAccTime + InStartValue;
+	
 	case EAnimType::CubicOut:
-		{
-			const float Offset = inTime - 1.0f;
-			CurveValue = Start + Distance * (Offset * Offset * Offset + 1.0f);
-		}
-		break;
+		InAccTime = InAccTime / InEndTime - 1.f;
+		return InDiffValue * (InAccTime * InAccTime * InAccTime + 1.f) + InStartValue;
 
 	case EAnimType::CubicInOut:
+		InAccTime /= InEndTime / 2.f;
+		if (InAccTime < 1.f)
 		{
-			float Scaled = inTime * 2.0f;
-			if (Scaled < 1.0f)
-			{
-				CurveValue = Start + Distance / 2.0f * Scaled * Scaled * Scaled;
-			}
-			else
-			{
-				Scaled -= 2.0f;
-				CurveValue = Start + Distance / 2.0f * (Scaled * Scaled * Scaled + 2.0f);
-			}
+			return InDiffValue / 2.f * InAccTime * InAccTime * InAccTime + InStartValue;
 		}
-		break;
+		else
+		{
+			InAccTime -= 2.f;
+			return InDiffValue / 2.f * (InAccTime * InAccTime * InAccTime + 2.f) + InStartValue;
+		}
+
+	case EAnimType::CubicOutIn:
+		if (InAccTime < InEndTime / 2.f)
+		{
+			float accTime = InAccTime * 2.f;
+			float startValue = InStartValue;
+			float diffValue = InDiffValue / 2.f;
+			float endValue = InEndTime;
+			accTime = accTime / endValue - 1.f;
+			return diffValue * (accTime * accTime * accTime + 1.f) + startValue;
+		}
+		else
+		{
+			float accTime = (InAccTime * 2.f) - InEndTime;
+			float startValue = InStartValue + InDiffValue / 2.f;
+			float diffValue = InDiffValue / 2.f;
+			float endValue = InEndTime;
+			accTime /= endValue;
+			return diffValue * accTime * accTime * accTime + startValue;
+		}
 
 	default:
 		// Unrecognized curve easing function type

@@ -9,6 +9,8 @@
 #include <Components/SkeletalMeshComponent.h>
 #include <DrawDebugHelpers.h>
 
+#include "Components/CapsuleComponent.h"
+
 
 UProjectileAttack::UProjectileAttack() : Super()
 {
@@ -49,6 +51,7 @@ void UProjectileAttack::Fire(AActor* inTarget)
 		{
 			splinePath = MakeSplinePath(inTarget);
 			ProjectileBase->SplinePath = splinePath;
+			//ProjectileBase->SplineLength = FVector::Dist(ownerPawn->GetActorLocation(), inTarget->GetActorLocation());
 			if(ownerPawn->DebugOnOff)
 				DrawDebugSpline(splinePath);
 			if(splinePath.IsValid())
@@ -69,43 +72,25 @@ FSplinePath UProjectileAttack::MakeSplinePath(AActor* inTarget)
 	
 	if(inTarget == nullptr)
 		return SplinePath;
+
+	auto monster = Cast<ACharacterNPC>(inTarget);
+	float capsuleHalfHeight = monster->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 	
 	SplinePath.ClearSplinePoints();
-	SplinePath.AddSplinePoint(shotLocation, ESplineCoordinateSpace::World, ESplinePointType::Curve);
+	SplinePath.AddSplinePoint(shotLocation, ESplineCoordinateSpace::World, ESplinePointType::CurveClamped);
 	FVector middlePoint = (shotLocation + inTarget->GetActorLocation()) / 2;
-	float length = FVector::Dist(ownerPawn->GetActorLocation(), inTarget->GetActorLocation());
-	FVector height  = FVector(0, 0, 0.3 * length);
+	float distToTarget = FVector::Dist(ownerPawn->GetActorLocation(), inTarget->GetActorLocation());
+	FVector height  = FVector(0, 0, 0.3 * distToTarget);
 	SplinePath.AddSplinePoint(middlePoint + height, ESplineCoordinateSpace::World, ESplinePointType::Curve);
-	SplinePath.AddSplinePoint(inTarget->GetActorLocation(), ESplineCoordinateSpace::World, ESplinePointType::Curve);
+	SplinePath.AddSplinePoint(inTarget->GetActorLocation() + FVector(0, 0, -capsuleHalfHeight), ESplineCoordinateSpace::World, ESplinePointType::CurveClamped);
 	SplinePath.UpdateSpline();
 
 	// Set clamp tangent
 	FSplineCurves& path = SplinePath.Path;
-	int32&& numPoints = path.Position.Points.Num();
-	for (int32 pointIdx = 0; pointIdx < numPoints; ++pointIdx)
-	{
-		const FVector& currentPointLoc = path.Position.Points[pointIdx].OutVal;
-
-		// clamp leave tangent
-		const int32 nextPointIndex = pointIdx + 1;
-		if (nextPointIndex < numPoints)
-		{
-			const FVector& nextPointLoc = path.Position.Points[nextPointIndex].OutVal;
-			const float distToNext = FVector::Distance(nextPointLoc, currentPointLoc);
-			path.Position.Points[pointIdx].LeaveTangent = path.Position.Points[pointIdx].LeaveTangent.GetClampedToMaxSize(distToNext);
-		}
-		
-		// clamp arrive tangent
-		const int32 prevPointIndex = pointIdx - 1;
-		if (prevPointIndex >= 0)
-		{
-			const FVector& prevPointLoc = path.Position.Points[prevPointIndex].OutVal;
-			const float distToPrev = FVector::Distance(prevPointLoc, currentPointLoc);
-			path.Position.Points[pointIdx].ArriveTangent = path.Position.Points[pointIdx].ArriveTangent.GetClampedToMaxSize(distToPrev);
-		}
-		
-		path.Position.Points[pointIdx].InterpMode = CIM_CurveUser;
-	}
+	const float dist = 2 * distToTarget;	// 이거 이해가 잘 안됨
+	path.Position.Points[1].LeaveTangent = path.Position.Points[1].LeaveTangent.GetClampedToMaxSize(dist);
+	path.Position.Points[1].ArriveTangent = path.Position.Points[1].ArriveTangent.GetClampedToMaxSize(dist);
+	path.Position.Points[1].InterpMode = CIM_CurveUser;
 	SplinePath.UpdateSpline();
 
 	return SplinePath;
@@ -127,5 +112,8 @@ void UProjectileAttack::DrawDebugSpline(FSplinePath inSpline)
 			location + 20 * rotation.Vector(),
 			10, FColor::Red, false, 3, 0, 3);
 	}
+	DrawDebugPoint(GetWorld(), inSpline.Path.Position.Points[0].OutVal, 5, FColor::Black, false, 3);
+	DrawDebugPoint(GetWorld(), inSpline.Path.Position.Points[1].OutVal, 5, FColor::Black, false, 3);
+	DrawDebugPoint(GetWorld(), inSpline.Path.Position.Points[2].OutVal, 5, FColor::Black, false, 3);
 }
 
