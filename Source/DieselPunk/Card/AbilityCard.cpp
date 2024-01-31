@@ -69,7 +69,15 @@ void FAbilityCard::_Complete(bool& OutSuccess, int32 InCost)
 			FSpawnParam spawnParam;
 			spawnParam.Rotation = Owner->GetActorRotation();
 			spawnParam.Location = result.Location;
-			spawnParam.CallBackSpawn = nullptr;
+			TWeakObjectPtr<ACharacterPC> owner = Owner;
+			spawnParam.CallBackSpawn = [&owner](AActor* actor)
+			{
+				ASkillActor* spawnActor = Cast<ASkillActor>(actor);
+				if(!owner.IsValid())
+					return;
+				spawnActor->SetOwnerPlayer(owner.Get());
+				spawnActor->InitTransformOffset();
+			};
 
 			int32 id = FObjectManager::INVALID_OBJECTID;
 			if(AbilityCardType == EAbilityCardType::Projectile)
@@ -80,10 +88,7 @@ void FAbilityCard::_Complete(bool& OutSuccess, int32 InCost)
 				id = FObjectManager::GetInstance()->CreateActor<AStatBuff>(uclass, spawnParam);
 
 			if(FObjectManager::GetInstance()->IsValidId(id))
-			{
-				Cast<ASkillActor>(FObjectManager::GetInstance()->FindActor(id))->InitTransformOffset();
 				OutSuccess = true;
-			}
 			else
 				OutSuccess = false;
 		}

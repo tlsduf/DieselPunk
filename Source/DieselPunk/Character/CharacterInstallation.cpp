@@ -73,7 +73,6 @@ void ACharacterInstallation::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void ACharacterInstallation::RunAi()
 {
 	Super::RunAi();
-	SetActorTickEnabled(true);
 	
 	Sphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	Sphere->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Overlap);

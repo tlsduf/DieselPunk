@@ -18,6 +18,9 @@ protected:
 	
 	UPROPERTY()
 	AController* OwnerController = nullptr;		// 소유 컨트롤러
+
+	UPROPERTY(EditAnywhere, Category = "MYDP_Location")
+	bool FixOwnerPosition = false;	// 다른 포지션 위치가 아닌 오너(플레이어)의 위치에 스폰 고정합니다.
 	
 	UPROPERTY(EditAnywhere, Category = "MYDP_Location")
 	FTransform OffsetTransform = FTransform::Identity;	// 초기 트랜스폼 오프셋
@@ -35,6 +38,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
+	void SetOwnerPlayer(ACharacterBase* InOwner){OwnerCharacter = InOwner;}
+	
 	// 설정한 OffsetTransform만큼 이동하여 초기 위치를 설정합니다.
 	virtual void InitTransformOffset();
 };

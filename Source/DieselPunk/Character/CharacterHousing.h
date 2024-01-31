@@ -39,7 +39,7 @@ public:
 	bool CompleteHousingTurret();
 
 	// AI 시작
-	virtual void RunAi(){}
+	virtual void RunAi();
 
 	void ChangeMaterialByHousingEffect(bool InRenderHousingEffect);
 

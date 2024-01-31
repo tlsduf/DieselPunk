@@ -20,7 +20,7 @@
 ACharacterHousing::ACharacterHousing()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	//PrimaryActorTick.bStartWithTickEnabled = false;
+	PrimaryActorTick.bStartWithTickEnabled = false;
 	HousingActorComponent = CreateDefaultSubobject<UHousingActorComponent>(TEXT("Housing Actor Component"));
 
 	static ConstructorHelpers::FObjectFinder<UMaterialInterface> material(TEXT("/Script/Engine.Material'/Game/DieselPunk/Material/M_Housing.M_Housing'"));
@@ -137,6 +137,11 @@ bool ACharacterHousing::CompleteHousingTurret()
 		return true;
 	}
 	return false;
+}
+
+void ACharacterHousing::RunAi()
+{
+	SetActorTickEnabled(true);
 }
 
 // =============================================================

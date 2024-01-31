@@ -29,6 +29,7 @@ void ASkillActor::BeginPlay()
 		OwnerCharacter = Cast<ACharacterBase>(GetOwner());
 		OwnerController = OwnerCharacter->GetController();
 	}
+	
 }
 
 // =============================================================
@@ -41,5 +42,7 @@ void ASkillActor::Tick(float DeltaTime)
 
 void ASkillActor::InitTransformOffset()
 {
+	if(FixOwnerPosition && OwnerCharacter)
+		SetActorLocation(OwnerCharacter->GetActorLocation());
 	AddActorLocalTransform(OffsetTransform);
 }
