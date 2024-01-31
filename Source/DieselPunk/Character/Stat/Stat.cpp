@@ -41,7 +41,8 @@ void FStat::Initialize(ACharacterBase* InOwner, const FString& InCharacterName)
 	SetStat(ECharacterStatType::JumpCount,		 data->JumpCount);
 	SetStat(ECharacterStatType::Luck,			 data->Luck);
 	SetStat(ECharacterStatType::CoolDown,		 data->CoolDown);
-	SetStat(ECharacterStatType::AttackRange,	 data->AttackRange);
+	SetStat(ECharacterStatType::AttackMaxRange,	 data->AttackMaxRange);
+	SetStat(ECharacterStatType::AttackMinRange,	 data->AttacMinRange);
 	SetStat(ECharacterStatType::Cost,			 1000);
 }
 

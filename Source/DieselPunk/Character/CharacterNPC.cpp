@@ -40,6 +40,7 @@ void ACharacterNPC::BeginPlay()
 	Super::BeginPlay();
 	CharacterType = ECharacterType::Monster;
 
+	// Stat Init
 	GetCharacterMovement()->MaxWalkSpeed = Stat.GetStat(ECharacterStatType::MoveSpeed);
 	
 	// SKill Stat Initialize
@@ -84,7 +85,7 @@ void ACharacterNPC::Tick(float DeltaTime)
 		{
 			FVector VRange = GetActorLocation() - GetAttackTarget()->GetActorLocation();
 			float FRange = VRange.Size();
-			InRange = (GetStat().GetStat(ECharacterStatType::AttackRange) < FRange) ? false : true;
+			InRange = (GetStat().GetStat(ECharacterStatType::AttackMaxRange) < FRange) ? false : true;
 		}
 		else
 			InRange = false;
@@ -261,7 +262,7 @@ void ACharacterNPC::UpdateEnemyTarget()
 	}
 	
 	float distance = FVector::Dist(GetActorLocation(), nexus->GetActorLocation());
-	if(distance > GetStat().GetStat(ECharacterStatType::AttackRange))
+	if(distance > GetStat().GetStat(ECharacterStatType::AttackMaxRange))
 		Target = nullptr;
 	else
 	{
@@ -392,6 +393,11 @@ void ACharacterNPC::UpdateSplinePath()
 			if(thisPtr.IsValid())
 				thisPtr->_UpdateSplinePath();
 		},0.075f, false);
+	
+	GetWorld()->GetTimerManager().SetTimer(TakeDamageHandle, [thisPtr](){
+			if(thisPtr.IsValid())
+				thisPtr->_UpdateSplinePath();
+		},0.125f, false);
 }
 
 void ACharacterNPC::_UpdateSplinePath()

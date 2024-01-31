@@ -88,7 +88,8 @@ enum class ECharacterStatType : uint8
 	JumpCount			UMETA( ToolTip = "점프 횟수" ),
 	Luck				UMETA( ToolTip = "행운" ),
 	CoolDown			UMETA( ToolTip = "스킬 쿨타임 감소" ),
-	AttackRange			UMETA( ToolTip = "사거리" ),
+	AttackMaxRange			UMETA( ToolTip = "사거리" ),
+	AttackMinRange			UMETA( ToolTip = "사거리" ),
 	Cost				UMETA( ToolTip = "코스트")
 };
 

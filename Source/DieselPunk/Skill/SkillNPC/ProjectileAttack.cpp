@@ -77,20 +77,28 @@ FSplinePath UProjectileAttack::MakeSplinePath(AActor* inTarget)
 	float capsuleHalfHeight = monster->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 	
 	SplinePath.ClearSplinePoints();
-	SplinePath.AddSplinePoint(shotLocation, ESplineCoordinateSpace::World, ESplinePointType::CurveClamped);
+	SplinePath.AddSplinePoint(shotLocation, ESplineCoordinateSpace::World, ESplinePointType::Curve);
 	FVector middlePoint = (shotLocation + inTarget->GetActorLocation()) / 2;
 	float distToTarget = FVector::Dist(ownerPawn->GetActorLocation(), inTarget->GetActorLocation());
-	FVector height  = FVector(0, 0, 0.3 * distToTarget);
+	FVector height  = FVector(0, 0, 0.6 * distToTarget);
 	SplinePath.AddSplinePoint(middlePoint + height, ESplineCoordinateSpace::World, ESplinePointType::Curve);
-	SplinePath.AddSplinePoint(inTarget->GetActorLocation() + FVector(0, 0, -capsuleHalfHeight), ESplineCoordinateSpace::World, ESplinePointType::CurveClamped);
+	SplinePath.AddSplinePoint(inTarget->GetActorLocation() + FVector(0, 0, -capsuleHalfHeight), ESplineCoordinateSpace::World, ESplinePointType::Curve);
 	SplinePath.UpdateSpline();
 
 	// Set clamp tangent
 	FSplineCurves& path = SplinePath.Path;
-	const float dist = 2 * distToTarget;	// 이거 이해가 잘 안됨
+	path.Position.Points[0].LeaveTangent = path.Position.Points[0].LeaveTangent.GetClampedToMaxSize(0);
+	path.Position.Points[0].ArriveTangent = path.Position.Points[0].ArriveTangent.GetClampedToMaxSize(0);
+	path.Position.Points[0].InterpMode = CIM_CurveUser;
+	
+	const float dist = 10 * distToTarget;
 	path.Position.Points[1].LeaveTangent = path.Position.Points[1].LeaveTangent.GetClampedToMaxSize(dist);
 	path.Position.Points[1].ArriveTangent = path.Position.Points[1].ArriveTangent.GetClampedToMaxSize(dist);
 	path.Position.Points[1].InterpMode = CIM_CurveUser;
+	
+	path.Position.Points[2].LeaveTangent = path.Position.Points[2].LeaveTangent.GetClampedToMaxSize(0);
+	path.Position.Points[2].ArriveTangent = path.Position.Points[2].ArriveTangent.GetClampedToMaxSize(0);
+	path.Position.Points[2].InterpMode = CIM_CurveUser;
 	SplinePath.UpdateSpline();
 
 	return SplinePath;

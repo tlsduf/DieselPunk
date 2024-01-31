@@ -66,7 +66,8 @@ void ACharacterTurret::RunAi()
 void ACharacterTurret::SetTurretTarget()
 {
 	// 사정거리 Draw
-	DrawDebugSearchArea();
+	if(DebugOnOff)
+		DrawDebugSearchArea();
 	
 	// * 터렛은 현재 목표가 없으면 탐색을 하여, 사거리가 유효한 가장 가까운 적을 목표로 삼는다.
 	// * 목표가 사거리에서 벗어나면 목표를 재탐색한다.
@@ -124,8 +125,8 @@ void ACharacterTurret::MakeSearchArea()
 {
 	float wide = GridSize * 100 / 2;
 	FVector firstPoint = GetActorLocation() + (GetActorRightVector() * wide);
-	FVector secondPoint = GetActorLocation() + (GetActorRightVector() * wide) + GetActorForwardVector() * GetStat().GetStat(ECharacterStatType::AttackRange);
-	FVector thirdPoint = GetActorLocation() + (-1 * GetActorRightVector() * wide) + GetActorForwardVector() * GetStat().GetStat(ECharacterStatType::AttackRange);
+	FVector secondPoint = GetActorLocation() + (GetActorRightVector() * wide) + GetActorForwardVector() * GetStat().GetStat(ECharacterStatType::AttackMaxRange);
+	FVector thirdPoint = GetActorLocation() + (-1 * GetActorRightVector() * wide) + GetActorForwardVector() * GetStat().GetStat(ECharacterStatType::AttackMaxRange);
 	FVector fourthPoint = GetActorLocation() + (-1 * GetActorRightVector() * wide);
 
 	// Set RectanglePoints
@@ -144,8 +145,8 @@ bool ACharacterTurret::InValidSearchArea(FVector inLocation)
 	if(TurretSearchAreaType == ESearchAreaType::Circle)
 	{
 		float distance = FVector::Dist(GetActorLocation(), inLocation);
-		bool inMaxDistance = distance < GetStat().GetStat(ECharacterStatType::AttackRange);		// 최대거리 안에 위치?
-		bool inMinDistance = true; //distance > GetStat().GetStat(ECharacterStatType::AttackMinRange);	//최소거리 밖에 위치?
+		bool inMaxDistance = distance < GetStat().GetStat(ECharacterStatType::AttackMaxRange);		// 최대거리 안에 위치?
+		bool inMinDistance = distance > GetStat().GetStat(ECharacterStatType::AttackMinRange);		//최소거리 밖에 위치?
 
 		float forwardDir = GetActorForwardVector().GetSafeNormal().Rotation().Yaw;
 		float toTargetDir = (inLocation - GetActorLocation()).GetSafeNormal().Rotation().Yaw;
@@ -161,7 +162,7 @@ bool ACharacterTurret::InValidSearchArea(FVector inLocation)
 }
 
 // =============================================================
-// 사각 내부에 점이 위치하는지 확인합니다. // Point in polygon algorithm
+// 다각형 내부에 점이 위치하는지 확인합니다. // Point in polygon algorithm
 // =============================================================
 bool ACharacterTurret::IsInPolygon(double InX, double InY)
 {
@@ -183,11 +184,21 @@ bool ACharacterTurret::IsInPolygon(double InX, double InY)
 	return ( cn & 1 );    // 0 if even (out), and 1 if  odd (in)
 }
 
+// =============================================================
 // 사정거리를 그립니다.
+// =============================================================
 void ACharacterTurret::DrawDebugSearchArea()
 {
 	if(TurretSearchAreaType == ESearchAreaType::Circle)
-		DrawDebugCircle(GetWorld(), GetActorLocation(), GetStat().GetStat(ECharacterStatType::AttackRange), 16, FColor::Red, false, -1, 0, 3, FVector(0,1,0), FVector(1,0,0));
+	{
+		float dif = GetStat().GetStat(ECharacterStatType::AttackMaxRange) - GetStat().GetStat(ECharacterStatType::AttackMinRange);
+		float colorDif = 255 / 16;
+		for(int32 i = 1 ; i <= 16 ; i++)
+		{
+			DrawDebugCircle(GetWorld(), GetActorLocation(), GetStat().GetStat(ECharacterStatType::AttackMaxRange) - (dif * i / 16), 16, FColor(255 - (colorDif * i),colorDif * i,0), false, -1, 0, 3, FVector(0,1,0), FVector(1,0,0), false);
+		}
+	}
+
 	if(TurretSearchAreaType == ESearchAreaType::Rectangle)
 	{
 		if(RectanglePoints.IsEmpty())

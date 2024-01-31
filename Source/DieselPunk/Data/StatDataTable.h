@@ -61,7 +61,11 @@ struct DIESELPUNK_API FStatDataTable : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int CoolDown = 0;
 
-	//사거리
+	// 최대 사거리
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int AttackRange = 0;
+	int AttackMaxRange = 0;
+
+	// 최소 사거리
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int AttacMinRange = 0;
 };

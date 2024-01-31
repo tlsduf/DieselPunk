@@ -66,6 +66,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="MYDP_Setting", meta=(AllowPrivateAccess="true"))
 	int32 GridSize = 1;
 
+
+	// 내비게이션
+	FTimerHandle PulseUpdatePathTHandle;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MYDP_Skill")
 	UDPNavigationComponent *DPNavigationComponent;

@@ -38,7 +38,7 @@ public:
 	// inLocation이 유효 범위 안에 있으면 True 반환
 	bool InValidSearchArea(FVector inLocation);
 
-	// 사각 내부에 점이 위치하는지 확인합니다. // Point in polygon algorithm
+	// 다각형 내부에 점이 위치하는지 확인합니다. // Point in polygon algorithm
 	bool IsInPolygon(double InX, double InY);
 
 	// 사정거리 DrawDebug
