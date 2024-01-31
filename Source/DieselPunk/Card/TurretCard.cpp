@@ -98,3 +98,18 @@ void FTurretCard::_Complete(bool& OutSuccess, int32 InCost)
 	}
 	OutSuccess = true;
 }
+
+void FTurretCard::_RotateInstallation(int32 InRotateAngle)
+{
+	ACharacterHousing* controlTurret = Cast<ACharacterHousing>(FObjectManager::GetInstance()->FindActor(ControlTurretId));
+	if(!controlTurret)
+	{
+		LOG_SCREEN(FColor::Red, TEXT("ControlTurretId: %d에 해당하는 Turret이 존재하지 않습니다."), ControlTurretId)
+		return;
+	}
+	
+	FRotator rotator;
+	rotator.Yaw = InRotateAngle;
+
+	controlTurret->AddActorWorldRotation(rotator);
+}

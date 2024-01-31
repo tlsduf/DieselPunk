@@ -13,6 +13,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FDelegate_ChangeDeckCount, int32)
 DECLARE_DELEGATE_TwoParams(FDelegate_CardActivate, bool&, int32)
 DECLARE_DELEGATE_TwoParams(FDelegate_CardComplete, bool&, int32)
 DECLARE_DELEGATE(FDelegate_CardCancel)
+DECLARE_DELEGATE_OneParam(FDelegate_RotateInstallation, int32)
 
 
 class UPlayerSkill;
@@ -38,6 +39,7 @@ class ACharacterPC : public ACharacterBase
 	FDelegate_CardActivate DelegateCardActivate;
 	FDelegate_CardComplete DelegateCardComplete;
 	FDelegate_CardCancel DelegateCardCancel;
+	FDelegate_RotateInstallation DelegateRotateInstallation;
 	FDelegate_ChangeDeckCount DelegateChangeDeckCount;
 
 	TWeakObjectPtr<ACharacterHousing> SelectInstallation;
@@ -199,6 +201,7 @@ public:
 	FDelegate_CardActivate& GetDelegateCardActivate(){return DelegateCardActivate;}
 	FDelegate_CardComplete& GetDelegateCardComplete(){return DelegateCardComplete;}
 	FDelegate_CardCancel& GetDelegateCardCancel(){return DelegateCardCancel;}
+	FDelegate_RotateInstallation& GetDelegateRotateInstallation(){return DelegateRotateInstallation;}
 
 	//덱 핸들러를 반환합니다.
 	FDeckHandler* GetDeckHandler() {return DeckHandler;}
@@ -211,6 +214,9 @@ public:
 
 	//카드 Complete를 실행합니다.
 	bool ExecuteCardComplete();
+
+	//설치물 회전을 실행합니다.
+	bool ExecuteRotateInstallation(int32 InRotateAngle);
 
 	//카드가 없다면 카드를 드로우합니다.
 	void DrawCard();

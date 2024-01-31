@@ -53,6 +53,16 @@ void FCard::BindCardComplete()
 	Owner->GetDelegateCardComplete().BindRaw(this, &FCard::Complete);
 }
 
+void FCard::BindRotateInstallation()
+{
+	if(!Owner.IsValid())
+	return;
+	
+	if(Owner->GetDelegateRotateInstallation().IsBound())
+		Owner->GetDelegateRotateInstallation().Unbind();
+	Owner->GetDelegateRotateInstallation().BindRaw(this, &FCard::RotateInstallation);
+}
+
 //바인딩을 위한 카드 사용 함수
 void FCard::Activate(bool& OutSuccess, int32 InCost)
 {
@@ -68,4 +78,9 @@ void FCard::Complete(bool& OutSuccess, int32 InCost)
 void FCard::Cancel()
 {
 	_Cancel();
+}
+
+void FCard::RotateInstallation(int32 RotateAngle)
+{
+	_RotateInstallation(RotateAngle);
 }

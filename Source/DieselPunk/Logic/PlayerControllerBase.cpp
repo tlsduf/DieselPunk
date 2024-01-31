@@ -316,11 +316,18 @@ void APlayerControllerBase::UseCard(int32 InCardIndex)
 	handler->GetHands()[InCardIndex]->BindCardActivate();
 	handler->GetHands()[InCardIndex]->BindCardCancel();
 	handler->GetHands()[InCardIndex]->BindCardComplete();
+	handler->GetHands()[InCardIndex]->BindRotateInstallation();
+
 	
 	PC->BindSkillUseCard();
 	if (UEnhancedInputComponent *EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent))
 	{
-		EnhancedInputComponent->BindAction(SkillInputActions[EAbilityType::MouseRM], ETriggerEvent::Triggered, this, &APlayerControllerBase::UnUseCard);
+		for(auto& inputHandle : PreInputHandle)
+			EnhancedInputComponent->RemoveBindingByHandle(inputHandle);
+		PreInputHandle.Empty();
+		PreInputHandle.Add(EnhancedInputComponent->BindAction(SkillInputActions[EAbilityType::MouseRM], ETriggerEvent::Triggered, this, &APlayerControllerBase::UnUseCard).GetHandle());
+		PreInputHandle.Add(EnhancedInputComponent->BindAction(SkillInputActions[EAbilityType::SkillE], ETriggerEvent::Started, this, &APlayerControllerBase::RotateInstallationCW).GetHandle());
+		PreInputHandle.Add(EnhancedInputComponent->BindAction(SkillInputActions[EAbilityType::SkillQ], ETriggerEvent::Started, this, &APlayerControllerBase::RotateInstallationCCW).GetHandle());
 	}
 }
 
@@ -346,7 +353,12 @@ void APlayerControllerBase::UnUseCard()
 	PC->UnBindSkillUseCard();
 	if (UEnhancedInputComponent *EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent))
 	{
-		EnhancedInputComponent->BindAction(SkillInputActions[EAbilityType::MouseRM], ETriggerEvent::Triggered, this, &APlayerControllerBase::OnInputSkillStarted);
+		for(auto& inputHandle : PreInputHandle)
+			EnhancedInputComponent->RemoveBindingByHandle(inputHandle);
+		PreInputHandle.Empty();
+		PreInputHandle.Add(EnhancedInputComponent->BindAction(SkillInputActions[EAbilityType::MouseRM], ETriggerEvent::Triggered, this, &APlayerControllerBase::OnInputSkillTriggered).GetHandle());
+		PreInputHandle.Add(EnhancedInputComponent->BindAction(SkillInputActions[EAbilityType::SkillE], ETriggerEvent::Started, this, &APlayerControllerBase::OnInputSkillStarted).GetHandle());
+		PreInputHandle.Add(EnhancedInputComponent->BindAction(SkillInputActions[EAbilityType::SkillQ], ETriggerEvent::Started, this, &APlayerControllerBase::OnInputSkillStarted).GetHandle());
 	}
 }
 
@@ -561,6 +573,22 @@ int32 APlayerControllerBase::PostCompleteCard()
 	UseCardNum = -1;
 	
 	return returnUseCardNum;
+}
+
+void APlayerControllerBase::RotateInstallationCW()
+{
+	if(!PC.IsValid())
+		return;
+
+	PC->ExecuteRotateInstallation(90);
+}
+
+void APlayerControllerBase::RotateInstallationCCW()
+{
+	if(!PC.IsValid())
+		return;
+
+	PC->ExecuteRotateInstallation(-90);
 }
 
 //드로우 한 후 카드 정보를 갱신합니다.

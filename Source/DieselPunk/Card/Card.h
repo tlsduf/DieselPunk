@@ -34,6 +34,8 @@ public:
 	void BindCardCancel();
 	//카드 사용 완료 시 호출할 함수 바인딩
 	void BindCardComplete();
+	//회전 입력 시 호출할 함수 바인딩
+	void BindRotateInstallation();
 
 	//바인딩을 위한 카드 사용 함수
 	void Activate(bool& OutSuccess, int32 InCost);
@@ -41,6 +43,8 @@ public:
 	void Cancel();
 	//바인딩을 위한 카드 사용 완료 함수
 	void Complete(bool& OutSuccess, int32 InCost);
+	//바인딩을 위한 설치물 회전 함수
+	void RotateInstallation(int32 RotateAngle);
 
 public:
 	const CardInfo& GetCardInfo() const {return Info;}
@@ -52,5 +56,7 @@ private:
 	virtual void _Cancel(){}
 	//카드 사용 완료 함수
 	virtual void _Complete(bool& OutSuccess, int32 InCost){}
+	//설치물 회전 함수
+	virtual void _RotateInstallation(int32 InRotateAngle){}
 	
 };

@@ -532,6 +532,14 @@ bool ACharacterPC::ExecuteCardComplete()
 	return true;
 }
 
+bool ACharacterPC::ExecuteRotateInstallation(int32 InRotateAngle)
+{
+	if(DelegateRotateInstallation.IsBound())
+		DelegateRotateInstallation.Execute(InRotateAngle);
+
+	return true;
+}
+
 void ACharacterPC::DrawCard()
 {
 	APlayerControllerBase* controller = Cast<APlayerControllerBase>(GetController());
@@ -567,6 +575,10 @@ void ACharacterPC::UnBindSkillUseCard()
 	Skills[EAbilityType::MouseLM] = CachedSkills[EAbilityType::MouseLM];
 	if(DelegateCardActivate.IsBound())
 		DelegateCardActivate.Unbind();
+	if(DelegateCardCancel.IsBound())
+		DelegateCardCancel.Unbind();
 	if(DelegateCardComplete.IsBound())
 		DelegateCardComplete.Unbind();
+	if(DelegateRotateInstallation.IsBound())
+		DelegateRotateInstallation.Unbind();
 }

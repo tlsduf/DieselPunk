@@ -101,6 +101,8 @@ private:
 
 	//카드가 액티베이트 되어있는 동안 카드를 변경하지 못합니다.
 	bool IsCardActivate = false;
+
+	TArray<int32> PreInputHandle;
 	
 protected:
 	APlayerControllerBase();
@@ -178,6 +180,12 @@ public:
 
 	//카드를 Complete한 후 처리를 담당합니다.
 	int32 PostCompleteCard();
+
+	//설치물을 시계방향으로 90도 회전합니다.
+	void RotateInstallationCW();
+
+	//설치물을 반시계방향으로 90도 회전합니다.
+	void RotateInstallationCCW();
 
 	//드로우 한 후 카드 정보를 갱신합니다.
 	void RenewHand();
