@@ -75,3 +75,9 @@ void USkillSpawnTurret::SkillStarted()
 	}
 }
 
+void USkillSpawnTurret::SpawnCancel()
+{
+	bTaskOn = false;
+	
+}
+

@@ -30,13 +30,17 @@ public:
 public:
 	//카드 사용 시 호출할 함수 바인딩
 	void BindCardActivate();
+	//카드 캔슬 시 호출할 함수 바인딩
+	void BindCardCancel();
 	//카드 사용 완료 시 호출할 함수 바인딩
 	void BindCardComplete();
 
 	//바인딩을 위한 카드 사용 함수
 	void Activate(bool& OutSuccess, int32 InCost);
+	//바인딩을 위한 카드 캔슬 함수
+	void Cancel();
 	//바인딩을 위한 카드 사용 완료 함수
-	void Complete(bool& OutSuccess);
+	void Complete(bool& OutSuccess, int32 InCost);
 
 public:
 	const CardInfo& GetCardInfo() const {return Info;}
@@ -44,7 +48,9 @@ public:
 private:
 	//카드 사용 함수
 	virtual void _Activate(bool& OutSuccess, int32 InCost){}
+	//카드 캔슬 함수
+	virtual void _Cancel(){}
 	//카드 사용 완료 함수
-	virtual void _Complete(bool& OutSuccess){}
+	virtual void _Complete(bool& OutSuccess, int32 InCost){}
 	
 };

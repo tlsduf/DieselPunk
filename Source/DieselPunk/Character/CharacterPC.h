@@ -11,7 +11,8 @@ DECLARE_DYNAMIC_DELEGATE(FDelegateJumpAction);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FDelegateLandAction, const FHitResult&, Hit);
 DECLARE_MULTICAST_DELEGATE_OneParam(FDelegate_ChangeDeckCount, int32)
 DECLARE_DELEGATE_TwoParams(FDelegate_CardActivate, bool&, int32)
-DECLARE_DELEGATE_OneParam(FDelegate_CardComplete, bool&)
+DECLARE_DELEGATE_TwoParams(FDelegate_CardComplete, bool&, int32)
+DECLARE_DELEGATE(FDelegate_CardCancel)
 
 
 class UPlayerSkill;
@@ -36,6 +37,7 @@ class ACharacterPC : public ACharacterBase
 
 	FDelegate_CardActivate DelegateCardActivate;
 	FDelegate_CardComplete DelegateCardComplete;
+	FDelegate_CardCancel DelegateCardCancel;
 	FDelegate_ChangeDeckCount DelegateChangeDeckCount;
 
 	TWeakObjectPtr<ACharacterHousing> SelectInstallation;
@@ -196,12 +198,16 @@ public:
 	// 카드 실행 델리게이트를 반환합니다.
 	FDelegate_CardActivate& GetDelegateCardActivate(){return DelegateCardActivate;}
 	FDelegate_CardComplete& GetDelegateCardComplete(){return DelegateCardComplete;}
+	FDelegate_CardCancel& GetDelegateCardCancel(){return DelegateCardCancel;}
 
 	//덱 핸들러를 반환합니다.
 	FDeckHandler* GetDeckHandler() {return DeckHandler;}
 
 	//카드 Activate를 실행합니다.
 	bool ExecuteCardActivate();
+
+	//카드 Cancel을 실행합니다.
+	bool ExecuteCardCancel();
 
 	//카드 Complete를 실행합니다.
 	bool ExecuteCardComplete();

@@ -25,6 +25,7 @@
 #include "../Manager/UIManager.h"
 #include "../UI/UserWidgetBase.h"
 #include "../UI/HUD/Hand.h"
+#include "DieselPunk/Skill/SkillPC/SkillSpawnTurret.h"
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(CharacterPC)
@@ -477,12 +478,31 @@ bool ACharacterPC::ExecuteCardActivate()
 		return false;
 	
 	int32 value = controller->PostActivateCard();
-	Stat.ChangeStat(ECharacterStatType::Cost, -DeckHandler->GetHands()[value]->GetCardInfo().Cost);
-	DeckHandler->UseCard(value);
 	
 	LOG_SCREEN(FColor::White, TEXT("%d카드를 사용합니다."), value)
 	
 	DelegateCardActivate.Unbind();
+	return true;
+}
+
+bool ACharacterPC::ExecuteCardCancel()
+{
+	APlayerControllerBase* controller = Cast<APlayerControllerBase>(GetController());
+	if(controller == nullptr)
+		return false;
+	
+	if(DelegateCardCancel.IsBound())
+		DelegateCardCancel.Execute();
+	USkillSpawnTurret* spawnskill = Cast<USkillSpawnTurret>(CardSkill);
+	spawnskill->SpawnCancel();
+
+	int32 value = controller->PostCancelCard();
+
+	LOG_SCREEN(FColor::White, TEXT("캔슬 완료"))
+
+	DelegateCardComplete.Unbind();
+
+	UnBindSkillUseCard();
 	return true;
 }
 
@@ -495,12 +515,14 @@ bool ACharacterPC::ExecuteCardComplete()
 	
 	bool IsSuccessComplete = false;
 	if(DelegateCardComplete.IsBound())
-		DelegateCardComplete.Execute(IsSuccessComplete);
+		DelegateCardComplete.Execute(IsSuccessComplete, Stat.GetStat(ECharacterStatType::Cost));
 
 	if(!IsSuccessComplete)
 		return false;
 
 	int32 value = controller->PostCompleteCard();
+	Stat.ChangeStat(ECharacterStatType::Cost, -DeckHandler->GetHands()[value]->GetCardInfo().Cost);
+	DeckHandler->UseCard(value);
 
 	LOG_SCREEN(FColor::White, TEXT("사용 완료"))
 
@@ -537,6 +559,7 @@ void ACharacterPC::SetSelectInstallation(TWeakObjectPtr<ACharacterHousing> InIns
 void ACharacterPC::BindSkillUseCard()
 {
 	Skills[EAbilityType::MouseLM] = CardSkill;
+	CardSkill->SkillStarted();
 }
 
 void ACharacterPC::UnBindSkillUseCard()

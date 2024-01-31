@@ -19,5 +19,5 @@ private:
 	//카드 사용 함수
 	virtual void _Activate(bool& OutSuccess, int32 InCost) override;
 	//카드 사용 완료 함수
-	virtual void _Complete(bool& OutSuccess) override;
+	virtual void _Complete(bool& OutSuccess, int32 InCost) override;
 };

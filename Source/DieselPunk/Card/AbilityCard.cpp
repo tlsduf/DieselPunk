@@ -30,19 +30,19 @@ FAbilityCard::~FAbilityCard()
 //카드 사용 함수
 void FAbilityCard::_Activate(bool& OutSuccess, int32 InCost)
 {
+	OutSuccess = true;
+}
+
+//카드 사용 완료 함수
+void FAbilityCard::_Complete(bool& OutSuccess, int32 InCost)
+{
 	if(InCost < Info.Cost)
 	{
 		LOG_SCREEN(FColor::White, TEXT("코스트가 부족합니다."))
 		OutSuccess = false;
 		return;
 	}
-
-	OutSuccess = true;
-}
-
-//카드 사용 완료 함수
-void FAbilityCard::_Complete(bool& OutSuccess)
-{
+	
 	for(const FString& blueprintName : BlueprintNames)
 	{
 		UClass* uclass = nullptr;
@@ -84,6 +84,8 @@ void FAbilityCard::_Complete(bool& OutSuccess)
 				Cast<ASkillActor>(FObjectManager::GetInstance()->FindActor(id))->InitTransformOffset();
 				OutSuccess = true;
 			}
+			else
+				OutSuccess = false;
 		}
 	}
 }

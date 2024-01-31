@@ -29,13 +29,6 @@ FTurretCard::~FTurretCard()
 //카드 사용 함수
 void FTurretCard::_Activate(bool& OutSuccess, int32 InCost)
 {
-	if(InCost < Info.Cost)
-	{
-		LOG_SCREEN(FColor::White, TEXT("코스트가 부족합니다."))
-		OutSuccess = false;
-		return;
-	}
-	
 	//터렛 스몰에 해당하는 경로 탐색을 위한 데이터 테이블 서치
 	const FCharacterDataTable* dataTable = FDataTableManager::GetInstance()->GetData<FCharacterDataTable>(EDataTableType::Character, CharacterName);
 	if(!dataTable)
@@ -71,9 +64,23 @@ void FTurretCard::_Activate(bool& OutSuccess, int32 InCost)
 	}
 }
 
-//카드 사용 완료 함수
-void FTurretCard::_Complete(bool& OutSuccess)
+void FTurretCard::_Cancel()
 {
+	FObjectManager::GetInstance()->DestroyActor(ControlTurretId);
+	
+	ControlTurretId = -1;
+}
+
+//카드 사용 완료 함수
+void FTurretCard::_Complete(bool& OutSuccess, int32 InCost)
+{
+	if(InCost < Info.Cost)
+	{
+		LOG_SCREEN(FColor::White, TEXT("코스트가 부족합니다."))
+		OutSuccess = false;
+		return;
+	}
+	
 	ACharacterHousing* controlTurret = Cast<ACharacterHousing>(FObjectManager::GetInstance()->FindActor(ControlTurretId));
 	if(!controlTurret)
 	{

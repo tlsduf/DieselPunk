@@ -32,6 +32,16 @@ void FCard::BindCardActivate()
 	Owner->GetDelegateCardActivate().BindRaw(this, &FCard::Activate);
 }
 
+void FCard::BindCardCancel()
+{
+	if(!Owner.IsValid())
+		return;
+	
+	if(Owner->GetDelegateCardCancel().IsBound())
+		Owner->GetDelegateCardCancel().Unbind();
+	Owner->GetDelegateCardCancel().BindRaw(this, &FCard::Cancel);
+}
+
 //카드 사용 완료 시 호출할 함수 바인딩
 void FCard::BindCardComplete()
 {
@@ -50,7 +60,12 @@ void FCard::Activate(bool& OutSuccess, int32 InCost)
 }
 
 //바인딩을 위한 카드 사용 완료 함수
-void FCard::Complete(bool& OutSuccess)
+void FCard::Complete(bool& OutSuccess, int32 InCost)
 {
-	_Complete(OutSuccess);
+	_Complete(OutSuccess, InCost);
+}
+
+void FCard::Cancel()
+{
+	_Cancel();
 }

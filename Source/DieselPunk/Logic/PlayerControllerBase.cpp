@@ -283,8 +283,12 @@ void APlayerControllerBase::OpenCloseDeckInterface()
 
 void APlayerControllerBase::UseCard(int32 InCardIndex)
 {
-	//현재 카드를 사용중일 경우 카드를 변경하지 못합니다.
-	if(IsCardActivate)
+	//이미 카드를 선택했을 경우 해당 오브젝트를 파괴합니다.
+	if(IsCardActivate && UseCardNum != InCardIndex)
+	{
+		PC->ExecuteCardCancel();
+	}
+	else if(UseCardNum == InCardIndex)
 		return;
 	
 	if(!PC.IsValid())
@@ -309,20 +313,23 @@ void APlayerControllerBase::UseCard(int32 InCardIndex)
 	}
 	UseCardNum = InCardIndex;
 
+	handler->GetHands()[InCardIndex]->BindCardActivate();
+	handler->GetHands()[InCardIndex]->BindCardCancel();
+	handler->GetHands()[InCardIndex]->BindCardComplete();
+	
 	PC->BindSkillUseCard();
 	if (UEnhancedInputComponent *EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent))
 	{
 		EnhancedInputComponent->BindAction(SkillInputActions[EAbilityType::MouseRM], ETriggerEvent::Triggered, this, &APlayerControllerBase::UnUseCard);
 	}
-	
-	handler->GetHands()[InCardIndex]->BindCardActivate();
-	handler->GetHands()[InCardIndex]->BindCardComplete();
 }
 
 void APlayerControllerBase::UnUseCard()
 {
 	if(IsCardActivate)
-		return;
+	{
+		PC->ExecuteCardCancel();
+	}
 	
 	if(!PC.IsValid())
 		return;
@@ -521,8 +528,6 @@ void APlayerControllerBase::SetUIControlOff()
 //카드를 Activate한 후 처리를 담당합니다.
 int32 APlayerControllerBase::PostActivateCard()
 {
-	Hand->ResizeHandCard(UseCardNum, FVector2d(1.0, 1.0));
-	Hand->PlayHandToHangerAnimation(UseCardNum);
 	//Hand->UnRegisterHand(UseCardNum);
 
 	IsCardActivate = true;
@@ -530,10 +535,26 @@ int32 APlayerControllerBase::PostActivateCard()
 	return UseCardNum;
 }
 
+int32 APlayerControllerBase::PostCancelCard()
+{
+	IsCardActivate = false;
+	
+	Hand->ResizeHandCard(UseCardNum, FVector2d(1.0, 1.0));
+	
+	int returnUseCardNum = UseCardNum;
+
+	UseCardNum = -1;
+	
+	return returnUseCardNum;
+}
+
 //카드를 Complete한 후 처리를 담당합니다.
 int32 APlayerControllerBase::PostCompleteCard()
 {
 	IsCardActivate = false;
+	
+	Hand->ResizeHandCard(UseCardNum, FVector2d(1.0, 1.0));
+	Hand->PlayHandToHangerAnimation(UseCardNum);
 
 	int returnUseCardNum = UseCardNum;
 

@@ -173,6 +173,9 @@ public:
 	//카드를 Activate한 후 처리를 담당합니다.
 	int32 PostActivateCard();
 
+	//카드를 Cancel한 후 처리를 담당합니다.
+	int32 PostCancelCard();
+
 	//카드를 Complete한 후 처리를 담당합니다.
 	int32 PostCompleteCard();
 
