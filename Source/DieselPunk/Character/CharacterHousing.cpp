@@ -55,20 +55,32 @@ void ACharacterHousing::BeginPlay()
 {
 	Super::BeginPlay();
 
-	/*
+	
 	//Material Instance Dynamic 생성
 	HousingDynamicMaterial = UMaterialInstanceDynamic::Create(HousingMaterial.Get(), this);
 
 	//터렛이 가지고 있는 모든 메쉬 컴포넌트 추출
-	TArray<UMeshComponent*> meshComponents;
-	GetComponents<UMeshComponent>(meshComponents);
+	TArray<USkeletalMeshComponent*> meshSkeltalComponents;
+	GetComponents<USkeletalMeshComponent>(meshSkeltalComponents);
 
 	//스켈레탈 메시, 스태틱 메시 추출
-	for(UMeshComponent* meshComponent : meshComponents)
+	for(UMeshComponent* meshComponent : meshSkeltalComponents)
 	{
 		if(meshComponent->GetName() == FString(TEXT("StaticMeshComponent_0")))
 			continue;
-		if(Cast<USkeletalMeshComponent>(meshComponent) == nullptr && Cast<UStaticMeshComponent>(meshComponent) == nullptr)
+		
+		TArray<TWeakObjectPtr<UMaterialInterface>>& material = OriginalMaterials.FindOrAdd(meshComponent);
+		for(int i = 0; i < meshComponent->GetNumMaterials(); ++i)
+			material.Add(meshComponent->GetMaterial(i));
+	}
+	
+	TArray<UStaticMeshComponent*> meshStaticComponents;
+	GetComponents<UStaticMeshComponent>(meshStaticComponents);
+
+	//스켈레탈 메시, 스태틱 메시 추출
+	for(UMeshComponent* meshComponent : meshStaticComponents)
+	{
+		if(meshComponent->GetName() == FString(TEXT("StaticMeshComponent_0")))
 			continue;
 		
 		TArray<TWeakObjectPtr<UMaterialInterface>>& material = OriginalMaterials.FindOrAdd(meshComponent);
@@ -78,7 +90,7 @@ void ACharacterHousing::BeginPlay()
 
 	//배치용 머터리얼로 변경
 	ChangeMaterialByHousingEffect(true);
-	*/
+	
 
 	//캡슐 콜리전 끄기
 	GetCapsuleComponent()->SetGenerateOverlapEvents(false);
@@ -173,21 +185,22 @@ void ACharacterHousing::RunAi()
 // =============================================================
 void ACharacterHousing::ChangeMaterialByHousingEffect(bool InRenderHousingEffect)
 {
-	/*
+	
 	if(InRenderHousingEffect)
 	{
 		for(TPair<TWeakObjectPtr<UMeshComponent>, TArray<TWeakObjectPtr<UMaterialInterface>>> pair : OriginalMaterials)
-			pair.Key->SetMaterial(0, HousingDynamicMaterial.Get());
+			for(int i = 0; i < pair.Value.Num(); ++i)
+				pair.Key->SetMaterial(i, HousingDynamicMaterial.Get());
 	}
 	else
 	{
 		for(TPair<TWeakObjectPtr<UMeshComponent>, TArray<TWeakObjectPtr<UMaterialInterface>>> pair : OriginalMaterials)
 		{
 			for(int i = 0; i < pair.Value.Num(); ++i)
-				pair.Key->SetMaterial(i, pair.Value[0].Get());
+				pair.Key->SetMaterial(i, pair.Value[i].Get());
 		}
 	}
-	*/
+	
 }
 
 // =============================================================
@@ -195,12 +208,12 @@ void ACharacterHousing::ChangeMaterialByHousingEffect(bool InRenderHousingEffect
 // =============================================================
 void ACharacterHousing::ChangeHousingMaterialParameterChange(bool InHousing)
 {
-	/*
+	
 	if(InHousing)
 		HousingDynamicMaterial->SetScalarParameterValue(FName(TEXT("IsHousing")), 1);
 	else
 		HousingDynamicMaterial->SetScalarParameterValue(FName(TEXT("IsHousing")), 0);
-	*/
+	
 }
 
 // 터렛 업그레이드시 처리
