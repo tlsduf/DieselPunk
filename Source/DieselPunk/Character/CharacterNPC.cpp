@@ -40,6 +40,15 @@ void ACharacterNPC::BeginPlay()
 
 	// Stat Init
 	GetCharacterMovement()->MaxWalkSpeed = Stat.GetStat(ECharacterStatType::MoveSpeed);
+
+	if(NPCType == ENPCType::Enemy)
+	{
+		TWeakObjectPtr<ACharacterNPC> thisPtr = this;
+		GetWorld()->GetTimerManager().SetTimer(TakeDamageHandle, [thisPtr](){
+				if(thisPtr.IsValid())
+					thisPtr->_UpdateSplinePath();
+			},0.3f, false);
+	}
 	
 	// SKill Stat Initialize
 	if(MeleeAttack != nullptr)

@@ -39,10 +39,6 @@ void UTargetAttack::AbilityStart(AActor* inTarget)
 	if(UTurretAnimInstace* animInst = Cast<UTurretAnimInstace>(ownerPawn->GetMesh()->GetAnimInstance()))	
 		animInst->AttackSign();
 	
-	// Draw Debug
-	if(ownerPawn->DebugOnOff)
-		DrawDebugLine(GetWorld(), ownerPawn->GetActorLocation(), inTarget->GetActorLocation(), FColor::Black, false, 1, 0, 5);
-	
 	
 	// Shot Effect
 	FEffectTransform shotET;

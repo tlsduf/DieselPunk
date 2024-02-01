@@ -31,6 +31,9 @@ public:
 	// Target의 위치를 기반으로 곡사궤도를 생성하고, Projectile에 Spline정보를 줍니다.
 	FSplinePath MakeSplinePath(AActor* inTarget);
 
+	// Target의 위치를 기반으로 곡사궤도를 생성하고, Projectile에 Spline정보를 줍니다.
+	FSplinePath MakeSplinePathForDirectFire(AActor* inTarget);
+
 	// 경로 DrawDebug
 	void DrawDebugSpline(FSplinePath inSpline);
 
@@ -38,6 +41,10 @@ private:
 	// 체크하면 곡사로 쏩니다.
 	UPROPERTY(EditAnywhere, Category = "MYDP_Combat")
 	bool bHowitzer = false;
+
+	// 체크하면 직사궤적을 나타내는 투사체를 쏩니다. 해당 투사체는 상호작용하지 않습니다.
+	UPROPERTY(EditAnywhere, Category = "MYDP_Combat")
+	bool bDirectFireEffect = false;
 	
 	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
 	TSubclassOf<AProjectileBase> ProjectileBaseClass;

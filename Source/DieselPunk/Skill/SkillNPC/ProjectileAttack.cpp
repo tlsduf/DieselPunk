@@ -63,6 +63,17 @@ void UProjectileAttack::Fire(AActor* inTarget)
 				ProjectileBase->FinishSpawning(SpawnTransform);
 			return;
 		}
+		if(bDirectFireEffect)
+		{
+			splinePath = MakeSplinePathForDirectFire(inTarget);
+			ProjectileBase->SplinePath = splinePath;
+			//ProjectileBase->SplineLength = FVector::Dist(ownerPawn->GetActorLocation(), inTarget->GetActorLocation());
+			if(ownerPawn->DebugOnOff)
+				DrawDebugSpline(splinePath);
+			if(splinePath.IsValid())
+				ProjectileBase->FinishSpawning(SpawnTransform);
+			return;
+		}
 		ProjectileBase->FinishSpawning(SpawnTransform);
 	}
 }
@@ -104,6 +115,26 @@ FSplinePath UProjectileAttack::MakeSplinePath(AActor* inTarget)
 	path.Position.Points[2].LeaveTangent = path.Position.Points[2].LeaveTangent.GetClampedToMaxSize(0);
 	path.Position.Points[2].ArriveTangent = path.Position.Points[2].ArriveTangent.GetClampedToMaxSize(0);
 	path.Position.Points[2].InterpMode = CIM_CurveUser;
+	SplinePath.UpdateSpline();
+
+	return SplinePath;
+}
+
+FSplinePath UProjectileAttack::MakeSplinePathForDirectFire(AActor* inTarget)
+{
+	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
+	FVector shotLocation = ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket");
+	
+	FSplinePath SplinePath;
+	
+	if(inTarget == nullptr)
+		return SplinePath;
+	
+	SplinePath.ClearSplinePoints();
+	SplinePath.AddSplinePoint(shotLocation, ESplineCoordinateSpace::World, ESplinePointType::Linear);
+	FVector middlePoint = (shotLocation + inTarget->GetActorLocation()) / 2;
+	SplinePath.AddSplinePoint(middlePoint, ESplineCoordinateSpace::World, ESplinePointType::Linear);
+	SplinePath.AddSplinePoint(inTarget->GetActorLocation(), ESplineCoordinateSpace::World, ESplinePointType::Linear);
 	SplinePath.UpdateSpline();
 
 	return SplinePath;

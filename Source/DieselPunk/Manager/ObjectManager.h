@@ -129,7 +129,7 @@ int32 FObjectManager::CreateActor(UClass* InClass, const FSpawnParam& InSpawnPar
 	SetObjectIdAt(actor, objId);
 
 	//스폰 마무리
-	actor->FinishSpawning(actor->GetActorTransform());
+	actor->FinishSpawning(spawnTransform);
 	
 	Objects.Add(objId, actor);
 

@@ -252,7 +252,7 @@ void UDPNavigationComponent::AddForceAlongSplinePath()
 {
 	if(!Owner.IsValid())
 		return;
-
+	
 	if(!SplinePath.IsValid())
 		return;
 	
