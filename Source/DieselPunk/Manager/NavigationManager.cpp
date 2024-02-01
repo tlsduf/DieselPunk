@@ -674,7 +674,7 @@ bool FNavigationManager::PlacementTurret(FVector& InOutLocation, int32 InGridSiz
 		}
 
 	SetBlockedByBreakableIsGoNodeState(xIndex[0], xIndex[xIndex.Num() - 1], yIndex[0], yIndex[yIndex.Num() - 1]);
-	DrawDebugAllNavNode_IsGoNodeState();
+	//DrawDebugAllNavNode_IsGoNodeState();
 
 	return true;
 }

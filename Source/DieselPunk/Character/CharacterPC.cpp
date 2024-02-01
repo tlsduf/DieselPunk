@@ -593,15 +593,11 @@ void ACharacterPC::SetSelectInstallation(TWeakObjectPtr<ACharacterHousing> InIns
 	{
 		if(SelectInstallation.IsValid())
 			SelectInstallation->ShowInteractInstallationUI(true, false);
-		LOG_SCREEN(FColor::Emerald, TEXT("nullptr"))
 	}
 	else
 	{
 		if(InInstallation == LookInstallation)
 			InInstallation->ShowInteractInstallationUI(true, true);
-		FString str = TEXT("Select ");
-		str += InInstallation->GetName();
-		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Emerald, str);
 	}
 	SelectInstallation = InInstallation;
 }
