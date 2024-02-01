@@ -24,6 +24,12 @@ private:
 
 	UPROPERTY()
 	TWeakObjectPtr<ACharacterNPC> CurTarget = nullptr;
+
+	// 터렛 공격 애니메이션 노드 조건
+	UPROPERTY(BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
+	bool bAttack = false;
+
+	FTimerHandle AttackTHandle;
 	
 public:
 	// 생성자
@@ -43,6 +49,9 @@ public:
 
 	// 현재 타겟을 설정합니다.
 	void SetCurTarget(TWeakObjectPtr<ACharacterNPC> InCharacter);
+
+	// 터렛이 공격하면 신호를 줍니다.
+	void AttackSign();
 	
 };
 

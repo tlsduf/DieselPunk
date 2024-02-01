@@ -2,11 +2,13 @@
 
 #include "TargetAttack.h"
 #include "..\..\Character\CharacterNPC.h"
+#include "../../Animation/TurretAnimInstace.h"
 
 #include <Kismet/GameplayStatics.h>
 #include <Components/SkeletalMeshComponent.h>
 
 #include "DrawDebugHelpers.h"
+
 
 UTargetAttack::UTargetAttack() : Super()
 {
@@ -33,6 +35,10 @@ void UTargetAttack::AbilityStart(AActor* inTarget)
 	
 	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
 
+	//애니메이션 재생?
+	if(UTurretAnimInstace* animInst = Cast<UTurretAnimInstace>(ownerPawn->GetMesh()->GetAnimInstance()))	
+		animInst->AttackSign();
+	
 	// Draw Debug
 	if(ownerPawn->DebugOnOff)
 		DrawDebugLine(GetWorld(), ownerPawn->GetActorLocation(), inTarget->GetActorLocation(), FColor::Black, false, 1, 0, 5);

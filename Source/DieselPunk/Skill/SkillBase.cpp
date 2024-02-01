@@ -3,6 +3,8 @@
 
 #include "SkillBase.h"
 #include "../Character/CharacterBase.h"
+
+
 #include "Tests/AutomationTestSettings.h"
 
 
