@@ -30,6 +30,40 @@
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(CharacterPC)
 
+void ACharacterPC::CheckViewMiddleForInteractInstallationUI()
+{
+	FHitResult result;
+	TArray<const AActor*> ignore;
+	ignore.Add(this);
+	if(UtilCollision::GetViewMiddle(GetWorld(), Cast<APlayerController>(GetController()), result, 99999, ignore))
+	{
+		ACharacterHousing* housing = Cast<ACharacterHousing>(result.GetActor());
+		if(housing == nullptr)
+		{
+			if(!LookInstallation.IsValid())
+				return;
+			LookInstallation->ShowInteractInstallationUI(false, false);
+			LookInstallation = nullptr;
+			return;
+		}
+
+		if(LookInstallation != housing)
+		{
+			if(LookInstallation.IsValid())
+				LookInstallation->ShowInteractInstallationUI(false, false);
+			LookInstallation = housing;
+			LookInstallation->ShowInteractInstallationUI(true, LookInstallation == SelectInstallation);
+		}
+	}
+	else
+	{
+		if(!LookInstallation.IsValid())
+			return;
+		LookInstallation->ShowInteractInstallationUI(false, false);
+		LookInstallation = nullptr;
+	}
+}
+
 ACharacterPC::ACharacterPC()
 {
 	// Set size for collision capsule
@@ -149,6 +183,8 @@ void ACharacterPC::Tick(float DeltaTime)
 		TempLevel = Stat.GetStat(ECharacterStatType::Level);
 		LevelUpEvent();
 	}
+
+	CheckViewMiddleForInteractInstallationUI();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -553,15 +589,21 @@ void ACharacterPC::DrawCard()
 
 void ACharacterPC::SetSelectInstallation(TWeakObjectPtr<ACharacterHousing> InInstallation)
 {
-	SelectInstallation = InInstallation;
 	if(InInstallation == nullptr)
+	{
+		if(SelectInstallation.IsValid())
+			SelectInstallation->ShowInteractInstallationUI(true, false);
 		LOG_SCREEN(FColor::Emerald, TEXT("nullptr"))
+	}
 	else
 	{
+		if(InInstallation == LookInstallation)
+			InInstallation->ShowInteractInstallationUI(true, true);
 		FString str = TEXT("Select ");
 		str += InInstallation->GetName();
 		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Emerald, str);
 	}
+	SelectInstallation = InInstallation;
 }
 
 void ACharacterPC::BindSkillUseCard()

@@ -43,6 +43,7 @@ class ACharacterPC : public ACharacterBase
 	FDelegate_ChangeDeckCount DelegateChangeDeckCount;
 
 	TWeakObjectPtr<ACharacterHousing> SelectInstallation;
+	TWeakObjectPtr<ACharacterHousing> LookInstallation;
 
 public:
 	/////////////////////////////////////////////////////////////////////
@@ -109,6 +110,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "MYDP_Test")
 	TMap<FString, int32> InitHaveCard;	//테스트용입니다. 초기 소지할 카드의 이름과 갯수를 입력하시면 해당 카드를 가지고 시작합니다.
+
+protected:
+	void CheckViewMiddleForInteractInstallationUI();
 	
 public:
 	ACharacterPC();

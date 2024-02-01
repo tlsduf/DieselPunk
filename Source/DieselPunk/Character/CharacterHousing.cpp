@@ -11,7 +11,9 @@
 #include <Materials/MaterialInstanceDynamic.h>
 #include <Components/BoxComponent.h>
 
-
+#include "Components/WidgetComponent.h"
+#include "DieselPunk/Manager/UIManager.h"
+#include "DieselPunk/UI/HUD/InteractInstallation.h"
 
 
 // =============================================================
@@ -34,6 +36,16 @@ ACharacterHousing::ACharacterHousing()
 	UClass* NavArea = ConstructorHelpersInternal::FindOrLoadClass(inPath, UNavAreaBase::StaticClass() );
 	Box->SetAreaClassOverride(NavArea);*/
 	Box->SetupAttachment(GetCapsuleComponent());
+
+	InteractInstallationWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("InteractWidgetComponent"));
+	if (InteractInstallationWidgetComponent)
+	{
+		InteractInstallationWidgetComponent->SetupAttachment(GetRootComponent());
+		InteractInstallationWidgetComponent->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+		InteractInstallationWidgetComponent->SetGenerateOverlapEvents(false);
+		InteractInstallationWidgetComponent->SetSimulatePhysics(false);
+		InteractInstallationWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	}
 }
 
 // =============================================================
@@ -81,6 +93,16 @@ void ACharacterHousing::BeginPlay()
 			Box->SetBoxExtent(FVector(GetGridSize() * 50, GetGridSize() * 50, GetGridSize() * 50));
 		}
 	}
+
+	int32 uiKey = FUIManager::GetInstance()->CreateWidgetBase(TEXT(""), TEXT("WBP_InteractInstallation"), TEXT("InteractInstallation"));
+	InteractInstallationUI = Cast<UInteractInstallation>(FUIManager::GetInstance()->GetWidgetBase(uiKey));
+
+	if(!InteractInstallationWidgetComponent || !InteractInstallationUI.IsValid())
+		return;
+
+	InteractInstallationWidgetComponent->SetWidget(InteractInstallationUI.Get());
+	InteractInstallationWidgetComponent->SetDrawSize(FVector2d(200.f, 150.f));
+	InteractInstallationWidgetComponent->SetHiddenInGame(true);
 }
 
 // =============================================================
@@ -179,4 +201,13 @@ void ACharacterHousing::ChangeHousingMaterialParameterChange(bool InHousing)
 void ACharacterHousing::UpgradeInstallation()
 {
 	LOG_SCREEN(FColor::Yellow, TEXT("Upgrade Complete!"))
+}
+
+void ACharacterHousing::ShowInteractInstallationUI(bool InShow, bool InSelected)
+{
+	InteractInstallationWidgetComponent->SetHiddenInGame(!InShow);
+	if(InShow)
+		InteractInstallationUI->Selected(InSelected);
+	else
+		InteractInstallationUI->Selected(false);
 }

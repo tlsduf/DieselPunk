@@ -5,6 +5,7 @@
 #include "CharacterNPC.h"
 #include "CharacterHousing.generated.h"
 
+class UInteractInstallation;
 class UHousingActorComponent;
 class UMeshComponent;
 class UMaterialInterface;
@@ -29,6 +30,11 @@ class DIESELPUNK_API ACharacterHousing : public ACharacterNPC
 
 	UPROPERTY(EditAnywhere)
 	UBoxComponent* Box;
+
+	TWeakObjectPtr<UInteractInstallation> InteractInstallationUI;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UWidgetComponent> InteractInstallationWidgetComponent;
 	
 public:
 	ACharacterHousing();
@@ -47,6 +53,8 @@ public:
 
 	// 업그레이드시 처리
 	virtual void UpgradeInstallation();
+
+	void ShowInteractInstallationUI(bool InShow, bool InSelected);
 protected:
 	virtual void BeginPlay() override;
 	
