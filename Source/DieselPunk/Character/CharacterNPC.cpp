@@ -44,10 +44,10 @@ void ACharacterNPC::BeginPlay()
 	if(NPCType == ENPCType::Enemy)
 	{
 		TWeakObjectPtr<ACharacterNPC> thisPtr = this;
-		GetWorld()->GetTimerManager().SetTimer(TakeDamageHandle, [thisPtr](){
+		GetWorld()->GetTimerManager().SetTimer(PathTHandle3, [thisPtr](){
 				if(thisPtr.IsValid())
 					thisPtr->_UpdateSplinePath();
-			},0.3f, false);
+			},0.5f, false);
 	}
 	
 	// SKill Stat Initialize
@@ -181,7 +181,7 @@ void ACharacterNPC::HandleStatusUI()
 	{
 		GetWorldTimerManager().ClearTimer(EnemyStatusUITHandle);
 		TWeakObjectPtr<ACharacterNPC> thisPtr = this;
-		GetWorld()->GetTimerManager().SetTimer(TakeDamageHandle, [thisPtr](){
+		GetWorld()->GetTimerManager().SetTimer(EnemyStatusUITHandle, [thisPtr](){
 				if(thisPtr.IsValid())
 					thisPtr->WidgetComp->bHiddenInGame = 1;
 			},10.0f, false);
@@ -190,7 +190,7 @@ void ACharacterNPC::HandleStatusUI()
 	{
 		// 타이머가 실행 중이 아니면, 10초 후에 EnemyStatusUI를 화면에서 제거합니다.(SetHidden)
 		TWeakObjectPtr<ACharacterNPC> thisPtr = this;
-		GetWorld()->GetTimerManager().SetTimer(TakeDamageHandle, [thisPtr](){
+		GetWorld()->GetTimerManager().SetTimer(EnemyStatusUITHandle, [thisPtr](){
 				if(thisPtr.IsValid())
 					thisPtr->WidgetComp->bHiddenInGame = 1;
 			},10.0f, false);
@@ -396,12 +396,12 @@ void ACharacterNPC::UpdateSplinePath()
 
 	// 내비메쉬 업데이트가 FindPathSync호출 보다 느려서 간격을 두고 호출합니다.
 	TWeakObjectPtr<ACharacterNPC> thisPtr = this;
-	GetWorld()->GetTimerManager().SetTimer(TakeDamageHandle, [thisPtr](){
+	GetWorld()->GetTimerManager().SetTimer(PathTHandle1, [thisPtr](){
 			if(thisPtr.IsValid())
 				thisPtr->_UpdateSplinePath();
 		},0.075f, false);
 	
-	GetWorld()->GetTimerManager().SetTimer(TakeDamageHandle, [thisPtr](){
+	GetWorld()->GetTimerManager().SetTimer(PathTHandle2, [thisPtr](){
 			if(thisPtr.IsValid())
 				thisPtr->_UpdateSplinePath();
 		},0.125f, false);

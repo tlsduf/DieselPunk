@@ -29,6 +29,10 @@ UCLASS()
 class DIESELPUNK_API ACharacterNPC : public ACharacterBase
 {
 	GENERATED_BODY()
+
+	FTimerHandle PathTHandle1;
+	FTimerHandle PathTHandle2;
+	FTimerHandle PathTHandle3;
 	
 protected:
 	/////////////////////////////////////////////////////////////////////
