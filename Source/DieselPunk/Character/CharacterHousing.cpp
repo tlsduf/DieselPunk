@@ -55,6 +55,7 @@ void ACharacterHousing::BeginPlay()
 {
 	Super::BeginPlay();
 
+	/*
 	//Material Instance Dynamic 생성
 	HousingDynamicMaterial = UMaterialInstanceDynamic::Create(HousingMaterial.Get(), this);
 
@@ -77,6 +78,7 @@ void ACharacterHousing::BeginPlay()
 
 	//배치용 머터리얼로 변경
 	ChangeMaterialByHousingEffect(true);
+	*/
 
 	//캡슐 콜리전 끄기
 	GetCapsuleComponent()->SetGenerateOverlapEvents(false);
@@ -171,6 +173,7 @@ void ACharacterHousing::RunAi()
 // =============================================================
 void ACharacterHousing::ChangeMaterialByHousingEffect(bool InRenderHousingEffect)
 {
+	/*
 	if(InRenderHousingEffect)
 	{
 		for(TPair<TWeakObjectPtr<UMeshComponent>, TArray<TWeakObjectPtr<UMaterialInterface>>> pair : OriginalMaterials)
@@ -184,6 +187,7 @@ void ACharacterHousing::ChangeMaterialByHousingEffect(bool InRenderHousingEffect
 				pair.Key->SetMaterial(i, pair.Value[0].Get());
 		}
 	}
+	*/
 }
 
 // =============================================================
@@ -191,10 +195,12 @@ void ACharacterHousing::ChangeMaterialByHousingEffect(bool InRenderHousingEffect
 // =============================================================
 void ACharacterHousing::ChangeHousingMaterialParameterChange(bool InHousing)
 {
+	/*
 	if(InHousing)
 		HousingDynamicMaterial->SetScalarParameterValue(FName(TEXT("IsHousing")), 1);
 	else
 		HousingDynamicMaterial->SetScalarParameterValue(FName(TEXT("IsHousing")), 0);
+	*/
 }
 
 // 터렛 업그레이드시 처리
