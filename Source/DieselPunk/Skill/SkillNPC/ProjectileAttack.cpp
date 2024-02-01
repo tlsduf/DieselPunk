@@ -4,6 +4,7 @@
 #include "..\../Actor\ProjectileBase.h"
 #include "..\..\Character\CharacterNPC.h"
 #include "../../Util/SplineConstructor.h"
+#include "../../Animation/TurretAnimInstace.h"
 
 #include <GameFramework/Character.h>
 #include <Components/SkeletalMeshComponent.h>
@@ -36,6 +37,10 @@ void UProjectileAttack::Fire(AActor* inTarget)
 		return;
 	
 	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
+
+	//애니메이션 재생?
+	if(UTurretAnimInstace* animInst = Cast<UTurretAnimInstace>(ownerPawn->GetMesh()->GetAnimInstance()))	
+		animInst->AttackSign();
 	
 	// projectile spawn
 	if(ProjectileBaseClass)

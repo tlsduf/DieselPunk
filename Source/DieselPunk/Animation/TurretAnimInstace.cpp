@@ -14,10 +14,7 @@ void UTurretAnimInstace::NativeUpdateAnimation(float InDeltaSeconds)
 	Super::NativeUpdateAnimation(InDeltaSeconds);
 
 	if(CurTarget.IsValid())
-		OwnerToTargetRot = (CurTarget->GetActorLocation() - GetOwningActor()->GetActorLocation()).Rotation();
-	else
-		OwnerToTargetRot = FRotator::ZeroRotator;
-		
+		OwnerToTargetRot = (CurTarget->GetActorLocation() - GetOwningActor()->GetActorLocation()).Rotation() - GetOwningActor()->GetActorRotation();
 }
 
 // AbilityType에 따른 몽타주를 반환합니다. None입력시 기본 몽타주 반환
@@ -78,4 +75,15 @@ void UTurretAnimInstace::SetCurTarget(TWeakObjectPtr<ACharacterNPC> InCharacter)
 		CurTarget = InCharacter;
 	else
 		CurTarget = nullptr;
+}
+
+// 터렛이 공격하면 신호를 줍니다.
+void UTurretAnimInstace::AttackSign()
+{
+	bAttack = true;
+	TWeakObjectPtr<UTurretAnimInstace> thisPtr = this;
+	GetWorld()->GetTimerManager().SetTimer(AttackTHandle, [thisPtr](){
+			if(thisPtr.IsValid())
+				thisPtr->bAttack = false;
+		},0.1f, false);
 }

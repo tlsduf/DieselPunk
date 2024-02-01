@@ -3,7 +3,6 @@
 #include "CharacterNPC.h"
 #include "../Manager/ObjectManager.h"
 #include "../Skill/SkillBase.h"
-#include "../Skill/SkillNPC/TargetAttack.h"
 #include "../UI/HUD/EnemyStatusUI.h"
 #include "../Manager/NavigationManager.h"
 #include "..\Component\DPNavigationComponent.h"
@@ -12,8 +11,7 @@
 #include <AIController.h>
 #include <GameFramework/CharacterMovementComponent.h>
 #include <NavigationSystem.h>
-
-#include "DrawDebugHelpers.h"
+#include <DrawDebugHelpers.h>
 
 
 // =============================================================
