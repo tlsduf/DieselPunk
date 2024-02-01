@@ -32,9 +32,16 @@ void AStatBuff::BeginPlay()
 	TickMaxCount = static_cast<int32>(MaxTime / TickTime);
 
 	// Effect
-	StartEffect(EEffectPlayType::Start, GetActorTransform());
+	TWeakObjectPtr<AStatBuff> thisPtr = this;
+	GetWorldTimerManager().SetTimerForNextTick([thisPtr]()
+	{
+		if(!thisPtr.IsValid())
+			return;
+		thisPtr->StartEffect(EEffectPlayType::Start, thisPtr->GetActorTransform());
 
-	Buff();
+		thisPtr->Buff();
+		
+	});
 }
 
 void AStatBuff::EndPlay(const EEndPlayReason::Type EndPlayReason)

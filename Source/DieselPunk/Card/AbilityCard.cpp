@@ -76,7 +76,6 @@ void FAbilityCard::_Complete(bool& OutSuccess, int32 InCost)
 				if(!owner.IsValid())
 					return;
 				spawnActor->SetOwnerPlayer(owner.Get());
-				spawnActor->InitTransformOffset();
 			};
 
 			int32 id = FObjectManager::INVALID_OBJECTID;
@@ -88,7 +87,12 @@ void FAbilityCard::_Complete(bool& OutSuccess, int32 InCost)
 				id = FObjectManager::GetInstance()->CreateActor<AStatBuff>(uclass, spawnParam);
 
 			if(FObjectManager::GetInstance()->IsValidId(id))
+			{
 				OutSuccess = true;
+				ASkillActor* skillActor = Cast<ASkillActor>(FObjectManager::GetInstance()->FindActor(id));
+				if(skillActor)
+					skillActor->InitTransformOffset();
+			}
 			else
 				OutSuccess = false;
 		}
