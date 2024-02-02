@@ -123,7 +123,7 @@ void ACharacterTurret::SetTurretTarget()
 // =============================================================
 void ACharacterTurret::MakeSearchArea()
 {
-	float wide = GridSize * 100 / 2;
+	float wide = GridSize * 100;
 	FVector firstPoint = GetActorLocation() + (GetActorRightVector() * wide);
 	FVector secondPoint = GetActorLocation() + (GetActorRightVector() * wide) + GetActorForwardVector() * GetStat().GetStat(ECharacterStatType::AttackMaxRange);
 	FVector thirdPoint = GetActorLocation() + (-1 * GetActorRightVector() * wide) + GetActorForwardVector() * GetStat().GetStat(ECharacterStatType::AttackMaxRange);
