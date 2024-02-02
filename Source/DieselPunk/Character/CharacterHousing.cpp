@@ -36,6 +36,7 @@ ACharacterHousing::ACharacterHousing()
 	UClass* NavArea = ConstructorHelpersInternal::FindOrLoadClass(inPath, UNavAreaBase::StaticClass() );
 	Box->SetAreaClassOverride(NavArea);*/
 	Box->SetupAttachment(GetCapsuleComponent());
+	Box->bHiddenInGame = false;
 
 	InteractInstallationWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("InteractWidgetComponent"));
 	if (InteractInstallationWidgetComponent)
