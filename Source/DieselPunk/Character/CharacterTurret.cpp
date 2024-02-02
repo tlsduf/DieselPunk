@@ -191,12 +191,15 @@ void ACharacterTurret::DrawDebugSearchArea()
 {
 	if(TurretSearchAreaType == ESearchAreaType::Circle)
 	{
-		float dif = GetStat().GetStat(ECharacterStatType::AttackMaxRange) - GetStat().GetStat(ECharacterStatType::AttackMinRange);
+		DrawDebugCircle(GetWorld(), GetActorLocation(), GetStat().GetStat(ECharacterStatType::AttackMaxRange), 16, FColor::Red, false, -1, 0, 3, FVector(0,1,0), FVector(1,0,0), true);
+		DrawDebugCircle(GetWorld(), GetActorLocation(), GetStat().GetStat(ECharacterStatType::AttackMinRange), 16, FColor::Green, false, -1, 0, 3, FVector(0,1,0), FVector(1,0,0), true);
+
+		/*float dif = GetStat().GetStat(ECharacterStatType::AttackMaxRange) - GetStat().GetStat(ECharacterStatType::AttackMinRange);
 		float colorDif = 255 / 4;
 		for(int32 i = 1 ; i <= 4 ; i++)
 		{
 			DrawDebugCircle(GetWorld(), GetActorLocation(), GetStat().GetStat(ECharacterStatType::AttackMaxRange) - (dif * i / 4), 16, FColor(255 - (colorDif * i),colorDif * i,0), false, -1, 0, 3, FVector(0,1,0), FVector(1,0,0), false);
-		}
+		}*/
 	}
 
 	if(TurretSearchAreaType == ESearchAreaType::Rectangle)
