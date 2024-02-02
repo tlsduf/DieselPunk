@@ -279,8 +279,8 @@ void AProjectileBase::_BeginOverlapEvent(UPrimitiveComponent* InOverlappedCompon
 	if(bPiercing <= 0)
 		Destroy();
 
-	PiercedTime++;
-	if(bPiercing <= PiercedTime)
+	PiercedCount++;
+	if(bPiercing <= PiercedCount)
 		Destroy();
 }
 

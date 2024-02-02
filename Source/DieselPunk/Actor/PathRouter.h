@@ -8,13 +8,14 @@
 */
 
 #include "GameFramework/Actor.h"
+#include "../Interface/DpManagementTargetInterFace.h"
 #include "PathRouter.generated.h"
 
 class USplineComponent;
 class UBoxComponent;
 
 UCLASS()
-class DIESELPUNK_API APathRouter : public AActor
+class DIESELPUNK_API APathRouter : public AActor, public IDpManagementTargetInterFace
 {
 	GENERATED_BODY()
 

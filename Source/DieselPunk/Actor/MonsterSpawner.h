@@ -8,6 +8,7 @@
 */
 
 #include "GameFramework/Actor.h"
+#include "../Interface/DpManagementTargetInterFace.h"
 #include "MonsterSpawner.generated.h"
 
 class USplineComponent;
@@ -25,7 +26,7 @@ struct FSpawnInfo
 };
 
 UCLASS()
-class DIESELPUNK_API AMonsterSpawner : public AActor
+class DIESELPUNK_API AMonsterSpawner : public AActor, public IDpManagementTargetInterFace
 {
 	GENERATED_BODY()
 

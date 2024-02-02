@@ -91,7 +91,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "MYDP_Combat")
 	int32 bPiercing = 0;
 
-	int32 PiercedTime = 0;
+	int32 PiercedCount = 0;
 	
 	// =================================================================================================
 	// 유틸 및 이펙트

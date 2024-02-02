@@ -2,13 +2,14 @@
 #pragma once
 
 #include <GameFramework/Actor.h>
+#include "../Interface/DpManagementTargetInterFace.h"
 #include "InteractiveActor.generated.h"
 
 class UWidgetComponent;
 class UItemGuideUI;
 
 UCLASS()
-class DIESELPUNK_API AInteractiveActor : public AActor
+class DIESELPUNK_API AInteractiveActor : public AActor, public IDpManagementTargetInterFace
 {
 	GENERATED_BODY()
 

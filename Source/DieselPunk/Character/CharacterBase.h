@@ -3,6 +3,7 @@
 #pragma once
 
 #include "GameFramework/Character.h"
+#include "../Interface/DpManagementTargetInterFace.h"
 #include "Stat/Stat.h"
 #include "CharacterBase.generated.h"
 
@@ -10,7 +11,7 @@ class UWidgetComponent;
 class UStatusUIBase;
 
 UCLASS()
-class DIESELPUNK_API ACharacterBase : public ACharacter
+class DIESELPUNK_API ACharacterBase : public ACharacter, public IDpManagementTargetInterFace
 {
 	GENERATED_BODY()
 

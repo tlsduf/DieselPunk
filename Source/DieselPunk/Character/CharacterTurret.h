@@ -21,6 +21,10 @@ public:
 	ESearchAreaType TurretSearchAreaType = ESearchAreaType::Circle;
 
 	TArray<FVector> RectanglePoints;			// 사각형 공격탐지범위 (현재는 포탑사거리 x 포탑그리드 크기)
+
+	// bPiercing 가 ture면 지형을 무시하고 공격합니다.
+	UPROPERTY(EditAnywhere, Category = "MYDP_Combat")
+	bool bPierceWall = false;
 	
 public:
 	ACharacterTurret();
@@ -37,6 +41,9 @@ public:
 	
 	// inLocation이 유효 범위 안에 있으면 True 반환
 	bool InValidSearchArea(FVector inLocation);
+
+	// inLocation까지 트레이스를 하여 맵 구성요소(ex 벽)이 있는지 탐색하고, 없으면 true 반환
+	bool InValidOverWall(FVector inLocation);
 
 	// 다각형 내부에 점이 위치하는지 확인합니다. // Point in polygon algorithm
 	bool IsInPolygon(double InX, double InY);

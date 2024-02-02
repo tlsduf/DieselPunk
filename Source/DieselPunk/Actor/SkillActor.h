@@ -3,12 +3,13 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
+#include "../Interface/DpManagementTargetInterFace.h"
 #include "SkillActor.generated.h"
 
 class ACharacterBase;
 
 UCLASS()
-class DIESELPUNK_API ASkillActor : public AActor
+class DIESELPUNK_API ASkillActor : public AActor, public IDpManagementTargetInterFace
 {
 	GENERATED_BODY()
 

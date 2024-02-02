@@ -96,6 +96,15 @@ void ACharacterTurret::SetTurretTarget()
 		});
 		//타겟을 공격할 수 있는 조건(벽에 막히거나)
 		//TODO
+		if(bPierceWall)
+		{
+			outActors.RemoveAll([thisPtr](int32 ID)
+			{
+				if(thisPtr.IsValid())
+					return thisPtr->InValidOverWall(FObjectManager::GetInstance()->FindActor(ID)->GetActorLocation());
+				return true;
+			});
+		}
 		
 		//기준점(대게 this)에 가장 가까운(또는 다른 조건) 액터(또는 어레이) 반환
 		TWeakObjectPtr<AActor> tempTarget = Cast<ACharacterNPC>(FObjectManager::GetInstance()->FindActor(
@@ -162,6 +171,33 @@ bool ACharacterTurret::InValidSearchArea(FVector inLocation)
 }
 
 // =============================================================
+// inLocation까지 트레이스를 하여 맵 구성요소(ex 벽)이 있는지 탐색하고, 없으면 true 반환
+// =============================================================
+bool ACharacterTurret::InValidOverWall(FVector inLocation)
+{
+	//라인트레이싱에 성공했는가
+	TArray<FHitResult> hits;
+	FVector start = GetActorLocation();
+	FVector end = inLocation;
+
+	FCollisionQueryParams params;
+	params.AddIgnoredActor(this);
+
+	bool bIsWorldObject = false;
+	//가장 가까운 라인트레이싱의 액터가 공격 대상인지 확인
+	if(GetWorld()->LineTraceMultiByChannel(hits, start, end, ECollisionChannel::ECC_WorldStatic, params))
+	{
+		for(const auto& hit : hits)
+		{
+			if(hit.GetActor()->GetClass()->ImplementsInterface(UDpManagementTargetInterFace::StaticClass()))
+				continue;
+			bIsWorldObject = true;
+		}
+	}
+	return bIsWorldObject;
+}
+
+// =============================================================
 // 다각형 내부에 점이 위치하는지 확인합니다. // Point in polygon algorithm
 // =============================================================
 bool ACharacterTurret::IsInPolygon(double InX, double InY)
@@ -175,10 +211,10 @@ bool ACharacterTurret::IsInPolygon(double InX, double InY)
 	{
 		int j = (i + 1) % RectanglePoints.Num();
 		if ((( RectanglePoints[i].Y <= InY ) && ( RectanglePoints[j].Y > InY )) || (( RectanglePoints[i].Y > InY ) && ( RectanglePoints[j].Y <=  InY )))
-		{ 
+		{
 			float vt = (float)(InY  - RectanglePoints[i].Y) / (RectanglePoints[j].Y - RectanglePoints[i].Y);
-			if (InX <  RectanglePoints[i].X + vt * ( RectanglePoints[j].X - RectanglePoints[i].X )) 
-				++cn;  
+			if (InX <  RectanglePoints[i].X + vt * ( RectanglePoints[j].X - RectanglePoints[i].X ))
+				++cn;
 		}
 	}
 	return ( cn & 1 );    // 0 if even (out), and 1 if  odd (in)

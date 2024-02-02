@@ -128,6 +128,9 @@ void UHousingActorComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 bool UHousingActorComponent::IsArrangeTurret()
 {
+	ACharacterPC* charPc = FObjectManager::GetInstance()->GetPlayer(); 
+	if(charPc == nullptr)
+		return false;
 	ACharacterHousing* owner = Cast<ACharacterHousing>(GetOwner());
 	if(owner == nullptr)
 		return false;
@@ -141,6 +144,7 @@ bool UHousingActorComponent::IsArrangeTurret()
 
 	//플레이어 충돌범위 제외
 	FCollisionQueryParams params;
+	params.AddIgnoredActor(charPc);
 	params.AddIgnoredActor(owner);
 	
 	return !GetOwner()->GetWorld()->OverlapMultiByChannel(hitResult, location, FQuat::Identity, ECC_WorldStatic,FCollisionShape::MakeBox(boxHalfExtend), params) &&
@@ -149,6 +153,9 @@ bool UHousingActorComponent::IsArrangeTurret()
 
 bool UHousingActorComponent::CompleteHousingTurret()
 {
+	ACharacterPC* charPc = FObjectManager::GetInstance()->GetPlayer(); 
+	if(charPc == nullptr)
+		return false;
 	ACharacterHousing* owner = Cast<ACharacterHousing>(GetOwner());
 	if(owner == nullptr)
 		return false;
@@ -162,6 +169,7 @@ bool UHousingActorComponent::CompleteHousingTurret()
 
 	//플레이어 충돌범위 제외
 	FCollisionQueryParams params;
+	params.AddIgnoredActor(charPc);
 	params.AddIgnoredActor(owner);
 
 	if(GetOwner()->GetWorld()->OverlapMultiByChannel(hitResult, location, FQuat::Identity, ECC_WorldStatic,FCollisionShape::MakeBox(boxHalfExtend), params))
