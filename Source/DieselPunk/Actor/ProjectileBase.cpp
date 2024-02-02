@@ -73,7 +73,7 @@ void AProjectileBase::BeginPlay()
 	if(SplinePath.IsValid())
 	{
 		SplineLength = SplinePath.GetSplineLength();
-		TimeToDestroy = SplinePath.Path.Position.Points[1].IsCurveKey() ? SplineLength / ProjectileMovementComponent->GetMaxSpeed() : 0.1f;
+		TimeToDestroy = SplinePath.Path.Position.Points[1].IsCurveKey() ? SplineLength / ProjectileMovementComponent->GetMaxSpeed() / 1.5 : 0.1f;
 		StartAnimator();
 	}
 	
@@ -152,7 +152,7 @@ void AProjectileBase::StartAnimator()
 {
 	TWeakObjectPtr<AProjectileBase> thisPtr = this;
 
-	float durationTime = SplinePath.Path.Position.Points[1].IsCurveKey() ? SplineLength / ProjectileMovementComponent->GetMaxSpeed() : 0.1f;
+	float durationTime = SplinePath.Path.Position.Points[1].IsCurveKey() ? SplineLength / ProjectileMovementComponent->GetMaxSpeed() / 1.5 : 0.1f;
 	
 	AnimatorParam param;
 	param.StartValue = 0.f;
