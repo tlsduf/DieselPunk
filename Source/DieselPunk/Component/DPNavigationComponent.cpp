@@ -105,21 +105,55 @@ void UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGoa
 	{
 		goalLocArray.RemoveAt(0);
 	}
+
+	// 목적지와 목적지 사이에 포탑이 설치된 경우 두 목적지를 제거 합니다. // LineTrace
+	TArray<FVector> removeVector;
+	for(int32 i = 0 ; i < goalLocArray.Num() - 2 ; i++)
+	{
+		TArray<FHitResult> hits;
+		FCollisionQueryParams params;
+		bool hasHit = GetWorld()->LineTraceMultiByChannel(hits, goalLocArray[i] + FVector(0, 0, 50), goalLocArray[i + 1] + FVector(0, 0, 50), ECollisionChannel::ECC_GameTraceChannel5, params);
+		if(hasHit)
+		{
+			bool bTurret = false;
+			for(auto hit : hits)
+			{
+				if(Cast<ACharacterTurret>(hit.GetActor()))
+					bTurret = true;
+			}
+			if(bTurret)
+			{
+				removeVector.AddUnique(goalLocArray[i]);
+				removeVector.AddUnique(goalLocArray[i + 1]);
+			}
+		}
+	}
+	if(!removeVector.IsEmpty())
+	{
+		for(const FVector& vectorKey : removeVector)
+		{
+			goalLocArray.Remove(vectorKey);
+		}
+	}
 	
 	// 목적지 위에 포탑이 설치 되어 있을 경우, 해당 목적지를 제거(Remove)합니다.
 	goalLocArray.RemoveAll([this](FVector goalLoc)
 	{
 		TArray<FHitResult> hits;
 		FCollisionQueryParams params;
-		GetWorld()->SweepMultiByChannel(hits, goalLoc, goalLoc + FVector(0,0,300), FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel5, FCollisionShape::MakeSphere(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius()), params);
+		bool hasHit = GetWorld()->SweepMultiByChannel(hits, goalLoc, goalLoc + FVector(0,0,300), FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel5, FCollisionShape::MakeSphere(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius()), params);
 		bool bTurret = false;
-		for(auto hit : hits)
+		if(hasHit)
 		{
-			if(Cast<ACharacterTurret>(hit.GetActor()))
-				bTurret = true;
+			for(auto hit : hits)
+			{
+				if(Cast<ACharacterTurret>(hit.GetActor()))
+					bTurret = true;
+			}
 		}
 		return bTurret;
 	});
+
 	
 	// 액터와 첫 목적지 까지의 경로를 담습니다.
 	TArray<FNavPathPoint> pathPoints = SearchPathTo(Owner->GetActorLocation(), goalLocArray[0])->GetPathPoints();
@@ -288,7 +322,7 @@ void UDPNavigationComponent::DrawDebugSpline()
 		DrawDebugPoint(GetWorld(), beforePoint, 25, FColor::Green, false, -1);
 		for(auto& point : MyPathPoints)
 		{
-			DrawDebugLine(GetWorld(),beforePoint, point, FColor::Purple, false, -1);
+			//DrawDebugLine(GetWorld(),beforePoint, point, FColor::Purple, false, -1);
 			DrawDebugPoint(GetWorld(), point, 10, FColor::Purple, false, -1);
 			beforePoint = point;
 		}

@@ -295,10 +295,13 @@ void ACharacterNPC::AddEnemyRoutingLines(FVector inGoalLoc, FVector inStart, FVe
 }
 
 // =============================================================
-// self와 선분사이의 거리를 반환합니다. (z축 무시)
+// self와 선분사이의 거리를 반환합니다. (z축 무시) 
 // =============================================================
 float ACharacterNPC::DistanceSegmentToSelf(FVector inStart, FVector inEnd)
 {
+	// 해당 선분은 아래 DrawDebug 라인과 같습니다.
+	// DrawDebugLine(GetWorld(), inStart + FVector(0,0,50), inEnd - (dir * 600) + FVector(0,0,50), FColor::Cyan, true, -1, 0, 5);
+
 	FVector2D A = FVector2D(inStart.X, inStart.Y);
 	FVector2D B = FVector2D(inEnd.X, inEnd.Y);
 	FVector2D P = FVector2D(GetActorLocation().X, GetActorLocation().Y);
