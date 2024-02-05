@@ -268,7 +268,7 @@ void ACharacterBase::HandleCombatState()
 	{
 		GetWorldTimerManager().ClearTimer(CombatStateTHandle);
 		TWeakObjectPtr<ACharacterBase> thisPtr = this;
-		GetWorld()->GetTimerManager().SetTimer(TakeDamageHandle, [thisPtr](){
+		GetWorld()->GetTimerManager().SetTimer(CombatStateTHandle, [thisPtr](){
 				if(thisPtr.IsValid())
 					thisPtr->InCombat = false;
 			},5.0f, false);
@@ -277,7 +277,7 @@ void ACharacterBase::HandleCombatState()
 	{
 		// 타이머가 실행 중이 아니면, 5초 후에 InCombat을 false로 설정합니다.
 		TWeakObjectPtr<ACharacterBase> thisPtr = this;
-		GetWorld()->GetTimerManager().SetTimer(TakeDamageHandle, [thisPtr](){
+		GetWorld()->GetTimerManager().SetTimer(CombatStateTHandle, [thisPtr](){
 				if(thisPtr.IsValid())
 					thisPtr->InCombat = false;
 			},5.0f, false);

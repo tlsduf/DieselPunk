@@ -44,7 +44,7 @@ void ACharacterNPC::BeginPlay()
 	if(NPCType == ENPCType::Enemy)
 	{
 		TWeakObjectPtr<ACharacterNPC> thisPtr = this;
-		GetWorld()->GetTimerManager().SetTimer(PathTHandle3, [thisPtr](){
+		GetWorld()->GetTimerManager().SetTimer(PathTHandle1, [thisPtr](){
 				if(thisPtr.IsValid())
 					thisPtr->_UpdateSplinePath();
 			},0.5f, false);
@@ -323,7 +323,7 @@ float ACharacterNPC::DistanceSegmentToSelf(FVector inStart, FVector inEnd)
 }
 
 // =============================================================
-// '몬스터'의 GoalLoc를 갱신합니다. // GoalLoc는 경유지점입니다.
+// '몬스터'의 GoalLoc를 갱신합니다. // GoalLoc는 도달할 수 있는 가장 가까운(경로상) 경유지점입니다.
 // =============================================================
 void ACharacterNPC::UpdateEnemyGoalLoc()
 {
@@ -396,23 +396,38 @@ void ACharacterNPC::UpdateSplinePath()
 
 	// 내비메쉬 업데이트가 FindPathSync호출 보다 느려서 간격을 두고 호출합니다.
 	TWeakObjectPtr<ACharacterNPC> thisPtr = this;
-	GetWorld()->GetTimerManager().SetTimer(PathTHandle1, [thisPtr](){
+	GetWorld()->GetTimerManager().SetTimer(PathTHandle2, [thisPtr](){
 			if(thisPtr.IsValid())
 				thisPtr->_UpdateSplinePath();
 		},0.075f, false);
 	
-	GetWorld()->GetTimerManager().SetTimer(PathTHandle2, [thisPtr](){
+	GetWorld()->GetTimerManager().SetTimer(PathTHandle3, [thisPtr](){
 			if(thisPtr.IsValid())
 				thisPtr->_UpdateSplinePath();
-		},0.125f, false);
+		},0.175f, false);
 }
 
 void ACharacterNPC::_UpdateSplinePath()
 {
+	__UpdateSplinePath();
+	// 길이 막힌 결과가 나오면, 한 번 더 경로를 확인합니다.
+	// 내비메쉬 업데이트와 FindPathSync호출이 오차가 있어, 의도하지 않은 결과가 나옴.
+	if(TargetedTurretID != FObjectManager::INVALID_OBJECTID)
+	{
+		TWeakObjectPtr<ACharacterNPC> thisPtr = this;
+		GetWorld()->GetTimerManager().SetTimer(PathTHandle4, [thisPtr](){
+				if(thisPtr.IsValid())
+					thisPtr->__UpdateSplinePath();
+			},0.075f, false);
+	}
+	DPNavigationComponent->MakeSplinePath();
+}
+
+void ACharacterNPC::__UpdateSplinePath()
+{
 	UpdateEnemyGoalLoc();
 	DPNavigationComponent->UpdatePath(NowGoalLoc, GetGoalLocArrayFromRoutingLines());
 	TargetedTurretID = DPNavigationComponent->GetTurretIdOnPath();
-	DPNavigationComponent->MakeSplinePath();
 }
 
 // =============================================================

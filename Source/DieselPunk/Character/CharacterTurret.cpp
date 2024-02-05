@@ -96,7 +96,7 @@ void ACharacterTurret::SetTurretTarget()
 		});
 		//타겟을 공격할 수 있는 조건(벽에 막히거나)
 		//TODO
-		if(bPierceWall)
+		if(!bPierceWall)
 		{
 			outActors.RemoveAll([thisPtr](int32 ID)
 			{
@@ -205,7 +205,7 @@ bool ACharacterTurret::IsInPolygon(double InX, double InY)
 	if(RectanglePoints.IsEmpty())
 		return false;
 	
-	int cn = 0;    // the  crossing number counter
+	int cn = 0;    // the crossing number counter
 	
 	for (int i = 0; i < RectanglePoints.Num(); i++)
 	{

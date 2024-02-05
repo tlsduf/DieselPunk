@@ -33,6 +33,7 @@ class DIESELPUNK_API ACharacterNPC : public ACharacterBase
 	FTimerHandle PathTHandle1;
 	FTimerHandle PathTHandle2;
 	FTimerHandle PathTHandle3;
+	FTimerHandle PathTHandle4;
 	
 protected:
 	/////////////////////////////////////////////////////////////////////
@@ -139,6 +140,7 @@ public:
 	// 몬스터 스폰완료시, 포탑 설치/파괴시, Target이 Nexus로 업데이트될 때 호출합니다.
 	void UpdateSplinePath();
 	void _UpdateSplinePath();
+	void __UpdateSplinePath();
 
 	// Enemy 타입을 가진 모든 NPC들의 경로를 재탐색 합니다.
 	void UpdateSplinePathAll();

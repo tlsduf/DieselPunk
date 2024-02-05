@@ -11,6 +11,8 @@
 #include <NavigationSystem.h>
 #include <DrawDebugHelpers.h>
 
+#include "Components/CapsuleComponent.h"
+
 
 UDPNavigationComponent::UDPNavigationComponent()
 {
@@ -109,7 +111,7 @@ void UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGoa
 	{
 		TArray<FHitResult> hits;
 		FCollisionQueryParams params;
-		Owner->GetWorld()->LineTraceMultiByChannel(hits, goalLoc, goalLoc + FVector(0,0,500), ECollisionChannel::ECC_GameTraceChannel5, params);
+		GetWorld()->SweepMultiByChannel(hits, goalLoc, goalLoc + FVector(0,0,300), FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel5, FCollisionShape::MakeSphere(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius()), params);
 		bool bTurret = false;
 		for(auto hit : hits)
 		{
@@ -150,7 +152,7 @@ int32 UDPNavigationComponent::GetTurretIdOnPath()
 	if(MyPathPoints.IsEmpty())
 		return turretID;
 	
-	TArray<FHitResult> hit;
+	TArray<FHitResult> hits;
 	FCollisionQueryParams params;
 
 	// 모든 몬스터들을 IgnoredActor에 등록합니다.
@@ -173,11 +175,11 @@ int32 UDPNavigationComponent::GetTurretIdOnPath()
 		FVector startPoint = MyPathPoints[i] + FVector(0,0,100);
 		FVector endPoint = MyPathPoints[i+1] + FVector(0,0,100);
 		// Warning 터렛이 탐색이 안 될 경우 트레이스채널 확인
-		bool hasHit = GetWorld()->LineTraceMultiByChannel(hit, startPoint, endPoint, ECollisionChannel::ECC_GameTraceChannel5, params);
+		bool hasHit = GetWorld()->SweepMultiByChannel(hits, startPoint, endPoint, FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel5, FCollisionShape::MakeSphere(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius()), params);
 		if(hasHit)
 		{
 			TArray<int32> turretIDs;
-			for(const FHitResult& hitResult : hit)
+			for(const FHitResult& hitResult : hits)
 			{
 				// 탑색된 액터가 터렛이라면 turretIDs 등록
 				if(auto turret = Cast<ACharacterTurret>(hitResult.GetActor()))

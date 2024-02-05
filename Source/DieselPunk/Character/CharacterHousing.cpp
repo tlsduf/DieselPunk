@@ -164,13 +164,14 @@ bool ACharacterHousing::CompleteHousingTurret()
 			Box->SetCanEverAffectNavigation(true);
 			Box->SetBoxExtent(FVector(GetGridSize() * 50, GetGridSize() * 50, GetGridSize() * 50));
 		}
-		// 포탑 생성완료시 모든 적의 경로를 재탐색합니다.
-		UpdateSplinePathAll();
+
 		// 포탑 생성완료시 사거리를 생성합니다.
 		if(auto turret = Cast<ACharacterTurret>(this))
 			if(turret->TurretSearchAreaType == ESearchAreaType::Rectangle)
 				turret->MakeSearchArea();
 		
+		// 포탑 생성완료시 모든 적의 경로를 재탐색합니다.
+		UpdateSplinePathAll();
 		return true;
 	}
 	return false;
