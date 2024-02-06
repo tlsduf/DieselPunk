@@ -60,7 +60,6 @@ public:
 	int32 SpawnerNumber = 0;					
 	
 protected:
-	int32 ObjectId = -1;					//오브젝트 ID
 	
 	/////////////////////////////////////////////////////////////////////
 	// for box , Poligon , MakeRandLoc //
@@ -102,10 +101,6 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	const int32 GetObjectId() const { return ObjectId; }
-
-	void SetObjectId(int32 InObjectId) { ObjectId = InObjectId; }
 	
 	// InWaveSetName에 해당하는 데이터테이블의 정보를 읽어 세팅하고, 스폰을 시작합니다.
 	void StartSpawn(FString InWaveSetName);

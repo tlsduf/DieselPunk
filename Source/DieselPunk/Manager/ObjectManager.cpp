@@ -139,13 +139,11 @@ int32 FObjectManager::AddActor(AActor* InActor)
 //캐릭터 베이스의 오브젝트 ID를 설정합니다.
 void FObjectManager::SetObjectIdAt(AActor* InActor, int32 InObjectId)
 {
-	ACharacterBase* charBase = Cast<ACharacterBase>(InActor);
-	if(charBase)
-		charBase->SetObjectId(InObjectId);
-	
-	AMonsterSpawner* spawnArea = Cast<AMonsterSpawner>(InActor);
-	if(spawnArea)
-		spawnArea->SetObjectId(InObjectId);
+	if(InActor->GetClass()->ImplementsInterface(UDpManagementTargetInterFace::StaticClass()))
+	{
+		IDpManagementTargetInterFace* interfaceManagement = Cast<IDpManagementTargetInterFace>(InActor);
+		interfaceManagement->SetObjectId(InObjectId);
+	}
 }
 
 //캐릭터일 경우에 캡슐컴포넌트의 Half Height만큼 위로 올린 값을 반환합니다.

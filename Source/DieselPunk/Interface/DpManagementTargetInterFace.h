@@ -13,12 +13,16 @@ class UDpManagementTargetInterFace : public UInterface
 };
 
 /**
- * 플레이어로부터 입력을 받아야 하는 객체일 경우 사용하는 인터페이스입니다. 
+ * 오브젝트 매니저로부터 관리되는 관리 대상입니다.
  */
 class DIESELPUNK_API IDpManagementTargetInterFace
 {
 	GENERATED_BODY()
+protected:
+	int32 ObjectId = -1;
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+	void SetObjectId(int32 InObjectId){ ObjectId = InObjectId; }
+	const int32& GetObjectId(){ return ObjectId; }
 };

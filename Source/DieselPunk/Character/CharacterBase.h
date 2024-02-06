@@ -18,8 +18,6 @@ class DIESELPUNK_API ACharacterBase : public ACharacter, public IDpManagementTar
 protected:
 	/////////////////////////////////////////////////////////////////////
 	// for Character info Management //
-	
-	int32 ObjectId = -1;			//오브젝트 ID
 	FStat Stat;						//스탯
 	
 	FDateTime CreateTime;
@@ -98,10 +96,6 @@ public:
 	
 	/////////////////////////////////////////////////////////////////////
 	// for Character info Management //
-	
-	const int32 GetObjectId() const { return ObjectId; }
-
-	void SetObjectId(int32 InObjectId) { ObjectId = InObjectId; }
 
 	// [Stat] 스탯을 가져옵니다.
 	FStat& GetStat() { return Stat; }

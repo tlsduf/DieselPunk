@@ -38,8 +38,6 @@ class DIESELPUNK_API APathRouter : public AActor, public IDpManagementTargetInte
 	UPROPERTY(VisibleInstanceOnly, Category = "MYDP_Setting")
 	int32 PathRouterNum = 0;				
 	
-	int32 ObjectId = -1;					// 오브젝트 ID
-	
 	/////////////////////////////////////////////////////////////////////
 	// for Box , Poligon , MakeRandLoc //
 
@@ -60,11 +58,6 @@ protected:
 
 	// Called change info in editor
 	virtual void OnConstruction(const FTransform& InTransform)override;
-	
-public:	
-	const int32 GetObjectId() const { return ObjectId; }
-
-	void SetObjectId(int32 InObjectId) { ObjectId = InObjectId; }
 
 private:
 	// 스플라인 포인트를 기반으로 직사각형의 점을 PolygonPoints에 담습니다.
