@@ -84,11 +84,17 @@ void UCardDetail::OpenCardDetail(int32 InKey)
 		FSlateBrush brush = image->GetBrush();
 		brush.SetResourceObject(LoadObject<UTexture>(nullptr, *info->TexturePath[i]));
 		image->SetBrush(brush);
-		
+
 		UTextBlock* text = Cast<UTextBlock>((*Cards[i])[TEXT("CardName")]);
 		if(text == nullptr)
 			return;
-		text->SetText(FText::FromString(info->CardName));
+		if(info->TexturePath[i].Find(TEXT("TestSmall")) != INDEX_NONE)
+		{
+			text->SetVisibility(ESlateVisibility::Visible);
+			text->SetText(FText::FromString(info->CardName));
+		}
+		else
+			text->SetVisibility(ESlateVisibility::Collapsed);
 	}
 	for(int i = info->TexturePath.Num(); i < 3; ++i)
 	{
@@ -143,7 +149,13 @@ void UCardDetail::PreviousTierButtonExecute()
 		UTextBlock* text = Cast<UTextBlock>((*Cards[i])[TEXT("CardName")]);
 		if(text == nullptr)
 			return;
-		text->SetText(FText::FromString(info->CardName));
+		if(info->TexturePath[i].Find(TEXT("TestSmall")) != INDEX_NONE)
+		{
+			text->SetVisibility(ESlateVisibility::Visible);
+			text->SetText(FText::FromString(info->CardName));
+		}
+		else
+			text->SetVisibility(ESlateVisibility::Collapsed);
 	}
 
 	if(TierIndex == 0)
@@ -177,7 +189,13 @@ void UCardDetail::NextTierButtonExecute()
 		UTextBlock* text = Cast<UTextBlock>((*Cards[i])[TEXT("CardName")]);
 		if(text == nullptr)
 			return;
-		text->SetText(FText::FromString(info->CardName));
+		if(info->TexturePath[i].Find(TEXT("TestSmall")) != INDEX_NONE)
+		{
+			text->SetVisibility(ESlateVisibility::Visible);
+			text->SetText(FText::FromString(info->CardName));
+		}
+		else
+			text->SetVisibility(ESlateVisibility::Collapsed);
 	}
 
 	if(TierIndex == MaxTier - 1)

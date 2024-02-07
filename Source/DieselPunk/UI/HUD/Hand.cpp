@@ -89,7 +89,13 @@ void UHand::RegisterHand(int InIndex, const CardInfo* InCardInfo)
 	UTextBlock* text = Cast<UTextBlock>((*card)[TEXT("CardName")]);
 	if(text == nullptr)
 		return;
-	text->SetText(FText::FromString(InCardInfo->CardName));
+	if(InCardInfo->TexturePath[0].Find(TEXT("TestSmall")) != INDEX_NONE)
+	{
+		text->SetVisibility(ESlateVisibility::Visible);
+		text->SetText(FText::FromString(InCardInfo->CardName));
+	}
+	else
+		text->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 //카드 등록 해제합니다. Visibility를 Hidden으로 변경합니다.

@@ -139,7 +139,12 @@ void UDeckCardRow::RegisterCard(int InIndex, const CardInfo* InCardInfo)
 			
 	//TEST!///////////////////////////////////////////////////////////////////////////
 	//테스트를 위한 코드입니다. 추후에 이미지 적용으로 변경됩니다.
-	text->SetVisibility(ESlateVisibility::Visible);
-	text->SetText(FText::FromString(InCardInfo->CardName));
+	if(InCardInfo->TexturePath[0].Find(TEXT("TestSmall")) != INDEX_NONE)
+	{
+		text->SetVisibility(ESlateVisibility::Visible);
+		text->SetText(FText::FromString(InCardInfo->CardName));
+	}
+	else
+		text->SetVisibility(ESlateVisibility::Collapsed);
 	//TEXT!///////////////////////////////////////////////////////////////////////////
 }
