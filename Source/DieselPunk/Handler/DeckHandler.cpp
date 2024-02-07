@@ -181,6 +181,9 @@ bool FDeckHandler::Draw()
 		if(Deck.IsEmpty())
 			RefillDeck();
 		
+		if(Deck.IsEmpty())
+			break;
+		
 		Hand[i] = Deck.Pop();
 	}
 

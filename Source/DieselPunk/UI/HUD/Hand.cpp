@@ -44,7 +44,12 @@ void UHand::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 void UHand::RegisterHands(TArray<FCard*> InHands)
 {
 	for(int i = 0; i < InHands.Num(); ++i)
-		RegisterHand(i, &InHands[i]->GetCardInfo());
+	{
+		if(InHands[i] != nullptr)
+			RegisterHand(i, &InHands[i]->GetCardInfo());
+		else
+			UnRegisterHand(i);
+	}
 }
 
 //카드를 등록합니다.
