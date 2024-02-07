@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "AIController.h"
 #include "CharacterPC.h"
 #include "CharacterNPC.generated.h"
 
@@ -48,6 +49,9 @@ protected:
 public:
 	/////////////////////////////////////////////////////////////////////
 	// for Character info Management //
+
+	UPROPERTY()
+	AAIController* AIController = nullptr;
 	
 	// NPC 타입
 	UPROPERTY(EditAnywhere, Category = "MYDP_info")

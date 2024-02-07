@@ -76,8 +76,8 @@ FPathFindingQuery UDPNavigationComponent::BuildPathFindingQuery(const FVector in
 		const FNavPathSharedPtr NoSharedPath = nullptr;
 		return FPathFindingQuery(this,
 			*MyNavData,
-			UtilCollision::GetZTrace(inStartLoc, -1).Location,
-			UtilCollision::GetZTrace(inEndLoc, -1).Location,
+			UtilCollision::GetZTrace(GetWorld(), inStartLoc, -1).Location,
+			UtilCollision::GetZTrace(GetWorld(), inEndLoc, -1).Location,
 			UNavigationQueryFilter::GetQueryFilter(*MyNavData, this, nullptr),
 			NoSharedPath, DefaultCostLimit, true);
 	}
@@ -87,6 +87,15 @@ FPathFindingQuery UDPNavigationComponent::BuildPathFindingQuery(const FVector in
 // 전체 경로를 탐색하여 Location을 MyPathPoints배열에 담습니다. // 몬스터 스폰완료시, 포탑 설치/파괴시, Target이 Nexus로 업데이트될 때 호출합니다.
 void UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGoalLocArray)
 {
+	/*
+	 * 전체과정
+	 * 경로 초기화
+	 * 처음 도달할 목적지 이전의 목적지를 제거합니다.
+	 * 목적지와 다음목적지 사이에 포탑이 설치된 경우 두 목적지를 제거 합니다. // LineTrace
+	 * 목적지 위에 포탑이 설치 되어 있을 경우, 해당 목적지를 제거합니다.
+	 * 액터와 첫 목적지 까지의 경로를 담습니다.
+	 * 목적지 부터 다음 목적지 까지의 경로를 담습니다.
+	 */
 	if(!Owner.IsValid())
 		return;
 
@@ -106,7 +115,7 @@ void UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGoa
 		goalLocArray.RemoveAt(0);
 	}
 
-	// 목적지와 목적지 사이에 포탑이 설치된 경우 두 목적지를 제거 합니다. // LineTrace
+	// 목적지와 다음목적지 사이에 포탑이 설치된 경우 두 목적지를 제거 합니다. // LineTrace
 	TArray<FVector> removeVector;
 	for(int32 i = 0 ; i < goalLocArray.Num() - 2 ; i++)
 	{
@@ -156,7 +165,7 @@ void UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGoa
 
 	
 	// 액터와 첫 목적지 까지의 경로를 담습니다.
-	TArray<FNavPathPoint> pathPoints = SearchPathTo(Owner->GetActorLocation(), goalLocArray[0])->GetPathPoints();
+ 	TArray<FNavPathPoint> pathPoints = SearchPathTo(Owner->GetActorLocation(), goalLocArray[0])->GetPathPoints();
 	for(int i = 0; i < pathPoints.Num(); i++)
 	{
 		MyPathPoints.Add(pathPoints[i]);
@@ -283,27 +292,49 @@ void UDPNavigationComponent::MakeSplinePath()
 	SplinePath.UpdateSpline();
 }
 
-// 스플라인 경로를 따라가게 AddForce 해줍니다.
-void UDPNavigationComponent::AddForceAlongSplinePath()
+// 스플라인 경로를 따라가게 움직임을 구현 해줍니다.
+FVector UDPNavigationComponent::AddForceAlongSplinePath()
 {
 	if(!Owner.IsValid())
-		return;
+		return FVector::ZeroVector;
 	
 	if(!SplinePath.IsValid())
-		return;
+		return Owner->GetActorLocation();
 	
-	float distOwnerToSplinePath = SplinePath.GetDistanceClosestToWorldLocation(Owner->GetActorLocation());
-	FVector nearestSplineLocation = SplinePath.GetLocationAtDistanceAlongSpline(distOwnerToSplinePath);
-	FRotator nearestSplineRotation = SplinePath.GetRotationAtDistanceAlongSpline(distOwnerToSplinePath);
-
-	FVector toSplineDir = (nearestSplineLocation - Owner->GetActorLocation()).GetSafeNormal();
+	/*FVector nearestSplineLocation;	// 가장 가까운 스플라인 점의 위치
+	FRotator nearestSplineRotation;	// 가장 가까운 스플라인 점의 방향
+	FVector toSplineDir;			// 가장 가까운 스플라인 점을 향한 벡터
+	FVector addForceDir;			// 스플라인 위에 있을 때는 nearestSplineRotation를, 스플라인과 멀어졌을 때는 toSplineDir과 합성한 벡터를 반환
 	
-	FVector addForceDir = nearestSplineRotation.Vector().GetSafeNormal();
+	// 성능향상을 위해 해당 구문을 인터벌로 호출합니다.
+	IntervalDeltaTime += inDeltaTime;
+	if(IntervalDeltaTime <= INTERVAL_TIME)
+	{
+		float distOwnerToSplinePath = SplinePath.GetDistanceClosestToWorldLocation(Owner->GetActorLocation());
+		nearestSplineLocation = SplinePath.GetLocationAtDistanceAlongSpline(distOwnerToSplinePath);
+		nearestSplineRotation = SplinePath.GetRotationAtDistanceAlongSpline(distOwnerToSplinePath);
+		IntervalDeltaTime = 0.f;
+	}
+	toSplineDir = (nearestSplineLocation - Owner->GetActorLocation()).GetSafeNormal();
+	addForceDir = nearestSplineRotation.Vector().GetSafeNormal();
 	
 	if( 10 < FVector::Dist(nearestSplineLocation, Owner->GetActorLocation()) )
 		addForceDir = (addForceDir + toSplineDir).GetSafeNormal();
-		
+	
 	Owner->AddMovementInput(addForceDir, 100);
+
+	return FVector::ZeroVector;*/
+
+	FVector nearestSplineLocation;	// 가장 가까운 스플라인 점의 위치
+	FRotator nearestSplineRotation;	// 가장 가까운 스플라인 점의 방향
+	FVector dest;					// 캐릭터의 Move 목표위치
+	
+	float distOwnerToSplinePath = SplinePath.GetDistanceClosestToWorldLocation(Owner->GetActorLocation());
+	nearestSplineLocation = SplinePath.GetLocationAtDistanceAlongSpline(distOwnerToSplinePath);
+	nearestSplineRotation = SplinePath.GetRotationAtDistanceAlongSpline(distOwnerToSplinePath);
+	dest = nearestSplineLocation + nearestSplineRotation.Vector().GetSafeNormal() * 100;
+	
+	return dest;
 }
 
 // 경로 DrawDebug

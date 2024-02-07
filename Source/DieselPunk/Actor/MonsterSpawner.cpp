@@ -4,7 +4,6 @@
 #include "../Actor/MonsterSpawner.h"
 #include "../Manager/DatatableManager.h"
 #include "../Data/WaveModuleDataTable.h"
-#include "../Data/WaveSetDataTable.h"
 #include "../Data/CharacterDataTable.h"
 #include "../Character/CharacterNPC.h"
 #include "../Manager/ObjectManager.h"
@@ -102,9 +101,9 @@ void AMonsterSpawner::Tick(float DeltaTime)
 // =============================================================
 // SpawnerName에 해당하는 데이터테이블의 정보를 읽어 세팅하고, 스폰을 시작합니다.
 // =============================================================
-void AMonsterSpawner::StartSpawn(FString InWaveSetName)
+void AMonsterSpawner::StartSpawn(FString InWaveModuleName)
 {
-	_SetWaveSet(InWaveSetName);
+	_SetWaveModule(InWaveModuleName);
 
 	// SpawnerDeltaTime 초기화, 스폰 활성화
 	SpawnerDeltaTime = 0.f;
@@ -124,32 +123,14 @@ void AMonsterSpawner::RemoveDeadNPCFromArray()
 }
 
 // =============================================================
-// InWaveSetName에 해당하는 데이터테이블의 정보를 읽어 SpawnInfo를 세팅합니다.
-// =============================================================
-void AMonsterSpawner::_SetWaveSet(FString InWaveSetName)
-{
-	const FWaveSetDataTable* WaveSetDataTable = FDataTableManager::GetInstance()->GetData<FWaveSetDataTable>(EDataTableType::WaveSet, InWaveSetName);
-	if(WaveSetDataTable == nullptr)
-	{
-		LOG_SCREEN(FColor::Red, TEXT("|| 스포너 : %s || 스포너Num : %d || 해당 스포너의 WaveSetInfoID가 비었습니다. DT_StageWave에서 확인바람."), *GetName(), SpawnerNumber)
-		return;
-	}
-	
-	for(const FWaveInfo& waveInfo : WaveSetDataTable->WaveSetInfo)
-	{
-		_SetWaveModule(waveInfo.WaveModuleID, waveInfo.StartDelay);
-	}
-}
-
-// =============================================================
 // InWaveModuleName에 해당하는 데이터테이블의 정보를 읽어 SpawnInfo를 세팅하고, InAddStartDelay만큼 스폰시간을 더합니다.
 // =============================================================
-void AMonsterSpawner::_SetWaveModule(FString InWaveModuleName, float InAddStartDelay)
+void AMonsterSpawner::_SetWaveModule(FString InWaveModuleName)
 {
 	const FWaveModuleDataTable* WaveModuleDataTable = FDataTableManager::GetInstance()->GetData<FWaveModuleDataTable>(EDataTableType::WaveModule, InWaveModuleName);
 	if(WaveModuleDataTable == nullptr)
 	{
-		LOG_SCREEN(FColor::Red, TEXT("|| 스포너 : %s || 스포너Num : %d || 해당 스포너의 WaveModuleID가 비었습니다. DT_WaveSet에서 확인바람."), *GetName(), SpawnerNumber)
+		LOG_SCREEN(FColor::Red, TEXT("|| 스포너 : %s || 스포너Num : %d || 해당 스포너의 WaveModuleID가 비었습니다. DT_StageWave에서 확인바람."), *GetName(), SpawnerNumber)
 		return;
 	}
 	
@@ -158,7 +139,7 @@ void AMonsterSpawner::_SetWaveModule(FString InWaveModuleName, float InAddStartD
 		//info 정보 획득
 		FSpawnInfo info;
 		info.MonsterName = spawnInfo.MonsterID;
-		info.StartDelay = spawnInfo.StartDelay + InAddStartDelay;
+		info.StartDelay = spawnInfo.StartDelay;
 		
 		//BP경로 획득
 		const FCharacterDataTable* characterDataTable = FDataTableManager::GetInstance()->GetData<FCharacterDataTable>(EDataTableType::Character, spawnInfo.MonsterID);
@@ -372,7 +353,7 @@ void AMonsterSpawner::GetRandomLocation()
 			if(IsInPolygon(x, y))
 			{
 				FVector location = FVector(x, y, RectanglePoints[0].Z);
-				location.Z = UtilCollision::GetZTrace(location, -1).Location.Z;
+				location.Z = UtilCollision::GetZTrace(GetWorld(), location, -1).Location.Z;
 				RandomLocation.Add(location);
 			}
 		}

@@ -34,7 +34,6 @@ void FDataTableManager::LoadDataTables()
 	LoadDataTable(EDataTableType::Character);
 	LoadDataTable(EDataTableType::Card);
 	LoadDataTable(EDataTableType::WaveModule);
-	LoadDataTable(EDataTableType::WaveSet);
 	LoadDataTable(EDataTableType::StageWave);
 }
 

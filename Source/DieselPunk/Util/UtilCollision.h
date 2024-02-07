@@ -3,7 +3,7 @@
 #pragma once
 
 // =========================================
-/* 범용적으로 사용할 트레이스 함수들입니다.
+/* 범용적으로 사용할 트레이스 함수와 기하학 계산 함수입니다.
  * DieselPunk\Config\DefaultEngine.ini 에 추가된 트레이스 채널이 명시되어 있습니다.
  *
  * 현재 추가된 트레이스 채널 (변경될 때 마다 최신화 요함)
@@ -28,16 +28,16 @@ class UWorld;
 namespace UtilCollision
 {
 	// 전방으로 캡슐스윕을 해 히트정보를 받아온다
-	void CapsuleSweepMulti(TArray<FHitResult>& OutHitResults, const FVector& inStartLocation, const FVector& inEndLocation, const float& inCapsuleRadius, EProjectileOwnerType inProjectileOwnerType, bool inDebugOnOff);
+	void CapsuleSweepMulti(UWorld* inWorld, TArray<FHitResult>& OutHitResults, const FVector& inStartLocation, const FVector& inEndLocation, const float& inCapsuleRadius, ECausorType inCausorType, bool inDebugOnOff);
 
 	// 전방으로 라인트레이스를 해 히트정보를 받아온다
-	FHitResult LineTraceForward(AActor *inOwner, float inAttackRange, bool inDebugOnOff);
+	FHitResult LineTraceForward(UWorld* inWorld, AActor *inOwner, float inAttackRange, bool inDebugOnOff);
 
 	// 커서 아래 위치 히트를 반환
-	FHitResult GetUnderCursor();
+	FHitResult GetUnderCursor(UWorld* inWorld);
 
 	// inStartLocation 으로부터 z방향의 트레이스 히트를 반환한다. inUpDown = 1 > Z  / inUpDown = -1 > -Z
-	FHitResult GetZTrace(FVector inStartLocation, int8 inUpDown);
+	FHitResult GetZTrace(UWorld* inWorld, FVector inStartLocation, int8 inUpDown);
 
 	// 화면 중앙 지점으로부터 바라보는 방향 히트를 반환
 	bool GetViewMiddle(UWorld* InWorld, APlayerController* InController, FHitResult& OutHitResult, int32 InRange = 99999, TArray<const AActor*> InIgnoreActor = TArray<const AActor*>());

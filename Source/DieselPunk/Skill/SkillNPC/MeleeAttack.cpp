@@ -45,7 +45,7 @@ void UMeleeAttack::Attack()
 	TArray<FHitResult> sweepResults;
 	FVector startLocation = ownerPawn->GetActorLocation() + ownerPawn->GetActorForwardVector() * AttackStartPoint;
 	FVector endLocation = startLocation + ownerPawn->GetActorForwardVector() * AttackRange;
-	UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, EProjectileOwnerType::Enemy, ownerPawn->DebugOnOff);
+	UtilCollision::CapsuleSweepMulti(GetWorld(), sweepResults, startLocation, endLocation, AttackRadius, ECausorType::Enemy, ownerPawn->DebugOnOff);
 	
 	// 데미지 전달
 	if(!sweepResults.IsEmpty())

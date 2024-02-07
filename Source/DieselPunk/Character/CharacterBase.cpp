@@ -132,10 +132,10 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 			auto DamageCauserPlayer = Cast<ACharacterBase>(DamageCauser);
 			// 플레이어의 경험치를 1 올림
 			DamageCauserPlayer->Stat.ChangeStat(ECharacterStatType::Exp, 1);
-			if(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Level) != UtilLevelCal::LevelCal(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Exp)))
-				DamageCauserPlayer->Stat.ChangeStat(ECharacterStatType::Level, UtilLevelCal::LevelCal(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Exp)));
-			if(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::MaxHp) != UtilLevelCal::MaxHealthCal(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Level)))
-				DamageCauserPlayer->Stat.ChangeStat(ECharacterStatType::MaxHp , UtilLevelCal::MaxHealthCal(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Level)));
+			if(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Level) != UtilLevelCal::LevelCalc(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Exp)))
+				DamageCauserPlayer->Stat.ChangeStat(ECharacterStatType::Level, UtilLevelCal::LevelCalc(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Exp)));
+			if(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::MaxHp) != UtilLevelCal::MaxHealthCalc(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Level)))
+				DamageCauserPlayer->Stat.ChangeStat(ECharacterStatType::MaxHp , UtilLevelCal::MaxHealthCalc(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Level)));
 			
 			Destroy();
 

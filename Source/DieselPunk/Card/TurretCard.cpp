@@ -2,6 +2,7 @@
 
 #include "TurretCard.h"
 
+#include "AITestsCommon.h"
 #include "../Data/CardDataTable.h"
 #include "../Data/CharacterDataTable.h"
 #include "../Manager/DatatableManager.h"
@@ -48,7 +49,7 @@ void FTurretCard::_Activate(bool& OutSuccess, int32 InCost)
 	if(TurretClass)
 	{
 		FVector traceStartLocation = Owner->GetActorLocation() + (Owner->GetActorForwardVector() * 500) + FVector(0,0,300);
-		FVector spawnLocation = UtilCollision::GetZTrace(traceStartLocation , -1).Location;
+		FVector spawnLocation = UtilCollision::GetZTrace(TurretClass->GetWorld(), traceStartLocation , -1).Location;
 			
 		FSpawnParam spawnParam;
 		spawnParam.Rotation = FRotator::ZeroRotator;

@@ -120,7 +120,7 @@ void AProjectileBase::DestroyEvent()
 		FVector endLocation = startLocation;
 		if(OwnerCharacter->DebugOnOff)
 			DrawDebugSphere(GetWorld(), startLocation, AttackRadius, 16, FColor::Red, false, 3, 0, 1);
-		UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, ProjectileOwnerType, DebugOnOff);
+		UtilCollision::CapsuleSweepMulti(GetWorld(), sweepResults, startLocation, endLocation, AttackRadius, ProjectileOwnerType, DebugOnOff);
 		if(!sweepResults.IsEmpty())
 		{
 			for (auto it = sweepResults.CreateIterator(); it; it++)
@@ -202,7 +202,7 @@ void AProjectileBase::_OnHit(UPrimitiveComponent* InHitComp, AActor* InOtherActo
 			TArray<FHitResult> sweepResults;
 			FVector startLocation = GetActorLocation();
 			FVector endLocation = startLocation;
-			UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, ProjectileOwnerType, DebugOnOff);
+			UtilCollision::CapsuleSweepMulti(GetWorld(), sweepResults, startLocation, endLocation, AttackRadius, ProjectileOwnerType, DebugOnOff);
 			if(!sweepResults.IsEmpty())
 			{
 				for (auto It = sweepResults.CreateIterator(); It; It++)
@@ -259,7 +259,7 @@ void AProjectileBase::_BeginOverlapEvent(UPrimitiveComponent* InOverlappedCompon
 			TArray<FHitResult> sweepResults;
 			FVector startLocation = GetActorLocation();
 			FVector endLocation = startLocation;
-			UtilCollision::CapsuleSweepMulti(sweepResults, startLocation, endLocation, AttackRadius, ProjectileOwnerType, DebugOnOff);
+			UtilCollision::CapsuleSweepMulti(GetWorld(), sweepResults, startLocation, endLocation, AttackRadius, ProjectileOwnerType, DebugOnOff);
 			if(!sweepResults.IsEmpty())
 			{
 				for (auto It = sweepResults.CreateIterator(); It; It++)
@@ -292,7 +292,7 @@ void AProjectileBase::SetCapsuleCollisionResponses()
 	// 모든 반응 Ignore로 초기화하고 시작
 	CapsuleComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 
-	if(ProjectileOwnerType == EProjectileOwnerType::Player)
+	if(ProjectileOwnerType == ECausorType::Player)
 	{
 		CapsuleComponent->SetCollisionObjectType(ECC_GameTraceChannel2);
 		if(CollisionResponses == ECollisionResponsesType::OnHit)
@@ -322,7 +322,7 @@ void AProjectileBase::SetCapsuleCollisionResponses()
 			CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel3, ECollisionResponse::ECR_Overlap);
 		}
 	}
-	else if(ProjectileOwnerType == EProjectileOwnerType::Enemy)
+	else if(ProjectileOwnerType == ECausorType::Enemy)
 	{
 		CapsuleComponent->SetCollisionObjectType(ECC_GameTraceChannel4);
 		if(CollisionResponses == ECollisionResponsesType::OnHit)

@@ -81,7 +81,7 @@ void USkillSoldierR::AfterLogic()
 	animInst->StopMontage(EAbilityType::SkillR, 0.2f);
 		
 	//*기능 실현부
-	FHitResult hitResult = UtilCollision::GetUnderCursor();
+	FHitResult hitResult = UtilCollision::GetUnderCursor(GetWorld());
 	AActor *hitActor = hitResult.GetActor();
 	if (hitActor)
 	{

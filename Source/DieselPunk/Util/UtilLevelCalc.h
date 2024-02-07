@@ -5,7 +5,7 @@
 
 namespace UtilLevelCal
 {
-	FORCEINLINE int LevelCal(int inExp)
+	FORCEINLINE int LevelCalc(int inExp)
 	{
 		return
 		  (0 <= inExp && inExp < 10) ? 1
@@ -36,7 +36,7 @@ namespace UtilLevelCal
 		;
 	}
 
-	FORCEINLINE int MaxHealthCal(int inLevel)
+	FORCEINLINE int MaxHealthCalc(int inLevel)
 	{
 		return
 		  (inLevel == 1) ? 200
@@ -67,7 +67,7 @@ namespace UtilLevelCal
 		;
 	}
 
-	FORCEINLINE int MaxExpCal(int inLevel)
+	FORCEINLINE int MaxExpCalc(int inLevel)
 	{
 		return 
 		  (inLevel == 1) ? 10

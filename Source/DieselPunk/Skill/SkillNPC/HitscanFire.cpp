@@ -28,7 +28,7 @@ void UHitscanFire::AbilityStart(AActor* inTarget)
 	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
 
 	// 충돌 검사
-	FHitResult hit = UtilCollision::LineTraceForward(ownerPawn, AttackRange, DebugOnOff);
+	FHitResult hit = UtilCollision::LineTraceForward(GetWorld(), ownerPawn, AttackRange, DebugOnOff);
 	AActor *hitActor = hit.GetActor();
 
 	// 데미지 결정

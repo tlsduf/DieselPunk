@@ -101,7 +101,7 @@ void ACharacterTurret::SetTurretTarget()
 			outActors.RemoveAll([thisPtr](int32 ID)
 			{
 				if(thisPtr.IsValid())
-					return thisPtr->InValidOverWall(FObjectManager::GetInstance()->FindActor(ID)->GetActorLocation());
+					return thisPtr->IsOverWall(FObjectManager::GetInstance()->FindActor(ID)->GetActorLocation());
 				return true;
 			});
 		}
@@ -123,7 +123,14 @@ void ACharacterTurret::SetTurretTarget()
 		// 유효하다면 타겟 추적
 		// 타겟이 범위안에 있는지 탐색 // 유효하지 않으면 타겟 초기화
 		if(!InValidSearchArea(Target->GetActorLocation()))
+		{
 			Target = nullptr;
+			return;
+		}
+		// 타겟과 포탑 사이에 벽이 있는지 탐색 // 벽이 있으면 타겟 초기화
+		if(bPierceWall)
+			if(IsOverWall(Target->GetActorLocation()))
+				Target = nullptr;
 	}
 }
 
@@ -171,9 +178,9 @@ bool ACharacterTurret::InValidSearchArea(FVector inLocation)
 }
 
 // =============================================================
-// inLocation까지 트레이스를 하여 맵 구성요소(ex 벽)이 있는지 탐색하고, 없으면 true 반환
+// inLocation까지 트레이스를 하여 맵 구성요소(ex 벽)이 있는지 탐색하고, 있으면 true 반환
 // =============================================================
-bool ACharacterTurret::InValidOverWall(FVector inLocation)
+bool ACharacterTurret::IsOverWall(FVector inLocation)
 {
 	//라인트레이싱에 성공했는가
 	TArray<FHitResult> hits;
@@ -184,7 +191,7 @@ bool ACharacterTurret::InValidOverWall(FVector inLocation)
 	params.AddIgnoredActor(this);
 
 	bool bIsWorldObject = false;
-	//가장 가까운 라인트레이싱의 액터가 공격 대상인지 확인
+	//라인트레이스하여 맵 오브젝트가 있는지 확인. 있으면 true
 	if(GetWorld()->LineTraceMultiByChannel(hits, start, end, ECollisionChannel::ECC_WorldStatic, params))
 	{
 		for(const auto& hit : hits)

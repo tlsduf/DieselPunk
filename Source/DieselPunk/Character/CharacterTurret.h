@@ -42,8 +42,8 @@ public:
 	// inLocation이 유효 범위 안에 있으면 True 반환
 	bool InValidSearchArea(FVector inLocation);
 
-	// inLocation까지 트레이스를 하여 맵 구성요소(ex 벽)이 있는지 탐색하고, 없으면 true 반환
-	bool InValidOverWall(FVector inLocation);
+	// inLocation까지 트레이스를 하여 맵 구성요소(ex 벽)이 있는지 탐색하고, 있으면 true 반환
+	bool IsOverWall(FVector inLocation);
 
 	// 다각형 내부에 점이 위치하는지 확인합니다. // Point in polygon algorithm
 	bool IsInPolygon(double InX, double InY);

@@ -33,19 +33,10 @@ enum class ECollisionResponsesType : uint8
 
 // 투사체 종류 Player or Enemy
 UENUM( BlueprintType )
-enum class EProjectileOwnerType : uint8
+enum class ECausorType : uint8
 {
 	Player		UMETA( ToolTip = "플레이어" ),
 	Enemy		UMETA( ToolTip = "적" )
-};
-
-// 적 종류 Minions , Elite, Boss
-UENUM( BlueprintType )
-enum class EEnemyType : uint8
-{
-	Minions		UMETA( ToolTip = "일반" ),
-	Elite		UMETA( ToolTip = "엘리트" ),
-	Boss		UMETA( ToolTip = "보스" )
 };
 
 // 아군NPC 적군NPC
@@ -88,8 +79,8 @@ enum class ECharacterStatType : uint8
 	JumpCount			UMETA( ToolTip = "점프 횟수" ),
 	Luck				UMETA( ToolTip = "행운" ),
 	CoolDown			UMETA( ToolTip = "스킬 쿨타임 감소" ),
-	AttackMaxRange			UMETA( ToolTip = "사거리" ),
-	AttackMinRange			UMETA( ToolTip = "사거리" ),
+	AttackMaxRange		UMETA( ToolTip = "최대사거리" ),
+	AttackMinRange		UMETA( ToolTip = "최소사거리" ),
 	Cost				UMETA( ToolTip = "코스트")
 };
 

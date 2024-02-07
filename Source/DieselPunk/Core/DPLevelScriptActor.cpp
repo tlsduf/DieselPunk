@@ -100,7 +100,7 @@ void ADPLevelScriptActor::SetStageWaveInfo()
 		FStageInfo info;
 		info.bDefconUse = inStageInfo.bDefconTimeUse;
 		info.DefconTime = inStageInfo.DefconTime;
-		info.WaveSetInfoID = inStageInfo.WaveSetInfoID;
+		info.WaveModuleInfoID = inStageInfo.WaveModuleInfoID;
 		info.SupplyInfo = inStageInfo.SupplyInfo;
 		
 		StageInfo.Add(info);
@@ -191,7 +191,7 @@ void ADPLevelScriptActor::StartWave()
 	{
 		AMonsterSpawner* monsterSpawner = Cast<AMonsterSpawner>(FObjectManager::GetInstance()->FindActor(MonsterSpawnerIDs[i]));
 		if(monsterSpawner && monsterSpawner->bSpawnComplete() && monsterSpawner->IsWaveCleared())
-			monsterSpawner->StartSpawn(StageInfo[WaveIndex].WaveSetInfoID[i]);
+			monsterSpawner->StartSpawn(StageInfo[WaveIndex].WaveModuleInfoID[i]);
 	}
 }
 

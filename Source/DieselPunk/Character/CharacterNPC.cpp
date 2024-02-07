@@ -100,7 +100,8 @@ void ACharacterNPC::Tick(float DeltaTime)
 		if(DPNavigationComponent != nullptr)
 		{
 			if(!InRange)
-				DPNavigationComponent->AddForceAlongSplinePath();
+				if(AIController)
+					AIController->MoveToLocation(DPNavigationComponent->AddForceAlongSplinePath(), 1, false, false);
 			if(DebugOnOff)
 				DPNavigationComponent->DrawDebugSpline();
 		}

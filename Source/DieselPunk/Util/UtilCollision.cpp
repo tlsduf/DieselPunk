@@ -20,20 +20,15 @@
 	 * @param inDebugOnOff : 디버그캡슐의 Draw를 결정하는 bool변수입니다.
 	 */
 // =============================================================
-void UtilCollision::CapsuleSweepMulti(TArray<FHitResult>& OutHitResults, const FVector& inStartLocation, const FVector& inEndLocation, const float& inCapsuleRadius, EProjectileOwnerType inProjectileOwnerType, bool inDebugOnOff)
+void UtilCollision::CapsuleSweepMulti(UWorld* inWorld, TArray<FHitResult>& OutHitResults, const FVector& inStartLocation, const FVector& inEndLocation, const float& inCapsuleRadius, ECausorType inCausorType, bool inDebugOnOff)
 {
-	// 월드 get
-	FWorldContext* world = GEngine->GetWorldContextFromGameViewport( GEngine->GameViewport );
-	if ( !world )
-		return ;
-	
 	FCollisionQueryParams params;
-	world->World()->SweepMultiByChannel(
+	inWorld->SweepMultiByChannel(
 		OutHitResults,
 		inStartLocation,
 		inEndLocation,
 		FQuat::Identity,
-		(inProjectileOwnerType == EProjectileOwnerType::Player) ? ECollisionChannel::ECC_GameTraceChannel7 : ECollisionChannel::ECC_GameTraceChannel8,
+		(inCausorType == ECausorType::Player) ? ECollisionChannel::ECC_GameTraceChannel7 : ECollisionChannel::ECC_GameTraceChannel8,
 		FCollisionShape::MakeSphere(inCapsuleRadius),
 		params);
 	
@@ -47,7 +42,7 @@ void UtilCollision::CapsuleSweepMulti(TArray<FHitResult>& OutHitResults, const F
 		FColor drawColor = !OutHitResults.IsEmpty() ? FColor::Green : FColor::Red;
 		float debugLifeTime = 5.0f;
 
-		DrawDebugCapsule(world->World(),
+		DrawDebugCapsule(inWorld,
 						 center,
 						 halfHeight,
 						 inCapsuleRadius,
@@ -67,17 +62,11 @@ void UtilCollision::CapsuleSweepMulti(TArray<FHitResult>& OutHitResults, const F
 	 * @param inDebugOnOff : 드로우 디버그 On/Off
 	 */
 // =============================================================
-FHitResult UtilCollision::LineTraceForward(AActor *inOwner, float inAttackRange, bool inDebugOnOff)
+FHitResult UtilCollision::LineTraceForward(UWorld* inWorld, AActor *inOwner, float inAttackRange, bool inDebugOnOff)
 {
 	FHitResult hit;
 	if (inOwner == nullptr)
 		return hit;
-	
-	// 월드 get
-	FWorldContext* world = GEngine->GetWorldContextFromGameViewport( GEngine->GameViewport );
-	if ( !world )
-		return hit;
-	
 
 	FVector startLocation = inOwner->GetActorLocation();
 	FRotator startRotation = inOwner->GetActorRotation();
@@ -88,7 +77,7 @@ FHitResult UtilCollision::LineTraceForward(AActor *inOwner, float inAttackRange,
 	FCollisionQueryParams params;
 	params.AddIgnoredActor(inOwner);
 
-	bool hasHit = world->World()->LineTraceSingleByChannel(
+	bool hasHit = inWorld->LineTraceSingleByChannel(
 		hit,
 		startLocation,
 		endLocation,
@@ -107,7 +96,7 @@ FHitResult UtilCollision::LineTraceForward(AActor *inOwner, float inAttackRange,
 		FColor drawColor = (hitActor != nullptr && hitActor != inOwner) ? FColor::Green : FColor::Red;
 		float debugLifeTime = 5.0f;
 
-		DrawDebugCapsule(world->World(),
+		DrawDebugCapsule(inWorld,
 						 center,
 						 halfHeight,
 						 1,
@@ -123,16 +112,10 @@ FHitResult UtilCollision::LineTraceForward(AActor *inOwner, float inAttackRange,
 // =============================================================
 // 커서 아래 위치 히트를 반환
 // =============================================================
-FHitResult UtilCollision::GetUnderCursor()
+FHitResult UtilCollision::GetUnderCursor(UWorld* inWorld)
 {
 	FHitResult hit;
-
-	// 월드 get
-	FWorldContext* world = GEngine->GetWorldContextFromGameViewport( GEngine->GameViewport );
-	if ( !world )
-		return hit;
-	
-	APlayerController *ownerController = UGameplayStatics::GetPlayerController(world->World(), 0);
+	APlayerController *ownerController = UGameplayStatics::GetPlayerController(inWorld, 0);
 	if (ownerController)
 	{
 		ownerController->GetHitResultUnderCursor(
@@ -147,17 +130,11 @@ FHitResult UtilCollision::GetUnderCursor()
 // =============================================================
 // inStartLocation 으로부터 z방향의 트레이스 히트를 반환한다. inUpDown : 1 => Z  / inUpDown : -1 => -Z
 // =============================================================
-FHitResult UtilCollision::GetZTrace(FVector inStartLocation, int8 inUpDown)
+FHitResult UtilCollision::GetZTrace(UWorld* inWorld, FVector inStartLocation, int8 inUpDown)
 {
 	FHitResult hit;
 	FCollisionQueryParams params;
-
-	// 월드 get
-	FWorldContext* world = GEngine->GetWorldContextFromGameViewport( GEngine->GameViewport );
-	if ( !world )
-		return hit;
-	
-	world->World()->LineTraceSingleByChannel(
+	inWorld->LineTraceSingleByChannel(
 	hit,
 	inStartLocation,
 	FVector(inStartLocation.X, inStartLocation.Y,inStartLocation.Z + (1000 * inUpDown)),
@@ -167,6 +144,7 @@ FHitResult UtilCollision::GetZTrace(FVector inStartLocation, int8 inUpDown)
 	return hit;
 }
 
+// 화면 중앙 지점으로부터 바라보는 방향 히트를 반환
 bool UtilCollision::GetViewMiddle(UWorld* InWorld, APlayerController* InController, FHitResult& OutHitResult, int32 InRange, TArray<const AActor*> InIgnoreActor)
 {
 	FHitResult hit;

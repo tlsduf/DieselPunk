@@ -75,8 +75,6 @@ protected:
 	/////////////////////////////////////////////////////////////////////
 	// for Spawning //
 	
-	FString WaveSetID = TEXT("");			//스폰할 웨이브 정보
-	
 	TArray<FSpawnInfo> SpawnInfo;			//스폰 몬스터 정보
 	
 	float SpawnerDeltaTime = 0.f;			//누적 시간
@@ -102,8 +100,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	
-	// InWaveSetName에 해당하는 데이터테이블의 정보를 읽어 세팅하고, 스폰을 시작합니다.
-	void StartSpawn(FString InWaveSetName);
+	// InWaveModuleName에 해당하는 데이터테이블의 정보를 읽어 세팅하고, 스폰을 시작합니다.
+	void StartSpawn(FString InWaveModuleName);
 
 	//생성한 몬스터 중 Destroy된 액터 삭제
 	void RemoveDeadNPCFromArray();
@@ -115,11 +113,8 @@ public:
 	bool bSpawnComplete() const { return SpawnInfo.IsEmpty(); };
 	
 private:
-	// InWaveSetName에 해당하는 데이터테이블의 정보를 읽어 SpawnInfo를 세팅합니다.
-	void _SetWaveSet(FString InWaveSetName);
-	
-	// InWaveModuleName에 해당하는 데이터테이블의 정보를 읽어 SpawnInfo를 세팅하고, InAddStartDelay만큼 스폰시간을 더합니다.
-	void _SetWaveModule(FString InWaveModuleName, float InAddStartDelay);
+	// InWaveModuleName에 해당하는 데이터테이블의 정보를 읽어 SpawnInfo를 세팅하고
+	void _SetWaveModule(FString InWaveModuleName);
 	
 	// SpawnInfo에 담긴 정보대로 몬스터를 스폰합니다.
 	void SpawnMonster(float InDeltaTime);

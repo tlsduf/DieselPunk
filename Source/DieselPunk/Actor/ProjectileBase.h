@@ -54,7 +54,7 @@ protected:
 
 	// OwnerType : Player or Enemy // 주인 타입
 	UPROPERTY(EditAnywhere, Category = "MYDP_CollisionType")
-	EProjectileOwnerType ProjectileOwnerType = EProjectileOwnerType::Player;
+	ECausorType ProjectileOwnerType = ECausorType::Player;
 
 	
 public:
