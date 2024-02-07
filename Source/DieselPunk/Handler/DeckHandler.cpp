@@ -193,13 +193,16 @@ bool FDeckHandler::Draw()
 }
 
 //카드를 리플레이스 합니다. 패에 있는 카드를 버리고 다시 카드를 뽑습니다. 덱에 카드가 없을 때 행거의 카드를 가져와 리필합니다.
-void FDeckHandler::Replace()
+TArray<int32> FDeckHandler::Replace()
 {
+	TArray<int32> outValues;
+	
 	//패에 남아있는 카드를 행거로 보냄
 	for(int i = 0; i < MaxHand; ++i)
 	{
 		if(Hand[i] != nullptr)
 		{
+			outValues.Add(i);
 			Hanger.Push(Hand[i]);
 			Hand[i] = nullptr;
 		}
@@ -207,6 +210,8 @@ void FDeckHandler::Replace()
 
 	//드로우
 	Draw();
+
+	return outValues;
 }
 
 //카드를 섞습니다.

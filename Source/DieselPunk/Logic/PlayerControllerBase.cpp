@@ -21,7 +21,7 @@
 #include <Components/ScrollBox.h>
 #include <Components/SizeBox.h>
 #include <Engine/Level.h>
-
+#include <Animation/WidgetAnimation.h>
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PlayerControllerBase)
 
@@ -82,8 +82,9 @@ void APlayerControllerBase::SetupInputComponent()
         EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APlayerControllerBase::Jump);
         EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &APlayerControllerBase::StopJumping);
 
-        EnhancedInputComponent->BindAction(InputC, ETriggerEvent::Started, this, &APlayerControllerBase::StartJog);
-        EnhancedInputComponent->BindAction(InputC, ETriggerEvent::Completed, this, &APlayerControllerBase::StopJog);
+        EnhancedInputComponent->BindAction(InputCtrl, ETriggerEvent::Started, this, &APlayerControllerBase::StartJog);
+        EnhancedInputComponent->BindAction(InputCtrl, ETriggerEvent::Completed, this, &APlayerControllerBase::StopJog);
+    	EnhancedInputComponent->BindAction(InputC, ETriggerEvent::Completed, this, &APlayerControllerBase::ReplaceCard);
 
         //EnhancedInputComponent->BindAction(MouseWheelUp, ETriggerEvent::Started, this, &APlayerControllerBase::SetZoomInProp);
         //EnhancedInputComponent->BindAction(MouseWheelDown, ETriggerEvent::Started, this, &APlayerControllerBase::SetZoomOutProp);
@@ -602,5 +603,41 @@ void APlayerControllerBase::RenewHand()
 void APlayerControllerBase::RegisterHands(TArray<FCard*> InCard)
 {
 	Hand->RegisterHands(InCard);
+}
+
+void APlayerControllerBase::ReplaceCard()
+{
+	//리플레이스 적용
+	TArray<int32> toHangerIndex;
+	if(PC->ReplaceCard(toHangerIndex) == false)
+		return;
+
+	//사용중인 카드가 있다면 파괴
+	if(IsCardActivate)
+	{
+		PC->ExecuteCardCancel();
+	}
+	
+	//적용중인 카드 초기화
+	UseCardNum = -1;
+	IsCardActivate = false;
+
+	//카드 버리는 애니메이션 재생
+	UWidgetAnimation* anim = nullptr;
+	for(const int32& index : toHangerIndex)
+		 anim = Hand->PlayHandToHangerAnimation(index);
+
+	//카드 버리는 애니메이션이 있다면 해당 애니메이션 종료 후 카드 드로우 애니메이션 재생
+	if(anim != nullptr)
+	{
+		float time = anim->GetEndTime() + 0.1f;
+		FTimerHandle handle;
+		TWeakObjectPtr<APlayerControllerBase> thisPtr = this;
+		GetWorldTimerManager().SetTimer(handle, [thisPtr]()
+		{
+			if(thisPtr.IsValid())
+				thisPtr->RenewHand();
+		}, time, false);
+	}
 }
 

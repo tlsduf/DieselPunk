@@ -62,7 +62,7 @@ public:
 	bool Draw();
 
 	//카드를 리플레이스 합니다. 패에 있는 카드를 버리고 다시 카드를 뽑습니다. 덱에 카드가 없을 때 행거의 카드를 가져와 리필합니다.
-	void Replace();
+	TArray<int32> Replace();
 
 	//카드를 섞습니다.
 	void ShuffleDeck();

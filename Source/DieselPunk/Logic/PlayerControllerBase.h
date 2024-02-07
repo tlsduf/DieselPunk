@@ -66,6 +66,9 @@ class DIESELPUNK_API APlayerControllerBase : public APlayerController
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP_Input", meta = (AllowPrivateAccess = "true"))
 	TArray<UInputAction*> InputUseCard;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP_Input", meta = (AllowPrivateAccess = "true"))
+	UInputAction *InputCtrl;
 	
 	// 6개의 스킬 InputAction // LM, RM, LShift, Q, E, R
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP_Input", meta = (AllowPrivateAccess = "true"))
@@ -195,4 +198,6 @@ public:
 
 	//HUD Id를 반환합니다.
 	int32 GetHUDId(){return HUDId;}
+
+	void ReplaceCard();
 };

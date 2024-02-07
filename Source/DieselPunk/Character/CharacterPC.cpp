@@ -622,3 +622,19 @@ void ACharacterPC::UnBindSkillUseCard()
 	if(DelegateRotateInstallation.IsBound())
 		DelegateRotateInstallation.Unbind();
 }
+
+bool ACharacterPC::ReplaceCard(TArray<int32>& OutUseIndex)
+{
+	int32 value = 50 * FMath::Pow(2.f, ReplaceUseCostCount - 1);
+
+	if(ReplaceUseCostCount != 0 && GetStat().GetStat(ECharacterStatType::Cost) < value)
+		return false;
+	
+	if(ReplaceUseCostCount != 0)
+		ChangeStat(ECharacterStatType::Cost, -value);
+	++ReplaceUseCostCount;
+	
+	OutUseIndex = DeckHandler->Replace(); 
+		
+	return true;
+}

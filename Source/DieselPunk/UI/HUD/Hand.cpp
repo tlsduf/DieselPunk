@@ -126,7 +126,7 @@ void UHand::UnRegisterHand(int InIndex)
 	FObjectManager::GetInstance()->GetPlayer()->DrawCard();
 }
 
-void UHand::PlayHandToHangerAnimation(int InIndex)
+UWidgetAnimation* UHand::PlayHandToHangerAnimation(int InIndex)
 {
 	UWidgetAnimation* anim = nullptr;
 	switch(InIndex)
@@ -147,10 +147,11 @@ void UHand::PlayHandToHangerAnimation(int InIndex)
 		anim = Hand4ToHanger;
 		break;
 	default:
-		return;
+		return nullptr;
 	}
-
+	
 	PlayAnimation(anim, 0.0f, 1, EUMGSequencePlayMode::Forward, 1, true);
+	return anim; 
 }
 
 //드로우 애니메이션을 재생합니다.

@@ -11,6 +11,8 @@ class ACharacterBase;
 class UHorizontalBox;
 class FCard;
 class ACharacterPC;
+class UWidgetAnimation;
+
 struct CardInfo;
 UCLASS()
 class DIESELPUNK_API UHand : public UUserWidgetBase
@@ -73,7 +75,7 @@ public:
 	void UnRegisterHand(int InIndex);
 
 	//핸드에서 행거로 이동하는 애니메이션을 재생합니다.
-	void PlayHandToHangerAnimation(int InIndex);
+	UWidgetAnimation* PlayHandToHangerAnimation(int InIndex);
 
 	//드로우 애니메이션을 재생합니다.
 	void PlayDrawAnimation();
