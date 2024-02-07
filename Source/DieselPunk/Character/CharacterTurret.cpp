@@ -5,10 +5,10 @@
 #include "..\Logic\NPCAIController.h"
 #include "../Animation/TurretAnimInstace.h"
 #include "../Manager/ObjectManager.h"
+#include "../Manager/NavigationManager.h"
 
 #include <Components/SkeletalMeshComponent.h>
 #include <Components/StaticMeshComponent.h>
-
 
 
 
@@ -139,7 +139,7 @@ void ACharacterTurret::SetTurretTarget()
 // =============================================================
 void ACharacterTurret::MakeSearchArea()
 {
-	float wide = GridSize * 100;
+	float wide = GridSizeHorizontal * FNavigationManager::GridSize;
 	FVector firstPoint = GetActorLocation() + (GetActorRightVector() * wide);
 	FVector secondPoint = GetActorLocation() + (GetActorRightVector() * wide) + GetActorForwardVector() * GetStat().GetStat(ECharacterStatType::AttackMaxRange);
 	FVector thirdPoint = GetActorLocation() + (-1 * GetActorRightVector() * wide) + GetActorForwardVector() * GetStat().GetStat(ECharacterStatType::AttackMaxRange);

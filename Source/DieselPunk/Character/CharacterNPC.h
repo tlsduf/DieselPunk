@@ -71,9 +71,13 @@ public:
 	USkillBase *TargetAttack;
 	
 	
-	//포탑의 사이즈입니다. 1그리드 = 100입니다.
+	//포탑의 세로 사이즈입니다. 1그리드 = 100입니다.
 	UPROPERTY(EditDefaultsOnly, Category="MYDP_Setting", meta=(AllowPrivateAccess="true"))
-	int32 GridSize = 1;
+	int32 GridSizeVertical = 1;
+
+	//포탑의 가로 사이즈입니다. 1그리드 = 100입니다.
+	UPROPERTY(EditDefaultsOnly, Category="MYDP_Setting", meta=(AllowPrivateAccess="true"))
+	int32 GridSizeHorizontal = 1;
 
 
 	// 내비게이션
@@ -134,7 +138,8 @@ public:
 	// 길이 막혔을 때, 파괴시 진행할 수 있는 포탑의 위치를 찾습니다.
 	bool FindShortestPath(const FVector& InEndLocation);
 	const TArray<FVector>& GetShortestPath() { return ShortestPath; } 
-	int32 GetGridSize() const { return GridSize; }
+	int32 GetGridSizeVertical() const { return GridSizeVertical; } 
+	int32 GetGridSizeHorizontal() const { return GridSizeHorizontal; }
 
 	// 길이 막혔을 때, '몬스터'의 타겟을 지정합니다.
 	bool SetBlockedAttackTarget(TWeakObjectPtr<AActor> InTarget, const TArray<FVector>& InPath = TArray<FVector>(), int InIndex = -1);

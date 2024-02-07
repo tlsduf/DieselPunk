@@ -572,35 +572,40 @@ TArray<FVector> FNavigationManager::PathFinding(const FVector& InStartLocation, 
 }
 
 //터렛 설치 가능한지 검색
-bool FNavigationManager::IsPlacementTurret(FVector InLocation, int32 InGridSize)
+bool FNavigationManager::IsPlacementTurret(FVector InLocation, int32 InGridSizeVertical, int32 InGridSizeHorizontal)
 {
 	FVector outLocation = FVector::ZeroVector;
 
 	TArray<int32> xIndex, yIndex;
 
-	//GridSize가 홀수일때
-	if(InGridSize & 1)
+	//GridSizeVertical이 홀수일때
+	if(InGridSizeVertical & 1)
 	{
-		int32 startX = floor(InLocation.X / GridSize) - InGridSize / 2;
-		int32 startY = floor(InLocation.Y / GridSize) - InGridSize / 2;
-
-		for(int i = 0; i < InGridSize; ++i)
-		{
+		int32 startX = floor(InLocation.X / GridSize) - InGridSizeVertical / 2;
+		for(int i = 0; i < InGridSizeVertical; ++i)
 			xIndex.Add(startX + i);
-			yIndex.Add(startY + i);
-		}
 	}
-	//GridSize가 짝수일때
+	//GridSizeVertical이 짝수일때
 	else
 	{
-		int32 startX = static_cast<int32>(round(InLocation.X / GridSize)) - InGridSize / 2;
-		int32 startY = static_cast<int32>(round(InLocation.Y / GridSize)) - InGridSize / 2;
-
-		for(int i = 0; i < InGridSize; ++i)
-		{
+		int32 startX = static_cast<int32>(round(InLocation.X / GridSize)) - InGridSizeVertical / 2;
+		for(int i = 0; i < InGridSizeVertical; ++i)
 			xIndex.Add(startX + i);
+	}
+	
+	//GridSizeHorizontal이 홀수일때
+	if(InGridSizeHorizontal & 1)
+	{
+		int32 startY = floor(InLocation.Y / GridSize) - InGridSizeHorizontal / 2;
+		for(int i = 0; i < InGridSizeHorizontal; ++i)
 			yIndex.Add(startY + i);
-		}
+	}
+	//InGridSizeHorizontal이 짝수일때
+	else
+	{
+		int32 startY = static_cast<int32>(round(InLocation.Y / GridSize)) - InGridSizeHorizontal / 2;
+		for(int i = 0; i < InGridSizeHorizontal; ++i)
+			yIndex.Add(startY + i);
 	}
 
 	//설치가 가능한지 검사
@@ -616,35 +621,40 @@ bool FNavigationManager::IsPlacementTurret(FVector InLocation, int32 InGridSize)
 }
 
 //터렛 설치
-bool FNavigationManager::PlacementTurret(FVector& InOutLocation, int32 InGridSize, TArray<TPair<int32, int32>>& OutIndex, TWeakObjectPtr<AActor> InTurret)
+bool FNavigationManager::PlacementTurret(FVector& InOutLocation, int32 InGridSizeVertical, int32 InGridSizeHorizontal, TArray<TPair<int32, int32>>& OutIndex, TWeakObjectPtr<AActor> InTurret)
 {
 	FVector outLocation = FVector::ZeroVector;
 
 	TArray<int32> xIndex, yIndex;
 
-	//GridSize가 홀수일때
-	if(InGridSize & 1)
+	//GridSizeVertical이 홀수일때
+	if(InGridSizeVertical & 1)
 	{
-		int32 startX = floor(InOutLocation.X / GridSize) - InGridSize / 2;
-		int32 startY = floor(InOutLocation.Y / GridSize) - InGridSize / 2;
-
-		for(int i = 0; i < InGridSize; ++i)
-		{
+		int32 startX = floor(InOutLocation.X / GridSize) - InGridSizeVertical / 2;
+		for(int i = 0; i < InGridSizeVertical; ++i)
 			xIndex.Add(startX + i);
-			yIndex.Add(startY + i);
-		}
 	}
-	//GridSize가 짝수일때
+	//GridSizeVertical이 짝수일때
 	else
 	{
-		int32 startX = static_cast<int32>(round(InOutLocation.X / GridSize)) - InGridSize / 2;
-		int32 startY = static_cast<int32>(round(InOutLocation.Y / GridSize)) - InGridSize / 2;
-
-		for(int i = 0; i < InGridSize; ++i)
-		{
+		int32 startX = static_cast<int32>(round(InOutLocation.X / GridSize)) - InGridSizeVertical / 2;
+		for(int i = 0; i < InGridSizeVertical; ++i)
 			xIndex.Add(startX + i);
+	}
+	
+	//GridSizeHorizontal이 홀수일때
+	if(InGridSizeHorizontal & 1)
+	{
+		int32 startY = floor(InOutLocation.Y / GridSize) - InGridSizeHorizontal / 2;
+		for(int i = 0; i < InGridSizeHorizontal; ++i)
 			yIndex.Add(startY + i);
-		}
+	}
+	//InGridSizeHorizontal이 짝수일때
+	else
+	{
+		int32 startY = static_cast<int32>(round(InOutLocation.Y / GridSize)) - InGridSizeHorizontal / 2;
+		for(int i = 0; i < InGridSizeHorizontal; ++i)
+			yIndex.Add(startY + i);
 	}
 
 	//설치가 가능한지 검사

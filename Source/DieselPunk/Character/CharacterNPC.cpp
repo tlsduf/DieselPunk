@@ -356,7 +356,7 @@ void ACharacterNPC::UpdateEnemyGoalLoc()
 // =============================================================
 bool ACharacterNPC::FindShortestPath(const FVector& InEndLocation)
 {
-	ShortestPath = FNavigationManager::GetInstance()->PathFinding(GetActorLocation(), InEndLocation, GridSize);
+	ShortestPath = FNavigationManager::GetInstance()->PathFinding(GetActorLocation(), InEndLocation, GridSizeHorizontal);
 	return !ShortestPath.IsEmpty();
 }
 

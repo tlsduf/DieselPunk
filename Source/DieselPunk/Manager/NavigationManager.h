@@ -82,10 +82,10 @@ public:
 	TArray<FVector> PathFinding(const FVector& InStartLocation, const FVector& InEndLocation, const int32 InCharacterGridSize);
 
 	//터렛 설치 가능한지 검색
-	bool IsPlacementTurret(FVector InLocation, int32 InGridSize);
+	bool IsPlacementTurret(FVector InLocation, int32 InGridSizeVertical, int32 InGridSizeHorizontal);
 
 	//터렛 설치
-	bool PlacementTurret(FVector& InOutLocation, int32 InGridSize, TArray<TPair<int32, int32>>& OutIndex, TWeakObjectPtr<AActor> InTurret);
+	bool PlacementTurret(FVector& InOutLocation, int32 InGridSizeVertical, int32 InGridSizeHorizontal, TArray<TPair<int32, int32>>& OutIndex, TWeakObjectPtr<AActor> InTurret);
 
 	//터렛 부서질 때 노드 복구
 	void RestoreNavNodeByDestructedTurret(const TArray<TPair<int32, int32>>& InIndex);

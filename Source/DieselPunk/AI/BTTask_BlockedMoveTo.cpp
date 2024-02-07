@@ -10,6 +10,7 @@
 #include <BehaviorTree/BlackboardComponent.h>
 
 #include "DrawDebugHelpers.h"
+#include "Components/CapsuleComponent.h"
 
 
 UBTTask_BlockedMoveTo::UBTTask_BlockedMoveTo()
@@ -58,7 +59,8 @@ EBTNodeResult::Type UBTTask_BlockedMoveTo::ExecuteTask(UBehaviorTreeComponent& O
 		
 		TArray<FOverlapResult> hitResult;
 		world->OverlapMultiByChannel(hitResult, path[point], FQuat::Identity, ECC_WorldStatic,
-					FCollisionShape::MakeSphere(OwnerCharacter->GetGridSize() * FNavigationManager::GridSize));
+		FCollisionShape::MakeBox(FVector(OwnerCharacter->GetGridSizeVertical() * FNavigationManager::GridSize / 2, OwnerCharacter->GetGridSizeHorizontal() * FNavigationManager::GridSize / 2,
+		OwnerCharacter->GetCapsuleComponent()->GetScaledCapsuleHalfHeight())));
 
 		for(const FOverlapResult& result : hitResult)
 		{

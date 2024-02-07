@@ -4,16 +4,16 @@
 #include "CharacterTurret.h"
 
 #include "../Component/HousingActorComponent.h"
+#include "../Manager/NavigationManager.h"
+#include "../Manager/UIManager.h"
+#include "../UI/HUD/InteractInstallation.h"
 
 #include <Components/SkeletalMeshComponent.h>
 #include <Components/StaticMeshComponent.h>
 #include <Components/CapsuleComponent.h>
 #include <Materials/MaterialInstanceDynamic.h>
 #include <Components/BoxComponent.h>
-
-#include "Components/WidgetComponent.h"
-#include "DieselPunk/Manager/UIManager.h"
-#include "DieselPunk/UI/HUD/InteractInstallation.h"
+#include <Components/WidgetComponent.h>
 
 
 // =============================================================
@@ -105,7 +105,8 @@ void ACharacterHousing::BeginPlay()
 			Box->SetGenerateOverlapEvents(false);
 			Box->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 			Box->SetCanEverAffectNavigation(false);
-			Box->SetBoxExtent(FVector(GetGridSize() * 50, GetGridSize() * 50, GetGridSize() * 50));
+			Box->SetBoxExtent(FVector(GetGridSizeVertical() * FNavigationManager::GridSize / 2, GetGridSizeHorizontal() * FNavigationManager::GridSize / 2,
+				GetCapsuleComponent()->GetScaledCapsuleHalfHeight()));
 		}
 	}
 
@@ -162,7 +163,8 @@ bool ACharacterHousing::CompleteHousingTurret()
 			Box->SetGenerateOverlapEvents(true);
 			Box->SetCollisionResponseToChannel(ECC_GameTraceChannel5, ECR_Block);
 			Box->SetCanEverAffectNavigation(true);
-			Box->SetBoxExtent(FVector(GetGridSize() * 50, GetGridSize() * 50, GetGridSize() * 50));
+			Box->SetBoxExtent(FVector(GetGridSizeVertical() * FNavigationManager::GridSize / 2, GetGridSizeHorizontal() * FNavigationManager::GridSize / 2,
+				GetCapsuleComponent()->GetScaledCapsuleHalfHeight()));
 		}
 
 		// 포탑 생성완료시 사거리를 생성합니다.

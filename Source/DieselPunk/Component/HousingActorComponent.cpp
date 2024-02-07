@@ -94,17 +94,22 @@ void UHousingActorComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	//바닥과 충돌 됐다면
 	if(hasHit)
 	{
-		int32 turretGridSize = Cast<ACharacterHousing>(GetOwner())->GetGridSize();
 		//그리드에 맞춘 위치 탐색
-		FVector newLocation;
-		if(turretGridSize & 1)
-			newLocation = FVector(floor(hit.Location.X / FNavigationManager::GridSize), (floor(hit.Location.Y / FNavigationManager::GridSize)), 0.0);
+		FVector newLocation = FVector::ZeroVector;
+
+		//Vertical
+		int32 turretGridSizeVertical = Cast<ACharacterHousing>(GetOwner())->GetGridSizeVertical();
+		if(turretGridSizeVertical & 1)
+			newLocation.X = floor(hit.Location.X / FNavigationManager::GridSize) * FNavigationManager::GridSize + FNavigationManager::GridSize / 2;
 		else
-			newLocation = FVector(round(hit.Location.X / FNavigationManager::GridSize), (round(hit.Location.Y / FNavigationManager::GridSize)), 0.0);
-		newLocation *= FNavigationManager::GridSize;
-		
-		if(turretGridSize & 1)
-			newLocation += FVector(FNavigationManager::GridSize / 2);
+			newLocation.X = round(hit.Location.X / FNavigationManager::GridSize) * FNavigationManager::GridSize;
+
+		//Horizontal
+		int32 turretGridSizeHorizontal = Cast<ACharacterHousing>(GetOwner())->GetGridSizeHorizontal();
+		if(turretGridSizeHorizontal & 1)
+			newLocation.Y = floor(hit.Location.Y / FNavigationManager::GridSize) * FNavigationManager::GridSize + FNavigationManager::GridSize / 2;
+		else
+			newLocation.Y = round(hit.Location.Y / FNavigationManager::GridSize) * FNavigationManager::GridSize;
 		
 		newLocation.Z = hit.Location.Z + Cast<ACharacter>(GetOwner())->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 
@@ -114,7 +119,7 @@ void UHousingActorComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 		//디버그 렌더를 위한 로케이션
 		FVector boxLocation = GetOwner()->GetActorLocation();
-		FVector boxGridSize = FVector(turretGridSize);
+		FVector boxGridSize = FVector(turretGridSizeVertical, turretGridSizeHorizontal, 0.0);
 		FVector boxExtend = (boxGridSize * FNavigationManager::GridSize / 2);
 		boxExtend.Z = Cast<ACharacter>(GetOwner())->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 		//boxLocation.Z += boxExtend.Z;
@@ -137,8 +142,9 @@ bool UHousingActorComponent::IsArrangeTurret()
 
 	TArray<FOverlapResult> hitResult;
 	FVector location = owner->GetActorLocation();
-	double gridSize = owner->GetGridSize();
-	FVector grid = {gridSize, gridSize, gridSize};
+	double gridSizeVertical = owner->GetGridSizeVertical();
+	double gridSizeHorizontal = owner->GetGridSizeHorizontal();
+	FVector grid = {gridSizeVertical, gridSizeHorizontal, gridSizeVertical};
 	FVector boxHalfExtend = (grid * FNavigationManager::GridSize / 2) - 0.25;
 	location.Z += boxHalfExtend.Z;
 
@@ -148,7 +154,7 @@ bool UHousingActorComponent::IsArrangeTurret()
 	params.AddIgnoredActor(owner);
 	
 	return !GetOwner()->GetWorld()->OverlapMultiByChannel(hitResult, location, FQuat::Identity, ECC_WorldStatic,FCollisionShape::MakeBox(boxHalfExtend), params) &&
-		FNavigationManager::GetInstance()->IsPlacementTurret(GetOwner()->GetActorLocation(), owner->GetGridSize());
+		FNavigationManager::GetInstance()->IsPlacementTurret(GetOwner()->GetActorLocation(), owner->GetGridSizeVertical(), owner->GetGridSizeHorizontal());
 }
 
 bool UHousingActorComponent::CompleteHousingTurret()
@@ -162,8 +168,9 @@ bool UHousingActorComponent::CompleteHousingTurret()
 
 	TArray<FOverlapResult> hitResult;
 	FVector location = owner->GetActorLocation();
-	double gridSize = owner->GetGridSize();
-	FVector grid = {gridSize, gridSize, gridSize};
+	double gridSizeVertical = owner->GetGridSizeVertical();
+	double gridSizeHorizontal = owner->GetGridSizeHorizontal();
+	FVector grid = {gridSizeVertical, gridSizeHorizontal, gridSizeVertical};
 	FVector boxHalfExtend = (grid * FNavigationManager::GridSize / 2) - 0.25;
 	location.Z += boxHalfExtend.Z;
 
@@ -176,7 +183,7 @@ bool UHousingActorComponent::CompleteHousingTurret()
 		return false;
 	
 	location = owner->GetActorLocation();
-	if(FNavigationManager::GetInstance()->PlacementTurret(location, owner->GetGridSize(), NavIndex, GetOwner()))
+	if(FNavigationManager::GetInstance()->PlacementTurret(location, owner->GetGridSizeVertical(), owner->GetGridSizeHorizontal(), NavIndex, GetOwner()))
 	{
 		location.Z += owner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 		GetOwner()->SetActorLocation(location);
