@@ -138,6 +138,9 @@ public:
 	
 	// 조건이 맞다면 '몬스터'의 타겟을 플레이어로 설정합니다.
 	bool bPlayerTargeting();
+
+	// 몬스터와 목표의 거리에 따른 조건 설정 // BT 활용
+	void SetInRange();
 	
 	// 몬스터의 RoutingLines TMap에 값을 추가합니다.
 	void AddEnemyRoutingLines(FVector inGoalLoc, FVector inStart, FVector inEnd);

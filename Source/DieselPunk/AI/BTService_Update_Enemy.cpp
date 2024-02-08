@@ -40,9 +40,6 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
         OwnerComp.GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), AICharacter->GetAttackTarget().Get());
     else
         OwnerComp.GetBlackboardComponent()->ClearValue(TEXT("Target"));
-    
-    // 목표위치 SET
-    OwnerComp.GetBlackboardComponent()->SetValueAsVector(TEXT("TargetLocation"), AICharacter->NowGoalLoc);
 
     // 타겟이 플레이어 일 경우
     if(AICharacter->bPlayerTargeting())

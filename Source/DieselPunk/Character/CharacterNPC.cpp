@@ -83,6 +83,7 @@ void ACharacterNPC::Tick(float DeltaTime)
 		EnemyStatusUI->SetHPPercent(HpPercent);
 		EnemyStatusUI->SetHPPercentAfterImage(HpPercentAfterImage);
 	}
+	
 	if(IsDead())
 		WidgetComp->bHiddenInGame = 1;
 
@@ -93,30 +94,27 @@ void ACharacterNPC::Tick(float DeltaTime)
 	// 타겟 업데이트
 	if(NPCType == ENPCType::Enemy)
 	{
+		// 몬스터 타겟 업데이트
 		UpdateEnemyTarget();
+		
+		// 타겟 위치에 따른 조건 업데이트
+		SetInRange();
+		
+		// 목표 지점 업데이트
 		UpdateEnemyGoalLoc();
-		
-		// 몬스터와 목표의 거리에 따른 조건 설정
-		//float MeleeRange = AICharacter->GetCapsuleComponent()->GetScaledCapsuleRadius() + 200;
-		if(Target.IsValid())
-		{
-			FVector VRange = GetActorLocation() - GetAttackTarget()->GetActorLocation();
-			float FRange = VRange.Size();
-			InRange = (GetStat().GetStat(ECharacterStatType::AttackMaxRange) < FRange) ? false : true;
-		}
-		else
-			InRange = false;
-		
+		if(DebugOnOff)
+			DrawDebugPoint(GetWorld(), NowGoalLoc, 30, FColor::Orange, false);
+
+		// Navigation
 		if(DPNavigationComponent != nullptr)
 		{
-			if(!InRange)
+			// 몬스터 AddMovementInput
+			if(!InRange && !bPlayerTargeting())
 				DPNavigationComponent->AddForceAlongSplinePath(DeltaTime);
+			// 경로 Draw
 			if(DebugOnOff)
 				DPNavigationComponent->DrawDebugSpline();
 		}
-
-		if(DebugOnOff)
-			DrawDebugPoint(GetWorld(), NowGoalLoc, 30, FColor::Orange, false);
 	}
 }
 
@@ -287,6 +285,9 @@ void ACharacterNPC::UpdateEnemyTarget()
 	}
 }
 
+// =============================================================
+// 조건이 맞다면 '몬스터'의 타겟을 플레이어로 설정합니다.
+// =============================================================
 bool ACharacterNPC::bPlayerTargeting()
 {
 	if(Player == nullptr)
@@ -295,7 +296,7 @@ bool ACharacterNPC::bPlayerTargeting()
 	FVector playerLoc = Player->GetActorLocation();
 	
 	// 플레이어가 유효 사거리 안에 위치
-	const int range = 1000;
+	const int range = 1500;
 	bool inRange = FVector::Dist(GetActorLocation(), playerLoc) <= range;
 	
 	// 플레이어가 유효 각도 안에 위치
@@ -307,6 +308,23 @@ bool ACharacterNPC::bPlayerTargeting()
 	// TODO
 	
 	return inRange && inDegree;
+}
+
+// =============================================================
+// 몬스터와 목표의 거리에 따른 조건 설정 // BT 활용
+// =============================================================
+void ACharacterNPC::SetInRange()
+{
+	// 몬스터와 목표의 거리에 따른 조건 설정
+	//float MeleeRange = AICharacter->GetCapsuleComponent()->GetScaledCapsuleRadius() + 200;
+	if(Target.IsValid())
+	{
+		FVector VRange = GetActorLocation() - GetAttackTarget()->GetActorLocation();
+		float FRange = VRange.Size();
+		InRange = (GetStat().GetStat(ECharacterStatType::AttackMaxRange) < FRange) ? false : true;
+	}
+	else
+		InRange = false;
 }
 
 // =============================================================
