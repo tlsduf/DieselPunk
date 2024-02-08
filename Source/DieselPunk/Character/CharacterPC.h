@@ -83,6 +83,7 @@ public:
 	UPROPERTY()
 	TMap<EAbilityType, TObjectPtr<UPlayerSkill>> Skills;			// 런타임에 인스턴스화된 스킬들을 담는 배열입니다. (실제로 이 배열에 담긴 스킬들을 호출)
 
+	UPROPERTY()
 	TMap<EAbilityType, TObjectPtr<UPlayerSkill>> CachedSkills;
 
 	UPROPERTY()

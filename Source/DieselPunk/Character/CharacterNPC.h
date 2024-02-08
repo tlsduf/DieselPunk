@@ -60,15 +60,24 @@ public:
 	
 	/////////////////////////////////////////////////////////////////////
 	// for skill //
+
+	UPROPERTY(EditAnywhere, Category = "MYDP_Skill")
+	TSubclassOf<USkillBase> MeleeAttackClass;
+
+	UPROPERTY(EditAnywhere, Category = "MYDP_Skill")
+	TSubclassOf<USkillBase> ProjectileAttackClass;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MYDP_Skill", meta = (AllowPrivateAccess = "true"))
-	USkillBase *MeleeAttack;
+	UPROPERTY(EditAnywhere, Category = "MYDP_Skill")
+	TSubclassOf<USkillBase> TargetAttackClass;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MYDP_Skill", meta = (AllowPrivateAccess = "true"))
-	USkillBase *ProjectileAttack;
+	UPROPERTY()
+	TObjectPtr<USkillBase> MeleeAttack;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MYDP_Skill", meta = (AllowPrivateAccess = "true"))
-	USkillBase *TargetAttack;
+	UPROPERTY()
+	TObjectPtr<USkillBase> ProjectileAttack;
+	
+	UPROPERTY()
+	TObjectPtr<USkillBase> TargetAttack;
 	
 	
 	//포탑의 세로 사이즈입니다. 1그리드 = 100입니다.
@@ -83,7 +92,7 @@ public:
 	// 내비게이션
 	FTimerHandle PulseUpdatePathTHandle;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MYDP_Skill")
+	UPROPERTY(BlueprintReadOnly, Category = "MYDP_Skill")
 	UDPNavigationComponent *DPNavigationComponent;
 	
 	FVector NowGoalLoc = FVector::ZeroVector;	// 처음으로 도달할 목표 위치 // 처음으로 도달할 경유지점 위치

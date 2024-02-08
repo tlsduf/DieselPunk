@@ -22,11 +22,6 @@ ACharacterNPC::ACharacterNPC()
 	// AI possess
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
-	// ActorComponent
-	MeleeAttack = CreateDefaultSubobject<USkillBase>(TEXT("MeleeAttack"));
-	ProjectileAttack = CreateDefaultSubobject<USkillBase>(TEXT("ProjectileAttack"));
-	TargetAttack = CreateDefaultSubobject<USkillBase>(TEXT("TargetAttack"));
-
 	DPNavigationComponent = CreateDefaultSubobject<UDPNavigationComponent>(TEXT("PathFindingComponent"));
 }
 
@@ -49,16 +44,28 @@ void ACharacterNPC::BeginPlay()
 					thisPtr->_UpdateSplinePath();
 			},0.5f, false);
 	}
-	
-	// SKill Stat Initialize
-	if(MeleeAttack != nullptr)
+
+	// Skill Instancing , SKill Stat Initialize
+	if(MeleeAttackClass)
+	{
+		MeleeAttack = NewObject<USkillBase>(this, MeleeAttackClass);
+		MeleeAttack->RegisterComponent();
 		MeleeAttack->InitSkill();
+	}
 
-	if(ProjectileAttack != nullptr)
+	if(ProjectileAttackClass)
+	{
+		ProjectileAttack = NewObject<USkillBase>(this, ProjectileAttackClass);
+		ProjectileAttack->RegisterComponent();
 		ProjectileAttack->InitSkill();
+	}
 
-	if(TargetAttack != nullptr)
+	if(TargetAttackClass)
+	{
+		TargetAttack = NewObject<USkillBase>(this, TargetAttackClass);
+		TargetAttack->RegisterComponent();
 		TargetAttack->InitSkill();
+	}
 }
 
 // =============================================================
