@@ -293,15 +293,15 @@ void UDPNavigationComponent::MakeSplinePath()
 }
 
 // 스플라인 경로를 따라가게 움직임을 구현 해줍니다.
-void UDPNavigationComponent::AddForceAlongSplinePath(float inDeltaTime)
+FVector UDPNavigationComponent::AddForceAlongSplinePath()
 {
 	if(!Owner.IsValid())
-		return;// FVector::ZeroVector;
+		return FVector::ZeroVector;
 	
 	if(!SplinePath.IsValid())
-		return;// Owner->GetActorLocation();
+		return Owner->GetActorLocation();
 	
-	FVector nearestSplineLocation;	// 가장 가까운 스플라인 점의 위치
+	/*FVector nearestSplineLocation;	// 가장 가까운 스플라인 점의 위치
 	FRotator nearestSplineRotation;	// 가장 가까운 스플라인 점의 방향
 	FVector toSplineDir;			// 가장 가까운 스플라인 점을 향한 벡터
 	FVector addForceDir;			// 스플라인 위에 있을 때는 nearestSplineRotation를, 스플라인과 멀어졌을 때는 toSplineDir과 합성한 벡터를 반환
@@ -320,22 +320,21 @@ void UDPNavigationComponent::AddForceAlongSplinePath(float inDeltaTime)
 	
 	if( 10 < FVector::Dist(nearestSplineLocation, Owner->GetActorLocation()) )
 		addForceDir = (addForceDir + toSplineDir).GetSafeNormal();
+	
+	Owner->AddMovementInput(addForceDir, 100);
 
-	constexpr int scaleValue = 100;
-	Owner->AddMovementInput(addForceDir, scaleValue);
+	return FVector::ZeroVector;*/
 
-	//return FVector::ZeroVector;
-
-	/*FVector nearestSplineLocation;	// 가장 가까운 스플라인 점의 위치
+	FVector nearestSplineLocation;	// 가장 가까운 스플라인 점의 위치
 	FRotator nearestSplineRotation;	// 가장 가까운 스플라인 점의 방향
 	FVector dest;					// 캐릭터의 Move 목표위치
 	
 	float distOwnerToSplinePath = SplinePath.GetDistanceClosestToWorldLocation(Owner->GetActorLocation());
 	nearestSplineLocation = SplinePath.GetLocationAtDistanceAlongSpline(distOwnerToSplinePath);
 	nearestSplineRotation = SplinePath.GetRotationAtDistanceAlongSpline(distOwnerToSplinePath);
-	dest = nearestSplineLocation + nearestSplineRotation.Vector().GetSafeNormal() * 500;
+	dest = nearestSplineLocation + nearestSplineRotation.Vector().GetSafeNormal() * 100;
 	
-	return dest;*/
+	return dest;
 }
 
 // 경로 DrawDebug
@@ -363,7 +362,7 @@ void UDPNavigationComponent::DrawDebugSpline()
 
 	// Spline 경로
 	double splineLength = SplinePath.Path.GetSplineLength();
-	const double sectionLength = 100;
+	double sectionLength = 1000.0 / 10;
 	int value = static_cast<int>(splineLength / sectionLength);
 	for(int i = 0 ; i < value; ++i)
 	{
@@ -374,7 +373,4 @@ void UDPNavigationComponent::DrawDebugSpline()
 			location + 20 * rotation.Vector(),
 			10, FColor::Red, false, -1, 0, 3);
 	}
-
-	// dest 위치
-	//DrawDebugPoint(GetWorld(), AddForceAlongSplinePath(), 25, FColor::Black, false, -1);
 }
