@@ -12,7 +12,6 @@
 #include <GameFramework/CharacterMovementComponent.h>
 #include <NavigationSystem.h>
 #include <DrawDebugHelpers.h>
-#include <Kismet/GameplayStatics.h>
 
 
 // =============================================================
@@ -34,8 +33,6 @@ void ACharacterNPC::BeginPlay()
 	Super::BeginPlay();
 	CharacterType = ECharacterType::Monster;
 
-	Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	
 	// Stat Init
 	GetCharacterMovement()->MaxWalkSpeed = Stat.GetStat(ECharacterStatType::MoveSpeed);
 
@@ -110,13 +107,14 @@ void ACharacterNPC::Tick(float DeltaTime)
 		if(DPNavigationComponent != nullptr)
 		{
 			if(!InRange)
-				DPNavigationComponent->AddForceAlongSplinePath(DeltaTime);
+				if(AIController)
+					AIController->MoveToLocation(DPNavigationComponent->AddForceAlongSplinePath(), 1, false, false);
 			if(DebugOnOff)
 				DPNavigationComponent->DrawDebugSpline();
 		}
 
 		if(DebugOnOff)
-			DrawDebugPoint(GetWorld(), NowGoalLoc, 30, FColor::Orange, false);
+			DrawDebugPoint(GetWorld(), GetNowGoalLoc(), 30, FColor::Orange, false);
 	}
 }
 
@@ -246,12 +244,13 @@ TArray<FVector> ACharacterNPC::GetGoalLocArrayFromRoutingLines()
 // =============================================================
 void ACharacterNPC::UpdateEnemyTarget()
 {
-	// (최우선)플레이어가 조건에 일치하는가? 	// 일치한다면 타겟을 플레이어로 지정
-	if(bPlayerTargeting())
+	// (최우선)플레이어가 근처에 있는가 혹은 조건에 일치하는가? 	// 일치한다면 타겟을 플레이어로 지정
+	/*if(bIsPlayerNear)
 	{
-		Target = Player;
+		Target = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+		TargetLocation = UGameplayStatics::GetPlayerPawn(GetWorld(), 0).GetActorLocation();
 		return;
-	}
+	}*/
 
 	// (우선) 터렛에 의해 길이 막혔는가? // 타겟을 터렛으로 설정
 	// TargetedTurretID가 유효한 값일 경우
@@ -285,28 +284,6 @@ void ACharacterNPC::UpdateEnemyTarget()
 		UpdateSplinePath();
 		Target = nexus;
 	}
-}
-
-bool ACharacterNPC::bPlayerTargeting()
-{
-	if(Player == nullptr)
-		return false;
-
-	FVector playerLoc = Player->GetActorLocation();
-	
-	// 플레이어가 유효 사거리 안에 위치
-	const int range = 1000;
-	bool inRange = FVector::Dist(GetActorLocation(), playerLoc) <= range;
-	
-	// 플레이어가 유효 각도 안에 위치
-	float forwardDir = GetActorForwardVector().GetSafeNormal().Rotation().Yaw;
-	float toTargetDir = (playerLoc - GetActorLocation()).GetSafeNormal().Rotation().Yaw;
-	bool inDegree = ( -SearchPlayerDEGREE < (forwardDir - toTargetDir) ) && ( (forwardDir - toTargetDir) < SearchPlayerDEGREE );
-	
-	// 플레이어가 유효 공간 안에 위치
-	// TODO
-	
-	return inRange && inDegree;
 }
 
 // =============================================================

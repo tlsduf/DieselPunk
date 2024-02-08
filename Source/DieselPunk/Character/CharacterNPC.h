@@ -31,7 +31,6 @@ class DIESELPUNK_API ACharacterNPC : public ACharacterBase
 {
 	GENERATED_BODY()
 
-	// TimerHandle
 	FTimerHandle PathTHandle1;
 	FTimerHandle PathTHandle2;
 	FTimerHandle PathTHandle3;
@@ -50,18 +49,17 @@ protected:
 public:
 	/////////////////////////////////////////////////////////////////////
 	// for Character info Management //
+
+	UPROPERTY()
+	AAIController* AIController = nullptr;
 	
 	// NPC 타입
 	UPROPERTY(EditAnywhere, Category = "MYDP_info")
 	ENPCType NPCType = ENPCType::Enemy;						
 
-	UPROPERTY()
-	AActor* Player = nullptr;
 	
 	/////////////////////////////////////////////////////////////////////
 	// for skill //
-
-	const float SearchPlayerDEGREE = 30;
 
 	UPROPERTY(EditAnywhere, Category = "MYDP_Skill")
 	TSubclassOf<USkillBase> MeleeAttackClass;
@@ -136,9 +134,6 @@ public:
 	void UpdateEnemyTarget();
 	TWeakObjectPtr<AActor> GetAttackTarget() { return Target; }
 	
-	// 조건이 맞다면 '몬스터'의 타겟을 플레이어로 설정합니다.
-	bool bPlayerTargeting();
-	
 	// 몬스터의 RoutingLines TMap에 값을 추가합니다.
 	void AddEnemyRoutingLines(FVector inGoalLoc, FVector inStart, FVector inEnd);
 	// RoutingLines에서 GoalLoc(Key)들을 배열로 만들어 반환합니다.
@@ -147,14 +142,15 @@ public:
 	float DistanceSegmentToSelf(FVector inStart, FVector inEnd);
 	// '몬스터'의 GoalLoc를 갱신합니다. // GoalLoc는 경유지점입니다. // Tick , 조건
 	void UpdateEnemyGoalLoc();
+	FVector GetNowGoalLoc() { return NowGoalLoc; }
 	
-	// 길이 막혔을 때, 파괴시 진행할 수 있는 포탑의 위치를 찾습니다. // 현재 사용x
+	// 길이 막혔을 때, 파괴시 진행할 수 있는 포탑의 위치를 찾습니다.
 	bool FindShortestPath(const FVector& InEndLocation);
 	const TArray<FVector>& GetShortestPath() { return ShortestPath; } 
 	int32 GetGridSizeVertical() const { return GridSizeVertical; } 
 	int32 GetGridSizeHorizontal() const { return GridSizeHorizontal; }
 
-	// 길이 막혔을 때, '몬스터'의 타겟을 지정합니다. // 현재 사용x
+	// 길이 막혔을 때, '몬스터'의 타겟을 지정합니다.
 	bool SetBlockedAttackTarget(TWeakObjectPtr<AActor> InTarget, const TArray<FVector>& InPath = TArray<FVector>(), int InIndex = -1);
 	FVector GetBlockedAttackTargetLoc() { return BlockedTargetLoc; }
 
