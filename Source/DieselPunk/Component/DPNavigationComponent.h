@@ -49,7 +49,7 @@ public:
 	void MakeSplinePath();
 
 	// 스플라인 경로를 따라가게 AddForce 해줍니다.
-	FVector AddForceAlongSplinePath();
+	void AddForceAlongSplinePath(float inDeltaTime);
 
 	// 경로 DrawDebug
 	void DrawDebugSpline();
