@@ -106,7 +106,10 @@ void ACharacterNPC::Tick(float DeltaTime)
 		{
 			// 몬스터 AddMovementInput
 			if(!InRange && !bPlayerTargeting())
-				DPNavigationComponent->AddForceAlongSplinePath(DeltaTime);
+				//DPNavigationComponent->AddForceAlongSplinePath(DeltaTime);
+			if(!InRange && !bPlayerTargeting())
+				if(AIController)
+					AIController->MoveToLocation(DPNavigationComponent->MoveToAlongSplinePath(), 1, false, false);
 			// 경로 Draw
 			if(DebugOnOff)
 				DPNavigationComponent->DrawDebugSpline();

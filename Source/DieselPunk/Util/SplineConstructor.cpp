@@ -104,7 +104,7 @@ float FSplinePath::GetDistanceClosestToWorldLocation(const FVector& InWorldLocat
 		const float Fraction = InputKey - PointIndex;
 		const int32 ReparamPointIndex = PointIndex * s_ReparamStepsPerSegment;
 		const float Distance = Path.ReparamTable.Points[ReparamPointIndex].InVal;
-		return Distance + Path.GetSegmentLength(PointIndex, Fraction);
+		return Distance + Path.GetSegmentLength(PointIndex, Fraction, false, Transform.GetScale3D());
 	}
 	else if (InputKey >= NumSegments)
 	{

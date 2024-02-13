@@ -50,6 +50,9 @@ public:
 
 	// 스플라인 경로를 따라가게 AddForce 해줍니다.
 	void AddForceAlongSplinePath(float inDeltaTime);
+	
+	// 스플라인 경로를 따라가게 MoveTo 해줍니다.
+	FVector MoveToAlongSplinePath();
 
 	// 경로 DrawDebug
 	void DrawDebugSpline();

@@ -53,6 +53,8 @@ void ANPCAIController::RunAi(APawn* inPawn, bool inForced)
 {
     if(inPawn == nullptr)
         return;
+
+    Cast<ACharacterNPC>(inPawn)->AIController = this;
     
     //포탑의 경우에는 배치 후에 Ai가 진행되어야 합니다.
     if(inForced == false && Cast<ACharacterTurret>(inPawn) != nullptr)

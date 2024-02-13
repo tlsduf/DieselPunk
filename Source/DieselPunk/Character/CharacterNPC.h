@@ -56,6 +56,9 @@ public:
 	ENPCType NPCType = ENPCType::Enemy;						
 
 	UPROPERTY()
+	AAIController* AIController = nullptr;
+	
+	UPROPERTY()
 	AActor* Player = nullptr;
 	
 	/////////////////////////////////////////////////////////////////////

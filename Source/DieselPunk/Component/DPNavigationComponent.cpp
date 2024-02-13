@@ -309,10 +309,10 @@ void UDPNavigationComponent::MakeSplinePath()
 void UDPNavigationComponent::AddForceAlongSplinePath(float inDeltaTime)
 {
 	if(!Owner.IsValid())
-		return;// FVector::ZeroVector;
+		return;
 	
 	if(!SplinePath.IsValid())
-		return;// Owner->GetActorLocation();
+		return;
 	
 	FVector nearestSplineLocation;	// 가장 가까운 스플라인 점의 위치
 	FRotator nearestSplineRotation;	// 가장 가까운 스플라인 점의 방향
@@ -340,10 +340,17 @@ void UDPNavigationComponent::AddForceAlongSplinePath(float inDeltaTime)
 
 	if(Owner->DebugOnOff)
 		DrawDebugDirectionalArrow(GetWorld(), Owner->GetActorLocation(), Owner->GetActorLocation() + addForceDir * 200, 5, FColor::Red, false);
-	
-	//return FVector::ZeroVector;
+}
 
-	/*FVector nearestSplineLocation;	// 가장 가까운 스플라인 점의 위치
+FVector UDPNavigationComponent::MoveToAlongSplinePath()
+{
+	if(!Owner.IsValid())
+		return FVector::ZeroVector;
+	
+	if(!SplinePath.IsValid())
+		return Owner->GetActorLocation();
+
+	FVector nearestSplineLocation;	// 가장 가까운 스플라인 점의 위치
 	FRotator nearestSplineRotation;	// 가장 가까운 스플라인 점의 방향
 	FVector dest;					// 캐릭터의 Move 목표위치
 	
@@ -352,7 +359,7 @@ void UDPNavigationComponent::AddForceAlongSplinePath(float inDeltaTime)
 	nearestSplineRotation = SplinePath.GetRotationAtDistanceAlongSpline(distOwnerToSplinePath);
 	dest = nearestSplineLocation + nearestSplineRotation.Vector().GetSafeNormal() * 500;
 	
-	return dest;*/
+	return dest;
 }
 
 // 경로 DrawDebug
