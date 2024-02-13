@@ -42,6 +42,8 @@ private:
 	void Initialize();
 	void Release();
 
+	bool LoadMapNode();
+
 	//네비 노드 추가
 	void AddNavNode(int32 InX, int32 InY, FDpNavNode InNavNode);
 

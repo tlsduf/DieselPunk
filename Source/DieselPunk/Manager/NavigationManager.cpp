@@ -22,7 +22,23 @@ FNavigationManager::~FNavigationManager()
 
 void FNavigationManager::Initialize()
 {
-	FString fileName = TEXT("NavNode_UEDPIE_0_TestLevel_DefenceGame.bin");
+	
+}
+
+void FNavigationManager::Release()
+{
+	for(TPair<int32, TMap<int32, FDpNavNode>>& pair : NavMap)
+		pair.Value.Empty();
+	NavMap.Empty();
+}
+
+bool FNavigationManager::LoadMapNode()
+{
+	UWorld* world = FObjectManager::GetInstance()->GetWorld();
+	if(world == nullptr)
+		return false;
+	FString fileName = world->GetMapName();
+	fileName = TEXT("NavNode_") + fileName + TEXT(".bin");
 	TArray<int32> loadData;
 	if(FFstreamManager::ReadDataBinaryByInteger<int32>(fileName, loadData))
 	{
@@ -38,13 +54,10 @@ void FNavigationManager::Initialize()
 				node.IsGoNodeState[j] = static_cast<ENavNodeState>(loadData[i + 3 + j]);
 		}
 	}
-}
+	else
+		return false;
 
-void FNavigationManager::Release()
-{
-	for(TPair<int32, TMap<int32, FDpNavNode>>& pair : NavMap)
-		pair.Value.Empty();
-	NavMap.Empty();
+	return true;
 }
 
 //네비 노드 추가
@@ -74,126 +87,123 @@ bool FNavigationManager::IsInList(int32 InX, int32 InY, const TArray<TPair<int32
 void FNavigationManager::BuildNavMap(TWeakObjectPtr<AFloorStaticMeshActor> InFloorStaticMeshActor,
                                       TArray<FDpBox> InBoxes)
 {
-	if(!NavMap.IsEmpty())
+	if(!LoadMapNode())
 	{
-		BuildNavMapLocation();
-		BuildNavGraph();
-		return;
-	}
-	UWorld* world = FObjectManager::GetInstance()->GetWorld();
-	if(world == nullptr)
-		return;
+		UWorld* world = FObjectManager::GetInstance()->GetWorld();
+		if(world == nullptr)
+			return;
 
-	//노드 생성
-	for(const FDpBox& box : InBoxes)
-	{
-		FVector minLoc = box.Location - box.Extend;
-		FVector maxLoc = box.Location + box.Extend;
-
-		int32 minGridX = static_cast<int32>(minLoc.X) / GridSize - 1;
-		int32 maxGridX = static_cast<int32>(maxLoc.X) / GridSize + 1;
-		int32 minGridY = static_cast<int32>(minLoc.Y) / GridSize - 1;
-		int32 maxGridY = static_cast<int32>(maxLoc.Y) / GridSize + 1;
-
-
-		for(int32 x = minGridX; x <= maxGridX; ++x)
+		//노드 생성
+		for(const FDpBox& box : InBoxes)
 		{
-			for(int32 y = minGridY; y <= maxGridY; ++y)
+			FVector minLoc = box.Location - box.Extend;
+			FVector maxLoc = box.Location + box.Extend;
+
+			int32 minGridX = static_cast<int32>(minLoc.X) / GridSize - 1;
+			int32 maxGridX = static_cast<int32>(maxLoc.X) / GridSize + 1;
+			int32 minGridY = static_cast<int32>(minLoc.Y) / GridSize - 1;
+			int32 maxGridY = static_cast<int32>(maxLoc.Y) / GridSize + 1;
+
+
+			for(int32 x = minGridX; x <= maxGridX; ++x)
 			{
-				//충돌 초기화
-				TArray<FOverlapResult> hitResult;
-				FVector location;
-				location.X = (x * GridSize) + (GridSize * 0.5);
-				location.Y = (y * GridSize) + (GridSize * 0.5);
-				location.Z = box.Location.Z;
-				FVector boxHalfExtend;
-				boxHalfExtend.X = GridSize * 0.5;
-				boxHalfExtend.Y = GridSize * 0.5;
-				boxHalfExtend.Z = box.Extend.Z * 2;
-
-				//플레이어 충돌범위 제외
-				FCollisionQueryParams params;
-				params.AddIgnoredActor(FObjectManager::GetInstance()->GetPlayer());
-
-				//충돌 검사
-				world->OverlapMultiByChannel(hitResult, location, FQuat::Identity, ECC_WorldStatic,
-					FCollisionShape::MakeBox(boxHalfExtend), params);
-
-				//노드 생성
-				FOverlapResult* find = hitResult.FindByPredicate([&InFloorStaticMeshActor](const FOverlapResult& overlapResult)
+				for(int32 y = minGridY; y <= maxGridY; ++y)
 				{
-					if(InFloorStaticMeshActor.IsValid())
-						return overlapResult.GetActor() == Cast<AActor>(InFloorStaticMeshActor.Get());
-					return false;
-				});
+					//충돌 초기화
+					TArray<FOverlapResult> hitResult;
+					FVector location;
+					location.X = (x * GridSize) + (GridSize * 0.5);
+					location.Y = (y * GridSize) + (GridSize * 0.5);
+					location.Z = box.Location.Z;
+					FVector boxHalfExtend;
+					boxHalfExtend.X = GridSize * 0.5;
+					boxHalfExtend.Y = GridSize * 0.5;
+					boxHalfExtend.Z = box.Extend.Z * 2;
 
-				//FloorStaticMeshActor와 충돌하지 않는다면 continue
-				if(find == nullptr)
-					continue;
+					//플레이어 충돌범위 제외
+					FCollisionQueryParams params;
+					params.AddIgnoredActor(FObjectManager::GetInstance()->GetPlayer());
+
+					//충돌 검사
+					world->OverlapMultiByChannel(hitResult, location, FQuat::Identity, ECC_WorldStatic,
+						FCollisionShape::MakeBox(boxHalfExtend), params);
+
+					//노드 생성
+					FOverlapResult* find = hitResult.FindByPredicate([&InFloorStaticMeshActor](const FOverlapResult& overlapResult)
+					{
+						if(InFloorStaticMeshActor.IsValid())
+							return overlapResult.GetActor() == Cast<AActor>(InFloorStaticMeshActor.Get());
+						return false;
+					});
+
+					//FloorStaticMeshActor와 충돌하지 않는다면 continue
+					if(find == nullptr)
+						continue;
 				
-				FDpNavNode navNode;
-				navNode.X = x;
-				navNode.Y = y;
-				//FloorStaticMeshActor 외의 충돌여부에 따라 NavNodeState 설정
-				if(hitResult.Num() > 1)
-				{
-					navNode.NavNodeState = ENavNodeState::BlockedByNonBreakable;
-					AddNavNode(x, y, navNode);
+					FDpNavNode navNode;
+					navNode.X = x;
+					navNode.Y = y;
+					//FloorStaticMeshActor 외의 충돌여부에 따라 NavNodeState 설정
+					if(hitResult.Num() > 1)
+					{
+						navNode.NavNodeState = ENavNodeState::BlockedByNonBreakable;
+						AddNavNode(x, y, navNode);
 					
-				}
-				else
-				{
-					navNode.NavNodeState = ENavNodeState::Passable;
-					AddNavNode(x, y, navNode);
+					}
+					else
+					{
+						navNode.NavNodeState = ENavNodeState::Passable;
+						AddNavNode(x, y, navNode);
+					}
 				}
 			}
 		}
-	}
 
-	//못지나 가는 노드가 주위에 있는 지 세팅
-	for(TPair<int32, TMap<int32, FDpNavNode>>& nodes : NavMap)
-	{
-		for(TPair<int32, FDpNavNode>& node : nodes.Value)
+		//못지나 가는 노드가 주위에 있는 지 세팅
+		for(TPair<int32, TMap<int32, FDpNavNode>>& nodes : NavMap)
 		{
-			if(node.Value.NavNodeState == ENavNodeState::BlockedByNonBreakable)
+			for(TPair<int32, FDpNavNode>& node : nodes.Value)
 			{
-				//못지나 가는 노드를 생성 시 주위 노드에 알림
-				for(int i = 0; i < Character_MaxHalfGrid; ++i)
+				if(node.Value.NavNodeState == ENavNodeState::BlockedByNonBreakable)
 				{
-					for(int j = -i; j <= i; ++j)
+					//못지나 가는 노드를 생성 시 주위 노드에 알림
+					for(int i = 0; i < Character_MaxHalfGrid; ++i)
 					{
-						for(int k = -i; k <= i; ++k)
+						for(int j = -i; j <= i; ++j)
 						{
-							FDpNavNode& otherNavNode = NavMap.FindOrAdd(node.Value.X + j).FindOrAdd(node.Value.Y + k);
-							if(otherNavNode.IsGoNodeState.Num() != Character_MaxHalfGrid)
-								otherNavNode.IsGoNodeState.SetNum(Character_MaxHalfGrid);
-							otherNavNode.IsGoNodeState[i] = ENavNodeState::BlockedByNonBreakable;
+							for(int k = -i; k <= i; ++k)
+							{
+								FDpNavNode& otherNavNode = NavMap.FindOrAdd(node.Value.X + j).FindOrAdd(node.Value.Y + k);
+								if(otherNavNode.IsGoNodeState.Num() != Character_MaxHalfGrid)
+									otherNavNode.IsGoNodeState.SetNum(Character_MaxHalfGrid);
+								otherNavNode.IsGoNodeState[i] = ENavNodeState::BlockedByNonBreakable;
+							}
 						}
 					}
 				}
 			}
 		}
-	}
 
-	//파일 출력을 위한 데이터 정리
-	TArray<int32> outArray;
-	for(const TPair<int32, TMap<int32, FDpNavNode>>& nodes : NavMap)
-	{
-		for(const TPair<int32, FDpNavNode>& node : nodes.Value)
+		//파일 출력을 위한 데이터 정리
+		TArray<int32> outArray;
+		for(const TPair<int32, TMap<int32, FDpNavNode>>& nodes : NavMap)
 		{
-			outArray.Add(node.Value.X);
-			outArray.Add(node.Value.Y);
-			outArray.Add(static_cast<int32>(node.Value.NavNodeState));
-			for(int i = 0; i < Character_MaxHalfGrid; ++i)
-				outArray.Add(static_cast<int32>(node.Value.IsGoNodeState[i]));
+			for(const TPair<int32, FDpNavNode>& node : nodes.Value)
+			{
+				outArray.Add(node.Value.X);
+				outArray.Add(node.Value.Y);
+				outArray.Add(static_cast<int32>(node.Value.NavNodeState));
+				for(int i = 0; i < Character_MaxHalfGrid; ++i)
+					outArray.Add(static_cast<int32>(node.Value.IsGoNodeState[i]));
+			}
 		}
-	}
 	
-	//노드 파일출력
-	FString fileName = world->GetMapName();
-	fileName = TEXT("NavNode_") + fileName + TEXT(".bin");
-	bool IsWriting = FFstreamManager::WriteDataBinaryByInteger(fileName, outArray);
+		//노드 파일출력
+		FString fileName = world->GetMapName();
+		fileName = TEXT("NavNode_") + fileName + TEXT(".bin");
+		bool IsWriting = FFstreamManager::WriteDataBinaryByInteger(fileName, outArray);
 
+	}
 	BuildNavMapLocation();
 	BuildNavGraph();
 }
