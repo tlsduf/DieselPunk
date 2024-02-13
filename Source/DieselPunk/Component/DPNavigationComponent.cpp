@@ -117,11 +117,25 @@ void UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGoa
 
 	// 목적지와 다음목적지 사이에 포탑이 설치된 경우 두 목적지를 제거 합니다. // LineTrace
 	TArray<FVector> removeVector;
+	TArray<FHitResult> hits;
+	FCollisionQueryParams params;
+	// owner의 현재위치와 첫 목적지 까지 트레이스
+	bool hasHit = GetWorld()->LineTraceMultiByChannel(hits, Owner->GetActorLocation(), goalLocArray[0] + FVector(0, 0, 50), ECollisionChannel::ECC_GameTraceChannel5, params);
+	if(hasHit)
+	{
+		bool bTurret = false;
+		for(auto hit : hits)
+		{
+			if(Cast<ACharacterTurret>(hit.GetActor()))
+				bTurret = true;
+		}
+		if(bTurret)
+			removeVector.Add(goalLocArray[0]);
+	}
+	// 목적지 to 목적지 트레이스
 	for(int32 i = 0 ; i < goalLocArray.Num() - 2 ; i++)
 	{
-		TArray<FHitResult> hits;
-		FCollisionQueryParams params;
-		bool hasHit = GetWorld()->LineTraceMultiByChannel(hits, goalLocArray[i] + FVector(0, 0, 50), goalLocArray[i + 1] + FVector(0, 0, 50), ECollisionChannel::ECC_GameTraceChannel5, params);
+		hasHit = GetWorld()->LineTraceMultiByChannel(hits, goalLocArray[i] + FVector(0, 0, 50), goalLocArray[i + 1] + FVector(0, 0, 50), ECollisionChannel::ECC_GameTraceChannel5, params);
 		if(hasHit)
 		{
 			bool bTurret = false;
@@ -149,8 +163,7 @@ void UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGoa
 	goalLocArray.RemoveAll([this](FVector goalLoc)
 	{
 		TArray<FHitResult> hits;
-		FCollisionQueryParams params;
-		bool hasHit = GetWorld()->SweepMultiByChannel(hits, goalLoc, goalLoc + FVector(0,0,300), FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel5, FCollisionShape::MakeSphere(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius()), params);
+		bool hasHit = GetWorld()->SweepMultiByChannel(hits, goalLoc, goalLoc + FVector(0,0,300), FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel5, FCollisionShape::MakeSphere(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius()));
 		bool bTurret = false;
 		if(hasHit)
 		{
@@ -305,25 +318,29 @@ void UDPNavigationComponent::AddForceAlongSplinePath(float inDeltaTime)
 	FRotator nearestSplineRotation;	// 가장 가까운 스플라인 점의 방향
 	FVector toSplineDir;			// 가장 가까운 스플라인 점을 향한 벡터
 	FVector addForceDir;			// 스플라인 위에 있을 때는 nearestSplineRotation를, 스플라인과 멀어졌을 때는 toSplineDir과 합성한 벡터를 반환
-	
+
+	FVector feetLocation = FVector(Owner->GetActorLocation().X, Owner->GetActorLocation().Y, Owner->GetActorLocation().Z - Owner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
 	// 성능향상을 위해 해당 구문을 인터벌로 호출합니다.
 	IntervalDeltaTime += inDeltaTime;
 	if(IntervalDeltaTime <= INTERVAL_TIME)
 	{
-		float distOwnerToSplinePath = SplinePath.GetDistanceClosestToWorldLocation(Owner->GetActorLocation());
+		float distOwnerToSplinePath = SplinePath.GetDistanceClosestToWorldLocation(feetLocation);
 		nearestSplineLocation = SplinePath.GetLocationAtDistanceAlongSpline(distOwnerToSplinePath);
 		nearestSplineRotation = SplinePath.GetRotationAtDistanceAlongSpline(distOwnerToSplinePath);
 		IntervalDeltaTime = 0.f;
 	}
-	toSplineDir = (nearestSplineLocation - Owner->GetActorLocation()).GetSafeNormal();
+	toSplineDir = (nearestSplineLocation - feetLocation).GetSafeNormal();
 	addForceDir = nearestSplineRotation.Vector().GetSafeNormal();
 	
-	if( 10 < FVector::Dist(nearestSplineLocation, Owner->GetActorLocation()) )
+	if( 50 < FVector::Dist(nearestSplineLocation, feetLocation) )
 		addForceDir = (addForceDir + toSplineDir).GetSafeNormal();
 
 	constexpr int scaleValue = 100;
 	Owner->AddMovementInput(addForceDir, scaleValue);
 
+	if(Owner->DebugOnOff)
+		DrawDebugDirectionalArrow(GetWorld(), Owner->GetActorLocation(), Owner->GetActorLocation() + addForceDir * 200, 5, FColor::Red, false);
+	
 	//return FVector::ZeroVector;
 
 	/*FVector nearestSplineLocation;	// 가장 가까운 스플라인 점의 위치

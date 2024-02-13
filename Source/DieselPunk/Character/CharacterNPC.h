@@ -135,10 +135,8 @@ public:
 	// '몬스터'의 Target을 설정합니다. // Tcik , 조건
 	void UpdateEnemyTarget();
 	TWeakObjectPtr<AActor> GetAttackTarget() { return Target; }
-	
 	// 조건이 맞다면 '몬스터'의 타겟을 플레이어로 설정합니다.
 	bool bPlayerTargeting();
-
 	// 몬스터와 목표의 거리에 따른 조건 설정 // BT 활용
 	void SetInRange();
 	

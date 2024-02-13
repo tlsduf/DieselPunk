@@ -6,6 +6,7 @@
 #include "../UI/HUD/EnemyStatusUI.h"
 #include "../Manager/NavigationManager.h"
 #include "..\Component\DPNavigationComponent.h"
+#include "../Character/CharacterTurret.h"
 
 #include <Components/WidgetComponent.h>
 #include <AIController.h>
@@ -94,14 +95,9 @@ void ACharacterNPC::Tick(float DeltaTime)
 	// 타겟 업데이트
 	if(NPCType == ENPCType::Enemy)
 	{
-		// 몬스터 타겟 업데이트
-		UpdateEnemyTarget();
-		
-		// 타겟 위치에 따른 조건 업데이트
-		SetInRange();
-		
-		// 목표 지점 업데이트
-		UpdateEnemyGoalLoc();
+		UpdateEnemyTarget();	// 몬스터 타겟 업데이트
+		SetInRange();	// 타겟 위치에 따른 조건 업데이트
+		UpdateEnemyGoalLoc();	// 목표 지점 업데이트
 		if(DebugOnOff)
 			DrawDebugPoint(GetWorld(), NowGoalLoc, 30, FColor::Orange, false);
 
@@ -294,20 +290,63 @@ bool ACharacterNPC::bPlayerTargeting()
 		return false;
 
 	FVector playerLoc = Player->GetActorLocation();
+	FVector playerLocXY = FVector(playerLoc.X, playerLoc.Y, GetActorLocation().Z);
+
+	const int range = 1500;
+	// DrawDebug
+	if(DebugOnOff)
+	{
+		DrawDebugCircleArc(GetWorld(), GetActorLocation(), range, GetActorForwardVector(), 0.523, 8, FColor::Red, false);
+		FVector rightVector = (GetActorForwardVector().GetSafeNormal().Rotation() + FRotator(0, 30, 0)).Vector().GetSafeNormal();
+		FVector leftVector = (GetActorForwardVector().GetSafeNormal().Rotation() - FRotator(0, 30, 0)).Vector().GetSafeNormal();
+		DrawDebugLine(GetWorld(), GetActorLocation(), GetActorLocation() + rightVector * range, FColor::Red, false);
+		DrawDebugLine(GetWorld(), GetActorLocation(), GetActorLocation() + leftVector * range, FColor::Red, false);
+	}
 	
 	// 플레이어가 유효 사거리 안에 위치
-	const int range = 1500;
+	//const int range = 1500;
 	bool inRange = FVector::Dist(GetActorLocation(), playerLoc) <= range;
+	if(!inRange)
+		return inRange;
+
+	// 유효 수직 거리안에 위치
+	const int zRange = 300;
+	auto zDif = GetActorLocation().Z < playerLoc.Z ? playerLoc.Z - GetActorLocation().Z : GetActorLocation().Z - playerLoc.Z ;
+	bool inZRange = zDif <= zRange;
+	if(!inZRange)
+		return inZRange;
 	
 	// 플레이어가 유효 각도 안에 위치
 	float forwardDir = GetActorForwardVector().GetSafeNormal().Rotation().Yaw;
-	float toTargetDir = (playerLoc - GetActorLocation()).GetSafeNormal().Rotation().Yaw;
+	float toTargetDir = (playerLocXY - GetActorLocation()).GetSafeNormal().Rotation().Yaw;
 	bool inDegree = ( -SearchPlayerDEGREE < (forwardDir - toTargetDir) ) && ( (forwardDir - toTargetDir) < SearchPlayerDEGREE );
+	if(!inDegree)
+		return inDegree;
 	
 	// 플레이어가 유효 공간 안에 위치
 	// TODO
-	
-	return inRange && inDegree;
+
+	// 플레이와 몬스터 사이에 벽이나 포탑이 있는지 탐색
+	TArray<FHitResult> hits;
+	FCollisionQueryParams params;
+	bool bIsWall = false;
+	// 라인트레이스하여 맵 오브젝트가 있는지 확인. 있으면 true
+	if(GetWorld()->LineTraceMultiByChannel(hits, GetActorLocation(), playerLoc, ECollisionChannel::ECC_GameTraceChannel5, params))
+	{
+		for(const auto& hit : hits)
+		{
+			if(hit.GetActor()->GetClass()->ImplementsInterface(UDpManagementTargetInterFace::StaticClass()))
+				continue;
+			bIsWall = true;
+		}
+		for(const auto& hit : hits)
+		{
+			if(Cast<ACharacterTurret>(hit.GetActor()))
+				bIsWall = true;
+		}
+	}
+		
+	return inRange && inZRange && inDegree && !bIsWall;
 }
 
 // =============================================================
