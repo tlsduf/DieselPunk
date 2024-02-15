@@ -116,7 +116,7 @@ void ACharacterTurret::SetTurretTarget()
 			return;
 		
 		//3 타겟 등록(NPC 프롭) : 위 조건에 맞는 타겟 등록
-		Target = tempTarget;
+		ChangeTarget(tempTarget);
 	}
 	else
 	{
@@ -124,13 +124,13 @@ void ACharacterTurret::SetTurretTarget()
 		// 타겟이 범위안에 있는지 탐색 // 유효하지 않으면 타겟 초기화
 		if(!InValidSearchArea(Target->GetActorLocation()))
 		{
-			Target = nullptr;
+			ChangeTarget(nullptr);
 			return;
 		}
 		// 타겟과 포탑 사이에 벽이 있는지 탐색 // 벽이 있으면 타겟 초기화
 		if(bPierceWall)
 			if(IsOverWall(Target->GetActorLocation()))
-				Target = nullptr;
+				ChangeTarget(nullptr);
 	}
 }
 
@@ -188,11 +188,11 @@ bool ACharacterTurret::IsOverWall(FVector inLocation)
 	FVector end = inLocation;
 
 	FCollisionQueryParams params;
-	params.AddIgnoredActor(this);
+	//params.AddIgnoredActor(this);
 
 	bool bIsWorldObject = false;
 	//라인트레이스하여 맵 오브젝트가 있는지 확인. 있으면 true
-	if(GetWorld()->LineTraceMultiByChannel(hits, start, end, ECollisionChannel::ECC_WorldStatic, params))
+	if(GetWorld()->LineTraceMultiByChannel(hits, start, end, ECollisionChannel::ECC_GameTraceChannel5, params))
 	{
 		for(const auto& hit : hits)
 		{

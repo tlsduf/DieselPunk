@@ -25,9 +25,7 @@ private:
 	TArray<FVector> MyPathPoints;	// 몬스터의 PathPoint를 담을 배열
 	
 	FSplinePath SplinePath;			// MyPathPoints를 기반으로 생성된 Curve Spline
-
-	const float INTERVAL_TIME = 0.1f;
-	float IntervalDeltaTime = 0.f;
+	
 	
 	// inStartLoc to inEndLoc 경로탐색 // 기존의 경로탐색 로직을 그대로 따라합니다.(아마도)
 	FNavPathSharedPtr SearchPathTo(const FVector inStartLoc, const FVector inEndLoc);

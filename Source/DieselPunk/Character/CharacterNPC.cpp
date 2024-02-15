@@ -87,11 +87,7 @@ void ACharacterNPC::Tick(float DeltaTime)
 	
 	if(IsDead())
 		WidgetComp->bHiddenInGame = 1;
-
-	//공격 대상이 사라졌다면 nullptr로 초기화
-	if(!Target.IsValid())
-		Target = nullptr;
-
+	
 	// 타겟 업데이트
 	if(NPCType == ENPCType::Enemy)
 	{
@@ -105,8 +101,8 @@ void ACharacterNPC::Tick(float DeltaTime)
 		if(DPNavigationComponent != nullptr)
 		{
 			// 몬스터 AddMovementInput
-			if(!InRange && !bPlayerTargeting())
-				//DPNavigationComponent->AddForceAlongSplinePath(DeltaTime);
+			/*if(!InRange && !bPlayerTargeting())
+				DPNavigationComponent->AddForceAlongSplinePath(DeltaTime);*/
 			if(!InRange && !bPlayerTargeting())
 				if(AIController)
 					AIController->MoveToLocation(DPNavigationComponent->MoveToAlongSplinePath(), 1, false, false);
@@ -243,10 +239,14 @@ TArray<FVector> ACharacterNPC::GetGoalLocArrayFromRoutingLines()
 // =============================================================
 void ACharacterNPC::UpdateEnemyTarget()
 {
-	// (최우선)플레이어가 조건에 일치하는가? 	// 일치한다면 타겟을 플레이어로 지정
+	//공격 대상이 사라졌다면 nullptr로 초기화
+	if(!Target.IsValid())
+		ChangeTarget(nullptr);
+	
+	// (최우선)플레이어가 조건에 일치하는가? // 일치한다면 타겟을 플레이어로 지정
 	if(bPlayerTargeting())
 	{
-		Target = Player;
+		ChangeTarget(Player);
 		return;
 	}
 
@@ -258,7 +258,7 @@ void ACharacterNPC::UpdateEnemyTarget()
 		if(FObjectManager::GetInstance()->FindActor(TargetedTurretID) != nullptr)
 		{
 			// 타겟을 해당 터렛으로 설정
-			Target = FObjectManager::GetInstance()->FindActor(TargetedTurretID);
+			ChangeTarget(FObjectManager::GetInstance()->FindActor(TargetedTurretID));
 			return;
 		}
 		// TargetedTurretID가 유효하지 않다면 값 리셋
@@ -270,18 +270,31 @@ void ACharacterNPC::UpdateEnemyTarget()
 	auto nexus = FObjectManager::GetInstance()->GetNexus();
 	if(nexus == nullptr)
 	{
-		Target = nullptr;
+		ChangeTarget(nullptr);
 		return;
 	}
 	
 	float distance = FVector::Dist(GetActorLocation(), nexus->GetActorLocation());
 	if(distance > GetStat().GetStat(ECharacterStatType::AttackMaxRange))
-		Target = nullptr;
+		ChangeTarget(nullptr);
 	else
-	{
-		UpdateSplinePath();
-		Target = nexus;
-	}
+		ChangeTarget(nexus);
+}
+
+// =============================================================
+// 타겟을 업데이트하고, 업데이트 조건에 따라 함수를 실행합니다.
+// =============================================================
+void ACharacterNPC::ChangeTarget(TWeakObjectPtr<AActor> inTarget)
+{
+	if(inTarget == Target)
+		return;
+
+	// 타겟이 플레이어에서 다른 타겟으로 업데이트 되면 경로재설정
+	if(Target == Player)
+		if(inTarget != Player)
+			UpdateSplinePath();
+	
+	Target = inTarget;
 }
 
 // =============================================================
@@ -328,27 +341,34 @@ bool ACharacterNPC::bPlayerTargeting()
 	
 	// 플레이어가 유효 공간 안에 위치
 	// TODO
-
+	
 	// 플레이와 몬스터 사이에 벽이나 포탑이 있는지 탐색
 	TArray<FHitResult> hits;
 	FCollisionQueryParams params;
+	//params.AddIgnoredActor(this);
+	
 	bool bIsWall = false;
 	// 라인트레이스하여 맵 오브젝트가 있는지 확인. 있으면 true
 	if(GetWorld()->LineTraceMultiByChannel(hits, GetActorLocation(), playerLoc, ECollisionChannel::ECC_GameTraceChannel5, params))
 	{
+		DrawDebugLine(GetWorld(), GetActorLocation(), playerLoc, FColor::Black, false);
 		for(const auto& hit : hits)
 		{
 			if(hit.GetActor()->GetClass()->ImplementsInterface(UDpManagementTargetInterFace::StaticClass()))
 				continue;
 			bIsWall = true;
+			//LOG_SCREEN(FColor::Red, TEXT("wall"))
 		}
 		for(const auto& hit : hits)
 		{
 			if(Cast<ACharacterTurret>(hit.GetActor()))
+			{
 				bIsWall = true;
+				//LOG_SCREEN(FColor::Red, TEXT("turret"))
+			}
 		}
 	}
-		
+	
 	return inRange && inZRange && inDegree && !bIsWall;
 }
 
@@ -483,6 +503,7 @@ bool ACharacterNPC::SetBlockedAttackTarget(TWeakObjectPtr<AActor> InTarget, cons
 // =============================================================
 void ACharacterNPC::UpdateSplinePath()
 {
+	LOG_SCREEN(FColor::Red, TEXT("경로 재탐색"))
 	if(NPCType != ENPCType::Enemy)
 		return;
 	if(DPNavigationComponent == nullptr)
@@ -493,12 +514,7 @@ void ACharacterNPC::UpdateSplinePath()
 	GetWorld()->GetTimerManager().SetTimer(PathTHandle2, [thisPtr](){
 			if(thisPtr.IsValid())
 				thisPtr->_UpdateSplinePath();
-		},0.075f, false);
-	
-	GetWorld()->GetTimerManager().SetTimer(PathTHandle3, [thisPtr](){
-			if(thisPtr.IsValid())
-				thisPtr->_UpdateSplinePath();
-		},0.175f, false);
+		},0.2f, false);
 }
 
 void ACharacterNPC::_UpdateSplinePath()
@@ -509,10 +525,10 @@ void ACharacterNPC::_UpdateSplinePath()
 	if(TargetedTurretID != FObjectManager::INVALID_OBJECTID)
 	{
 		TWeakObjectPtr<ACharacterNPC> thisPtr = this;
-		GetWorld()->GetTimerManager().SetTimer(PathTHandle4, [thisPtr](){
+		GetWorld()->GetTimerManager().SetTimer(PathTHandle3, [thisPtr](){
 				if(thisPtr.IsValid())
 					thisPtr->__UpdateSplinePath();
-			},0.075f, false);
+			},0.2f, false);
 	}
 	DPNavigationComponent->MakeSplinePath();
 }
@@ -543,3 +559,4 @@ void ACharacterNPC::UpdateSplinePathAll()
 	}
 	LOG_SCREEN(FColor::Red, TEXT("모든 적 경로 재탐색"))
 }
+
