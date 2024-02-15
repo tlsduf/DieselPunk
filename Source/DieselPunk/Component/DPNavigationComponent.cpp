@@ -10,8 +10,8 @@
 
 #include <NavigationSystem.h>
 #include <DrawDebugHelpers.h>
+#include <Components/CapsuleComponent.h>
 
-#include "Components/CapsuleComponent.h"
 #include "Shader/ShaderTypes.h"
 
 
@@ -119,11 +119,25 @@ void UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGoa
 	// 목적지와 다음목적지 사이에 포탑이 설치된 경우 두 목적지를 제거 합니다. // LineTrace
 	TArray<FVector> removeVector;
 	TArray<FHitResult> hits;
+	// 모든 몬스터들을 IgnoredActor에 등록합니다. // 플레이어를 IgnoredActor에 등록합니다.
 	FCollisionQueryParams params;
-	params.AddIgnoredActor(Owner.Get());
+	TArray<int32> monstersIDs;
+	FObjectManager::GetInstance()->FindActorArrayByPredicate(monstersIDs, [](AActor* InActor)
+	{
+		if(auto npc = Cast<ACharacterNPC>(InActor))
+			if(npc->NPCType == ENPCType::Enemy)
+				return true;
+		return false;
+	});
+	for(const int32& ID : monstersIDs)
+	{
+		params.AddIgnoredActor(FObjectManager::GetInstance()->FindActor(ID));
+	}
+	params.AddIgnoredActor(FObjectManager::GetInstance()->GetPlayer());
+	
 	// owner의 현재위치와 첫 목적지 까지 트레이스
 	//bool hasHit = GetWorld()->LineTraceMultiByChannel(hits, Owner->GetActorLocation(), goalLocArray[0] + FVector(0, 0, 50), ECollisionChannel::ECC_GameTraceChannel5, params);
-	bool hasHit = GetWorld()->SweepMultiByChannel(hits, Owner->GetActorLocation(), goalLocArray[0] + FVector(0, 0, 50), FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel5, FCollisionShape::MakeSphere(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius()));
+	bool hasHit = GetWorld()->SweepMultiByChannel(hits, Owner->GetActorLocation(), goalLocArray[0] + FVector(0, 0, 50), FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeSphere(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius()), params);
 	if(hasHit)
 	{
 		bool bTurret = false;
@@ -139,7 +153,7 @@ void UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGoa
 	for(int32 i = 0 ; i < goalLocArray.Num() - 2 ; i++)
 	{
 		//hasHit = GetWorld()->LineTraceMultiByChannel(hits, goalLocArray[i] + FVector(0, 0, 50), goalLocArray[i + 1] + FVector(0, 0, 50), ECollisionChannel::ECC_GameTraceChannel5, params);
-		hasHit = GetWorld()->SweepMultiByChannel(hits, goalLocArray[i] + FVector(0, 0, 50), goalLocArray[i + 1] + FVector(0, 0, 50), FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel5, FCollisionShape::MakeSphere(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius()));
+		hasHit = GetWorld()->SweepMultiByChannel(hits, goalLocArray[i] + FVector(0, 0, 50), goalLocArray[i + 1] + FVector(0, 0, 50), FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeSphere(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius()), params);
 		if(hasHit)
 		{
 			bool bTurret = false;
@@ -167,7 +181,7 @@ void UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGoa
 	goalLocArray.RemoveAll([this](FVector goalLoc)
 	{
 		TArray<FHitResult> hits;
-		bool hasHit = GetWorld()->SweepMultiByChannel(hits, goalLoc, goalLoc + FVector(0,0,300), FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel5, FCollisionShape::MakeSphere(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius()));
+		bool hasHit = GetWorld()->SweepMultiByChannel(hits, goalLoc, goalLoc + FVector(0,0,300), FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeSphere(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius()));
 		bool bTurret = false;
 		if(hasHit)
 		{
@@ -213,9 +227,8 @@ int32 UDPNavigationComponent::GetTurretIdOnPath()
 		return turretID;
 	
 	TArray<FHitResult> hits;
+	// 모든 몬스터들을 IgnoredActor에 등록합니다. // 플레이어를 IgnoredActor에 등록합니다.
 	FCollisionQueryParams params;
-
-	// 모든 몬스터들을 IgnoredActor에 등록합니다.
 	TArray<int32> monstersIDs;
 	FObjectManager::GetInstance()->FindActorArrayByPredicate(monstersIDs, [](AActor* InActor)
 	{
@@ -228,6 +241,7 @@ int32 UDPNavigationComponent::GetTurretIdOnPath()
 	{
 		params.AddIgnoredActor(FObjectManager::GetInstance()->FindActor(ID));
 	}
+	params.AddIgnoredActor(FObjectManager::GetInstance()->GetPlayer());
 
 	// 순차적으로 점과 점 사이를 검사합니다.
 	for(int32 i = 0 ; i < (MyPathPoints.Num() - 1) ; i++)
@@ -235,7 +249,7 @@ int32 UDPNavigationComponent::GetTurretIdOnPath()
 		FVector startPoint = MyPathPoints[i] + FVector(0,0,100);
 		FVector endPoint = MyPathPoints[i+1] + FVector(0,0,100);
 		// Warning 터렛이 탐색이 안 될 경우 트레이스채널 확인
-		bool hasHit = GetWorld()->SweepMultiByChannel(hits, startPoint, endPoint, FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel5, FCollisionShape::MakeSphere(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius() - 10), params);
+		bool hasHit = GetWorld()->SweepMultiByChannel(hits, startPoint, endPoint, FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeSphere(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius() - 10), params);
 		if(hasHit)
 		{
 			TArray<int32> turretIDs;

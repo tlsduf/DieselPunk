@@ -14,6 +14,7 @@
 #include <NavigationSystem.h>
 #include <DrawDebugHelpers.h>
 #include <Kismet/GameplayStatics.h>
+#include <Components/CapsuleComponent.h>
 
 
 // =============================================================
@@ -101,11 +102,11 @@ void ACharacterNPC::Tick(float DeltaTime)
 		if(DPNavigationComponent != nullptr)
 		{
 			// 몬스터 AddMovementInput
-			/*if(!InRange && !bPlayerTargeting())
-				DPNavigationComponent->AddForceAlongSplinePath(DeltaTime);*/
 			if(!InRange && !bPlayerTargeting())
+				DPNavigationComponent->AddForceAlongSplinePath(DeltaTime);
+			/*if(!InRange && !bPlayerTargeting())
 				if(AIController)
-					AIController->MoveToLocation(DPNavigationComponent->MoveToAlongSplinePath(), 1, false, false);
+					AIController->MoveToLocation(DPNavigationComponent->MoveToAlongSplinePath(), 1, false, false);*/
 			// 경로 Draw
 			if(DebugOnOff)
 				DPNavigationComponent->DrawDebugSpline();
@@ -344,12 +345,24 @@ bool ACharacterNPC::bPlayerTargeting()
 	
 	// 플레이와 몬스터 사이에 벽이나 포탑이 있는지 탐색
 	TArray<FHitResult> hits;
+	// 모든 몬스터들을 IgnoredActor에 등록합니다.
 	FCollisionQueryParams params;
-	//params.AddIgnoredActor(this);
+	TArray<int32> monstersIDs;
+	FObjectManager::GetInstance()->FindActorArrayByPredicate(monstersIDs, [](AActor* InActor)
+	{
+		if(auto npc = Cast<ACharacterNPC>(InActor))
+			if(npc->NPCType == ENPCType::Enemy)
+				return true;
+		return false;
+	});
+	for(const int32& ID : monstersIDs)
+	{
+		params.AddIgnoredActor(FObjectManager::GetInstance()->FindActor(ID));
+	}
 	
 	bool bIsWall = false;
 	// 라인트레이스하여 맵 오브젝트가 있는지 확인. 있으면 true
-	if(GetWorld()->LineTraceMultiByChannel(hits, GetActorLocation(), playerLoc, ECollisionChannel::ECC_GameTraceChannel5, params))
+	if(GetWorld()->SweepMultiByChannel(hits, GetActorLocation(), playerLoc, FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeSphere(GetCapsuleComponent()->GetScaledCapsuleRadius()), params))
 	{
 		DrawDebugLine(GetWorld(), GetActorLocation(), playerLoc, FColor::Black, false);
 		for(const auto& hit : hits)

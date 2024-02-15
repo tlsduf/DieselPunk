@@ -16,10 +16,16 @@
  * ECC_GameTraceChannel5 = "traceChannel5"
  * 
  * - TraceChannels
- * ECC_GameTraceChannel6 = "TempTrace"
+ * ECC_GameTraceChannel6 = "CharacterMultiTrace"
  * ECC_GameTraceChannel7 = "PlayerChannel"
  * ECC_GameTraceChannel8 = "EnemyChannel"
  * ECC_GameTraceChannel9 = "Floor"
+ *
+ * 멀티 트레이스는 첫 블록이 감지될 때 까지의 오버랩 액터를 가져옵니다.
+ * CharacterMultiTrace를 캐릭터 감지(MultiTrace)에 활용하기 위한방법 :
+ * 기본 CharacterMultiTrace반응을 Overlap으로 설정해줍니다.(프로젝트 세팅-엔진-콜리전)
+ * 모든 캐릭터의 CharacterMultiTrace반응을 Block으로 설정해줍니다.
+ * ECC_GameTraceChannel6 로 MultiTrace를 하되, FCollisionQueryParams 의 IgnoredActor에 본인(필수)과 무시할 캐릭터들을 등록해줍니다.
 */
 // =========================================
 

@@ -187,12 +187,25 @@ bool ACharacterTurret::IsOverWall(FVector inLocation)
 	FVector start = GetActorLocation();
 	FVector end = inLocation;
 
+	// 모든 터렛을 IgnoredActor에 등록합니다. // 플레이어를 IgnoredActor에 등록합니다.
 	FCollisionQueryParams params;
-	//params.AddIgnoredActor(this);
-
+	TArray<int32> turretsIDs;
+	FObjectManager::GetInstance()->FindActorArrayByPredicate(turretsIDs, [](AActor* InActor)
+	{
+		if(auto turret = Cast<ACharacterTurret>(InActor))
+			if(turret->NPCType == ENPCType::Alliance)
+				return true;
+		return false;
+	});
+	for(const int32& ID : turretsIDs)
+	{
+		params.AddIgnoredActor(FObjectManager::GetInstance()->FindActor(ID));
+	}
+	params.AddIgnoredActor(FObjectManager::GetInstance()->GetPlayer());
+	
 	bool bIsWorldObject = false;
 	//라인트레이스하여 맵 오브젝트가 있는지 확인. 있으면 true
-	if(GetWorld()->LineTraceMultiByChannel(hits, start, end, ECollisionChannel::ECC_GameTraceChannel5, params))
+	if(GetWorld()->LineTraceMultiByChannel(hits, start, end, ECollisionChannel::ECC_GameTraceChannel6, params))
 	{
 		for(const auto& hit : hits)
 		{

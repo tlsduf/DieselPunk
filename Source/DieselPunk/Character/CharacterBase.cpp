@@ -10,8 +10,10 @@
 
 #include <Components/WidgetComponent.h>
 #include <Components/StaticMeshComponent.h>
+#include <Components/CapsuleComponent.h>
 
 #include "ColorManagement/Public/ColorManagementDefines.h"
+
 #include "Engine/Level.h"
 
 
@@ -54,6 +56,9 @@ void ACharacterBase::BeginPlay()
 	
 	//스탯 초기화
 	Stat.Initialize(this, CharacterName);
+
+	// 트레이스 반응 설정 // ECC_GameTraceChannel6는 플레이어, 아군, 적군 이 서로를 탐지할 때 사용합니다.
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel6, ECollisionResponse::ECR_Block);
 }
 
 // =============================================================

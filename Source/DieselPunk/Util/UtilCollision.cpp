@@ -138,7 +138,7 @@ FHitResult UtilCollision::GetZTrace(UWorld* inWorld, FVector inStartLocation, in
 	hit,
 	inStartLocation,
 	FVector(inStartLocation.X, inStartLocation.Y,inStartLocation.Z + (1000 * inUpDown)),
-	ECollisionChannel::ECC_WorldStatic,
+	ECollisionChannel::ECC_Visibility,
 	params);
 
 	return hit;
