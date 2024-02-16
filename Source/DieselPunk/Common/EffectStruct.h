@@ -27,4 +27,16 @@ struct FEffectData
 	//사운드
 	UPROPERTY(EditAnywhere)
 	USoundBase* Sound;
+
+	//어태치 할것인가
+	UPROPERTY(EditAnywhere)
+	bool bAttach = false;
+
+	//어태치 할 본 이름
+	UPROPERTY(EditAnywhere)
+	FName AttachBoneName = "";
+
+	//오프셋
+	UPROPERTY(EditAnywhere)
+	FTransform Offset = FTransform::Identity;
 };

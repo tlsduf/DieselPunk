@@ -141,6 +141,9 @@ enum class EEffectPlayType : uint8
 	Tick	UMETA( ToolTip = "적용 시 스탯버프 액터에" ),
 	Hit		UMETA( ToolTip = "적용 시 타겟에" ),
 	End		UMETA( ToolTip = "종료 시" ),
+	Spawn	UMETA( ToolTip = "스폰 시"),
+	Death	UMETA( ToolTip = "사망 시"),
+	Walk	UMETA( ToolTip = "걸을 때 마다"),
 	None,
 };
 

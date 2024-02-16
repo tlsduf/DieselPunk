@@ -48,3 +48,8 @@ UNiagaraComponent* UtilEffect::SpawnNiagaraEffectAttached(UNiagaraSystem* InNiag
 
 	return niagaraComp;
 }
+
+void UtilEffect::SpawnSoundBase(const UObject* InWorldContextObject, USoundBase* InSound, FVector InLocation)
+{
+	UGameplayStatics::PlaySoundAtLocation(InWorldContextObject, InSound, InLocation);
+}

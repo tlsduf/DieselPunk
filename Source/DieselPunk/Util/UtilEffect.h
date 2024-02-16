@@ -41,4 +41,7 @@ namespace UtilEffect
 
 	// 나이아가라 이펙트를 생성한다.(Attached)
 	UNiagaraComponent* SpawnNiagaraEffectAttached( UNiagaraSystem* InNiagaraSystem, USceneComponent* InAttachComp, FName InSocketName = NAME_None, const FEffectTransform& InEffectTransform = FEffectTransform());
+
+	//사운드 베이스를 재생한다.
+	void SpawnSoundBase(const UObject* InWorldContextObject, USoundBase* InSound, FVector InLocation);
 }
