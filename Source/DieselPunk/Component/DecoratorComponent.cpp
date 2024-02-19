@@ -115,7 +115,7 @@ void UDecoratorComponent::StartEffect(EEffectPlayType InEffectPlayType, FName In
 
 				FEffectTransform transform;
 				transform.Location = mesh->GetBoneLocation(effect.AttachBoneName, EBoneSpaces::WorldSpace);
-				transform.Rotation = mesh->GetBoneQuaternion(effect.AttachBoneName, EBoneSpaces::WorldSpace).Rotator();
+				transform.Rotation = Owner->GetActorRotation();
 				transform.Scale = Owner->GetActorScale();
 		
 				if (effect.N_Effect)
