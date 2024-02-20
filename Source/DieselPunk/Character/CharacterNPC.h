@@ -170,9 +170,9 @@ public:
 
 	
 	// Getter, Setter
-	TWeakObjectPtr<AActor> GetAttackTarget() { return Target; }
-	const TArray<FVector>& GetShortestPath() { return ShortestPath; } 
-	int32 GetGridSizeVertical() const { return GridSizeVertical; } 
+	TWeakObjectPtr<AActor> GetAttackTarget() const { return Target; }
+	const TArray<FVector>& GetShortestPath() const { return ShortestPath; }
+	int32 GetGridSizeVertical() const { return GridSizeVertical; }
 	int32 GetGridSizeHorizontal() const { return GridSizeHorizontal; }
-	FVector GetBlockedAttackTargetLoc() { return BlockedTargetLoc; }
+	FVector GetBlockedAttackTargetLoc() const { return BlockedTargetLoc; }
 };

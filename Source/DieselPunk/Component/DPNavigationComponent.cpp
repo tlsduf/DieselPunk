@@ -12,8 +12,6 @@
 #include <DrawDebugHelpers.h>
 #include <Components/CapsuleComponent.h>
 
-#include "Shader/ShaderTypes.h"
-
 
 UDPNavigationComponent::UDPNavigationComponent()
 {
@@ -34,7 +32,7 @@ void UDPNavigationComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 }
 
 // inStartLoc to inEndLoc 경로탐색 // 기존의 경로탐색 로직을 그대로 따라합니다.(아마도)
-FNavPathSharedPtr UDPNavigationComponent::SearchPathTo(const FVector inStartLoc, const FVector inEndLoc)
+FNavPathSharedPtr UDPNavigationComponent::SearchPathTo(const FVector& inStartLoc, const FVector& inEndLoc)
 {
 	if(!Owner.IsValid())
 		return nullptr;
@@ -69,7 +67,7 @@ FNavPathSharedPtr UDPNavigationComponent::SearchPathTo(const FVector inStartLoc,
 }
 
 // FPathFindingQuery Set
-FPathFindingQuery UDPNavigationComponent::BuildPathFindingQuery(const FVector inStartLoc, const FVector inEndLoc) const
+FPathFindingQuery UDPNavigationComponent::BuildPathFindingQuery(const FVector& inStartLoc, const FVector& inEndLoc) const
 {
 	if (MyNavData)
 	{
@@ -85,41 +83,45 @@ FPathFindingQuery UDPNavigationComponent::BuildPathFindingQuery(const FVector in
 	return FPathFindingQuery();
 }
 
-// 전체 경로를 탐색하여 Location을 MyPathPoints배열에 담습니다. // 몬스터 스폰완료시, 포탑 설치/파괴시, Target이 Nexus로 업데이트될 때 호출합니다.
-void UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGoalLocArray)
+// 전체 경로를 탐색하여 Location을 MyPathPoints배열에 담습니다. // 몬스터 스폰완료시, 포탑 설치/파괴시, Target이 Player에서 다른액터로 업데이트될 때 호출합니다.
+int32 UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGoalLocArray)
 {
 	/*
 	 * 전체과정
-	 * 경로 초기화
-	 * 처음 도달할 목적지 이전의 목적지를 제거합니다.
-	 * 목적지와 다음목적지 사이에 포탑이 설치된 경우 두 목적지를 제거 합니다. // LineTrace
-	 * 목적지 위에 포탑이 설치 되어 있을 경우, 해당 목적지를 제거합니다.
-	 * 액터와 첫 목적지 까지의 경로를 담습니다.
-	 * 목적지 부터 다음 목적지 까지의 경로를 담습니다.
+	 * 0 경로 초기화
+	 * 1 처음 도달할 목적지 이전의 목적지를 제거합니다.
+	 * 2 목적지와 다음목적지 사이에 포탑이 설치된 경우 두 목적지를 제거 합니다. // SweepMulti by Sphere
+	 * 3 목적지 위에 포탑이 설치 되어 있을 경우, 해당 목적지를 제거합니다.
+	 * 4 액터와 첫 목적지 까지의 경로를 담습니다.
+	 * 5 목적지 부터 다음 목적지 까지의 경로를 담습니다.
+	 * 6 경로를 탐색하여 경로위에 포탑이 있다면(길이막혔다고 판단), 해당 포탑의 ID를 반환하고 뒤의 경로를 제거하고 포탑의 위치를 경로에 추가합니다.
 	 */
-	if(!Owner.IsValid())
-		return;
 
-	//UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
-	//if (NavSys != nullptr)
-		//NavSys->Build();
+	int32 BlockedTurretID = FObjectManager::INVALID_OBJECTID;
 	
-	// 경로 초기화
+	if(!Owner.IsValid())
+		return BlockedTurretID;
+
+	//=========================================================================
+	// 0 경로 초기화
 	MyPathPoints.Empty();
-	
-	// 처음 도달할 목적지 이전의 목적지를 제거합니다.
+
+	//=========================================================================
+	// 1 처음 도달할 목적지 이전의 목적지를 제거합니다.
 	int32 index;
 	TArray<FVector> goalLocArray = inGoalLocArray;
 	goalLocArray.Find(inGoalLoc, index);
 	for(int i = 0; i < index ; i++)
-	{
 		goalLocArray.RemoveAt(0);
-	}
 
-	// 목적지와 다음목적지 사이에 포탑이 설치된 경우 두 목적지를 제거 합니다. // LineTrace
-	TArray<FVector> removeVector;
-	TArray<FHitResult> hits;
-	// 모든 몬스터들을 IgnoredActor에 등록합니다. // 플레이어를 IgnoredActor에 등록합니다.
+	//=========================================================================
+	// 목적지가 없다면 더 이상 연산하지 않습니다.
+	if(goalLocArray.IsEmpty())
+		return BlockedTurretID;
+
+	//=========================================================================
+	// 포탑만을 감지하기 위한 FCollisionQueryParams
+	// 모든 몬스터들을 IgnoredActor에 등록합니다. // 플레이어와 Nexus를 IgnoredActor에 등록합니다.
 	FCollisionQueryParams params;
 	TArray<int32> monstersIDs;
 	FObjectManager::GetInstance()->FindActorArrayByPredicate(monstersIDs, [](AActor* InActor)
@@ -130,104 +132,89 @@ void UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGoa
 		return false;
 	});
 	for(const int32& ID : monstersIDs)
-	{
 		params.AddIgnoredActor(FObjectManager::GetInstance()->FindActor(ID));
-	}
 	params.AddIgnoredActor(FObjectManager::GetInstance()->GetPlayer());
+	params.AddIgnoredActor(FObjectManager::GetInstance()->GetNexus());
 	
-	// owner의 현재위치와 첫 목적지 까지 트레이스
-	//bool hasHit = GetWorld()->LineTraceMultiByChannel(hits, Owner->GetActorLocation(), goalLocArray[0] + FVector(0, 0, 50), ECollisionChannel::ECC_GameTraceChannel5, params);
-	bool hasHit = GetWorld()->SweepMultiByChannel(hits, Owner->GetActorLocation(), goalLocArray[0] + FVector(0, 0, 50), FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeSphere(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius()), params);
-	if(hasHit)
-	{
-		bool bTurret = false;
-		for(auto hit : hits)
-		{
-			if(Cast<ACharacterTurret>(hit.GetActor()))
-				bTurret = true;
-		}
-		if(bTurret)
-			removeVector.Add(goalLocArray[0]);
-	}
-	// 목적지 to 목적지 트레이스
+	//=========================================================================
+	// 2 목적지와 다음목적지 사이에 포탑이 설치된 경우 두 목적지를 제거 합니다. // SweepMulti by Sphere(r = CapsuleRadius)
+	TArray<FVector> removeVector;	// 제거대상이 된 목적지 배열
+	TArray<FHitResult> hits;
+	// owner의 현재위치와 첫 목적지 까지 트레이스 // 포탑이 있다면 목적지를 removeVector에 Add
+	hits.Empty();
+	if(	GetWorld()->SweepMultiByChannel(hits, Owner->GetActorLocation(), goalLocArray[0] + FVector(0, 0, 50),
+		FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeSphere(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius()), params))
+		removeVector.AddUnique(goalLocArray[0]);
+	// 목적지 to 다음목적지 트레이스 // 포탑이 있다면 목적지를 removeVector에 Add
+	hits.Empty();
 	for(int32 i = 0 ; i < goalLocArray.Num() - 2 ; i++)
 	{
-		//hasHit = GetWorld()->LineTraceMultiByChannel(hits, goalLocArray[i] + FVector(0, 0, 50), goalLocArray[i + 1] + FVector(0, 0, 50), ECollisionChannel::ECC_GameTraceChannel5, params);
-		hasHit = GetWorld()->SweepMultiByChannel(hits, goalLocArray[i] + FVector(0, 0, 50), goalLocArray[i + 1] + FVector(0, 0, 50), FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeSphere(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius()), params);
-		if(hasHit)
-		{
-			bool bTurret = false;
-			for(auto hit : hits)
-			{
-				if(Cast<ACharacterTurret>(hit.GetActor()))
-					bTurret = true;
-			}
-			if(bTurret)
-			{
-				removeVector.AddUnique(goalLocArray[i]);
-				removeVector.AddUnique(goalLocArray[i + 1]);
-			}
-		}
+		if(!GetWorld()->SweepMultiByChannel(hits, goalLocArray[i] + FVector(0, 0, 50), goalLocArray[i + 1] + FVector(0, 0, 50),
+			FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeSphere(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius()), params))
+			continue;
+		removeVector.AddUnique(goalLocArray[i]);
+		removeVector.AddUnique(goalLocArray[i + 1]);
 	}
+	// 제거해야 할 목적지Key들을 제거합니다.
 	if(!removeVector.IsEmpty())
-	{
 		for(const FVector& vectorKey : removeVector)
-		{
 			goalLocArray.Remove(vectorKey);
-		}
-	}
-	
-	// 목적지 위에 포탑이 설치 되어 있을 경우, 해당 목적지를 제거(Remove)합니다.
-	goalLocArray.RemoveAll([this](FVector goalLoc)
+
+	//=========================================================================
+	// 3 목적지 위에 포탑이 설치 되어 있을 경우, 해당 목적지를 제거(Remove)합니다.
+	TWeakObjectPtr<UDPNavigationComponent> thisPtr = this;
+	goalLocArray.RemoveAll([thisPtr, params](FVector goalLoc)
 	{
+		if(!thisPtr.IsValid())
+			return true;
+		
 		TArray<FHitResult> hits;
-		bool hasHit = GetWorld()->SweepMultiByChannel(hits, goalLoc, goalLoc + FVector(0,0,300), FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeSphere(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius()));
-		bool bTurret = false;
-		if(hasHit)
-		{
-			for(auto hit : hits)
-			{
-				if(Cast<ACharacterTurret>(hit.GetActor()))
-					bTurret = true;
-			}
-		}
-		return bTurret;
+		if(thisPtr->GetWorld()->SweepMultiByChannel(hits, goalLoc, goalLoc + FVector(0,0,300),
+			FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeSphere(thisPtr->Owner->GetCapsuleComponent()->GetScaledCapsuleRadius()), params))
+			return true;
+		return false;
 	});
 
-	
-	// 액터와 첫 목적지 까지의 경로를 담습니다.
+	//=========================================================================
+	// 4 액터와 첫 목적지 까지의 경로를 담습니다.
  	TArray<FNavPathPoint> pathPoints = SearchPathTo(Owner->GetActorLocation(), goalLocArray[0])->GetPathPoints();
 	for(int i = 0; i < pathPoints.Num(); i++)
-	{
 		MyPathPoints.Add(pathPoints[i]);
-	}
-		
-	// 목적지 부터 다음 목적지 까지의 경로를 담습니다.
+
+	//=========================================================================
+	// 5 목적지 부터 다음 목적지 까지의 경로를 담습니다.
 	for(int i = 0; i < goalLocArray.Num() ; i++)
 	{
 		if(!goalLocArray.IsValidIndex(i + 1))
 			break;
 		TArray<FNavPathPoint> pathPoints1 = SearchPathTo(goalLocArray[i], goalLocArray[i + 1])->GetPathPoints();
 		for(int j = 1; j < pathPoints1.Num(); j++)
-		{
 			MyPathPoints.Add(pathPoints1[j]);
-		}
 	}
+
+	//=========================================================================
+	// 6 경로를 탐색하여 경로위에 포탑이 있다면(길이막혔다고 판단), 해당 포탑의 ID를 반환하고 뒤의 경로를 제거하고 포탑의 위치를 경로에 추가합니다.
+	BlockedTurretID =  GetTurretIdOnPath();
+	return BlockedTurretID;
 }
 
-// 생성된 경로(곡선경로 아님 MyPathPoints) 위에 포탑이 있는지 확인합니다.
-// 포탑이 있다면, 경로의 주인(몬스터)와 가장 가까운 포탑의 ID를 반환하고,
-// MyPathPoints를 포탑이 최종목적지가 되도록 포탑의 위치를 추가하고, 뒤의 value들을 제거합니다.
-// index 0부터 순차적으로 탐색하고, 첫 포탑 반환시 탐색을 종료합니다.
+
+// 경로위에 포탑이 있다면 해당 포탑의 ID를 반환합니다.
 int32 UDPNavigationComponent::GetTurretIdOnPath()
 {
-	int32 turretID = FObjectManager::INVALID_OBJECTID;
+	// 0 MyPathPoints 의 index 0부터 순차적으로 탐색하고, 첫 포탑 감지 시 탐색을 종료합니다.
+	// 1 생성된 경로(곡선경로 아님 MyPathPoints) 위에 포탑이 있는지 확인합니다.
+	// 2 포탑이 있다면 포탑의 ID를 반환할 수 있게 turretID 값을 업데이트합니다.
+	// 3 MyPathPoints를 포탑이 최종목적지가 되게 설정: 뒤의 value들을 제거하고 포탑의 위치를 추가합니다.
+	
+	int32 BlockedTurretID = FObjectManager::INVALID_OBJECTID;
 	
 	if(MyPathPoints.IsEmpty())
-		return turretID;
+		return BlockedTurretID;
 	
 	TArray<FHitResult> hits;
-	// 모든 몬스터들을 IgnoredActor에 등록합니다. // 플레이어를 IgnoredActor에 등록합니다.
+	// 포탑만을 감지하기 위한 FCollisionQueryParams
+	// 모든 몬스터들을 IgnoredActor에 등록합니다. // 플레이어와 Nexus를 IgnoredActor에 등록합니다.
 	FCollisionQueryParams params;
 	TArray<int32> monstersIDs;
 	FObjectManager::GetInstance()->FindActorArrayByPredicate(monstersIDs, [](AActor* InActor)
@@ -238,45 +225,33 @@ int32 UDPNavigationComponent::GetTurretIdOnPath()
 		return false;
 	});
 	for(const int32& ID : monstersIDs)
-	{
 		params.AddIgnoredActor(FObjectManager::GetInstance()->FindActor(ID));
-	}
 	params.AddIgnoredActor(FObjectManager::GetInstance()->GetPlayer());
-
+	params.AddIgnoredActor(FObjectManager::GetInstance()->GetNexus());
+	
 	// 순차적으로 점과 점 사이를 검사합니다.
 	for(int32 i = 0 ; i < (MyPathPoints.Num() - 1) ; i++)
 	{
-		FVector startPoint = MyPathPoints[i] + FVector(0,0,100);
-		FVector endPoint = MyPathPoints[i+1] + FVector(0,0,100);
 		// Warning 터렛이 탐색이 안 될 경우 트레이스채널 확인
-		bool hasHit = GetWorld()->SweepMultiByChannel(hits, startPoint, endPoint, FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeSphere(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius() - 10), params);
-		if(hasHit)
-		{
-			TArray<int32> turretIDs;
-			for(const FHitResult& hitResult : hits)
-			{
-				// 탑색된 액터가 터렛이라면 turretIDs 등록
-				if(ACharacterTurret* turret = Cast<ACharacterTurret>(hitResult.GetActor()))
-					turretIDs.Add(turret->GetObjectId());
-			}
-			if(!turretIDs.IsEmpty())
-			{
-				// turretArray 의 value 중 Owner의 위치와 가장 가까운 turret 반환
-				turretID = FObjectManager::GetInstance()->GetNearestACtorByRangeAndIds(Owner->GetActorLocation(), turretIDs);
-				// MyPathPoints 의 i+1의 인덱스부터 끝 인덱스까지 삭제
-				int32 num = MyPathPoints.Num();
-				for(int32 j = i+1 ; j < num ; j++)
-				{
-					MyPathPoints.RemoveAt(i+1);
-				}
-				// turret 위치를 MyPathPoints에 추가
-				MyPathPoints.Add(FObjectManager::GetInstance()->FindActor(turretID)->GetActorLocation());
-				// for문 종료
-				break;
-			}
-		}
+		// Warning 부하가 될 수 있음
+		bool hasHit = GetWorld()->SweepMultiByChannel(hits, MyPathPoints[i] + FVector(0,0,100), MyPathPoints[i+1] + FVector(0,0,100),
+			FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeSphere(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius()), params);
+		if(!hasHit)
+			continue;
+
+		// 탐색된 액터(터렛)의 ObjectID를 turretID에 전달
+		if(ACharacterTurret* turret = Cast<ACharacterTurret>(hits[hits.Num() - 1].GetActor()))
+			BlockedTurretID = (turret->GetObjectId());
+		// MyPathPoints 의 i+1의 Key부터 끝 까지 삭제
+		int32 num = MyPathPoints.Num();
+		for(int32 j = i+1 ; j < num ; j++)
+			MyPathPoints.RemoveAt(i+1);
+		// turret 위치를 MyPathPoints에 추가
+		MyPathPoints.Add(FObjectManager::GetInstance()->FindActor(BlockedTurretID)->GetActorLocation());
+		// 포탑이 감지 되었으므로 for문 종료
+		break;
 	}
-	return turretID;
+	return BlockedTurretID;
 }
 
 // MyPathPoints를 기반으로 곡선경로 스플라인을 생성합니다.
@@ -288,9 +263,7 @@ void UDPNavigationComponent::MakeSplinePath()
 	// MyPathPoints 배열에 담긴 Loc 정보로 SplinePath를 구성합니다.
 	SplinePath.ClearSplinePoints();
 	for(const FVector& pathPoint : MyPathPoints)
-	{
 		SplinePath.AddSplinePoint(pathPoint, ESplineCoordinateSpace::World, ESplinePointType::Curve);
-	}
 	SplinePath.UpdateSpline();
 
 	// Set clamp tangent
@@ -324,7 +297,7 @@ void UDPNavigationComponent::MakeSplinePath()
 }
 
 // 스플라인 경로를 따라가게 움직임을 구현 해줍니다.
-void UDPNavigationComponent::AddForceAlongSplinePath(float inDeltaTime)
+void UDPNavigationComponent::AddForceAlongSplinePath()
 {
 	if(!Owner.IsValid())
 		return;
@@ -395,7 +368,6 @@ void UDPNavigationComponent::DrawDebugSpline()
 		DrawDebugPoint(GetWorld(), beforePoint, 25, FColor::Green, false, -1);
 		for(auto& point : MyPathPoints)
 		{
-			//DrawDebugLine(GetWorld(),beforePoint, point, FColor::Purple, false, -1);
 			DrawDebugPoint(GetWorld(), point, 10, FColor::Purple, false, -1);
 			beforePoint = point;
 		}
@@ -404,7 +376,7 @@ void UDPNavigationComponent::DrawDebugSpline()
 
 	// Spline 경로
 	double splineLength = SplinePath.Path.GetSplineLength();
-	const double sectionLength = 100;
+	constexpr double sectionLength = 100;
 	int value = static_cast<int>(splineLength / sectionLength);
 	for(int i = 0 ; i < value; ++i)
 	{

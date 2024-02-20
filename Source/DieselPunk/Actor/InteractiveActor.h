@@ -78,7 +78,7 @@ protected:
 	//================================================================
 	// * DelegateInteractTask에 바인딩되는 예시함수 ( 새로운 기능이 필요한 경우 함수를 만들어서 _Task함수에 추가 )
 
-	// ChracterPC의 DelegateInteractTask에 바인딩되는 함수 // 각종 효과 실행
+	// CharacterPC의 DelegateInteractTask에 바인딩되는 함수 // 각종 효과 실행
 	UFUNCTION()
 	void Task();
 

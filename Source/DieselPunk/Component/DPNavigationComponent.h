@@ -28,26 +28,23 @@ private:
 	
 	
 	// inStartLoc to inEndLoc 경로탐색 // 기존의 경로탐색 로직을 그대로 따라합니다.(아마도)
-	FNavPathSharedPtr SearchPathTo(const FVector inStartLoc, const FVector inEndLoc);
+	FNavPathSharedPtr SearchPathTo(const FVector& inStartLoc, const FVector& inEndLoc);
 	
 	// FPathFindingQuery Set
-	FPathFindingQuery BuildPathFindingQuery(const FVector inStartLoc, const FVector inEndLoc) const;
+	FPathFindingQuery BuildPathFindingQuery(const FVector& inStartLoc, const FVector& inEndLoc) const;
 
 public:
 	// 전체 경로를 탐색합니다. // 몬스터 스폰시, 포탑 설치/파괴시, Target이 Nexus로 업데이트될 때 호출합니다.
-	void UpdatePath(FVector inGoalLoc, TArray<FVector> inGoalLocArray);
-
-	// 생성된 경로(곡선경로 아님 MyPathPoints) 위에 포탑이 있는지 확인합니다.
-	// 포탑이 있다면, 그 포탑의 ID를 반환하고,
-	// MyPathPoints를 포탑이 최종목적지가 되도록 포탑의 위치를 추가하고, 뒤의 value들을 제거합니다.
-	// index 0부터 순차적으로 탐색하고, 첫 포탑 반환시 탐색을 종료합니다.
+	int32 UpdatePath(FVector inGoalLoc, TArray<FVector> inGoalLocArray);
+	
+	// 경로위에 포탑이 있다면 해당 포탑의 ID를 반환합니다.
 	int32 GetTurretIdOnPath();
 	
 	// MyPathPoints를 기반으로 곡선경로 스플라인을 생성합니다.
 	void MakeSplinePath();
 
 	// 스플라인 경로를 따라가게 AddForce 해줍니다.
-	void AddForceAlongSplinePath(float inDeltaTime);
+	void AddForceAlongSplinePath();
 	
 	// 스플라인 경로를 따라가게 MoveTo 해줍니다.
 	FVector MoveToAlongSplinePath();

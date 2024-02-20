@@ -128,7 +128,7 @@ void ACharacterTurret::SetTurretTarget()
 			return;
 		}
 		// 타겟과 포탑 사이에 벽이 있는지 탐색 // 벽이 있으면 타겟 초기화
-		if(bPierceWall)
+		if(!bPierceWall)
 			if(IsOverWall(Target->GetActorLocation()))
 				ChangeTarget(nullptr);
 	}

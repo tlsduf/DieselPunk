@@ -55,9 +55,7 @@ void AMonsterSpawner::BeginPlay()
 		{
 			DrawDebugLine(GetWorld(), GetActorLocation(), PathRouterNodes[1]->GetActorLocation(), FColor::Green, true, -1, 0, 5);
 			for(int i = 1; i < PathRouterNodeNum; i++ )
-			{
 				DrawDebugLine(GetWorld(), PathRouterNodes[i]->GetActorLocation(), PathRouterNodes[i+1]->GetActorLocation(), FColor::Green, true, -1, 0, 5);
-			}
 		}
 	}
 	
@@ -70,9 +68,7 @@ void AMonsterSpawner::BeginPlay()
 		{
 			TArray<FVector> goalLocArray;
 			for(auto& pathRouter : PathRouterNodes)
-			{
 				goalLocArray.Add( pathRouter.Value->MakeGoalLocByProportion( SetProportion(location) ) );
-			}
 			PathMap.Add(location, goalLocArray);
 		}
 	}
@@ -111,7 +107,7 @@ void AMonsterSpawner::StartSpawn(FString InWaveModuleName)
 }
 
 // =============================================================
-//생성한 몬스터 중 Destroy된 액터 삭제
+// 생성한 몬스터 중 Destroy된 액터 삭제
 // =============================================================
 void AMonsterSpawner::RemoveDeadNPCFromArray()
 {
@@ -218,17 +214,14 @@ void AMonsterSpawner::SpawnMonster(float InDeltaTime)
 					{
 						npc->AddEnemyRoutingLines(PathMap[spawnParam.Location][0], GetActorLocation(), PathRouterNodes[1]->GetActorLocation());
 						for(int i = 1; i < PathRouterNodeNum; i++ )
-						{
 							npc->AddEnemyRoutingLines(PathMap[spawnParam.Location][i], PathRouterNodes[i]->GetActorLocation(), PathRouterNodes[i+1]->GetActorLocation());
-						}
 					}
 					if(FObjectManager::GetInstance()->GetNexus() != nullptr)
 						npc->AddEnemyRoutingLines(FObjectManager::GetInstance()->GetNexus()->GetActorLocation(), PathRouterNodes[PathRouterNodeNum]->GetActorLocation(), FObjectManager::GetInstance()->GetNexus()->GetActorLocation());
 					npc->UpdateSplinePath();
 				}
 			}
-		
-
+			
 			//생성한 몬스터 정보 삭제
 			iterSpawnInfo.RemoveCurrent();
 		}

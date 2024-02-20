@@ -94,23 +94,21 @@ void ACharacterNPC::Tick(float DeltaTime)
 	{
 		UpdateEnemyTarget();	// 몬스터 타겟 업데이트
 		SetInRange();	// 타겟 위치에 따른 조건 업데이트
-		UpdateEnemyGoalLoc();	// 목표 지점 업데이트
 		if(DebugOnOff)
 			DrawDebugPoint(GetWorld(), NowGoalLoc, 30, FColor::Orange, false);
 
 		// Navigation
-		if(DPNavigationComponent != nullptr)
-		{
-			// 몬스터 AddMovementInput
-			if(!InRange && !bPlayerTargeting())
-				DPNavigationComponent->AddForceAlongSplinePath(DeltaTime);
-			/*if(!InRange && !bPlayerTargeting())
-				if(AIController)
-					AIController->MoveToLocation(DPNavigationComponent->MoveToAlongSplinePath(), 1, false, false);*/
-			// 경로 Draw
-			if(DebugOnOff)
-				DPNavigationComponent->DrawDebugSpline();
-		}
+		if(DPNavigationComponent == nullptr)
+			return;
+		// 몬스터 AddMovementInput
+		if(!InRange && !bPlayerTargeting())
+			DPNavigationComponent->AddForceAlongSplinePath();
+		/*if(!InRange && !bPlayerTargeting())
+			if(AIController)
+				AIController->MoveToLocation(DPNavigationComponent->MoveToAlongSplinePath(), 1, false, false);*/
+		// 경로 Draw
+		if(DebugOnOff)
+			DPNavigationComponent->DrawDebugSpline();
 	}
 }
 
@@ -223,19 +221,6 @@ void ACharacterNPC::DoTargetAttack()
 }
 
 // =============================================================
-// 스폰시 '몬스터'의 GoalArray를 설정합니다.
-// =============================================================
-TArray<FVector> ACharacterNPC::GetGoalLocArrayFromRoutingLines()
-{
-	TArray<FVector> goalLocArray;
-	for(auto& routingLine : RoutingLines)
-	{
-		goalLocArray.Add(routingLine.Key);
-	}
-	return goalLocArray;
-}
-
-// =============================================================
 // '몬스터'의 Target을 설정합니다.
 // =============================================================
 void ACharacterNPC::UpdateEnemyTarget()
@@ -343,7 +328,7 @@ bool ACharacterNPC::bPlayerTargeting()
 	// 플레이어가 유효 공간 안에 위치
 	// TODO
 	
-	// 플레이와 몬스터 사이에 벽이나 포탑이 있는지 탐색
+	// 플레이와 몬스터 사이에 벽이나 포탑 있는지 탐색
 	TArray<FHitResult> hits;
 	// 모든 몬스터들을 IgnoredActor에 등록합니다.
 	FCollisionQueryParams params;
@@ -356,29 +341,21 @@ bool ACharacterNPC::bPlayerTargeting()
 		return false;
 	});
 	for(const int32& ID : monstersIDs)
-	{
 		params.AddIgnoredActor(FObjectManager::GetInstance()->FindActor(ID));
-	}
 	
 	bool bIsWall = false;
-	// 라인트레이스하여 맵 오브젝트가 있는지 확인. 있으면 true
+	// 캡슐반지름 크기의 구로 스윕하여 맵 오브젝트가 있는지 확인. 있으면 true
 	if(GetWorld()->SweepMultiByChannel(hits, GetActorLocation(), playerLoc, FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeSphere(GetCapsuleComponent()->GetScaledCapsuleRadius()), params))
 	{
-		DrawDebugLine(GetWorld(), GetActorLocation(), playerLoc, FColor::Black, false);
+		if(DebugOnOff)
+			DrawDebugLine(GetWorld(), GetActorLocation(), playerLoc, FColor::Black, false);
+		if(Cast<ACharacterTurret>(hits[hits.Num() - 1].GetActor()))
+			bIsWall = true;
 		for(const auto& hit : hits)
 		{
 			if(hit.GetActor()->GetClass()->ImplementsInterface(UDpManagementTargetInterFace::StaticClass()))
 				continue;
 			bIsWall = true;
-			//LOG_SCREEN(FColor::Red, TEXT("wall"))
-		}
-		for(const auto& hit : hits)
-		{
-			if(Cast<ACharacterTurret>(hit.GetActor()))
-			{
-				bIsWall = true;
-				//LOG_SCREEN(FColor::Red, TEXT("turret"))
-			}
 		}
 	}
 	
@@ -416,6 +393,17 @@ void ACharacterNPC::AddEnemyRoutingLines(FVector inGoalLoc, FVector inStart, FVe
 		dir.Normalize();
 		DrawDebugLine(GetWorld(), inStart + FVector(0,0,50), inEnd - (dir * 600) + FVector(0,0,50), FColor::Cyan, true, -1, 0, 5);
 	}
+}
+
+// =============================================================
+// 스폰시 '몬스터'의 GoalArray를 설정합니다.
+// =============================================================
+TArray<FVector> ACharacterNPC::GetGoalLocArrayFromRoutingLines()
+{
+	TArray<FVector> goalLocArray;
+	for(auto& routingLine : RoutingLines)
+		goalLocArray.Add(routingLine.Key);
+	return goalLocArray;
 }
 
 // =============================================================
@@ -530,6 +518,7 @@ void ACharacterNPC::UpdateSplinePath()
 		},0.2f, false);
 }
 
+// 내비메쉬 업데이트가 FindPathSync호출 보다 느려서 간격을 두고 호출합니다.
 void ACharacterNPC::_UpdateSplinePath()
 {
 	__UpdateSplinePath();
@@ -543,14 +532,13 @@ void ACharacterNPC::_UpdateSplinePath()
 					thisPtr->__UpdateSplinePath();
 			},0.2f, false);
 	}
-	DPNavigationComponent->MakeSplinePath();
 }
 
 void ACharacterNPC::__UpdateSplinePath()
 {
 	UpdateEnemyGoalLoc();
-	DPNavigationComponent->UpdatePath(NowGoalLoc, GetGoalLocArrayFromRoutingLines());
-	TargetedTurretID = DPNavigationComponent->GetTurretIdOnPath();
+	TargetedTurretID = DPNavigationComponent->UpdatePath(NowGoalLoc, GetGoalLocArrayFromRoutingLines());
+	DPNavigationComponent->MakeSplinePath();
 }
 
 // =============================================================

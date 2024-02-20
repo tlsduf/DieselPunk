@@ -51,13 +51,9 @@ public:
 	TMap<int32, TObjectPtr<APathRouter>> PathRouterNodes;	// 연결된 라우터를 모두 등록합니다.
 	int32 PathRouterNodeNum = 0;							// 연결된 라우터의 순서입니다. 이것을 Key로 하여 PathRouterNodes에 등록합니다.
 
-	//경로색깔
-	UPROPERTY(EditInstanceOnly, Category = "MYDP_Setting")
-	FColor PathColor;							
-
 	// 스포너 이름 디폴트 0 (1, 2, 3 ~)
 	UPROPERTY(EditInstanceOnly, Category = "MYDP_Setting")
-	int32 SpawnerNumber = 0;					
+	int32 SpawnerNumber = 0;
 	
 protected:
 	
