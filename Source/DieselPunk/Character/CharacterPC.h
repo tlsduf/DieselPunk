@@ -19,6 +19,7 @@ DECLARE_DELEGATE_OneParam(FDelegate_RotateInstallation, int32)
 class UPlayerSkill;
 class FDeckHandler;
 class ACharacterHousing;
+class UDecalComponent;
 enum class EAbilityType : uint8;
 
 UCLASS(config = Game)
@@ -44,6 +45,9 @@ class ACharacterPC : public ACharacterBase
 
 	TWeakObjectPtr<ACharacterHousing> SelectInstallation;
 	TWeakObjectPtr<ACharacterHousing> LookInstallation;
+
+	TWeakObjectPtr<UDecalComponent> IndicatorBase;
+	TWeakObjectPtr<UDecalComponent> Indicator;
 
 public:
 	/////////////////////////////////////////////////////////////////////
@@ -116,6 +120,12 @@ public:
 	int32 InitCost = 1000;	//테스트용입니다. 초기 소지할 코스트를 입력하시면 해당 코스트를 가지고 시작합니다.
 	
 	int32 ReplaceUseCostCount = 0;	//리플레이스 사용 횟수입니다.
+	
+	//인디케이터 데칼 머터리얼
+	TWeakObjectPtr<UMaterialInterface> IndicatorMaterial;
+	
+	//인디케이터 베이스 데칼 머터리얼
+	TWeakObjectPtr<UMaterialInterface> IndicatorBaseMaterial;
 
 protected:
 	void CheckViewMiddleForInteractInstallationUI();
@@ -241,5 +251,8 @@ public:
 	void UnBindSkillUseCard();
 
 	bool ReplaceCard(TArray<int32>& OutUseIndex);
+
+	void SpawnDecalComponent(double InMaxRange, double InRange);
+	void DestroyDecalComponent();
 };
 

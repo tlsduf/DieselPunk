@@ -25,7 +25,9 @@
 #include "../Manager/UIManager.h"
 #include "../UI/UserWidgetBase.h"
 #include "../UI/HUD/Hand.h"
+#include "Components/DecalComponent.h"
 #include "DieselPunk/Skill/SkillPC/SkillSpawnTurret.h"
+#include "Kismet/GameplayStatics.h"
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(CharacterPC)
@@ -99,6 +101,15 @@ ACharacterPC::ACharacterPC()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character)
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+
+
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> materialIndicator(TEXT("/Script/Engine.Material'/Game/DieselPunk/Assets/Fx/Indicator/Material/M_Indicator.M_Indicator'"));
+	if(materialIndicator.Succeeded())
+		IndicatorMaterial = materialIndicator.Object;
+
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> materialIndicatorBase(TEXT("/Script/Engine.Material'/Game/DieselPunk/Assets/Fx/Indicator/Material/M_IndicatorBase.M_IndicatorBase'"));
+	if(materialIndicatorBase.Succeeded())
+		IndicatorBaseMaterial = materialIndicatorBase.Object;
 }
 
 void ACharacterPC::BeginPlay()
@@ -184,6 +195,18 @@ void ACharacterPC::Tick(float DeltaTime)
 		Stat.ChangeStat(ECharacterStatType::Hp , Stat.GetStat(ECharacterStatType::MaxHp));
 		TempLevel = Stat.GetStat(ECharacterStatType::Level);
 		LevelUpEvent();
+	}
+
+	// 인디케이터
+	if(IndicatorBase.IsValid())
+		IndicatorBase->SetWorldLocation(GetActorLocation());
+	if(Indicator.IsValid())
+	{
+		FHitResult result;
+		TArray<const AActor*> ignore;
+		ignore.Add(this);
+		if(UtilCollision::GetViewMiddle(GetWorld(), Cast<APlayerController>(Controller), result, 99999, ignore))
+			Indicator->SetWorldLocation(result.Location);
 	}
 
 	CheckViewMiddleForInteractInstallationUI();
@@ -637,4 +660,21 @@ bool ACharacterPC::ReplaceCard(TArray<int32>& OutUseIndex)
 	OutUseIndex = DeckHandler->Replace(); 
 		
 	return true;
+}
+
+void ACharacterPC::SpawnDecalComponent(double InMaxRange, double InRange)
+{
+	if(IndicatorBaseMaterial.IsValid())
+		IndicatorBase = UGameplayStatics::SpawnDecalAtLocation(this, IndicatorBaseMaterial.Get(), FVector(InMaxRange), GetActorLocation());
+
+	if(IndicatorMaterial.IsValid())
+		Indicator = UGameplayStatics::SpawnDecalAtLocation(this, IndicatorMaterial.Get(), FVector(InRange), GetActorLocation());
+}
+
+void ACharacterPC::DestroyDecalComponent()
+{
+	if(Indicator.IsValid())
+		Indicator->DestroyComponent();
+	if(IndicatorBase.IsValid())
+		IndicatorBase->DestroyComponent();
 }

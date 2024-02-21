@@ -31,6 +31,12 @@ FAbilityCard::~FAbilityCard()
 void FAbilityCard::_Activate(bool& OutSuccess, int32 InCost)
 {
 	OutSuccess = true;
+	Owner->SpawnDecalComponent(5000.0, 1000.0);
+}
+
+void FAbilityCard::_Cancel()
+{
+	Owner->DestroyDecalComponent();
 }
 
 //카드 사용 완료 함수
@@ -97,4 +103,6 @@ void FAbilityCard::_Complete(bool& OutSuccess, int32 InCost)
 				OutSuccess = false;
 		}
 	}
+
+	Owner->DestroyDecalComponent();
 }

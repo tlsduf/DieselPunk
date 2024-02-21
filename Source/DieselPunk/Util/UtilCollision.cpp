@@ -149,6 +149,9 @@ bool UtilCollision::GetViewMiddle(UWorld* InWorld, APlayerController* InControll
 {
 	FHitResult hit;
 
+	if(InController == nullptr)
+		return false;
+
 	//뷰 사이즈 획득
 	int32 viewX, viewY;
 	InController->GetViewportSize(viewX, viewY);
