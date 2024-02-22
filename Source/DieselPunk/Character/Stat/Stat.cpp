@@ -43,7 +43,7 @@ void FStat::Initialize(ACharacterBase* InOwner, const FString& InCharacterName)
 	SetStat(ECharacterStatType::CoolDown,		 data->CoolDown);
 	SetStat(ECharacterStatType::AttackMaxRange,	 data->AttackMaxRange);
 	SetStat(ECharacterStatType::AttackMinRange,	 data->AttacMinRange);
-	SetStat(ECharacterStatType::Cost,			 0);
+	SetStat(ECharacterStatType::Cost,			  data->Cost);
 }
 
 //스탯 클래스를 비웁니다.

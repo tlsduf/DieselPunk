@@ -15,6 +15,7 @@
 #include "ColorManagement/Public/ColorManagementDefines.h"
 
 #include "Engine/Level.h"
+#include "Kismet/GameplayStatics.h"
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(CharacterBase)
@@ -134,19 +135,30 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 		// 3.죽음구현
 		if (IsDead())
 		{
-			auto DamageCauserPlayer = Cast<ACharacterBase>(DamageCauser);
-			// 플레이어의 경험치를 1 올림
-			DamageCauserPlayer->Stat.ChangeStat(ECharacterStatType::Exp, 1);
-			if(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Level) != UtilLevelCal::LevelCalc(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Exp)))
-				DamageCauserPlayer->Stat.ChangeStat(ECharacterStatType::Level, UtilLevelCal::LevelCalc(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Exp)));
-			if(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::MaxHp) != UtilLevelCal::MaxHealthCalc(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Level)))
-				DamageCauserPlayer->Stat.ChangeStat(ECharacterStatType::MaxHp , UtilLevelCal::MaxHealthCalc(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Level)));
+			if(auto NPC = Cast<ACharacterNPC>(this))
+			{
+				// 몬스터 처치 시 여러 기능을 실행
+				if(NPC->NPCType == ENPCType::Enemy)
+				{
+					// 플레이어에게 코스트를 지급합니다.
+					ACharacterPC* playerPawn = Cast<ACharacterPC>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+					if (playerPawn != nullptr)
+						playerPawn->ChangeStat(ECharacterStatType::Cost, Stat.GetStat(ECharacterStatType::Cost));
+					
+					auto DamageCauserPlayer = Cast<ACharacterBase>(DamageCauser);
+					// 플레이어의 경험치를 1 올림
+					DamageCauserPlayer->Stat.ChangeStat(ECharacterStatType::Exp, 1);
+					if(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Level) != UtilLevelCal::LevelCalc(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Exp)))
+						DamageCauserPlayer->Stat.ChangeStat(ECharacterStatType::Level, UtilLevelCal::LevelCalc(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Exp)));
+					if(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::MaxHp) != UtilLevelCal::MaxHealthCalc(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Level)))
+						DamageCauserPlayer->Stat.ChangeStat(ECharacterStatType::MaxHp , UtilLevelCal::MaxHealthCalc(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Level)));
+				}
+				// 포탑 파괴시 모든 적의 경로를 재탐색합니다.
+				if(NPC->NPCType == ENPCType::Alliance)
+					NPC->UpdateSplinePathAll();
+			}
 			
 			Destroy();
-
-			// 포탑 파괴시 모든 적의 경로를 재탐색합니다.
-			if(auto turret = Cast<ACharacterTurret>(this))
-				turret->UpdateSplinePathAll();
 			
 			// 레벨관리
 			if(ADPLevelScriptActor* level = Cast<ADPLevelScriptActor>(this->GetLevel()->GetLevelScriptActor()))

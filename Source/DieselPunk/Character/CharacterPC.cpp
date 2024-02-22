@@ -141,8 +141,6 @@ void ACharacterPC::BeginPlay()
 	//패를 HUD에 등록합니다.
 	TArray<FCard*> hand = DeckHandler->GetHands();
 	Cast<APlayerControllerBase>(GetController())->RegisterHands(hand);
-
-	ChangeStat(ECharacterStatType::Cost, InitCost);
 	
 	//Skill Stat Set
 	for(const auto& It : Skills)

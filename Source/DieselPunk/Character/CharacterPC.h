@@ -115,9 +115,6 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "MYDP_Test")
 	TMap<FString, int32> InitHaveCard;	//테스트용입니다. 초기 소지할 카드의 이름과 갯수를 입력하시면 해당 카드를 가지고 시작합니다.
-
-	UPROPERTY(EditAnywhere, Category = "MYDP_Test")
-	int32 InitCost = 1000;	//테스트용입니다. 초기 소지할 코스트를 입력하시면 해당 코스트를 가지고 시작합니다.
 	
 	int32 ReplaceUseCostCount = 0;	//리플레이스 사용 횟수입니다.
 	

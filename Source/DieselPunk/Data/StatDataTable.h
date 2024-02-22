@@ -68,4 +68,8 @@ struct DIESELPUNK_API FStatDataTable : public FTableRowBase
 	// 최소 사거리
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int AttacMinRange = 0;
+
+	// 코스트
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int Cost = 0;
 };
