@@ -55,9 +55,7 @@ protected:
 	// OwnerType : Player or Enemy // 주인 타입
 	UPROPERTY(EditAnywhere, Category = "MYDP_CollisionType")
 	ECausorType ProjectileOwnerType = ECausorType::Player;
-
 	
-public:
 	// =================================================================================================
 	// 데미지 및 범위 공격관련
 	// =================================================================================================
@@ -167,4 +165,10 @@ private:
 	// 캡슐콜리전 반응을 ECollisionResponsesType 과 EProjectileOwnerType 에 따라 설정합니다.
 	// 현재 생성자와 BeginPlay 에 한줄씩 있음. 
 	void SetCapsuleCollisionResponses();
+
+public:
+	/////////////////////////////////////////////////////////////////////
+	// Getter, Setter //
+	void SetDamage(const float& inDamage) { Damage = inDamage; }
+	void SetSplinePath(const FSplinePath& inSplinePath ) { SplinePath = inSplinePath; }
 };

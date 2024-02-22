@@ -9,9 +9,6 @@
 
 
 
-
-
-
 #include "Engine/LevelScriptActor.h"
 #include "DPLevelScriptActor.generated.h"
 
@@ -21,7 +18,7 @@ struct FStageInfo
 	bool bDefconUse = false;		// 현 웨이브 데프콘 사용 유무
 	int32 DefconTime = 0;			// 현 웨이브 데프콘 시간
 	TArray<FString> WaveModuleInfoID;			// 웨이브 ID. DT_WaveSet 와 행 이름이 동일해야합니다.
-	bool SupplyInfo = false;		// 현 웨이브 서플라이 유무
+	int32 CostReward = 0;			// 현 웨이브 코스트보상
 };
 
 UCLASS()
@@ -45,7 +42,8 @@ class DIESELPUNK_API ADPLevelScriptActor : public ALevelScriptActor
 	int32 WaveIndex = 0;				// 0부터 StageInfo.Num() 까지 
 	
 ////////////////////////////////////////////////////////////////////////////////
-	
+
+protected:
 	ADPLevelScriptActor();
 
 	virtual void BeginPlay() override;
@@ -67,8 +65,8 @@ private:
 	void StartWave();
 	
 public:
-	// 웨이브가 클리어됐는지 확인하고, 클리어되면 다음 웨이브를 실행합니다.
-	void WaveClearEvent();
+	// 웨이브가 클리어됐는지 확인하고, 클리어되면 특정 함수들을 실행합니다.
+	void CheckWaveCleared();
 	
 	// 스테이지의 웨이브를 바인딩합니다. // 다음 웨이브를 바인딩합니다.
 	void BindStartWave();
@@ -76,7 +74,13 @@ public:
 	// 스테이지의 웨이브를 시작합니다. // 다음 웨이브를 시작합니다.
 	void CallStartWave();
 
-	TArray<int32> GetMonsterSpawnerIDs() { return MonsterSpawnerIDs; }
-	TArray<int32> GetPathRouterIDs() { return PathRouterIDs; }
+	// 웨이브 클리어 이벤트를 실행합니다.
+	void WaveClearEvent();
 
+public:
+	/////////////////////////////////////////////////////////////////////
+	// Getter, Setter //
+	
+	const TArray<int32>& GetMonsterSpawnerIDs() { return MonsterSpawnerIDs; }
+	const TArray<int32>& GetPathRouterIDs() { return PathRouterIDs; }
 };

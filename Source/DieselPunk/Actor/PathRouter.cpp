@@ -41,12 +41,6 @@ void APathRouter::BeginPlay()
 
 	if(ObjectId == -1)
 		FObjectManager::GetInstance()->AddActor(this);
-	
-	// 스플라인 디버그라인
-	if(DebugOnOff)
-	{
-
-	}
 }
 
 // =============================================================
@@ -141,7 +135,7 @@ void APathRouter::RegistPathRouter(TMap<int32, TObjectPtr<APathRouter>>& inPathR
 // =============================================================
 // 투영값을 통해 위치를 반환합니다.
 // =============================================================
-FVector APathRouter::MakeGoalLocByProportion(FVector2D inProportion)
+FVector APathRouter::MakeGoalLocByProportion(const FVector2D& inProportion)
 {
 	// 스플라인의 점으로 직사각형을 생성합니다.
 	MakeRectangleBySplinePoints();

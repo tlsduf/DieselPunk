@@ -62,7 +62,7 @@ void ADamageUIActor::CreateDamageUI()
 	DamageUI->SetDamage(Damage);
 }
 
-void ADamageUIActor::SetDamage(float inDamage)
+void ADamageUIActor::SetDamage(const float& inDamage)
 {
 	Damage = inDamage;
 }

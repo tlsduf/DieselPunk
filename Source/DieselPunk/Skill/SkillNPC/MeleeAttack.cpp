@@ -3,7 +3,7 @@
 #include "MeleeAttack.h"
 #include "../../Util/UtilCollision.h"
 #include "../../Character/CharacterNPC.h"
-#include "../../Animation/MonsterAnimInstace.h"
+#include "..\..\Animation\MonsterAnimInstance.h"
 
 #include <Kismet/GameplayStatics.h>
 #include <Components/SkeletalMeshComponent.h>
@@ -30,7 +30,7 @@ float UMeleeAttack::PlayAnim()
 	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
 
 	//애니메이션 재생?
-	UMonsterAnimInstace* animInst = Cast<UMonsterAnimInstace>(ownerPawn->GetMesh()->GetAnimInstance());
+	UMonsterAnimInstance* animInst = Cast<UMonsterAnimInstance>(ownerPawn->GetMesh()->GetAnimInstance());
 	if (!animInst)
 		return 0;
 	

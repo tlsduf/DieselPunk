@@ -142,6 +142,7 @@ public:
 	// 전투상태 핸들링 함수 // 전투상태 돌입 5초 후, 전투상태 자동 해제. // 해제 전 갱신 시, 5초갱신.
 	void HandleCombatState();
 
+	
 	const FDateTime& GetCreateTime() const {return CreateTime;}
 
 	const FString& GetCharacterName() const {return CharacterName;}

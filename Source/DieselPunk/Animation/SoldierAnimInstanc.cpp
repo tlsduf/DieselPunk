@@ -59,9 +59,9 @@ UAnimMontage* USoldierAnimInstance::GetMontageByAbilityType(EAbilityType InAbili
 				return LoadObject<UAnimMontage>(nullptr, *path.ToString());
 			}
 		case EAbilityType::None:			return nullptr;
+		
+	default: return nullptr;
 	}
-
-	return nullptr;
 }
 
 // 몽타주를 재생합니다.

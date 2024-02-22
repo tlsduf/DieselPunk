@@ -28,7 +28,7 @@ struct FStageWaveInfo
 
 	// 웨이브가 끝난 후, 보상관련 정보입니다.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool SupplyInfo = false;
+	int32 CostReward = 0;
 };
 
 

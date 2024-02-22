@@ -36,7 +36,7 @@ void USkillSmall::AbilityStart(AActor* inTarget)
 		ShotLocation = ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket");
 		FTransform SpawnTransform = FTransform( ShotRotation, ShotLocation);
 		AProjectileBase *ProjectileBase1 = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileBaseClass, SpawnTransform, GetOwner());
-		ProjectileBase1->Damage = CaptureDamage;
+		ProjectileBase1->SetDamage(CaptureDamage);
 		ProjectileBase1->FinishSpawning(SpawnTransform);
 
 		ShotLocation = ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket2");
@@ -47,7 +47,7 @@ void USkillSmall::AbilityStart(AActor* inTarget)
 			{
 				FTransform SpawnTransform = FTransform( thisPtr->ShotRotation, thisPtr->ShotLocation);
 				AProjectileBase *ProjectileBase2 = thisPtr->GetWorld()->SpawnActorDeferred<AProjectileBase>(thisPtr->ProjectileBaseClass, SpawnTransform, thisPtr->GetOwner());
-				ProjectileBase2->Damage = thisPtr->CaptureDamage;
+				ProjectileBase2->SetDamage(thisPtr->CaptureDamage);
 				ProjectileBase2->FinishSpawning(SpawnTransform);
 			}
 		},0.1f, false);
@@ -59,7 +59,7 @@ void USkillSmall::AbilityStart(AActor* inTarget)
 			{
 				FTransform SpawnTransform = FTransform( thisPtr->ShotRotation, thisPtr->ShotLocation);
 				AProjectileBase *ProjectileBase3 = thisPtr->GetWorld()->SpawnActorDeferred<AProjectileBase>(thisPtr->ProjectileBaseClass, SpawnTransform, thisPtr->GetOwner());
-				ProjectileBase3->Damage = thisPtr->CaptureDamage;
+				ProjectileBase3->SetDamage(thisPtr->CaptureDamage);
 				ProjectileBase3->FinishSpawning(SpawnTransform);
 			}
 		},0.2f, false);
@@ -71,7 +71,7 @@ void USkillSmall::AbilityStart(AActor* inTarget)
 			{
 				FTransform SpawnTransform = FTransform( thisPtr->ShotRotation, thisPtr->ShotLocation);
 				AProjectileBase *ProjectileBase4 = thisPtr->GetWorld()->SpawnActorDeferred<AProjectileBase>(thisPtr->ProjectileBaseClass, SpawnTransform, thisPtr->GetOwner());
-				ProjectileBase4->Damage = thisPtr->CaptureDamage;
+				ProjectileBase4->SetDamage(thisPtr->CaptureDamage);
 				ProjectileBase4->FinishSpawning(SpawnTransform);
 			}
 		},0.3f, false);

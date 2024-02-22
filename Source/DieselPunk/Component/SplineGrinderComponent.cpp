@@ -40,7 +40,7 @@ void USplineGrinderComponent::GrindAction(const FHitResult& Hit)
 	if(Hit.Component->ComponentHasTag("Rail") && !bOnRail)
 	{
 		bOnRail = true;
-		Cast<UDPAnimInstance>(Cast<ACharacterPC>(GetOwner())->GetMesh()->GetAnimInstance())->OnRail = bOnRail;
+		Cast<UDPAnimInstance>(Cast<ACharacterPC>(GetOwner())->GetMesh()->GetAnimInstance())->SetOnRail(bOnRail);
 		
 		SplineComponent = Hit.GetActor()->GetComponentByClass<USplineComponent>();
 		const FVector hitPointOnSpline = SplineComponent->FindLocationClosestToWorldLocation(Hit.ImpactPoint, ESplineCoordinateSpace::World);
@@ -93,7 +93,7 @@ void USplineGrinderComponent::JumpAction()
 {
 	Animator.Stop();
 	bOnRail = false;
-	Cast<UDPAnimInstance>(Cast<ACharacterPC>(GetOwner())->GetMesh()->GetAnimInstance())->OnRail = bOnRail;
+	Cast<UDPAnimInstance>(Cast<ACharacterPC>(GetOwner())->GetMesh()->GetAnimInstance())->SetOnRail(bOnRail);
 	SplineComponent = nullptr;
 }
 

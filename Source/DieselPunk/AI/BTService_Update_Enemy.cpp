@@ -22,18 +22,13 @@ UBTService_Update_Enemy::UBTService_Update_Enemy()
 void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 *NodeMemory, float DeltaSeconds)
 {
     Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
-
-    // 플레이어 정보
-    APawn *PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-    if (PlayerPawn == nullptr)
-        return;
     
     if(OwnerComp.GetAIOwner() == nullptr)
         return;
 
     // AIController , self
     AAIController *AIController = OwnerComp.GetAIOwner();
-    auto AICharacter = Cast<ACharacterNPC>(AIController->GetPawn());
+    ACharacterNPC* AICharacter = Cast<ACharacterNPC>(AIController->GetPawn());
 
     // 타겟 SET
     if(AICharacter->GetAttackTarget().IsValid())
@@ -98,7 +93,6 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
     else
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InRange"), false);
 
-
     
     // 죽음 시 블랙보드 제어
     if (AICharacter->IsDead())
@@ -107,8 +101,8 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("IsLive"), true);
     
     // 캐릭터가 생성될 때, 일정시간동안 Spawn 애니메이션을 실행시킴
-    ANPCAIController * Controller = Cast<ANPCAIController>(AIController);
-    if (Controller->bPlaySpawnAnim)
+    ANPCAIController* controller = Cast<ANPCAIController>(AIController);
+    if (controller->bPlaySpawnAnim)
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("PlaySpawnAnim"), true);
     else
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("PlaySpawnAnim"), false);

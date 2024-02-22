@@ -3,11 +3,6 @@
 #include "SkillActor.h"
 #include "../Character/CharacterBase.h"
 
-#include <Components/CapsuleComponent.h>
-#include <Components/StaticMeshComponent.h>
-#include <GameFramework/ProjectileMovementComponent.h>
-#include <Kismet/GameplayStatics.h>
-
 
 // =============================================================
 // 생성자
@@ -29,7 +24,6 @@ void ASkillActor::BeginPlay()
 		OwnerCharacter = Cast<ACharacterBase>(GetOwner());
 		OwnerController = OwnerCharacter->GetController();
 	}
-	
 }
 
 // =============================================================
@@ -40,6 +34,7 @@ void ASkillActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+// 설정한 OffsetTransform만큼 이동하여 초기 위치를 설정합니다.
 void ASkillActor::InitTransformOffset()
 {
 	if(FixOwnerPosition && OwnerCharacter)

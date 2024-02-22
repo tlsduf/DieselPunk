@@ -6,7 +6,11 @@
 #include "../Manager/DatatableManager.h"
 #include "../Data/StageWaveDataTable.h"
 #include "../Actor/MonsterSpawner.h"
-#include "../Actor/PathRouter.h"
+#include "../Character/CharacterPC.h"
+
+#include <Kismet/GameplayStatics.h>
+
+
 
 
 //생성자
@@ -69,17 +73,17 @@ void ADPLevelScriptActor::GetMonsterSpawnerIdInWorld()
 		{
 			if(i == j)
 				continue;
-			if( Cast<AMonsterSpawner>(FObjectManager::GetInstance()->FindActor(MonsterSpawnerIDs[i]))->SpawnerNumber
-				== Cast<AMonsterSpawner>(FObjectManager::GetInstance()->FindActor(MonsterSpawnerIDs[j]))->SpawnerNumber)
-				LOG_SCREEN(FColor::Red, TEXT("스포너 Alert: 중복되는 SpawnerNumber가 존재합니다. SpanwerNumber : %d 를 확인하세요."), Cast<AMonsterSpawner>(FObjectManager::GetInstance()->FindActor(MonsterSpawnerIDs[j]))->SpawnerNumber);
+			if( Cast<AMonsterSpawner>(FObjectManager::GetInstance()->FindActor(MonsterSpawnerIDs[i]))->GetSpawnerNumber()
+				== Cast<AMonsterSpawner>(FObjectManager::GetInstance()->FindActor(MonsterSpawnerIDs[j]))->GetSpawnerNumber())
+				LOG_SCREEN(FColor::Red, TEXT("스포너 Alert: 중복되는 SpawnerNumber가 존재합니다. SpanwerNumber : %d 를 확인하세요."), Cast<AMonsterSpawner>(FObjectManager::GetInstance()->FindActor(MonsterSpawnerIDs[j]))->GetSpawnerNumber());
 		}
 	}
 	
 	// SpawnerNumber 순으로 재정렬 (중복이 있어도 정렬함)
 	MonsterSpawnerIDs.Sort([](const int32& A, const int32& B)
 	{
-		 return Cast<AMonsterSpawner>(FObjectManager::GetInstance()->FindActor(A))->SpawnerNumber
-				< Cast<AMonsterSpawner>(FObjectManager::GetInstance()->FindActor(B))->SpawnerNumber;
+		 return Cast<AMonsterSpawner>(FObjectManager::GetInstance()->FindActor(A))->GetSpawnerNumber()
+				< Cast<AMonsterSpawner>(FObjectManager::GetInstance()->FindActor(B))->GetSpawnerNumber();
 	});
 }
 
@@ -101,16 +105,16 @@ void ADPLevelScriptActor::SetStageWaveInfo()
 		info.bDefconUse = inStageInfo.bDefconTimeUse;
 		info.DefconTime = inStageInfo.DefconTime;
 		info.WaveModuleInfoID = inStageInfo.WaveModuleInfoID;
-		info.SupplyInfo = inStageInfo.SupplyInfo;
+		info.CostReward = inStageInfo.CostReward;
 		
 		StageInfo.Add(info);
 	}
 }
 
 // =============================================================
-// 웨이브가 클리어됐는지 확인하고, 클리어되면 다음 웨이브를 실행합니다.
+// 웨이브가 클리어됐는지 확인하고, 클리어되면 특정 함수들을 실행합니다.
 // =============================================================
-void ADPLevelScriptActor::WaveClearEvent()
+void ADPLevelScriptActor::CheckWaveCleared()
 {
 	bool isWaveCleared = true;
 	for(auto ID : MonsterSpawnerIDs)
@@ -126,6 +130,7 @@ void ADPLevelScriptActor::WaveClearEvent()
 	// 웨이브가 클리어되면 다음 웨이브 바인딩
 	if(isWaveCleared)
 	{
+		WaveClearEvent();
 		WaveIndex++;
 		BindStartWave();
 	}
@@ -178,6 +183,22 @@ void ADPLevelScriptActor::CallStartWave()
 }
 
 // =============================================================
+// 웨이브 클리어 이벤트를 실행합니다.
+// =============================================================
+void ADPLevelScriptActor::WaveClearEvent()
+{
+	//WaveIndex 가 StageInfo배열의 개수보다 크면 예외처리
+	if(StageInfo.Num() <= WaveIndex)
+		return;
+
+	// 플레이어에게 코스트를 지급합니다.
+	ACharacterPC* playerPawn = Cast<ACharacterPC>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	if (playerPawn == nullptr)
+		return;
+	playerPawn->ChangeStat(ECharacterStatType::Cost, StageInfo[WaveIndex].CostReward);
+}
+
+// =============================================================
 // 각 스포너들의 웨이브를 실행합니다. [TODO] 스포너 이름
 // =============================================================
 void ADPLevelScriptActor::StartWave()
@@ -190,7 +211,7 @@ void ADPLevelScriptActor::StartWave()
 	for(int32 i = 0; i < MonsterSpawnerIDs.Num(); ++i)
 	{
 		AMonsterSpawner* monsterSpawner = Cast<AMonsterSpawner>(FObjectManager::GetInstance()->FindActor(MonsterSpawnerIDs[i]));
-		if(monsterSpawner && monsterSpawner->bSpawnComplete() && monsterSpawner->IsWaveCleared())
+		if(monsterSpawner && monsterSpawner->IsSpawnComplete() && monsterSpawner->IsWaveCleared())
 			monsterSpawner->StartSpawn(StageInfo[WaveIndex].WaveModuleInfoID[i]);
 	}
 }

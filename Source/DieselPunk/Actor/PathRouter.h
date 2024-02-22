@@ -68,7 +68,11 @@ public:
 	void RegistPathRouter(TMap<int32, TObjectPtr<APathRouter>>& inPathRouterNodes, int32& inPathRouterNodeNum);
 
 	// 투영값을 통해 위치를 반환합니다.
-	FVector MakeGoalLocByProportion(FVector2D inProportion);
+	FVector MakeGoalLocByProportion(const FVector2D& inProportion);
 
-	int32 GetPathRouterNumber() { return PathRouterNum; }
+public:
+	/////////////////////////////////////////////////////////////////////
+	// Getter, Setter //
+	
+	int32 GetPathRouterNumber() const { return PathRouterNum; }
 };

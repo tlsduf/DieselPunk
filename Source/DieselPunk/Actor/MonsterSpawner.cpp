@@ -28,6 +28,7 @@ AMonsterSpawner::AMonsterSpawner()
 	
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
 	BoxComponent->SetupAttachment(SceneRoot);
+	BoxComponent->SetBoxExtent(FVector(BoxScale,BoxScale,BoxScale));
 	BoxComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	BoxComponent->PrimaryComponentTick.bCanEverTick = false;
 
@@ -97,7 +98,7 @@ void AMonsterSpawner::Tick(float DeltaTime)
 // =============================================================
 // SpawnerName에 해당하는 데이터테이블의 정보를 읽어 세팅하고, 스폰을 시작합니다.
 // =============================================================
-void AMonsterSpawner::StartSpawn(FString InWaveModuleName)
+void AMonsterSpawner::StartSpawn(const FString& InWaveModuleName)
 {
 	_SetWaveModule(InWaveModuleName);
 
@@ -121,7 +122,7 @@ void AMonsterSpawner::RemoveDeadNPCFromArray()
 // =============================================================
 // InWaveModuleName에 해당하는 데이터테이블의 정보를 읽어 SpawnInfo를 세팅하고, InAddStartDelay만큼 스폰시간을 더합니다.
 // =============================================================
-void AMonsterSpawner::_SetWaveModule(FString InWaveModuleName)
+void AMonsterSpawner::_SetWaveModule(const FString& InWaveModuleName)
 {
 	const FWaveModuleDataTable* WaveModuleDataTable = FDataTableManager::GetInstance()->GetData<FWaveModuleDataTable>(EDataTableType::WaveModule, InWaveModuleName);
 	if(WaveModuleDataTable == nullptr)
@@ -163,14 +164,7 @@ void AMonsterSpawner::_SetWaveModule(FString InWaveModuleName)
 	{
 		return lhs.StartDelay < rhs.StartDelay; 
 	});
-}
-
-// =============================================================
-// 스포너가 소환한 몬스터가 다 파괴되었는지를 반환합니다.
-// =============================================================
-bool AMonsterSpawner::IsWaveCleared()
-{
-	return SpawnedMonsterID.IsEmpty();
+	
 }
 
 // =============================================================
@@ -199,7 +193,7 @@ void AMonsterSpawner::SpawnMonster(float InDeltaTime)
 			spawnParam.CallBackSpawn = nullptr;
 
 			//몬스터 생성
-			int32 id = FObjectManager::GetInstance()->CreateActor<ACharacterNPC>(classInfo, spawnParam);
+			const int32 id = FObjectManager::GetInstance()->CreateActor<ACharacterNPC>(classInfo, spawnParam);
 
 			//몬스터 생성 검증
 			if(!FObjectManager::IsValidId(id))
@@ -208,7 +202,7 @@ void AMonsterSpawner::SpawnMonster(float InDeltaTime)
 			{
 				SpawnedMonsterID.Add(id);
 				// 몬스터 투영값 계산 // 몬스터 목표배열 설정
-				if(auto npc = Cast<ACharacterNPC>(FObjectManager::GetInstance()->FindActor(id)))
+				if(ACharacterNPC* npc = Cast<ACharacterNPC>(FObjectManager::GetInstance()->FindActor(id)))
 				{
 					if(!PathRouterNodes.IsEmpty())
 					{
@@ -234,7 +228,7 @@ void AMonsterSpawner::SpawnMonster(float InDeltaTime)
 }
 
 // =============================================================
-// 연결된 PathRouter를 모두 번호를 부여하며 등록합니다.
+// 연결된 PathRouter를 모두 번호를 부여하며 등록합니다. // 재귀시작함수 입니다.
 // =============================================================
 void AMonsterSpawner::RegistPathRouter(TMap<int32, TObjectPtr<APathRouter>>& inPathRouterNodes)
 {
@@ -249,7 +243,7 @@ void AMonsterSpawner::RegistPathRouter(TMap<int32, TObjectPtr<APathRouter>>& inP
 // =============================================================
 // 스폰시 해당'몬스터'의 Proportion을 설정합니다.
 // =============================================================
-FVector2D AMonsterSpawner::SetProportion(FVector inLoc)
+FVector2D AMonsterSpawner::SetProportion(const FVector& inLoc)
 {
 	// Get distance between (firstPoint-secondPoint)Line and ThirdPoint
 	FVector firstPoint, secondPoint, thirdPoint;
@@ -286,7 +280,6 @@ void AMonsterSpawner::MakeRectangleBySplinePoints()
 	FVector firstPoint, secondPoint, thirdPoint, fourthPoint;
 
 	FVector scale = GetActorScale3D();
-	double BoxScale = 150;
 	firstPoint = BoxComponent->Bounds.Origin
 	+ GetActorRotation().Vector().GetSafeNormal() * BoxScale * scale.X
 	+ (GetActorRotation() + FRotator(0,-90,0)).Clamp().Vector().GetSafeNormal() * BoxScale * scale.Y;
@@ -302,6 +295,7 @@ void AMonsterSpawner::MakeRectangleBySplinePoints()
 	
 	// Set RectanglePoints
 	RectanglePoints.Empty();
+	RectanglePoints.Reserve(4);
 	RectanglePoints.Add(firstPoint);
 	RectanglePoints.Add(secondPoint);
 	RectanglePoints.Add(thirdPoint);
@@ -356,7 +350,7 @@ void AMonsterSpawner::GetRandomLocation()
 // =============================================================
 // 사각 내부에 점이 위치하는지 확인합니다. // Point in polygon algorithm
 // =============================================================
-bool AMonsterSpawner::IsInPolygon(double InX, double InY)
+bool AMonsterSpawner::IsInPolygon(const double& InX, const double& InY)
 {
 	int cn = 0;    // the  crossing number counter
 	
@@ -365,7 +359,7 @@ bool AMonsterSpawner::IsInPolygon(double InX, double InY)
 		int j = (i + 1) % RectanglePoints.Num();
 		if ((( RectanglePoints[i].Y <= InY ) && ( RectanglePoints[j].Y > InY )) || (( RectanglePoints[i].Y > InY ) && ( RectanglePoints[j].Y <=  InY )))
 		{ 
-			float vt = (float)(InY  - RectanglePoints[i].Y) / (RectanglePoints[j].Y - RectanglePoints[i].Y);
+			float vt = static_cast<float>(InY - RectanglePoints[i].Y) / (RectanglePoints[j].Y - RectanglePoints[i].Y);
 			if (InX <  RectanglePoints[i].X + vt * ( RectanglePoints[j].X - RectanglePoints[i].X )) 
 				++cn;  
 		}

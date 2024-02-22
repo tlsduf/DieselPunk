@@ -45,7 +45,7 @@ void USkillSoldierRM::SkillTriggered()
 	{
 		FTransform spawnTransform( shotRotation, shotLocation);
 		AProjectileBase *Projectile = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileClass, spawnTransform, GetOwner());
-		Projectile->Damage = Damage;
+		Projectile->SetDamage(Damage);
 		Projectile->FinishSpawning(spawnTransform);
 	}
 }

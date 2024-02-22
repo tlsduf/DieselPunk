@@ -59,8 +59,7 @@ void AInteractiveActor::CreateUI()
 	{
 		userWidget->AddToRoot();
 
-		UUserWidgetBase* userWidgetBase = Cast<UUserWidgetBase>( userWidget );
-		if ( userWidgetBase )
+		if ( UUserWidgetBase* userWidgetBase = Cast<UUserWidgetBase>( userWidget ) )
 			userWidgetBase->OnCreated();
 	}
 	UItemGuideUI* myWidget = Cast<UItemGuideUI>(userWidget);

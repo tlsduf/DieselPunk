@@ -35,7 +35,7 @@ void UDPAnimInstance::NativeUpdateAnimation(float InDeltaSeconds)
 		
 	Speed = Velocity.Length();
 	
-	HorizentalSpeed = FVector(Velocity.X, Velocity.Y, 0).Length();
+	HorizontalSpeed = FVector(Velocity.X, Velocity.Y, 0).Length();
 	
 	YawDelta = CalYawDelta(InDeltaSeconds);
 	RotationLastTick = Character->GetActorRotation();

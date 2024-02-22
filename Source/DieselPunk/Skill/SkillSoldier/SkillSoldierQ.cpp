@@ -56,7 +56,7 @@ void USkillSoldierQ::Shot()
 		// 투사체1
 		FTransform spawnTransform = FTransform( FRotator(spawnPitch.Pitch, shotRotation.Yaw, 0), shotLocation);
 		AProjectileBase *Projectile = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileClass, spawnTransform, GetOwner());
-		Projectile->Damage = Damage;
+		Projectile->SetDamage(Damage);
 		Projectile->FinishSpawning(spawnTransform);
 	}
 }

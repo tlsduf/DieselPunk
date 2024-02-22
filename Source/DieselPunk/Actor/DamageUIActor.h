@@ -43,7 +43,7 @@ public:
 	void CreateDamageUI();
 
 	// 데미지 세팅
-	void SetDamage(float inDamage);
+	void SetDamage(const float& inDamage);
 
 	// LifeTime 후 파괴됩니다.
 	void SelfDestroy();

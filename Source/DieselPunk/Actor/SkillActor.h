@@ -39,7 +39,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	void SetOwnerPlayer(ACharacterBase* InOwner){OwnerCharacter = InOwner;}
+	void SetOwnerPlayer(ACharacterBase* InOwner) {OwnerCharacter = InOwner;}
 	
 	// 설정한 OffsetTransform만큼 이동하여 초기 위치를 설정합니다.
 	virtual void InitTransformOffset();

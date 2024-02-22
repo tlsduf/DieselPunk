@@ -8,7 +8,7 @@
 
 class ACharacterBase;
 
-const int LeanIntensityScaling = 7.0f;
+constexpr int LeanIntensityScaling = 7.0f;
 
 UCLASS()
 class DIESELPUNK_API UDPAnimInstance : public UAnimInstance
@@ -35,7 +35,7 @@ protected:
 	float Speed = 0;
 
 	UPROPERTY(BlueprintReadOnly, Category = "MYDP_Movement", Meta = (AllowPrivateAccess = true))
-	float HorizentalSpeed = 0;
+	float HorizontalSpeed = 0;
 
 	UPROPERTY(BlueprintReadOnly, Category = "MYDP_Movement", Meta = (AllowPrivateAccess = true))
 	float YawDelta = 0;
@@ -51,9 +51,7 @@ protected:
 	bool IsDead = false;
 
 	FRotator RotationLastTick = FRotator();
-
-
-public:
+	
 	UPROPERTY(BlueprintReadOnly, Category = "MYDP", Meta = (AllowPrivateAccess = true))
 	bool OnRail = false;
 	
@@ -67,4 +65,9 @@ public:
 
 	// 캐릭터 회전에 따른 기울기를 계산합니다.
 	float CalYawDelta(float InDeltaSeconds);
+	
+public:
+	/////////////////////////////////////////////////////////////////////
+	// Getter, Setter //
+	void SetOnRail(const bool inBool) { OnRail = inBool; }
 };

@@ -41,27 +41,29 @@ class DIESELPUNK_API AMonsterSpawner : public AActor, public IDpManagementTarget
 
 	/////////////////////////////////////////////////////////////////////
 	// for info Management //
-public:
-	TMap<FVector, TArray<FVector>> PathMap;		//몬스터가 스폰될 위치를 Key로 하여, 목표위치배열을 담습니다.
-
-	//연결된 라우터(다음 경로)
-	UPROPERTY(EditInstanceOnly, Category = "MYDP_Setting")
-	TObjectPtr<APathRouter> NextPathRouter;		
-
-	TMap<int32, TObjectPtr<APathRouter>> PathRouterNodes;	// 연결된 라우터를 모두 등록합니다.
-	int32 PathRouterNodeNum = 0;							// 연결된 라우터의 순서입니다. 이것을 Key로 하여 PathRouterNodes에 등록합니다.
 
 	// 스포너 이름 디폴트 0 (1, 2, 3 ~)
 	UPROPERTY(EditInstanceOnly, Category = "MYDP_Setting")
 	int32 SpawnerNumber = 0;
 	
+	TMap<FVector, TArray<FVector>> PathMap;		// 몬스터가 스폰될 위치를 Key로 하여, 투영에 의해 결정된 총 목적지 배열을 담습니다.
+	
+	//연결된 라우터(다음 경로)
+	UPROPERTY(EditInstanceOnly, Category = "MYDP_Setting")
+	TObjectPtr<APathRouter> NextPathRouter;		
+
+	int32 PathRouterNodeNum = 0;							// 연결된 라우터의 순서입니다. 이것을 Key로 하여 PathRouterNodes에 등록합니다.
+	TMap<int32, TObjectPtr<APathRouter>> PathRouterNodes;	// 연결된 라우터를 모두 등록합니다.
+	
 protected:
 	
 	/////////////////////////////////////////////////////////////////////
-	// for box , Poligon , MakeRandLoc //
+	// for box , Polygon , MakeRandLoc //
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UBoxComponent> BoxComponent;		// 영역을 만들 박스 컴포넌트
+	
+	const double BoxScale = 150;			// 박스크기
 
 	TArray<FVector> RectanglePoints;			// 박스의 꼭짓점을 담을 배열
 
@@ -80,12 +82,11 @@ protected:
 	bool bDoSpawn = false;					//스폰해야하는지
 
 	constexpr static double DistanceDifference = 150;	// 랜덤 스폰 거리 차이
-	
-public:	
+
+protected:
 	// Sets default values for this actor's properties
 	AMonsterSpawner();
 	
-protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -97,32 +98,39 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	
 	// InWaveModuleName에 해당하는 데이터테이블의 정보를 읽어 세팅하고, 스폰을 시작합니다.
-	void StartSpawn(FString InWaveModuleName);
+	void StartSpawn(const FString& InWaveModuleName);
 
 	//생성한 몬스터 중 Destroy된 액터 삭제
 	void RemoveDeadNPCFromArray();
 	
 	// 스포너가 소환한 몬스터가 다 파괴되었는지를 반환합니다.
-	bool IsWaveCleared();
+	bool IsWaveCleared() const { return SpawnedMonsterID.IsEmpty(); }
 
 	// 몬스터를 다 소환했는지 반환합니다.
-	bool bSpawnComplete() const { return SpawnInfo.IsEmpty(); };
-	
+	bool IsSpawnComplete() const { return SpawnInfo.IsEmpty(); }
+
 private:
+	/////////////////////////////////////////////////////////////////////
+	// DT정보 Set, 스폰 //
+	
 	// InWaveModuleName에 해당하는 데이터테이블의 정보를 읽어 SpawnInfo를 세팅하고
-	void _SetWaveModule(FString InWaveModuleName);
+	void _SetWaveModule(const FString& InWaveModuleName);
 	
 	// SpawnInfo에 담긴 정보대로 몬스터를 스폰합니다.
 	void SpawnMonster(float InDeltaTime);
 
-private:
-	// 연결된 PathRouter를 모두 번호를 부여하며 등록합니다.
+	/////////////////////////////////////////////////////////////////////
+	// PathRouter(경유지) 등록, 위치투영을 위한 비율값 세팅 //
+	
+	// 연결된 PathRouter를 모두 번호를 부여하며 등록합니다. // 재귀시작함수 입니다.
 	void RegistPathRouter(TMap<int32, TObjectPtr<APathRouter>>& inPathRouterNodes);
 	
 	// 스폰시 해당'몬스터'의 Proportion을 설정합니다.
-	FVector2D SetProportion(FVector inLoc);
+	FVector2D SetProportion(const FVector& inLoc);
 
-private:
+	/////////////////////////////////////////////////////////////////////
+	// 사각 영역 생성, 사각 내부 점 생성 //
+	
 	// 박스컴포넌트를 기반으로 직사각형의 점을 PolygonPoints에 담습니다.
 	void MakeRectangleBySplinePoints();
 	
@@ -130,5 +138,11 @@ private:
 	void GetRandomLocation();
 	
 	// 사각 내부에 점이 위치하는지 확인합니다. // Point in polygon algorithm
-	bool IsInPolygon(double InX, double InY);
+	bool IsInPolygon(const double& InX, const double& InY);
+
+
+public:
+	/////////////////////////////////////////////////////////////////////
+	// Getter, Setter //
+	int32 GetSpawnerNumber() const { return SpawnerNumber; };
 };

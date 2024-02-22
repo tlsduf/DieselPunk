@@ -150,7 +150,7 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 			
 			// 레벨관리
 			if(ADPLevelScriptActor* level = Cast<ADPLevelScriptActor>(this->GetLevel()->GetLevelScriptActor()))
-				level->WaveClearEvent();
+				level->CheckWaveCleared();
 		}
 		return damage;
 	}

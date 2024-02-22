@@ -1,16 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "MonsterAnimInstace.h"
+#include "MonsterAnimInstance.h"
 #include "../Skill/SkillNPC/MeleeAttack.h"
 #include "../Character/CharacterNPC.h"
 
 #include <Animation/AnimMontage.h>
 
-UMonsterAnimInstace::UMonsterAnimInstace(){}
+UMonsterAnimInstance::UMonsterAnimInstance(){}
 
 // 틱마다 호출되는 함수
-void UMonsterAnimInstace::NativeUpdateAnimation(float InDeltaSeconds)
+void UMonsterAnimInstance::NativeUpdateAnimation(float InDeltaSeconds)
 {
 	Super::NativeUpdateAnimation(InDeltaSeconds);
 
@@ -18,7 +18,7 @@ void UMonsterAnimInstace::NativeUpdateAnimation(float InDeltaSeconds)
 }
 
 // AbilityType에 따른 몽타주를 반환합니다. None입력시 기본 몽타주 반환
-UAnimMontage* UMonsterAnimInstace::GetMontageByAbilityType(EAbilityType InAbilityType)
+UAnimMontage* UMonsterAnimInstance::GetMontageByAbilityType(EAbilityType InAbilityType)
 {
 	FSoftObjectPath path = MonsterMontage.ToSoftObjectPath();
 	if(!path.IsValid())
@@ -28,7 +28,7 @@ UAnimMontage* UMonsterAnimInstace::GetMontageByAbilityType(EAbilityType InAbilit
 }
 
 // 몽타주를 재생합니다.
-float UMonsterAnimInstace::PlayMontage(EAbilityType InAbilityType, EMonsterSkillMontageType InSectionType, float InPlayRate/* = 1.f*/)
+float UMonsterAnimInstance::PlayMontage(EAbilityType InAbilityType, EMonsterSkillMontageType InSectionType, float InPlayRate/* = 1.f*/)
 {
 	UAnimMontage* animMontage = GetMontageByAbilityType(InAbilityType);
 	if (!animMontage)
@@ -42,7 +42,7 @@ float UMonsterAnimInstace::PlayMontage(EAbilityType InAbilityType, EMonsterSkill
 }
 
 // 몽타주 재생을 정지합니다.
-void UMonsterAnimInstace::StopMontage(EAbilityType InAbilityType, float InBlendOutTime)
+void UMonsterAnimInstance::StopMontage(EAbilityType InAbilityType, float InBlendOutTime)
 {
 	UAnimMontage* animMontage = GetMontageByAbilityType(InAbilityType);
 	if(!animMontage)
@@ -51,7 +51,7 @@ void UMonsterAnimInstace::StopMontage(EAbilityType InAbilityType, float InBlendO
 }
 
 // 몽타주 재생을 일시 정지합니다.
-void UMonsterAnimInstace::PauseMontage(EAbilityType InAbilityType)
+void UMonsterAnimInstance::PauseMontage(EAbilityType InAbilityType)
 {
 	UAnimMontage* animMontage = GetMontageByAbilityType(InAbilityType);
 	if(!animMontage)
@@ -60,7 +60,7 @@ void UMonsterAnimInstace::PauseMontage(EAbilityType InAbilityType)
 }
 
 // 몽타주를 다시 재생합니다.
-void UMonsterAnimInstace::ResumeMontage(EAbilityType InAbilityType)
+void UMonsterAnimInstance::ResumeMontage(EAbilityType InAbilityType)
 {
 	UAnimMontage* animMontage = GetMontageByAbilityType(InAbilityType);
 	if(!animMontage)
@@ -68,7 +68,7 @@ void UMonsterAnimInstace::ResumeMontage(EAbilityType InAbilityType)
 	Montage_Resume(animMontage);
 }
 
-void UMonsterAnimInstace::AnimNotify_NotifyMeleeAttack() const
+void UMonsterAnimInstance::AnimNotify_NotifyMeleeAttack() const
 {
 	auto ownerPawn = Cast<ACharacterNPC>(GetOwningActor());
 	
@@ -81,7 +81,7 @@ void UMonsterAnimInstace::AnimNotify_NotifyMeleeAttack() const
 }
 
 // 공중몹 프로펠러 회전
-int16 UMonsterAnimInstace::AddRotation()
+int16 UMonsterAnimInstance::AddRotation()
 {
 	Radian++;
 

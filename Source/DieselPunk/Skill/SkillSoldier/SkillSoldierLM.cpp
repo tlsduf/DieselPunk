@@ -54,7 +54,7 @@ void USkillSoldierLM::SkillTriggered()
 		//ProjectileClass = LoadClass<ASoldierProjectile>( NULL, *resourcePath );
 		FTransform spawnTransform( shotRotation, shotLocation);
 		AProjectileBase *Projectile = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileClass, spawnTransform, GetOwner());
-		Projectile->Damage = Damage;
+		Projectile->SetDamage(Damage);
 		Projectile->FinishSpawning(spawnTransform);
 	}
 	// * or if EBuffOn is true
@@ -62,7 +62,7 @@ void USkillSoldierLM::SkillTriggered()
 	{
 		FTransform spawnTransform( shotRotation, shotLocation);
 		AProjectileBase *Projectile = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileEBuffClass, spawnTransform, GetOwner());
-		Projectile->Damage = Damage * 1.5;
+		Projectile->SetDamage(Damage * 1.5);
 		Projectile->FinishSpawning(spawnTransform);
 		--Magazine;
 

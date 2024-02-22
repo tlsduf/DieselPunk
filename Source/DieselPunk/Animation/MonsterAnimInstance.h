@@ -3,13 +3,13 @@
 #pragma once
 
 #include "../Animation/DPAnimInstance.h"
-#include "MonsterAnimInstace.generated.h"
+#include "MonsterAnimInstance.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class DIESELPUNK_API UMonsterAnimInstace : public UDPAnimInstance
+class DIESELPUNK_API UMonsterAnimInstance : public UDPAnimInstance
 {
 	GENERATED_BODY()
 	
@@ -21,9 +21,10 @@ private:
 	// 공중몹 프로펠러 회전
 	UPROPERTY(BlueprintReadOnly, Category = "MYDP", Meta = (AllowPrivateAccess = true))
 	int Radian = 0;
+	
 public:
 	// 생성자
-	UMonsterAnimInstace();
+	UMonsterAnimInstance();
 	// 틱마다 호출되는 함수, 스피드를 계산한다.
 	virtual void NativeUpdateAnimation(float InDeltaSeconds) override;
 	// AbilityType에 따른 몽타주를 반환합니다. None입력시 기본 몽타주 반환

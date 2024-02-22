@@ -50,12 +50,12 @@ void UProjectileAttack::Fire(AActor* inTarget)
 		FTransform SpawnTransform = FTransform( shotRotation, shotLocation);
 		
 		AProjectileBase *ProjectileBase = GetWorld()->SpawnActorDeferred<AProjectileBase>(ProjectileBaseClass, SpawnTransform, GetOwner());
-		ProjectileBase->Damage = Damage;
+		ProjectileBase->SetDamage(Damage);
 		FSplinePath splinePath;
 		if(bHowitzer)
 		{
 			splinePath = MakeSplinePath(inTarget);
-			ProjectileBase->SplinePath = splinePath;
+			ProjectileBase->SetSplinePath(splinePath);
 			//ProjectileBase->SplineLength = FVector::Dist(ownerPawn->GetActorLocation(), inTarget->GetActorLocation());
 			if(ownerPawn->DebugOnOff)
 				DrawDebugSpline(splinePath);
@@ -66,7 +66,7 @@ void UProjectileAttack::Fire(AActor* inTarget)
 		if(bDirectFireEffect)
 		{
 			splinePath = MakeSplinePathForDirectFire(inTarget);
-			ProjectileBase->SplinePath = splinePath;
+			ProjectileBase->SetSplinePath(splinePath);
 			//ProjectileBase->SplineLength = FVector::Dist(ownerPawn->GetActorLocation(), inTarget->GetActorLocation());
 			if(ownerPawn->DebugOnOff)
 				DrawDebugSpline(splinePath);
