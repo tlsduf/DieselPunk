@@ -118,7 +118,7 @@ void AProjectileBase::DestroyEvent()
 		TArray<FHitResult> sweepResults;
 		FVector startLocation = GetActorLocation();
 		FVector endLocation = startLocation;
-		if(OwnerCharacter->DebugOnOff)
+		if(OwnerCharacter->GetDebugOnOff())
 			DrawDebugSphere(GetWorld(), startLocation, AttackRadius, 16, FColor::Red, false, 3, 0, 1);
 		UtilCollision::CapsuleSweepMulti(GetWorld(), sweepResults, startLocation, endLocation, AttackRadius, ProjectileOwnerType, DebugOnOff);
 		if(!sweepResults.IsEmpty())

@@ -55,7 +55,7 @@ void USkillSoldierShift::SkillTriggered()
 	if (CanDash && currentAccelLength > 0 )
 	{
 		// 화면 와이드 아웃(Run)
-		OwnerCharacterPC->InCombat = false;
+		OwnerCharacterPC->SetInCombat(false);
 		//ownerPawn->SetRunZoomOutProp();
 		OwnerCharacterPC->IsJog = true;
 		

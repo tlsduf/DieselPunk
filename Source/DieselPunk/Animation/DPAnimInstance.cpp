@@ -42,7 +42,7 @@ void UDPAnimInstance::NativeUpdateAnimation(float InDeltaSeconds)
 	
 	IsAccelerating = Character->GetCharacterMovement()->GetCurrentAcceleration().Length() > 0;
 
-	InCombat = Character->InCombat;
+	InCombat = Character->GetInCombat();
 	
 	IsDead = Character->IsDead();
 }

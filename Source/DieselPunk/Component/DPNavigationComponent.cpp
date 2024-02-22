@@ -127,7 +127,7 @@ int32 UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGo
 	FObjectManager::GetInstance()->FindActorArrayByPredicate(monstersIDs, [](AActor* InActor)
 	{
 		if(auto npc = Cast<ACharacterNPC>(InActor))
-			if(npc->NPCType == ENPCType::Enemy)
+			if(npc->GetNPCType() == ENPCType::Enemy)
 				return true;
 		return false;
 	});
@@ -220,7 +220,7 @@ int32 UDPNavigationComponent::GetTurretIdOnPath()
 	FObjectManager::GetInstance()->FindActorArrayByPredicate(monstersIDs, [](AActor* InActor)
 	{
 		if(auto npc = Cast<ACharacterNPC>(InActor))
-			if(npc->NPCType == ENPCType::Enemy)
+			if(npc->GetNPCType() == ENPCType::Enemy)
 				return true;
 		return false;
 	});
@@ -324,7 +324,7 @@ void UDPNavigationComponent::AddForceAlongSplinePath()
 	constexpr int scaleValue = 100;
 	Owner->AddMovementInput(addForceDir, scaleValue);
 
-	if(Owner->DebugOnOff)
+	if(Owner->GetDebugOnOff())
 		DrawDebugDirectionalArrow(GetWorld(), Owner->GetActorLocation(), Owner->GetActorLocation() + addForceDir * 200, 5, FColor::Red, false);
 }
 
@@ -346,7 +346,7 @@ FVector UDPNavigationComponent::MoveToAlongSplinePath()
 	nearestSplineRotation = SplinePath.GetRotationAtDistanceAlongSpline(distOwnerToSplinePath);
 	dest = nearestSplineLocation + nearestSplineRotation.Vector().GetSafeNormal() * 500;
 
-	if(Owner->DebugOnOff)
+	if(Owner->GetDebugOnOff())
 		DrawDebugLine(GetWorld(), feetLocation, dest, FColor::Black, false);
 	
 	return dest;

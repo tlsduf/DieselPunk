@@ -55,8 +55,7 @@ protected:
 
 	/////////////////////////////////////////////////////////////////////
 	// for State //
-
-public:
+	
 	// InCombat이 True 면 전투상태
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	bool InCombat = false;					
@@ -142,10 +141,17 @@ public:
 	// 전투상태 핸들링 함수 // 전투상태 돌입 5초 후, 전투상태 자동 해제. // 해제 전 갱신 시, 5초갱신.
 	void HandleCombatState();
 
-	
+public:
+	/////////////////////////////////////////////////////////////////////
+	// Getter, Setter //
 	const FDateTime& GetCreateTime() const {return CreateTime;}
 
 	const FString& GetCharacterName() const {return CharacterName;}
 
 	const ECharacterType& GetCharacterType() const {return CharacterType;}
+
+	bool GetInCombat() const { return InCombat; }
+	void SetInCombat(bool inBool) { InCombat = inBool; }
+
+	bool GetDebugOnOff() const { return DebugOnOff; }
 };

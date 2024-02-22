@@ -138,7 +138,7 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 			if(auto NPC = Cast<ACharacterNPC>(this))
 			{
 				// 몬스터 처치 시 여러 기능을 실행
-				if(NPC->NPCType == ENPCType::Enemy)
+				if(NPC->GetNPCType() == ENPCType::Enemy)
 				{
 					// 플레이어에게 코스트를 지급합니다.
 					ACharacterPC* playerPawn = Cast<ACharacterPC>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
@@ -154,7 +154,7 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 						DamageCauserPlayer->Stat.ChangeStat(ECharacterStatType::MaxHp , UtilLevelCal::MaxHealthCalc(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Level)));
 				}
 				// 포탑 파괴시 모든 적의 경로를 재탐색합니다.
-				if(NPC->NPCType == ENPCType::Alliance)
+				if(NPC->GetNPCType() == ENPCType::Alliance)
 					NPC->UpdateSplinePathAll();
 			}
 			

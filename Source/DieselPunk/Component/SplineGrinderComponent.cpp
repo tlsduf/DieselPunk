@@ -64,7 +64,7 @@ void USplineGrinderComponent::GrindAction(const FHitResult& Hit)
 			if(thisPtr.IsValid())
 			{
 				thisPtr->GetOwner()->SetActorLocation(thisPtr->SplineComponent->GetLocationAtDistanceAlongSpline(InCurValue, ESplineCoordinateSpace::Type::World) + FVector(0,0,60));
-				if(!Cast<ACharacterPC>(thisPtr->GetOwner())->InCombat)
+				if(!Cast<ACharacterPC>(thisPtr->GetOwner())->GetInCombat())
 				{
 					if( thisPtr->bForwardDir )
 						thisPtr->GetOwner()->SetActorRotation(thisPtr->SplineComponent->GetRotationAtDistanceAlongSpline(InCurValue, ESplineCoordinateSpace::Type::World));

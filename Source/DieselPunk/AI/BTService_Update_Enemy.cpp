@@ -88,7 +88,7 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("IsAbleAttack"), false);*/
     
     // 몬스터와 목표의 거리에 따른 조건 설정
-    if(AICharacter->InRange)
+    if(AICharacter->GetInRange())
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InRange"), true);
     else
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InRange"), false);

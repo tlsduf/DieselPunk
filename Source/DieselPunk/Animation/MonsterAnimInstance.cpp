@@ -68,18 +68,6 @@ void UMonsterAnimInstance::ResumeMontage(EAbilityType InAbilityType)
 	Montage_Resume(animMontage);
 }
 
-void UMonsterAnimInstance::AnimNotify_NotifyMeleeAttack() const
-{
-	auto ownerPawn = Cast<ACharacterNPC>(GetOwningActor());
-	
-	UMeleeAttack *MA = nullptr;
-	if(ownerPawn->MeleeAttack)
-		MA = Cast<UMeleeAttack>(ownerPawn->MeleeAttack);
-	
-	if(MA != nullptr)
-		MA->AbilityStart(nullptr);
-}
-
 // 공중몹 프로펠러 회전
 int16 UMonsterAnimInstance::AddRotation()
 {

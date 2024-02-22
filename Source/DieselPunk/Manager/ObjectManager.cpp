@@ -195,7 +195,7 @@ ACharacterNPC* FObjectManager::GetNexus()
 		if(object.Value.IsValid())
 		{
 			ACharacterNPC* nexus = Cast<ACharacterNPC>(object.Value);
-			if(nexus != nullptr && nexus->NPCType == ENPCType::Nexus)
+			if(nexus != nullptr && nexus->GetNPCType() == ENPCType::Nexus)
 			{
 				Nexus = nexus;
 				return Nexus.Get();

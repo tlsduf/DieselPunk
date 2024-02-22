@@ -57,7 +57,7 @@ void UProjectileAttack::Fire(AActor* inTarget)
 			splinePath = MakeSplinePath(inTarget);
 			ProjectileBase->SetSplinePath(splinePath);
 			//ProjectileBase->SplineLength = FVector::Dist(ownerPawn->GetActorLocation(), inTarget->GetActorLocation());
-			if(ownerPawn->DebugOnOff)
+			if(ownerPawn->GetDebugOnOff())
 				DrawDebugSpline(splinePath);
 			if(splinePath.IsValid())
 				ProjectileBase->FinishSpawning(SpawnTransform);
@@ -68,7 +68,7 @@ void UProjectileAttack::Fire(AActor* inTarget)
 			splinePath = MakeSplinePathForDirectFire(inTarget);
 			ProjectileBase->SetSplinePath(splinePath);
 			//ProjectileBase->SplineLength = FVector::Dist(ownerPawn->GetActorLocation(), inTarget->GetActorLocation());
-			if(ownerPawn->DebugOnOff)
+			if(ownerPawn->GetDebugOnOff())
 				DrawDebugSpline(splinePath);
 			if(splinePath.IsValid())
 				ProjectileBase->FinishSpawning(SpawnTransform);

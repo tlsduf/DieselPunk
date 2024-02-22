@@ -36,7 +36,6 @@ class DIESELPUNK_API ACharacterNPC : public ACharacterBase
 	FTimerHandle PathTHandle2;
 	FTimerHandle PathTHandle3;
 
-	
 protected:
 	/////////////////////////////////////////////////////////////////////
 	// for UI //
@@ -45,9 +44,7 @@ protected:
 	TWeakObjectPtr< UEnemyStatusUI > EnemyStatusUI;		// 상태 UI 포인터
 
 	FTimerHandle EnemyStatusUITHandle;
-
 	
-public:
 	/////////////////////////////////////////////////////////////////////
 	// for Character info Management //
 	
@@ -93,9 +90,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="MYDP_Setting", meta=(AllowPrivateAccess="true"))
 	int32 GridSizeHorizontal = 1;
 
-
-	// 내비게이션
-	FTimerHandle PulseUpdatePathTHandle;
 	
 	UPROPERTY(BlueprintReadOnly, Category = "MYDP_Skill")
 	UDPNavigationComponent *DPNavigationComponent;
@@ -170,9 +164,19 @@ public:
 
 	
 	// Getter, Setter
+	ENPCType GetNPCType() const { return NPCType; }
+
+	void SetAIController(AAIController* inController) { AIController = inController; }
+
+	bool GetInRange() const { return InRange; }
+	
 	TWeakObjectPtr<AActor> GetAttackTarget() const { return Target; }
+	
 	const TArray<FVector>& GetShortestPath() const { return ShortestPath; }
+	
 	int32 GetGridSizeVertical() const { return GridSizeVertical; }
+	
 	int32 GetGridSizeHorizontal() const { return GridSizeHorizontal; }
+	
 	FVector GetBlockedAttackTargetLoc() const { return BlockedTargetLoc; }
 };

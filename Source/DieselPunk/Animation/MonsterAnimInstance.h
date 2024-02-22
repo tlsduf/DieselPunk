@@ -39,9 +39,6 @@ public:
 	void ResumeMontage(EAbilityType InAbilityType);
 
 private:
-	// MeleeAttack 전용 애님노티파이 입니다. 
-	UFUNCTION()
-	void AnimNotify_NotifyMeleeAttack() const;
 
 	// 공중몹 프로펠러 회전
 	int16 AddRotation();

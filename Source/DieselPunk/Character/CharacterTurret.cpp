@@ -81,7 +81,7 @@ void ACharacterTurret::SetTurretTarget()
 		FObjectManager::GetInstance()->FindActorArrayByPredicate(outActors, [](AActor* InActor)
 		{
 			if(ACharacterNPC* thisNPC = Cast<ACharacterNPC>(InActor))
-				if(thisNPC->NPCType == ENPCType::Enemy)
+				if(thisNPC->GetNPCType() == ENPCType::Enemy)
 					return true;
         
 			return false;
