@@ -30,18 +30,18 @@ void FDataTableManager::LoadDataTables()
 {
 	if(!Datas.IsEmpty())
 		Datas.Empty();
-	LoadDataTable(EDataTableType::Stat);
-	LoadDataTable(EDataTableType::Character);
-	LoadDataTable(EDataTableType::Card);
-	LoadDataTable(EDataTableType::WaveModule);
-	LoadDataTable(EDataTableType::StageWave);
+	for(EDataTableType tableType : TEnumRange<EDataTableType>())
+		LoadDataTable(tableType);
 }
 
 //변수 TableName의 데이터 테이블을 로드합니다.
 void FDataTableManager::LoadDataTable(const EDataTableType& InDataTableType)
 {
 	//데이터 테이블을 로드하여 추가합니다.
-	Datas.Add(InDataTableType,LoadObject<UDataTable>(nullptr, *UtilPath::GetDataTablePath(*UtilPath::EnumToString(InDataTableType))));
+	UDataTable* table = LoadObject<UDataTable>(nullptr, *UtilPath::GetDataTablePath(*UtilPath::EnumToString(InDataTableType)));
+
+	if(table)
+		Datas.Add(InDataTableType, table);
 }
 
 //테이블에 등록된 데이터뭉치를 가져옵니다.

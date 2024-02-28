@@ -57,8 +57,11 @@ enum class EDataTableType : uint8
 	Card			UMETA( ToolTip = "카드 정보" ),
 	WaveModule		UMETA( ToolTip = "웨이브 모듈 정보" ),
 	WaveSet			UMETA( ToolTip = "웨이브 세트 정보" ),
-	StageWave		UMETA( ToolTip = "스테이지 웨이브 정보" )
+	StageWave		UMETA( ToolTip = "스테이지 웨이브 정보" ),
+	Buff			UMETA( ToolTip = "버프 정보" ),
+	Count
 };
+ENUM_RANGE_BY_COUNT(EDataTableType, EDataTableType::Count);
 
 // 스탯 타입
 UENUM( BlueprintType )
@@ -81,8 +84,10 @@ enum class ECharacterStatType : uint8
 	CoolDown			UMETA( ToolTip = "스킬 쿨타임 감소" ),
 	AttackMaxRange		UMETA( ToolTip = "최대사거리" ),
 	AttackMinRange		UMETA( ToolTip = "최소사거리" ),
-	Cost				UMETA( ToolTip = "코스트")
+	Cost				UMETA( ToolTip = "코스트"),
+	Count
 };
+ENUM_RANGE_BY_COUNT(ECharacterStatType, ECharacterStatType::Count);
 
 // 네비 노드 상태
 UENUM( BlueprintType )
@@ -165,4 +170,12 @@ enum class ESearchAreaType : uint8
 {
 	Circle			UMETA( ToolTip = "원 파생 범위" ),
 	Rectangle		UMETA( ToolTip = "사각형 파생 범위 " ),
+};
+
+// 버프 밸류 적용 타입
+UENUM( BlueprintType )
+enum class EBuffValueType : uint8
+{
+	Constant		UMETA( ToolTip = "상수" ),
+	Percentage		UMETA( ToolTip = "백분율" ),
 };
