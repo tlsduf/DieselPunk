@@ -7,6 +7,7 @@
 #include "../Core/DpGameMode.h"
 #include "../Manager/ObjectManager.h"
 #include "../Core/DPLevelScriptActor.h"
+#include "../Component/StatControlComponent.h"
 
 #include <Components/WidgetComponent.h>
 #include <Components/StaticMeshComponent.h>
@@ -38,6 +39,8 @@ ACharacterBase::ACharacterBase()
 		WidgetComp->SetSimulatePhysics( false );
 		WidgetComp->SetWidgetSpace( EWidgetSpace::Screen );
 	}
+
+	StatControlComponent = CreateDefaultSubobject<UStatControlComponent>(TEXT("StatControlComponent"));
 }
 
 
@@ -54,9 +57,6 @@ void ACharacterBase::BeginPlay()
 		FObjectManager::GetInstance()->AddActor(this);
 
 	CreateStatusUI();
-	
-	//스탯 초기화
-	Stat.Initialize(this, CharacterName);
 
 	// 트레이스 반응 설정 // ECC_GameTraceChannel6는 플레이어, 아군, 적군 이 서로를 탐지할 때 사용합니다.
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel6, ECollisionResponse::ECR_Block);
@@ -67,8 +67,6 @@ void ACharacterBase::BeginPlay()
 // =============================================================
 void ACharacterBase::BeginDestroy()
 {
-	Stat.Release();
-	
 	Super::BeginDestroy();
 }
 
@@ -95,15 +93,16 @@ void ACharacterBase::SetupPlayerInputComponent(UInputComponent* InPlayerInputCom
 // [Stat] 스탯을 변화합니다. 인게임에서 진행도중 스탯을 변경하려면 이 함수를 사용하세요. Stat[InStatType] = Stat[InStatType] + InValue; 로 적용됩니다.
 void ACharacterBase::ChangeStat(ECharacterStatType InStatType, int32 InValue)
 {
-	Stat.ChangeStat(InStatType, InValue);
+	int32 value = StatControlComponent->GetStat(InStatType) + InValue;
+	StatControlComponent->SetStat(InStatType, value);
 }
 
 //================================================================
 // 블루프린트용 스탯 Getter
 //================================================================
-int32 ACharacterBase::GetCharacterStat(ECharacterStatType inStatType)
+int32 ACharacterBase::GetStat(ECharacterStatType InStatType)
 {
-	return Stat.GetStat(inStatType);
+	return StatControlComponent->GetStat(InStatType);
 }
 
 //================================================================
@@ -121,10 +120,10 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 		//================================================================
 		// 1.데미지 계산(공식적용|올림내림)
 		damage = (int)(damage + 0.2); // 데미지 소수점 처리 *소수점첫째자리가 0.8 이상이면 올림, 미만시 내림
-		damage = FMath::Min(Stat.GetStat(ECharacterStatType::Hp), (int)damage);
+		damage = FMath::Min(GetStat(ECharacterStatType::Hp), (int)damage);
 		
-		_UpdateHp(Stat.GetStat(ECharacterStatType::Hp) - damage, Stat.GetStat(ECharacterStatType::MaxHp));
-		Stat.ChangeStat(ECharacterStatType::Hp , -damage);
+		_UpdateHp(GetStat(ECharacterStatType::Hp) - damage, GetStat(ECharacterStatType::MaxHp));
+		ChangeStat(ECharacterStatType::Hp , -damage);
 		CreateDamageActor(damage);
 		
 		//================================================================
@@ -143,15 +142,15 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 					// 플레이어에게 코스트를 지급합니다.
 					ACharacterPC* playerPawn = Cast<ACharacterPC>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 					if (playerPawn != nullptr)
-						playerPawn->ChangeStat(ECharacterStatType::Cost, Stat.GetStat(ECharacterStatType::Cost));
+						playerPawn->ChangeStat(ECharacterStatType::Cost, GetStat(ECharacterStatType::Cost));
 					
 					auto DamageCauserPlayer = Cast<ACharacterBase>(DamageCauser);
 					// 플레이어의 경험치를 1 올림
-					DamageCauserPlayer->Stat.ChangeStat(ECharacterStatType::Exp, 1);
-					if(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Level) != UtilLevelCal::LevelCalc(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Exp)))
-						DamageCauserPlayer->Stat.ChangeStat(ECharacterStatType::Level, UtilLevelCal::LevelCalc(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Exp)));
-					if(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::MaxHp) != UtilLevelCal::MaxHealthCalc(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Level)))
-						DamageCauserPlayer->Stat.ChangeStat(ECharacterStatType::MaxHp , UtilLevelCal::MaxHealthCalc(DamageCauserPlayer->Stat.GetStat(ECharacterStatType::Level)));
+					DamageCauserPlayer->ChangeStat(ECharacterStatType::Exp, 1);
+					if(DamageCauserPlayer->GetStat(ECharacterStatType::Level) != UtilLevelCal::LevelCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Exp)))
+						DamageCauserPlayer->ChangeStat(ECharacterStatType::Level, UtilLevelCal::LevelCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Exp)));
+					if(DamageCauserPlayer->GetStat(ECharacterStatType::MaxHp) != UtilLevelCal::MaxHealthCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Level)))
+						DamageCauserPlayer->ChangeStat(ECharacterStatType::MaxHp , UtilLevelCal::MaxHealthCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Level)));
 				}
 				// 포탑 파괴시 모든 적의 경로를 재탐색합니다.
 				if(NPC->GetNPCType() == ENPCType::Alliance)
@@ -221,7 +220,7 @@ void ACharacterBase::CreateDamageActor(float InDamage)
 void ACharacterBase::_UpdateHp(int InCurHp, int InMaxHp)
 {
 	// 현재 체력 퍼센트
-	float curPercent = ( float )Stat.GetStat(ECharacterStatType::Hp) / ( float )Stat.GetStat(ECharacterStatType::MaxHp);
+	float curPercent = ( float )GetStat(ECharacterStatType::Hp) / ( float )GetStat(ECharacterStatType::MaxHp);
 	curPercent = FMath::Clamp( curPercent, 0.f, 1.f );
 
 	// 목표 체력 퍼센트
@@ -269,7 +268,7 @@ void ACharacterBase::_UpdateHp(int InCurHp, int InMaxHp)
 //================================================================
 bool ACharacterBase::IsDead()
 {
-	return Stat.GetStat(ECharacterStatType::Hp) <= 0;
+	return GetStat(ECharacterStatType::Hp) <= 0;
 }
 
 //================================================================

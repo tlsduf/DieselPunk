@@ -42,7 +42,9 @@ protected:
 
 	void SetStatDelegateFunction(TWeakObjectPtr<AActor> InActor, ECharacterStatType InStatType, int32 InValue);
 
-public:	
+public:
+	virtual void BeginDestroy() override;
+	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 

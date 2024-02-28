@@ -84,7 +84,7 @@ public:
 	void ResizeHandCard(int InIndex, FVector2d InSize);
 
 	UFUNCTION()
-	void ChangeCredit(TWeakObjectPtr<ACharacterBase> InCharacter, ECharacterStatType InStatType, int32 InValue);
+	void ChangeCredit(TWeakObjectPtr<AActor> InCharacter, ECharacterStatType InStatType, int32 InValue);
 
 	UFUNCTION()
 	void ChangeDeckCount(int32 InValue);

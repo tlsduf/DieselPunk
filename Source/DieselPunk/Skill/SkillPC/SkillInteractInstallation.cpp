@@ -96,7 +96,7 @@ void USkillInteractInstallation::SkillTriggered()
 		LOG_SCREEN(FColor::Yellow, TEXT("Fix Turret"))
 
 		//최대 체력으로 복구
-		int32 hp = InteractiveInstallation->GetStat().GetStat(ECharacterStatType::MaxHp) - InteractiveInstallation->GetStat().GetStat(ECharacterStatType::Hp);
+		int32 hp = InteractiveInstallation->GetStat(ECharacterStatType::MaxHp) - InteractiveInstallation->GetStat(ECharacterStatType::Hp);
 		InteractiveInstallation->ChangeStat(ECharacterStatType::Hp, hp);
 	}
 	else

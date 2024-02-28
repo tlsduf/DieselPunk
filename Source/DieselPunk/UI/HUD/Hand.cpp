@@ -6,6 +6,8 @@
 #include "../../Character/CharacterPC.h"
 #include "../../Manager/ObjectManager.h"
 #include "../../Character/CharacterPC.h"
+#include "../../Component/StatControlComponent.h"
+#include "../../Handler/DeckHandler.h"
 
 #include <Components/SizeBox.h>
 #include <Components/Image.h>
@@ -13,7 +15,6 @@
 #include <Blueprint/WidgetTree.h>
 #include <Animation/WidgetAnimation.h>
 
-#include "DieselPunk/Handler/DeckHandler.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(Hand)
 
@@ -28,7 +29,7 @@ void UHand::OnCreated()
 
 void UHand::Initailize(ACharacterPC* InPlayer)
 {
-	InPlayer->GetStat().GetChangeStatDelegate().AddUObject(this, &UHand::ChangeCredit);
+	InPlayer->GetStatControlComponent()->GetSetStatDelegate().AddUObject(this, &UHand::ChangeCredit);
 	InPlayer->GetDelegateChangeDeckCount().AddUObject(this, &UHand::ChangeDeckCount);
 }
 
@@ -192,12 +193,12 @@ void UHand::ResizeHandCard(int InIndex, FVector2d InSize)
 	sizebox->SetRenderScale(InSize);
 }
 
-void UHand::ChangeCredit(TWeakObjectPtr<ACharacterBase> InCharacter, ECharacterStatType InStatType, int32 InValue)
+void UHand::ChangeCredit(TWeakObjectPtr<AActor> InCharacter, ECharacterStatType InStatType, int32 InValue)
 {
 	if(InStatType != ECharacterStatType::Cost)
 		return;
 
-	Cost += InValue;
+	Cost = InValue;
 
 	TextCost->SetText(FText::FromString(FString::Printf(TEXT("%d"), Cost)));
 }

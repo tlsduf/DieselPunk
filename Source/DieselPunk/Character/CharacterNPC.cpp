@@ -37,9 +37,6 @@ void ACharacterNPC::BeginPlay()
 	CharacterType = ECharacterType::Monster;
 
 	Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	
-	// Stat Init
-	GetCharacterMovement()->MaxWalkSpeed = Stat.GetStat(ECharacterStatType::MoveSpeed);
 
 	if(NPCType == ENPCType::Enemy)
 	{
@@ -261,7 +258,7 @@ void ACharacterNPC::UpdateEnemyTarget()
 	}
 	
 	float distance = FVector::Dist(GetActorLocation(), nexus->GetActorLocation());
-	if(distance > GetStat().GetStat(ECharacterStatType::AttackMaxRange))
+	if(distance > GetStat(ECharacterStatType::AttackMaxRange))
 		ChangeTarget(nullptr);
 	else
 		ChangeTarget(nexus);
@@ -373,7 +370,7 @@ void ACharacterNPC::SetInRange()
 	{
 		FVector VRange = GetActorLocation() - GetAttackTarget()->GetActorLocation();
 		float FRange = VRange.Size();
-		InRange = (GetStat().GetStat(ECharacterStatType::AttackMaxRange) < FRange) ? false : true;
+		InRange = (GetStat(ECharacterStatType::AttackMaxRange) < FRange) ? false : true;
 	}
 	else
 		InRange = false;

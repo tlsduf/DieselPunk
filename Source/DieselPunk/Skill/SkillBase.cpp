@@ -50,7 +50,7 @@ void USkillBase::AbilityStart(AActor* inTarget)
 void USkillBase::InitSkill()
 {
 	if(OwnerCharacter)
-		CharacterStatAtk = static_cast<float>(OwnerCharacter->GetStat().GetStat(ECharacterStatType::Atk));
+		CharacterStatAtk = static_cast<float>(OwnerCharacter->GetStat(ECharacterStatType::Atk));
 	Damage = CharacterStatAtk * AtkCoefficient;
 }
 

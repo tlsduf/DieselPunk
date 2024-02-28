@@ -14,7 +14,7 @@ struct FEffectData
 	
 	//이펙트 재생 타입
 	UPROPERTY(EditAnywhere)
-	EEffectPlayType EffectPlayType;
+	EEffectPlayType EffectPlayType = EEffectPlayType::None;
 	
 	//나이아가라 이펙트
 	UPROPERTY(EditAnywhere)

@@ -16,7 +16,7 @@ struct DIESELPUNK_API FBuffDataTable : public FTableRowBase
 	
 	//변경할 스탯
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ECharacterStatType CharacterStatType;
+	ECharacterStatType CharacterStatType = ECharacterStatType::Hp;
 
 	//버프 종료 시 스탯 복구할 지
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -28,7 +28,7 @@ struct DIESELPUNK_API FBuffDataTable : public FTableRowBase
 	
 	//버프 배율 타입(백분율/상수)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EBuffValueType BuffValueType;
+	EBuffValueType BuffValueType = EBuffValueType::Constant;
 
 	//밸류
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

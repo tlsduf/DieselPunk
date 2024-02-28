@@ -157,12 +157,12 @@ void ACharacterPC::Tick(float DeltaTime)
 	// 뛰는 상태인지 판별하여 MaxWalkSpeed 초기화.
 	if (IsJog)
 	{
-		GetCharacterMovement()->MaxWalkSpeed = Stat.GetStat(ECharacterStatType::MoveSpeed) * 2;
+		GetCharacterMovement()->MaxWalkSpeed = GetStat(ECharacterStatType::MoveSpeed) * 2;
 		SetRunZoomOutProp();
 	}
 	else
 	{
-		GetCharacterMovement()->MaxWalkSpeed = Stat.GetStat(ECharacterStatType::MoveSpeed);
+		GetCharacterMovement()->MaxWalkSpeed = GetStat(ECharacterStatType::MoveSpeed);
 		IsJog = false;
 		SetZoomOutProp();
 	}
@@ -188,10 +188,10 @@ void ACharacterPC::Tick(float DeltaTime)
 	}
 
 	// 레벨이 올랐음을 감지하는 구문.
-	if(TempLevel != Stat.GetStat(ECharacterStatType::Level))
+	if(TempLevel != GetStat(ECharacterStatType::Level))
 	{
-		Stat.ChangeStat(ECharacterStatType::Hp , Stat.GetStat(ECharacterStatType::MaxHp));
-		TempLevel = Stat.GetStat(ECharacterStatType::Level);
+		ChangeStat(ECharacterStatType::Hp , GetStat(ECharacterStatType::MaxHp));
+		TempLevel = GetStat(ECharacterStatType::Level);
 		LevelUpEvent();
 	}
 
@@ -308,7 +308,7 @@ void ACharacterPC::StartJog()
 	
 	if (dotResult > 0.01)
 	{
-		GetCharacterMovement()->MaxWalkSpeed = Stat.GetStat(ECharacterStatType::MoveSpeed) * 2;
+		GetCharacterMovement()->MaxWalkSpeed = GetStat(ECharacterStatType::MoveSpeed) * 2;
 		IsJog = true;
 		SetRunZoomOutProp();
 		InCombat = false;
@@ -317,7 +317,7 @@ void ACharacterPC::StartJog()
 
 void ACharacterPC::StopJog()
 {
-	GetCharacterMovement()->MaxWalkSpeed = Stat.GetStat(ECharacterStatType::MoveSpeed);
+	GetCharacterMovement()->MaxWalkSpeed = GetStat(ECharacterStatType::MoveSpeed);
 	IsJog = false;
 	SetZoomOutProp();
 }
@@ -531,7 +531,7 @@ bool ACharacterPC::ExecuteCardActivate()
 	
 	bool IsSuccessActivate = false;
 	if(DelegateCardActivate.IsBound())
-		DelegateCardActivate.Execute(IsSuccessActivate, Stat.GetStat(ECharacterStatType::Cost));
+		DelegateCardActivate.Execute(IsSuccessActivate, GetStat(ECharacterStatType::Cost));
 
 	if(!IsSuccessActivate)
 		return false;
@@ -574,13 +574,13 @@ bool ACharacterPC::ExecuteCardComplete()
 	
 	bool IsSuccessComplete = false;
 	if(DelegateCardComplete.IsBound())
-		DelegateCardComplete.Execute(IsSuccessComplete, Stat.GetStat(ECharacterStatType::Cost));
+		DelegateCardComplete.Execute(IsSuccessComplete, GetStat(ECharacterStatType::Cost));
 
 	if(!IsSuccessComplete)
 		return false;
 
 	int32 value = controller->PostCompleteCard();
-	Stat.ChangeStat(ECharacterStatType::Cost, -DeckHandler->GetHands()[value]->GetCardInfo().Cost);
+	ChangeStat(ECharacterStatType::Cost, -DeckHandler->GetHands()[value]->GetCardInfo().Cost);
 	DeckHandler->UseCard(value);
 
 	LOG_SCREEN(FColor::White, TEXT("사용 완료"))
@@ -648,7 +648,7 @@ bool ACharacterPC::ReplaceCard(TArray<int32>& OutUseIndex)
 {
 	int32 value = 50 * FMath::Pow(2.f, ReplaceUseCostCount - 1);
 
-	if(ReplaceUseCostCount != 0 && GetStat().GetStat(ECharacterStatType::Cost) < value)
+	if(ReplaceUseCostCount != 0 && GetStat(ECharacterStatType::Cost) < value)
 		return false;
 	
 	if(ReplaceUseCostCount != 0)

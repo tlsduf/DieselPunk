@@ -18,6 +18,11 @@ UStatControlComponent::UStatControlComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// ...
+	ACharacterBase* owner = Cast<ACharacterBase>(Owner);
+	if(owner)
+	{
+		ActorName = owner->GetCharacterName();
+	}
 }
 
 
@@ -31,7 +36,6 @@ void UStatControlComponent::BeginPlay()
 		return;
 	
 	//스탯 초기화
-	Stat.Empty();
 	for(ECharacterStatType statType : TEnumRange<ECharacterStatType>())
 	{
 		if(statType == ECharacterStatType::Count)
@@ -39,13 +43,12 @@ void UStatControlComponent::BeginPlay()
 
 		Stat.FindOrAdd(statType) = 0.0;
 	}
-
-	DelegateChangeStat.Clear();
+	
 	DelegateChangeStat.AddUObject(this, &UStatControlComponent::SetStatDelegateFunction);
 
 	if(ActorName == TEXT(""))
 	{
-		UE_LOG(LogLoad, Error, TEXT("%s의 ActorName이 등록되지 않았습니다. 데이터 테이블에서 스탯을 불러올 수 없습니다."), *Owner->GetName())
+		LOG_SCREEN(FColor::Red, TEXT("%s의 ActorName이 등록되지 않았습니다. 데이터 테이블에서 스탯을 불러올 수 없습니다."), *Owner->GetName())
 		return;
 	}
 
@@ -53,7 +56,7 @@ void UStatControlComponent::BeginPlay()
 
 	if(!data)
 	{
-		UE_LOG(LogLoad, Error, TEXT("ActorName: %s에 해당하는 데이터 열이 없습니다. 데이터 테이블에서 스탯을 불러올 수 없습니다."), *Owner->GetName())
+		LOG_SCREEN(FColor::Red, TEXT("ActorName: %s에 해당하는 데이터 열이 없습니다. 데이터 테이블에서 스탯을 불러올 수 없습니다."), *Owner->GetName())
 		return;
 	}
 
@@ -75,7 +78,7 @@ void UStatControlComponent::BeginPlay()
 	SetStat(ECharacterStatType::CoolDown,		 data->CoolDown);
 	SetStat(ECharacterStatType::AttackMaxRange,	 data->AttackMaxRange);
 	SetStat(ECharacterStatType::AttackMinRange,	 data->AttacMinRange);
-	SetStat(ECharacterStatType::Cost,			  data->Cost);
+	SetStat(ECharacterStatType::Cost,			 data->Cost);
 }
 
 void UStatControlComponent::SetStatDelegateFunction(TWeakObjectPtr<AActor> InActor, ECharacterStatType InStatType, int32 InValue)
@@ -96,13 +99,21 @@ void UStatControlComponent::SetStatDelegateFunction(TWeakObjectPtr<AActor> InAct
 	}
 }
 
+void UStatControlComponent::BeginDestroy()
+{
+	Super::BeginDestroy();
+	
+	Stat.Empty();
+	DelegateChangeStat.Clear();
+}
+
 void UStatControlComponent::SetStat(ECharacterStatType InStatType, int32 InValue)
 {
 	int32* stat = Stat.Find(InStatType);
-	if(!stat)
+	if(!stat || *stat == InValue)
 		return;
-
-	*stat = *stat + InValue;
+	
+	*stat = InValue;
 
 	if(DelegateChangeStat.IsBound())
 		DelegateChangeStat.Broadcast(Owner, InStatType, *stat);

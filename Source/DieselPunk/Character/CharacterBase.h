@@ -4,11 +4,11 @@
 
 #include "GameFramework/Character.h"
 #include "../Interface/DpManagementTargetInterFace.h"
-#include "Stat/Stat.h"
 #include "CharacterBase.generated.h"
 
 class UWidgetComponent;
 class UStatusUIBase;
+class UStatControlComponent;
 
 UCLASS()
 class DIESELPUNK_API ACharacterBase : public ACharacter, public IDpManagementTargetInterFace
@@ -18,7 +18,8 @@ class DIESELPUNK_API ACharacterBase : public ACharacter, public IDpManagementTar
 protected:
 	/////////////////////////////////////////////////////////////////////
 	// for Character info Management //
-	FStat Stat;						//스탯
+	UPROPERTY(EditDefaultsOnly, Category="MYDP")
+	UStatControlComponent* StatControlComponent;
 	
 	FDateTime CreateTime;
 
@@ -97,14 +98,14 @@ public:
 	// for Character info Management //
 
 	// [Stat] 스탯을 가져옵니다.
-	FStat& GetStat() { return Stat; }
+	UStatControlComponent* GetStatControlComponent() { return StatControlComponent; }
 
 	// [Stat] 스탯을 변화합니다. 인게임에서 진행도중 스탯을 변경하려면 이 함수를 사용하세요. Stat[InStatType] = Stat[InStatType] + InValue; 로 적용됩니다.
 	void ChangeStat(ECharacterStatType InStatType, int32 InValue);
 	
 	// [Stat] 블루프린트용 스탯 Getter
 	UFUNCTION(BlueprintPure)
-	int32 GetCharacterStat(ECharacterStatType inStatType);
+	int32 GetStat(ECharacterStatType InStatType);
 
 	// 데미지 처리
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent, class AController *EventInstigator, AActor *DamageCauser) override;
