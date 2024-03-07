@@ -2,11 +2,15 @@
 
 #include "FstreamManager.h"
 
+FString FFstreamManager::FilePath = FPaths::GameDevelopersDir();
+std::wofstream FFstreamManager::CustomOutStream;
+std::wifstream FFstreamManager::CustomInStream;
+
 //바이너리 파일 쓰기
 bool FFstreamManager::WriteDataBinary(FString InFileName, const TArray<FString>& InString)
 {
 	std::wofstream fout;
-	FString filePath = FPaths::GameDevelopersDir();
+	FString filePath = FilePath;
 	filePath += FString::Printf(TEXT("Data/%s"), *InFileName);
 	fout.open(*filePath, std::ios::binary | std::ios::trunc);
 
@@ -30,7 +34,7 @@ bool FFstreamManager::WriteDataBinary(FString InFileName, const TArray<FString>&
 bool FFstreamManager::ReadDataBinary(FString InFileName, TArray<FString>& OutString)
 {
 	std::wifstream fin;
-	FString filePath = FPaths::GameDevelopersDir();
+	FString filePath = FilePath;
 	filePath += FString::Printf(TEXT("Data/%s"), *InFileName);
 	fin.open(*filePath, std::ios::binary);
 	wchar_t* buffer = nullptr;
@@ -56,15 +60,47 @@ bool FFstreamManager::ReadDataBinary(FString InFileName, TArray<FString>& OutStr
 	return false;
 }
 
+bool FFstreamManager::OpenDataBinaryCustom(FString InFileName, std::ios_base::openmode InOpenMode)
+{
+	FString filePath = FilePath;
+	filePath += FString::Printf(TEXT("Data/%s"), *InFileName);
+	CustomOutStream.open(*filePath, std::ios::binary | InOpenMode);
+
+	return CustomOutStream.is_open();
+}
+
+bool FFstreamManager::WriteDataBinaryCustom(const TArray<FString>& InString, FString InDivideWord)
+{
+	if(CustomOutStream.is_open())
+	{
+		for(const FString& data : InString)
+		{
+			FString outData = data;
+			outData += InDivideWord;
+			CustomOutStream.write(*outData, outData.Len());
+		}
+		FString endString = TEXT("\0");
+		CustomOutStream.write(*endString, 1);
+		return true;
+	}
+	return false;
+}
+
+bool FFstreamManager::CloseDataBinaryCustom()
+{
+	CustomOutStream.close();
+	return !CustomOutStream.is_open();
+}
+
 //읽은 전체 바이너리 파일을 스트링으로 분리
-TArray<FString> FFstreamManager::SplitString(const FString& InString)
+TArray<FString> FFstreamManager::SplitString(const FString& InString, FString InDivideWord)
 {
 	FString storeString;
 	TArray<FString> outString;
 
 	for(size_t i = 0; i < InString.Len(); ++i)
 	{
-		if(InString[i] == TEXT('/'))
+		if(FString(&InString[i]) == InDivideWord)
 		{
 			outString.Add(storeString);
 			storeString = "";

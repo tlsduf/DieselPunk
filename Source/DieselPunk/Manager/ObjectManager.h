@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #pragma once
 
+#include "../Interface/ObjectPoolingInterface.h"
+
 
 struct FSpawnParam
 {
@@ -25,6 +27,13 @@ public:
 	}
 };
 
+struct FPoolingInfo
+{
+	FString UClassRefPath;
+	int32	Count;
+	int32	CheckCount;
+};
+
 class ACharacterPC;
 class ACharacterNPC;
 
@@ -40,6 +49,10 @@ private:
 	TWeakObjectPtr<APlayerController>	Controller;
 	TWeakObjectPtr<ACharacterPC>		Player;
 	TWeakObjectPtr<ACharacterNPC>		Nexus;
+	
+	TMap<UClass*, TArray<TWeakObjectPtr<AActor>>>	PoolingObject;
+	TMap<FString, TMap<UClass*, FPoolingInfo>>		PoolingObjectInfo;
+	FTimerHandle									WritePoolingObjectHandle;
 public:
 	constexpr static int32 INVALID_UCLASS = -9999;			//생성 시 UCLASS의 오류
 	constexpr static int32 OBJECT_SPAWN_FAILED = -9998;		//오브젝트 생성 실패
@@ -94,6 +107,12 @@ public:
 
 	//로케이션과 액터의 Id어레이를 받아 가장 InLocation에 가까운 액터의 Id를 반환합니다.
 	int32	GetNearestACtorByRangeAndIds(FVector InLocation, const TArray<int32>& InActorIds);
+
+	//오브젝트 풀링 기록
+	void WritePoolingObjectCount();
+
+	//월드 전환 시 풀링 오브젝트 재할당
+	void ReAllocatePoolingObject(FString InWorldName);
 };
 
 template <typename T>
@@ -110,26 +129,51 @@ int32 FObjectManager::CreateActor(UClass* InClass, const FSpawnParam& InSpawnPar
 	//트랜스폼 생성
 	FTransform spawnTransform(InSpawnParam.Rotation, InSpawnParam.Location);
 
-	//액터 생성
-	AActor* actor = World->SpawnActorDeferred<T>(InClass, spawnTransform, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-
-	if(!actor)
-		return OBJECT_SPAWN_FAILED;
+	int32 objId = FObjectIdGenerator::GenerateID();
 	
-	//캐릭터일 경우에 캡슐 절반높이만큼 위로 올려스폰
-	FVector location = GetLocationByPawn(actor, InSpawnParam.Location);
-	spawnTransform = FTransform(InSpawnParam.Rotation, location);
+	AActor* actor = nullptr;
+	if(InClass->ImplementsInterface(UObjectPoolingInterface::StaticClass()) && PoolingObject.Find(InClass) != nullptr)
+	{
+		actor = PoolingObject.Find(InClass)->CreateIterator()->Get();
+		PoolingObject.Find(InClass)->CreateIterator().RemoveCurrent();
 
-	//콜백함수 호출
-	if(InSpawnParam.CallBackSpawn)
+		if(actor == nullptr)
+			return INVALID_OBJECTID;
+		
+		actor->SetActorLocation(InSpawnParam.Location);
+		actor->SetActorRotation(InSpawnParam.Rotation);
 		InSpawnParam.CallBackSpawn(actor);
 
-	//오브젝트ID 등록
-	int32 objId = FObjectIdGenerator::GenerateID();
-	SetObjectIdAt(actor, objId);
+		//오브젝트ID 등록
+		SetObjectIdAt(actor, objId);
 
-	//스폰 마무리
-	actor->FinishSpawning(spawnTransform);
+		Cast<IObjectPoolingInterface>(actor)->Initialize();
+
+		actor->DispatchBeginPlay();
+	}
+	else
+	{
+		//액터 생성
+		actor = World->SpawnActorDeferred<T>(InClass, spawnTransform, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+
+		if(!actor)
+			return OBJECT_SPAWN_FAILED;
+		
+		//캐릭터일 경우에 캡슐 절반높이만큼 위로 올려스폰
+		FVector location = GetLocationByPawn(actor, InSpawnParam.Location);
+		spawnTransform = FTransform(InSpawnParam.Rotation, location);
+
+		//콜백함수 호출
+		if(InSpawnParam.CallBackSpawn)
+			InSpawnParam.CallBackSpawn(actor);
+
+		//오브젝트ID 등록
+		SetObjectIdAt(actor, objId);
+
+		//스폰 마무리
+		actor->FinishSpawning(spawnTransform);
+		
+	}
 	
 	Objects.Add(objId, actor);
 

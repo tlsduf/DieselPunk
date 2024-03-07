@@ -7,16 +7,27 @@ class DIESELPUNK_API FFstreamManager
 private:
 	static std::wofstream CustomOutStream;
 	static std::wifstream CustomInStream;
-private:
+public:
+	static FString FilePath;
+public:
 	//바이너리 파일 쓰기
 	static bool WriteDataBinary(FString InFileName, const TArray<FString>& InString);
 
 	//바이너리 파일 읽기
 	static bool ReadDataBinary(FString InFileName, TArray<FString>& OutString);
 
+	//커스텀 바이너리 파일 오픈
+	static bool OpenDataBinaryCustom(FString InFileName, std::ios_base::openmode InOpenMode);
+
+	//커스텀 바이너리 파일 쓰기
+	static bool WriteDataBinaryCustom(const TArray<FString>& InString, FString InDivideWord = TEXT("/"));
+
+	//커스텀 바이너리 파일 닫기
+	static bool CloseDataBinaryCustom();
+
 	//읽은 전체 바이너리 파일을 스트링으로 분리
-	static TArray<FString> SplitString(const FString& InString);
-public:
+	static TArray<FString> SplitString(const FString& InString, FString InDivideWord = TEXT("/"));
+	
 	//Integer계열의 데이터 쓰기
 	template<typename T>
 	static bool WriteDataBinaryByInteger(FString InFilePath, const TArray<T>& InArrayInt);
