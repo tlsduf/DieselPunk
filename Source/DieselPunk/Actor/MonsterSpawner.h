@@ -104,7 +104,7 @@ public:
 	void RemoveDeadNPCFromArray();
 	
 	// 스포너가 소환한 몬스터가 다 파괴되었는지를 반환합니다.
-	bool IsWaveCleared() const { return SpawnedMonsterID.IsEmpty(); }
+	bool IsWaveCleared() const { return SpawnInfo.IsEmpty() && SpawnedMonsterID.IsEmpty(); }
 
 	// 몬스터를 다 소환했는지 반환합니다.
 	bool IsSpawnComplete() const { return SpawnInfo.IsEmpty(); }
