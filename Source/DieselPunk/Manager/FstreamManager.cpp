@@ -98,16 +98,7 @@ TArray<FString> FFstreamManager::SplitString(const FString& InString, FString In
 	FString storeString;
 	TArray<FString> outString;
 
-	for(size_t i = 0; i < InString.Len(); ++i)
-	{
-		if(FString(&InString[i]) == InDivideWord)
-		{
-			outString.Add(storeString);
-			storeString = "";
-		}
-		else
-			storeString += InString[i];
-	}
+	InString.ParseIntoArray(outString, *InDivideWord, true);
 
 	return outString;
 }
