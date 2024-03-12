@@ -586,8 +586,6 @@ bool ACharacterPC::ExecuteCardComplete()
 	LOG_SCREEN(FColor::White, TEXT("사용 완료"))
 
 	DelegateCardComplete.Unbind();
-
-	UnBindSkillUseCard();
 	return true;
 }
 
@@ -642,6 +640,25 @@ void ACharacterPC::UnBindSkillUseCard()
 		DelegateCardComplete.Unbind();
 	if(DelegateRotateInstallation.IsBound())
 		DelegateRotateInstallation.Unbind();
+}
+
+bool ACharacterPC::CardSkillIsExpectedUnBind()
+{
+	USkillSpawnTurret* skill = Cast<USkillSpawnTurret>(Skills[EAbilityType::MouseLM]);
+	if(skill)
+		return skill->IsExpectedUnBind();
+	return false;
+}
+
+void ACharacterPC::RestoreSkillBind()
+{
+	APlayerControllerBase* controller = Cast<APlayerControllerBase>(GetController());
+	if(controller == nullptr)
+		return;
+
+	UnBindSkillUseCard();
+
+	controller->RestoreSkillBind();
 }
 
 bool ACharacterPC::ReplaceCard(TArray<int32>& OutUseIndex)

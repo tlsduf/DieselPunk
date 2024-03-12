@@ -103,11 +103,12 @@ void APlayerControllerBase::SetupInputComponent()
         //스킬 호출에 관한 바인딩
         for (EAbilityType type : TEnumRange<EAbilityType>())
         {
-        EnhancedInputComponent->BindAction(SkillInputActions[type], ETriggerEvent::Started, this, &APlayerControllerBase::OnInputSkillStarted);
-        EnhancedInputComponent->BindAction(SkillInputActions[type], ETriggerEvent::Ongoing, this, &APlayerControllerBase::OnInputSkillOngoing);
-        EnhancedInputComponent->BindAction(SkillInputActions[type], ETriggerEvent::Triggered, this, &APlayerControllerBase::OnInputSkillTriggered);
-        EnhancedInputComponent->BindAction(SkillInputActions[type], ETriggerEvent::Completed, this, &APlayerControllerBase::OnInputSkillCompleted);
-        EnhancedInputComponent->BindAction(SkillInputActions[type], ETriggerEvent::Canceled, this, &APlayerControllerBase::OnInputSkillCanceled);
+        	TMap<ETriggerEvent, int32>& handles = BindInputActionHandle.FindOrAdd(type);
+        	handles.Add(ETriggerEvent::Started, EnhancedInputComponent->BindAction(SkillInputActions[type], ETriggerEvent::Started, this, &APlayerControllerBase::OnInputSkillStarted).GetHandle());
+        	handles.Add(ETriggerEvent::Ongoing, EnhancedInputComponent->BindAction(SkillInputActions[type], ETriggerEvent::Ongoing, this, &APlayerControllerBase::OnInputSkillOngoing).GetHandle());
+        	handles.Add(ETriggerEvent::Triggered, EnhancedInputComponent->BindAction(SkillInputActions[type], ETriggerEvent::Triggered, this, &APlayerControllerBase::OnInputSkillTriggered).GetHandle());
+        	handles.Add(ETriggerEvent::Completed, EnhancedInputComponent->BindAction(SkillInputActions[type], ETriggerEvent::Completed, this, &APlayerControllerBase::OnInputSkillCompleted).GetHandle());
+        	handles.Add(ETriggerEvent::Canceled,EnhancedInputComponent->BindAction(SkillInputActions[type], ETriggerEvent::Canceled, this, &APlayerControllerBase::OnInputSkillCanceled).GetHandle());
         }
 
     	for(int i = 0; i < FDeckHandler::MaxHand; ++i)
@@ -138,13 +139,17 @@ void APlayerControllerBase::SetMappingContextByInputType()
 	if (PC.IsValid())
 	{
 		PC->InitSkills(); // TSubClassOf로 설정된 캐릭터의 스킬들을 인스턴스화 시킵니다.
-		
+
+
+		// 스킬에서 트리거 타입을 등록하지 않고 사용중이지도 않으므로 코드에서 제외합니다.
+		/*
 		for (const TPair<EAbilityType, TObjectPtr<UInputAction>>& inputActions : SkillInputActions)
 		{
 			// 설정해둔 트리거 타입을 넣습니다.
 			SkillInputActions[inputActions.Key]->Triggers.Reset();
 			SkillInputActions[inputActions.Key]->Triggers.Add(Cast<UPlayerSkill>(PC->GetSkills()[inputActions.Key])->GetTriggerType());
 		}
+		*/
 	}
 	
 	if (UEnhancedInputLocalPlayerSubsystem *subSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
@@ -161,7 +166,7 @@ const EAbilityType APlayerControllerBase::GetAbilityKeyFromAction(const FInputAc
 {
 	if (const UInputAction *inputAction = inInstance.GetSourceAction())
 	{
-		if (inputAction->GetName().Contains(TEXT("IA_LeftMouse")))
+		if (inputAction->GetName().Contains(TEXT("IA_LeftMouse")) || inputAction->GetName().Contains(TEXT("IA_CardActivate")))
 			return EAbilityType::MouseLM;
 		
 		else if (inputAction->GetName().Contains(TEXT("IA_RightMouse")))
@@ -241,6 +246,33 @@ void APlayerControllerBase::OnInputSkillCanceled(const FInputActionInstance& inI
 	}
 }
 
+void APlayerControllerBase::PlayerSkillBind(EAbilityType InAbilityType)
+{
+	if (UEnhancedInputComponent *EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent))
+	{
+		TMap<ETriggerEvent, int32>& handles = BindInputActionHandle.FindOrAdd(InAbilityType);
+		handles.Add(ETriggerEvent::Started, EnhancedInputComponent->BindAction(SkillInputActions[InAbilityType], ETriggerEvent::Started, this, &APlayerControllerBase::OnInputSkillStarted).GetHandle());
+		handles.Add(ETriggerEvent::Ongoing, EnhancedInputComponent->BindAction(SkillInputActions[InAbilityType], ETriggerEvent::Ongoing, this, &APlayerControllerBase::OnInputSkillOngoing).GetHandle());
+		handles.Add(ETriggerEvent::Triggered, EnhancedInputComponent->BindAction(SkillInputActions[InAbilityType], ETriggerEvent::Triggered, this, &APlayerControllerBase::OnInputSkillTriggered).GetHandle());
+		handles.Add(ETriggerEvent::Completed, EnhancedInputComponent->BindAction(SkillInputActions[InAbilityType], ETriggerEvent::Completed, this, &APlayerControllerBase::OnInputSkillCompleted).GetHandle());
+		handles.Add(ETriggerEvent::Canceled,EnhancedInputComponent->BindAction(SkillInputActions[InAbilityType], ETriggerEvent::Canceled, this, &APlayerControllerBase::OnInputSkillCanceled).GetHandle());
+	}
+}
+
+void APlayerControllerBase::PlayerSkillUnBind(EAbilityType InAbilityType)
+{
+	TMap<ETriggerEvent, int32>* handles = BindInputActionHandle.Find(InAbilityType);
+	if(handles == nullptr)
+		return;
+
+	if (UEnhancedInputComponent *EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent))
+	{
+		for(const TPair<ETriggerEvent, int32> handle : *handles)
+			EnhancedInputComponent->RemoveBindingByHandle(handle.Value);
+		handles->Empty();
+	}
+}
+
 //덱 인터페이스 켜기/끄기
 void APlayerControllerBase::OpenCloseDeckInterface()
 {
@@ -284,6 +316,10 @@ void APlayerControllerBase::OpenCloseDeckInterface()
 
 void APlayerControllerBase::UseCard(int32 InCardIndex)
 {
+	//바인딩 예정 중일 경우에는 카드 선택이 불가능 하도록 변경
+	if(PC->CardSkillIsExpectedUnBind() || IsExpectedUnBindByUnUse)
+		return;
+	
 	//이미 카드를 선택했을 경우 해당 오브젝트를 파괴합니다.
 	if(IsCardActivate && UseCardNum != InCardIndex)
 	{
@@ -323,12 +359,24 @@ void APlayerControllerBase::UseCard(int32 InCardIndex)
 	PC->BindSkillUseCard();
 	if (UEnhancedInputComponent *EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent))
 	{
-		for(auto& inputHandle : PreInputHandle)
-			EnhancedInputComponent->RemoveBindingByHandle(inputHandle);
-		PreInputHandle.Empty();
-		PreInputHandle.Add(EnhancedInputComponent->BindAction(SkillInputActions[EAbilityType::MouseRM], ETriggerEvent::Triggered, this, &APlayerControllerBase::UnUseCard).GetHandle());
-		PreInputHandle.Add(EnhancedInputComponent->BindAction(SkillInputActions[EAbilityType::SkillE], ETriggerEvent::Started, this, &APlayerControllerBase::RotateInstallationCW).GetHandle());
-		PreInputHandle.Add(EnhancedInputComponent->BindAction(SkillInputActions[EAbilityType::SkillQ], ETriggerEvent::Started, this, &APlayerControllerBase::RotateInstallationCCW).GetHandle());
+		PlayerSkillUnBind(EAbilityType::MouseLM);
+		PlayerSkillUnBind(EAbilityType::MouseRM);
+		PlayerSkillUnBind(EAbilityType::SkillE);
+		PlayerSkillUnBind(EAbilityType::SkillQ);
+
+		TMap<ETriggerEvent, int32>& handlesLM = BindInputActionHandle.FindOrAdd(EAbilityType::MouseLM);
+		handlesLM.Add(ETriggerEvent::Started, EnhancedInputComponent->BindAction(InputCardActivate, ETriggerEvent::Started, this, &APlayerControllerBase::OnInputSkillStarted).GetHandle());
+		handlesLM.Add(ETriggerEvent::Completed, EnhancedInputComponent->BindAction(InputCardActivate, ETriggerEvent::Completed, this, &APlayerControllerBase::OnInputSkillCompleted).GetHandle());
+
+		TMap<ETriggerEvent, int32>& handlesRM = BindInputActionHandle.FindOrAdd(EAbilityType::MouseRM);
+		handlesRM.Add(ETriggerEvent::Started, EnhancedInputComponent->BindAction(InputUnUseCard, ETriggerEvent::Started, this, &APlayerControllerBase::UnUseCard).GetHandle());
+		handlesRM.Add(ETriggerEvent::Completed, EnhancedInputComponent->BindAction(InputUnUseCard, ETriggerEvent::Completed, this, &APlayerControllerBase::UnUseCardUnbind).GetHandle());
+		
+		TMap<ETriggerEvent, int32>& handlesE = BindInputActionHandle.FindOrAdd(EAbilityType::SkillE);
+		handlesE.Add(ETriggerEvent::Started, EnhancedInputComponent->BindAction(SkillInputActions[EAbilityType::SkillE], ETriggerEvent::Started, this, &APlayerControllerBase::RotateInstallationCW).GetHandle());
+
+		TMap<ETriggerEvent, int32>& handlesQ = BindInputActionHandle.FindOrAdd(EAbilityType::SkillQ);
+		handlesQ.Add(ETriggerEvent::Started, EnhancedInputComponent->BindAction(SkillInputActions[EAbilityType::SkillQ], ETriggerEvent::Started, this, &APlayerControllerBase::RotateInstallationCCW).GetHandle());
 	}
 }
 
@@ -350,16 +398,27 @@ void APlayerControllerBase::UnUseCard()
 		Hand->ResizeHandCard(i, FVector2d(1.0, 1.0));
 	
 	UseCardNum = -1;
-
 	PC->UnBindSkillUseCard();
-	if (UEnhancedInputComponent *EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent))
+
+	IsExpectedUnBindByUnUse = true;
+}
+
+void APlayerControllerBase::UnUseCardUnbind()
+{
+	if(IsExpectedUnBindByUnUse)
 	{
-		for(auto& inputHandle : PreInputHandle)
-			EnhancedInputComponent->RemoveBindingByHandle(inputHandle);
-		PreInputHandle.Empty();
-		PreInputHandle.Add(EnhancedInputComponent->BindAction(SkillInputActions[EAbilityType::MouseRM], ETriggerEvent::Triggered, this, &APlayerControllerBase::OnInputSkillTriggered).GetHandle());
-		PreInputHandle.Add(EnhancedInputComponent->BindAction(SkillInputActions[EAbilityType::SkillE], ETriggerEvent::Started, this, &APlayerControllerBase::OnInputSkillStarted).GetHandle());
-		PreInputHandle.Add(EnhancedInputComponent->BindAction(SkillInputActions[EAbilityType::SkillQ], ETriggerEvent::Started, this, &APlayerControllerBase::OnInputSkillStarted).GetHandle());
+		
+		PlayerSkillUnBind(EAbilityType::MouseLM);
+		PlayerSkillUnBind(EAbilityType::MouseRM);
+		PlayerSkillUnBind(EAbilityType::SkillE);
+		PlayerSkillUnBind(EAbilityType::SkillQ);
+		
+		PlayerSkillBind(EAbilityType::MouseLM);
+		PlayerSkillBind(EAbilityType::MouseRM);
+		PlayerSkillBind(EAbilityType::SkillE);
+		PlayerSkillBind(EAbilityType::SkillQ);
+		
+		IsExpectedUnBindByUnUse = false;
 	}
 }
 
@@ -574,6 +633,19 @@ int32 APlayerControllerBase::PostCompleteCard()
 	UseCardNum = -1;
 	
 	return returnUseCardNum;
+}
+
+void APlayerControllerBase::RestoreSkillBind()
+{
+	PlayerSkillUnBind(EAbilityType::MouseLM);
+	PlayerSkillUnBind(EAbilityType::MouseRM);
+	PlayerSkillUnBind(EAbilityType::SkillE);
+	PlayerSkillUnBind(EAbilityType::SkillQ);
+		
+	PlayerSkillBind(EAbilityType::MouseLM);
+	PlayerSkillBind(EAbilityType::MouseRM);
+	PlayerSkillBind(EAbilityType::SkillE);
+	PlayerSkillBind(EAbilityType::SkillQ);
 }
 
 void APlayerControllerBase::RotateInstallationCW()

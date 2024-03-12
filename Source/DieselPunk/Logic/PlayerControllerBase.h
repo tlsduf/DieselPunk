@@ -6,6 +6,7 @@
 #include <GameFramework/PlayerController.h>
 #include "PlayerControllerBase.generated.h"
 
+enum class ETriggerEvent : uint8;
 class UInputAction;
 class UInputMappingContext;
 struct FInputActionInstance;
@@ -70,6 +71,12 @@ class DIESELPUNK_API APlayerControllerBase : public APlayerController
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP_Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction *InputCtrl;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP_Input", meta = (AllowPrivateAccess = "true"))
+	UInputAction *InputCardActivate;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP_Input", meta = (AllowPrivateAccess = "true"))
+	UInputAction *InputUnUseCard;
+	
 	// 6개의 스킬 InputAction // LM, RM, LShift, Q, E, R
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP_Input", meta = (AllowPrivateAccess = "true"))
 	TMap<EAbilityType, TObjectPtr<UInputAction>> SkillInputActions;
@@ -105,7 +112,10 @@ private:
 	//카드가 액티베이트 되어있는 동안 카드를 변경하지 못합니다.
 	bool IsCardActivate = false;
 
-	TArray<int32> PreInputHandle;
+	bool IsExpectedUnBindByUnUse = false;
+	
+	//바인딩 된 인풋 액션 핸들
+	TMap<EAbilityType, TMap<ETriggerEvent, int32>> BindInputActionHandle;
 	
 protected:
 	APlayerControllerBase();
@@ -152,12 +162,16 @@ private:
 	void OnInputSkillCompleted(const FInputActionInstance &inInstance);
 	void OnInputSkillCanceled(const FInputActionInstance &inInstance);
 
+	void PlayerSkillBind(EAbilityType InAbilityType);
+	void PlayerSkillUnBind(EAbilityType InAbilityType);
+
 	//덱 인터페이스 켜기/끄기
 	void OpenCloseDeckInterface();
 	
 	//카드 사용 준비
 	void UseCard(int32 InCardIndex);
 	void UnUseCard();
+	void UnUseCardUnbind();
 public:
 
 	//필터 변경 시 블루프린트 호출
@@ -183,6 +197,8 @@ public:
 
 	//카드를 Complete한 후 처리를 담당합니다.
 	int32 PostCompleteCard();
+
+	void RestoreSkillBind();
 
 	//설치물을 시계방향으로 90도 회전합니다.
 	void RotateInstallationCW();

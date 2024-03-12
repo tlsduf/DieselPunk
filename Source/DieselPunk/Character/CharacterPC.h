@@ -247,6 +247,10 @@ public:
 	void BindSkillUseCard();
 	void UnBindSkillUseCard();
 
+	bool CardSkillIsExpectedUnBind();
+
+	void RestoreSkillBind();
+
 	bool ReplaceCard(TArray<int32>& OutUseIndex);
 
 	void SpawnDecalComponent(double InMaxRange, double InRange);

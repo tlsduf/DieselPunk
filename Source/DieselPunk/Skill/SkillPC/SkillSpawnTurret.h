@@ -18,6 +18,7 @@ class DIESELPUNK_API USkillSpawnTurret : public UPlayerSkill
 
 private:
 	bool bTaskOn = false;
+	bool ExpectedUnBind = false;
 
 	//컨트롤하는 터렛 Id
 	int32 ControlTurretId = -1;
@@ -27,8 +28,12 @@ protected:
 	USkillSpawnTurret();
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
-	
+
 	virtual void SkillStarted() override;
+	
+	virtual void SkillCompleted() override;
 public:
 	void SpawnCancel();
+
+	bool IsExpectedUnBind(){return ExpectedUnBind;}
 };
