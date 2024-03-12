@@ -2,6 +2,7 @@
 #pragma once
 #include <Engine/DataTable.h>
 
+struct FDPTableRowBase;
 enum class EDataTableType : uint8;
 
 //게임 시작 시 데이터 테이블을 로드하고 관리합니다.
@@ -10,6 +11,7 @@ class DIESELPUNK_API FDataTableManager
 	Singleton_Declare(FDataTableManager)
 private:
 	TMap<EDataTableType, UDataTable*> Datas;
+	TMap<int32, FDPTableRowBase*> CachedDatas;
 private:
 	void Initialize();
 	void Release();
@@ -26,6 +28,9 @@ public:
 
 	template<typename T>
 	const T* GetData(const EDataTableType& InDataTableType, const FString& InRowName);
+
+	template<typename T>
+	const T* GetData(int32 InDataId);
 };
 
 template <typename T>
@@ -35,4 +40,14 @@ const T* FDataTableManager::GetData(const EDataTableType& InDataTableType, const
 	if(dataTablePtr == nullptr)
 		return nullptr;
 	return (*dataTablePtr)->FindRow<T>(FName(InRowName), TEXT("FDataTableManager::GetData()"));
+}
+
+template <typename T>
+const T* FDataTableManager::GetData(int32 InDataId)
+{
+	FDPTableRowBase** findData = CachedDatas.Find(InDataId);
+	if(findData == nullptr)
+		return nullptr;
+
+	return Cast<T>(*findData);
 }

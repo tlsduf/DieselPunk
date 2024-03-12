@@ -2,6 +2,8 @@
 
 #include "DatatableManager.h"
 
+#include "DieselPunk/Data/DPTableRowBase.h"
+
 Singleton_Defintion(FDataTableManager)
 
 FDataTableManager::FDataTableManager()
@@ -41,7 +43,17 @@ void FDataTableManager::LoadDataTable(const EDataTableType& InDataTableType)
 	UDataTable* table = LoadObject<UDataTable>(nullptr, *UtilPath::GetDataTablePath(*UtilPath::EnumToString(InDataTableType)));
 
 	if(table)
+	{
 		Datas.Add(InDataTableType, table);
+		TArray<FDPTableRowBase*> datas;
+		table->GetAllRows<FDPTableRowBase>(table->GetName(), datas);
+
+		for(FDPTableRowBase* data : datas)
+		{
+			if(CachedDatas.Find(data->DataID) == nullptr)
+				CachedDatas.Add(data->DataID, data);
+		}
+	}
 }
 
 //테이블에 등록된 데이터뭉치를 가져옵니다.

@@ -2,8 +2,7 @@
 
 #pragma once
 
-#include <Engine/DataTable.h>
-
+#include "DPTableRowBase.h"
 #include "StageWaveDataTable.generated.h"
 
 //한 스포너에 스폰시킬 몬스터 정보입니다.
@@ -33,7 +32,7 @@ struct FStageWaveInfo
 
 
 USTRUCT()
-struct DIESELPUNK_API FStageWaveDataTable : public FTableRowBase
+struct DIESELPUNK_API FStageWaveDataTable : public FDPTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 	

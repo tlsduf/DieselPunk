@@ -2,8 +2,7 @@
 
 #pragma once
 
-#include <Engine/DataTable.h>
-
+#include "DPTableRowBase.h"
 #include "WaveModuleDataTable.generated.h"
 
 //한 스포너에 스폰시킬 몬스터 정보입니다.
@@ -35,7 +34,7 @@ struct FWaveModuleInfo
 
 
 USTRUCT()
-struct DIESELPUNK_API FWaveModuleDataTable : public FTableRowBase
+struct DIESELPUNK_API FWaveModuleDataTable : public FDPTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 	

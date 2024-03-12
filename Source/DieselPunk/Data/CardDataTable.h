@@ -2,14 +2,13 @@
 
 #pragma once
 
-#include <Engine/DataTable.h>
-
+#include "DPTableRowBase.h"
 #include "CardDataTable.generated.h"
 /**
  * 캐릭터 데이터 테이블입니다.
  */
 USTRUCT()
-struct DIESELPUNK_API FCardDataTable : public FTableRowBase
+struct DIESELPUNK_API FCardDataTable : public FDPTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 	

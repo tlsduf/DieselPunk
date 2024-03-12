@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <Engine/DataTable.h>
+#include "DPTableRowBase.h"
 #include "BuffDataTable.generated.h"
 
 /**
@@ -10,7 +10,7 @@
  * 행 이름인 버프 네임과 버프 정보를 가지고 있습니다.
  */
 USTRUCT()
-struct DIESELPUNK_API FBuffDataTable : public FTableRowBase
+struct DIESELPUNK_API FBuffDataTable : public FDPTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 	
