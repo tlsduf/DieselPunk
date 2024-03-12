@@ -119,6 +119,26 @@ void UStatControlComponent::SetStat(ECharacterStatType InStatType, int32 InValue
 		DelegateChangeStat.Broadcast(Owner, InStatType, *stat);
 }
 
+void UStatControlComponent::SetAllStatByStatDataTable(const FStatDataTable* InStatDataTable)
+{
+	SetStat(ECharacterStatType::MaxHp,			 InStatDataTable->Hp);
+	SetStat(ECharacterStatType::Hp,				 InStatDataTable->Hp);
+	SetStat(ECharacterStatType::HpRecoverySpeed, InStatDataTable->HpRecoverySpeed);
+	SetStat(ECharacterStatType::Atk,			 InStatDataTable->Atk);
+	SetStat(ECharacterStatType::AtkSpeed,		 InStatDataTable->AtkSpeed);
+	SetStat(ECharacterStatType::Def,			 InStatDataTable->Def);
+	SetStat(ECharacterStatType::ArmorPen,		 InStatDataTable->ArmorPen);
+	SetStat(ECharacterStatType::CriticalPer,	 InStatDataTable->CriticalPer);
+	SetStat(ECharacterStatType::CriticalAtk,	 InStatDataTable->CriticalAtk);
+	SetStat(ECharacterStatType::MoveSpeed,		 InStatDataTable->MoveSpeed);
+	SetStat(ECharacterStatType::JumpCount,		 InStatDataTable->JumpCount);
+	SetStat(ECharacterStatType::Luck,			 InStatDataTable->Luck);
+	SetStat(ECharacterStatType::CoolDown,		 InStatDataTable->CoolDown);
+	SetStat(ECharacterStatType::AttackMaxRange,	 InStatDataTable->AttackMaxRange);
+	SetStat(ECharacterStatType::AttackMinRange,	 InStatDataTable->AttacMinRange);
+	SetStat(ECharacterStatType::Cost,			 InStatDataTable->Cost);
+}
+
 
 // Called every frame
 void UStatControlComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

@@ -6,6 +6,7 @@
 #include <Components/ActorComponent.h>
 #include "StatControlComponent.generated.h"
 
+struct FStatDataTable;
 class FBuff;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -49,6 +50,8 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void SetStat(ECharacterStatType InStatType, int32 InValue);
+
+	void SetAllStatByStatDataTable(const FStatDataTable* InStatDataTable);
 
 	const int32& GetStat(ECharacterStatType InStatType);
 

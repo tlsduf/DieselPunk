@@ -49,5 +49,5 @@ const T* FDataTableManager::GetData(int32 InDataId)
 	if(findData == nullptr)
 		return nullptr;
 
-	return Cast<T>(*findData);
+	return static_cast<T*>(*findData);
 }

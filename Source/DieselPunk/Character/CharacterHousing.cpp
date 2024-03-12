@@ -7,6 +7,9 @@
 #include "../Manager/NavigationManager.h"
 #include "../Manager/UIManager.h"
 #include "../UI/HUD/InteractInstallation.h"
+#include "../Component/StatControlComponent.h"
+#include "../Data/StatDataTable.h"
+#include "../Manager/DatatableManager.h"
 
 #include <Components/SkeletalMeshComponent.h>
 #include <Components/StaticMeshComponent.h>
@@ -16,6 +19,7 @@
 #include <Components/WidgetComponent.h>
 
 
+struct FStatDataTable;
 // =============================================================
 // 생성자
 // =============================================================
@@ -223,6 +227,29 @@ void ACharacterHousing::ChangeHousingMaterialParameterChange(bool InHousing)
 // 터렛 업그레이드시 처리
 void ACharacterHousing::UpgradeInstallation()
 {
+	int32 lv = GetStat(ECharacterStatType::Level);
+	lv++;
+
+	if(lv >= UpgradeInfos.Num())
+	{
+		LOG_SCREEN(FColor::Yellow, TEXT("Upgrade Failed! Have not Upgrade Meshes"));
+		return;
+	}
+	
+	const FStatDataTable* data = FDataTableManager::GetInstance()->GetData<FStatDataTable>(UpgradeInfos[lv - 1].UpgradeID);
+	if(data == nullptr)
+	{
+		LOG_SCREEN(FColor::Yellow, TEXT("Upgrade Failed! Have not Stat Info for UpgradeID:%d"), UpgradeInfos[lv - 1].UpgradeID);
+		return;
+	}
+
+	//메시 변경
+	GetMesh()->SetSkeletalMeshAsset(UpgradeInfos[lv - 1].UpgradeMesh);
+
+	//스탯 변경
+	StatControlComponent->SetAllStatByStatDataTable(data);
+	ChangeStat(ECharacterStatType::Level, 1);
+	
 	LOG_SCREEN(FColor::Yellow, TEXT("Upgrade Complete!"))
 }
 
