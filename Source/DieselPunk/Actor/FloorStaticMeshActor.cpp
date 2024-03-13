@@ -15,6 +15,8 @@ AFloorStaticMeshActor::AFloorStaticMeshActor()
 
 	FloorComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Floor"));
 	SetRootComponent(FloorComponent);
+
+	FloorComponent->SetCollisionObjectType(ECC_WorldStatic);
 }
 
 // Called when the game starts or when spawned
