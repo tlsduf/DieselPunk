@@ -263,8 +263,8 @@ void FNavigationManager::BuildNavMap(TArray<AActor*> InFloorStaticMeshActors)
 						location.Y = (y * GridSize) + (GridSize * 0.5);
 						location.Z = box.Location.Z;
 						FVector boxHalfExtend;
-						boxHalfExtend.X = GridSize * 0.5;
-						boxHalfExtend.Y = GridSize * 0.5;
+						boxHalfExtend.X = (GridSize - 2) * 0.5;
+						boxHalfExtend.Y = (GridSize - 2) * 0.5;
 						boxHalfExtend.Z = box.Extend.Z * 2;
 
 						//플레이어 충돌범위 제외
