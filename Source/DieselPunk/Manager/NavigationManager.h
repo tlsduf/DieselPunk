@@ -79,6 +79,7 @@ public:
 	
 	//네비 노드 생성
 	void BuildNavMap(TWeakObjectPtr<AFloorStaticMeshActor> InFloorStaticMeshActor, TArray<FDpBox> InBoxes);
+	void BuildNavMap(TArray<AActor*> InFloorStaticMeshActors);
 	
 	//A-Star알고리즘을 통해 InStartLocation에서 InEndLocation까지의 최단거리 반환
 	TArray<FVector> PathFinding(const FVector& InStartLocation, const FVector& InEndLocation, const int32 InCharacterGridSize);

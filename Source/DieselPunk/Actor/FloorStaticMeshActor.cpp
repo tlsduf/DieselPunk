@@ -23,24 +23,6 @@ AFloorStaticMeshActor::AFloorStaticMeshActor()
 void AFloorStaticMeshActor::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//액터 안에있는 박스 컴포넌트를 모두 획득
-	TArray<UBoxComponent*> boxComponents;
-	GetComponents<UBoxComponent>(boxComponents);
-
-	//박스 구조체 생성
-	TArray<FDpBox> boxes;
-	boxes.Reserve(boxComponents.Num());
-	for(UBoxComponent* boxComp : boxComponents)
-	{
-		FDpBox box;
-		box.Location = boxComp->GetComponentLocation();
-		box.Extend = boxComp->GetScaledBoxExtent();
-		box.BoxComp = boxComp;
-		boxes.Add(box);
-	}
-
-	FNavigationManager::GetInstance()->BuildNavMap(this, boxes);
 }
 
 // Called every frame

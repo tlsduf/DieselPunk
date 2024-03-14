@@ -8,6 +8,8 @@
 
 #include <DrawDebugHelpers.h>
 
+#include "Components/BoxComponent.h"
+
 Singleton_Defintion(FNavigationManager)
 
 FNavigationManager::FNavigationManager()
@@ -203,6 +205,158 @@ void FNavigationManager::BuildNavMap(TWeakObjectPtr<AFloorStaticMeshActor> InFlo
 		fileName = TEXT("NavNode_") + fileName + TEXT(".bin");
 		bool IsWriting = FFstreamManager::WriteDataBinaryByInteger(fileName, outArray);
 
+	}
+	BuildNavMapLocation();
+	BuildNavGraph();
+}
+
+void FNavigationManager::BuildNavMap(TArray<AActor*> InFloorStaticMeshActors)
+{
+	if(!LoadMapNode())
+	{
+		UWorld* world = FObjectManager::GetInstance()->GetWorld();
+		if(world == nullptr)
+			return;
+
+		for(AActor* staticMeshActor : InFloorStaticMeshActors)
+		{
+			AFloorStaticMeshActor* floor = Cast<AFloorStaticMeshActor>(staticMeshActor);
+			if(floor == nullptr)
+				continue;
+		
+			//액터 안에있는 박스 컴포넌트를 모두 획득
+			TArray<UBoxComponent*> boxComponents;
+			floor->GetComponents<UBoxComponent>(boxComponents);
+		
+			//박스 구조체 생성
+			TArray<FDpBox> boxes;
+			boxes.Reserve(boxComponents.Num());
+			for(UBoxComponent* boxComp : boxComponents)
+			{
+				FDpBox box;
+				box.Location = boxComp->GetComponentLocation();
+				box.Extend = boxComp->GetScaledBoxExtent();
+				box.BoxComp = boxComp;
+				boxes.Add(box);
+			}
+
+			//노드 생성
+			for(const FDpBox& box : boxes)
+			{
+				FVector minLoc = box.Location - box.Extend;
+				FVector maxLoc = box.Location + box.Extend;
+
+				int32 minGridX = static_cast<int32>(minLoc.X) / GridSize - 1;
+				int32 maxGridX = static_cast<int32>(maxLoc.X) / GridSize + 1;
+				int32 minGridY = static_cast<int32>(minLoc.Y) / GridSize - 1;
+				int32 maxGridY = static_cast<int32>(maxLoc.Y) / GridSize + 1;
+
+
+				for(int32 x = minGridX; x <= maxGridX; ++x)
+				{
+					for(int32 y = minGridY; y <= maxGridY; ++y)
+					{
+						//충돌 초기화
+						TArray<FOverlapResult> hitResult;
+						FVector location;
+						location.X = (x * GridSize) + (GridSize * 0.5);
+						location.Y = (y * GridSize) + (GridSize * 0.5);
+						location.Z = box.Location.Z;
+						FVector boxHalfExtend;
+						boxHalfExtend.X = GridSize * 0.5;
+						boxHalfExtend.Y = GridSize * 0.5;
+						boxHalfExtend.Z = box.Extend.Z * 2;
+
+						//플레이어 충돌범위 제외
+						FCollisionQueryParams params;
+						params.AddIgnoredActor(FObjectManager::GetInstance()->GetPlayer());
+
+						//충돌 검사
+						world->OverlapMultiByChannel(hitResult, location, FQuat::Identity, ECC_WorldStatic,
+							FCollisionShape::MakeBox(boxHalfExtend), params);
+
+						//노드 생성
+						FOverlapResult* find = hitResult.FindByPredicate([&floor](const FOverlapResult& overlapResult)
+						{
+							if(floor != nullptr)
+								return overlapResult.GetActor() == Cast<AActor>(floor);
+							return false;
+						});
+
+						//FloorStaticMeshActor와 충돌하지 않는다면 continue
+						if(find == nullptr)
+							continue;
+				
+						FDpNavNode navNode;
+						navNode.X = x;
+						navNode.Y = y;
+						//FloorStaticMeshActor 외의 충돌여부에 따라 NavNodeState 설정
+						if(hitResult.Num() > 1)
+						{
+							navNode.NavNodeState = ENavNodeState::BlockedByNonBreakable;
+							AddNavNode(x, y, navNode);
+					
+						}
+						else
+						{
+							navNode.NavNodeState = ENavNodeState::Passable;
+							AddNavNode(x, y, navNode);
+						}
+					}
+				}
+			}
+
+			//못지나 가는 노드가 주위에 있는 지 세팅
+			for(TPair<int32, TMap<int32, FDpNavNode>>& nodes : NavMap)
+			{
+				for(TPair<int32, FDpNavNode>& node : nodes.Value)
+				{
+					if(node.Value.NavNodeState == ENavNodeState::BlockedByNonBreakable)
+					{
+						//못지나 가는 노드를 생성 시 주위 노드에 알림
+						for(int i = 0; i < Character_MaxHalfGrid; ++i)
+						{
+							for(int j = -i; j <= i; ++j)
+							{
+								for(int k = -i; k <= i; ++k)
+								{
+									TMap<int32, FDpNavNode>* findXValue = NavMap.Find(node.Value.X + j);
+									if(findXValue == nullptr)
+										continue;
+
+									FDpNavNode* findYValue = findXValue->Find(node.Value.Y + k);
+									if(findYValue == nullptr)
+										continue;
+									
+									if(findYValue->IsGoNodeState.Num() != Character_MaxHalfGrid)
+										findYValue->IsGoNodeState.SetNum(Character_MaxHalfGrid);
+									findYValue->IsGoNodeState[i] = ENavNodeState::BlockedByNonBreakable;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		//파일 출력을 위한 데이터 정리
+		TArray<int32> outArray;
+		for(const TPair<int32, TMap<int32, FDpNavNode>>& nodes : NavMap)
+		{
+			for(const TPair<int32, FDpNavNode>& node : nodes.Value)
+			{
+				outArray.Add(node.Value.X);
+				outArray.Add(node.Value.Y);
+				outArray.Add(static_cast<int32>(node.Value.NavNodeState));
+				for(int i = 0; i < Character_MaxHalfGrid; ++i)
+					outArray.Add(static_cast<int32>(node.Value.IsGoNodeState[i]));
+			}
+		}
+		
+		//노드 파일출력
+		FString fileName = world->GetMapName();
+		fileName = TEXT("NavNode_") + fileName + TEXT(".bin");
+		bool IsWriting = FFstreamManager::WriteDataBinaryByInteger(fileName, outArray);
 	}
 	BuildNavMapLocation();
 	BuildNavGraph();

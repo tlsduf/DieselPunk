@@ -11,6 +11,8 @@
 #include "../UI/HUD/Hand.h"
 #include "../Manager/UIManager.h"
 #include "../Core/DPLevelScriptActor.h"
+#include "../Manager/NavigationManager.h"
+#include "../Actor/FloorStaticMeshActor.h"
 
 #include <Blueprint/UserWidget.h>
 #include <EnhancedInputComponent.h>
@@ -71,6 +73,10 @@ void APlayerControllerBase::BeginPlay()
 	Hand->OnCreated();
 
 	DeckInterfaceOpen = false;
+
+	TArray<AActor*> findActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AFloorStaticMeshActor::StaticClass(), findActors);
+	FNavigationManager::GetInstance()->BuildNavMap(findActors);
 }
 
 void APlayerControllerBase::SetupInputComponent()
