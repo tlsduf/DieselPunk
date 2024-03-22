@@ -26,6 +26,8 @@
 #include "../UI/UserWidgetBase.h"
 #include "../UI/HUD/Hand.h"
 #include "Components/DecalComponent.h"
+#include "DieselPunk/Actor/Weapon.h"
+#include "DieselPunk/Manager/ObjectManager.h"
 #include "DieselPunk/Skill/SkillPC/SkillSpawnTurret.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -146,6 +148,30 @@ void ACharacterPC::BeginPlay()
 	for(const auto& It : Skills)
 	{
 		It.Value->InitSkill();
+	}
+
+	if(DefaultWeapon)
+	{
+		FSpawnParam spawnParam;
+		spawnParam.Location = FVector::ZeroVector;
+		spawnParam.Rotation = FRotator::ZeroRotator;
+		TWeakObjectPtr<ACharacterBase> thisPtr = this;
+		spawnParam.CallBackSpawn = [thisPtr](AActor* InActor)
+		{
+			if(InActor != nullptr)
+			{
+				AWeapon* weapon = Cast<AWeapon>(InActor);
+				if(weapon == nullptr)
+					return;
+				weapon->SetOwnerPlayer(thisPtr.Get());
+			}
+		};
+		int32 weaponId = FObjectManager::GetInstance()->CreateActor<AWeapon>(DefaultWeapon, spawnParam);
+		AActor* actor = FObjectManager::GetInstance()->FindActor(weaponId);
+		if(actor == nullptr)
+			return;
+		Weapon = Cast<AWeapon>(actor);
+		
 	}
 }
 
@@ -418,6 +444,9 @@ void ACharacterPC::InitSkills()
 		Skills.Empty();
 	for (const TPair<EAbilityType, TSubclassOf<UPlayerSkill>>& ability : SkillInfos)
 	{
+		if(ability.Key == EAbilityType::MouseLM || ability.Key == EAbilityType::MouseRM)
+			continue;
+		
 		if(ability.Value != nullptr)
 		{
 			Skills.Add(ability.Key, NewObject<UPlayerSkill>(this, ability.Value));
@@ -452,32 +481,37 @@ void ACharacterPC::InitSkills()
 // =============================================================
 void ACharacterPC::SkillStarted(const EAbilityType inAbilityType)
 {
-	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
-		ability->SkillStarted();
+	if(Skills.Find(inAbilityType) != nullptr)
+		if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
+			ability->SkillStarted();
 }
 void ACharacterPC::SkillOngoing(const EAbilityType inAbilityType)
 {
-	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
-		ability->SkillOngoing();
+	if(Skills.Find(inAbilityType) != nullptr)
+		if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
+			ability->SkillOngoing();
 }
 void ACharacterPC::SkillTriggered(const EAbilityType inAbilityType)
 {
-	if (Skills[inAbilityType]->CanActivateAbility() && !GetOtherSkillActivating(inAbilityType))
-	{
-		HandleCombatState();
-		if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
-			ability->SkillTriggered();
-	}
+	if(Skills.Find(inAbilityType) != nullptr)
+		if (Skills[inAbilityType]->CanActivateAbility() && !GetOtherSkillActivating(inAbilityType))
+		{
+			HandleCombatState();
+			if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
+				ability->SkillTriggered();
+		}
 }
 void ACharacterPC::SkillCompleted(const EAbilityType inAbilityType)
 {
-	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
-		ability->SkillCompleted();
+	if(Skills.Find(inAbilityType) != nullptr)
+		if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
+			ability->SkillCompleted();
 }
 void ACharacterPC::SkillCanceled(const EAbilityType inAbilityType)
 {
-	if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
-		ability->SkillCanceled();
+	if(Skills.Find(inAbilityType) != nullptr)
+		if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
+			ability->SkillCanceled();
 }
 
 //================================================================
@@ -511,7 +545,10 @@ bool ACharacterPC::GetOtherSkillActivating(EAbilityType inType)
 //================================================================
 float ACharacterPC::GetSkillCoolTimePercent(EAbilityType inType)
 {
-	return Skills[inType]->GetCoolTimePercent();
+	if(Skills.Find(inType) != nullptr)
+		return Skills[inType]->GetCoolTimePercent();
+
+	return 0.f;
 }
 
 //================================================================
@@ -625,13 +662,19 @@ void ACharacterPC::SetSelectInstallation(TWeakObjectPtr<ACharacterHousing> InIns
 
 void ACharacterPC::BindSkillUseCard()
 {
-	Skills[EAbilityType::MouseLM] = CardSkill;
+	Skills.FindOrAdd(EAbilityType::MouseLM) = CardSkill;
+	if(Skills.Find(EAbilityType::MouseLM) != nullptr)
+		Skills[EAbilityType::MouseLM] = CardSkill;
 	CardSkill->SkillStarted();
 }
 
 void ACharacterPC::UnBindSkillUseCard()
 {
-	Skills[EAbilityType::MouseLM] = CachedSkills[EAbilityType::MouseLM];
+	TObjectPtr<UPlayerSkill>* findSkill = CachedSkills.Find(EAbilityType::MouseLM);
+	if(findSkill != nullptr)
+		Skills[EAbilityType::MouseLM] = *findSkill;
+	else
+		Skills.Remove(EAbilityType::MouseLM);
 	if(DelegateCardActivate.IsBound())
 		DelegateCardActivate.Unbind();
 	if(DelegateCardCancel.IsBound())
@@ -644,6 +687,9 @@ void ACharacterPC::UnBindSkillUseCard()
 
 bool ACharacterPC::CardSkillIsExpectedUnBind()
 {
+	if(Skills.Find(EAbilityType::MouseLM) == nullptr)
+		return false;
+	
 	USkillSpawnTurret* skill = Cast<USkillSpawnTurret>(Skills[EAbilityType::MouseLM]);
 	if(skill)
 		return skill->IsExpectedUnBind();
@@ -692,4 +738,13 @@ void ACharacterPC::DestroyDecalComponent()
 		Indicator->DestroyComponent();
 	if(IndicatorBase.IsValid())
 		IndicatorBase->DestroyComponent();
+}
+
+void ACharacterPC::OnPossessWeapon(AWeapon* InWeapon)
+{
+	Skills.FindOrAdd(EAbilityType::MouseLM) = InWeapon->GetSkill_LM();
+	CachedSkills.FindOrAdd(EAbilityType::MouseLM) = InWeapon->GetSkill_LM();
+	
+	Skills.FindOrAdd(EAbilityType::MouseRM) = InWeapon->GetSkill_RM();
+	CachedSkills.FindOrAdd(EAbilityType::MouseRM) = InWeapon->GetSkill_RM();
 }

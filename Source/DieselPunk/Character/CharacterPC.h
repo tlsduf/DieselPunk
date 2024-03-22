@@ -6,6 +6,7 @@
 #include "InputActionValue.h"
 #include "CharacterPC.generated.h"
 
+class AWeapon;
 DECLARE_DYNAMIC_DELEGATE(FDelegateInteractTask);
 DECLARE_DYNAMIC_DELEGATE(FDelegateJumpAction);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FDelegateLandAction, const FHitResult&, Hit);
@@ -123,6 +124,11 @@ public:
 	
 	//인디케이터 베이스 데칼 머터리얼
 	TWeakObjectPtr<UMaterialInterface> IndicatorBaseMaterial;
+
+	UPROPERTY(EditDefaultsOnly, Category="MYDP_Weapon")
+	TSubclassOf<AWeapon> DefaultWeapon;
+
+	TObjectPtr<AWeapon> Weapon;
 
 protected:
 	void CheckViewMiddleForInteractInstallationUI();
@@ -255,5 +261,7 @@ public:
 
 	void SpawnDecalComponent(double InMaxRange, double InRange);
 	void DestroyDecalComponent();
+
+	void OnPossessWeapon(AWeapon* InWeapon);
 };
 

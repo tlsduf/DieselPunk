@@ -3,6 +3,7 @@
 
 #include "SkillBase.h"
 #include "../Character/CharacterBase.h"
+#include "DieselPunk/Actor/Weapon.h"
 
 
 #include "Tests/AutomationTestSettings.h"
@@ -23,8 +24,17 @@ void USkillBase::BeginPlay()
 
 	if(GetOwner() != nullptr)
 	{
-		OwnerCharacter = Cast<ACharacterBase>(GetOwner());
-		OwnerController = OwnerCharacter->GetController();
+		if(ACharacterBase* charBase = Cast<ACharacterBase>(GetOwner()))
+		{
+			OwnerCharacter = charBase;
+			OwnerController = OwnerCharacter->GetController();
+		}
+		if(AWeapon* weapon = Cast<AWeapon>(GetOwner()))
+		{
+			OwnerCharacter = weapon->GetOwnerPlayer();
+			if(OwnerCharacter)
+				OwnerController = OwnerCharacter->GetController();
+		}
 	}
 }
 

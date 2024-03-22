@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SkillActor.h"
+
+#include "Weapon.h"
 #include "../Character/CharacterBase.h"
 
 
@@ -21,8 +23,17 @@ void ASkillActor::BeginPlay()
 
 	if(GetOwner() != nullptr)
 	{
-		OwnerCharacter = Cast<ACharacterBase>(GetOwner());
-		OwnerController = OwnerCharacter->GetController();
+		if(ACharacterBase* charBase = Cast<ACharacterBase>(GetOwner()))
+		{
+			OwnerCharacter = charBase;
+			OwnerController = OwnerCharacter->GetController();
+		}
+		if(AWeapon* weapon = Cast<AWeapon>(GetOwner()))
+		{
+			OwnerCharacter = weapon->GetOwnerPlayer();
+			if(OwnerCharacter)
+				OwnerController = OwnerCharacter->GetController();
+		}
 	}
 }
 
