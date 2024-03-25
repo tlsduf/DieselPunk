@@ -15,7 +15,6 @@
 #include <Blueprint/WidgetTree.h>
 #include <Animation/WidgetAnimation.h>
 
-
 #include UE_INLINE_GENERATED_CPP_BY_NAME(Hand)
 
 
@@ -96,7 +95,12 @@ void UHand::RegisterHand(int InIndex, const CardInfo* InCardInfo)
 		text->SetText(FText::FromString(InCardInfo->CardName));
 	}
 	else
+	{
 		text->SetVisibility(ESlateVisibility::Collapsed);
+		UTextBlock* cost = Cast<UTextBlock>((*card)[TEXT("Cost")]);
+		if(cost)
+			cost->SetText(FText::FromString(FString::FromInt(InCardInfo->Cost)));
+	}
 }
 
 //카드 등록 해제합니다. Visibility를 Hidden으로 변경합니다.
