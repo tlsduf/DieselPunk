@@ -8,6 +8,8 @@
 #include <GameFramework/ProjectileMovementComponent.h>
 #include <Kismet/GameplayStatics.h>
 
+#include "Weapon.h"
+
 
 // =============================================================
 // 생성자
@@ -197,24 +199,27 @@ void AProjectileBase::_OnHit(UPrimitiveComponent* InHitComp, AActor* InOtherActo
 	// 데미지 전달
 	if (InOtherActor && InOtherActor != this && InOtherActor != GetOwner())
 	{
-		if(DoRadialDamage)
+		if(Cast<AWeapon>(GetOwner()) == nullptr || InOtherActor != Cast<AWeapon>(GetOwner())->GetOwnerPlayer())
 		{
-			TArray<FHitResult> sweepResults;
-			FVector startLocation = GetActorLocation();
-			FVector endLocation = startLocation;
-			UtilCollision::CapsuleSweepMulti(GetWorld(), sweepResults, startLocation, endLocation, AttackRadius, ProjectileOwnerType, DebugOnOff);
-			if(!sweepResults.IsEmpty())
+			if(DoRadialDamage)
 			{
-				for (auto It = sweepResults.CreateIterator(); It; It++)
+				TArray<FHitResult> sweepResults;
+				FVector startLocation = GetActorLocation();
+				FVector endLocation = startLocation;
+				UtilCollision::CapsuleSweepMulti(GetWorld(), sweepResults, startLocation, endLocation, AttackRadius, ProjectileOwnerType, DebugOnOff);
+				if(!sweepResults.IsEmpty())
 				{
-					InOtherActor = It->GetActor();
-					UGameplayStatics::ApplyDamage(InOtherActor, Damage, OwnerController, OwnerCharacter, nullptr);
+					for (auto It = sweepResults.CreateIterator(); It; It++)
+					{
+						InOtherActor = It->GetActor();
+						UGameplayStatics::ApplyDamage(InOtherActor, Damage, OwnerController, OwnerCharacter, nullptr);
+					}
 				}
 			}
-		}
-		else
-		{
-			UGameplayStatics::ApplyDamage(InOtherActor, Damage, OwnerController, OwnerCharacter, nullptr);
+			else
+			{
+				UGameplayStatics::ApplyDamage(InOtherActor, Damage, OwnerController, OwnerCharacter, nullptr);
+			}
 		}
 	}
 
