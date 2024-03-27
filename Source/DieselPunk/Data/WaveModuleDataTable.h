@@ -14,6 +14,10 @@ struct FWaveModuleInfo
 	//스폰할 몬스터의 이름입니다. DT_Character와 행 이름이 동일해야합니다.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString MonsterID;
+
+	// 몬스터를 n 만큼 스폰합니다
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int SpawnCount = 0.f;
 	
 	// 스폰을 시작하기 까지 시간입니다.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -38,7 +42,7 @@ struct DIESELPUNK_API FWaveModuleDataTable : public FDPTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 	
-	//몬스터 스폰 정보입니다.
+	//웨이브 정보입니다.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FWaveModuleInfo> WaveModuleInfo;
 };

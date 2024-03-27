@@ -36,7 +36,7 @@ struct DIESELPUNK_API FStageWaveDataTable : public FDPTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 	
-	//몬스터 스폰 정보입니다.
+	//스테이지웨이브 정보입니다.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FStageWaveInfo> StageWaveInfo;
 };

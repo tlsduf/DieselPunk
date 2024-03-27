@@ -148,13 +148,25 @@ void AMonsterSpawner::_SetWaveModule(const FString& InWaveModuleName)
 		info.BpPath = UtilPath::GetCharacterBlueprintPath(*characterDataTable->BluePrintPath);
 		
 		//정보 추가
-		SpawnInfo.Add(info);
+		if(spawnInfo.SpawnCount < 1)
+			SpawnInfo.Add(info);
+		else
+		{
+			for(int i = 0 ; i < spawnInfo.SpawnCount ; i++)
+				SpawnInfo.Add(info);
+		}
 		if(spawnInfo.bDoRep)
 		{
 			for(int i = 0; i < (spawnInfo.Reps - 1); i++)
 			{
 				info.StartDelay += spawnInfo.Delay;
-				SpawnInfo.Add(info);
+				if(spawnInfo.SpawnCount < 1)
+					SpawnInfo.Add(info);
+				else
+				{
+					for(int j = 0 ; j < spawnInfo.SpawnCount ; j++)
+						SpawnInfo.Add(info);
+				}
 			}
 		}
 	}
