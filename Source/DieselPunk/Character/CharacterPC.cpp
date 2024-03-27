@@ -91,14 +91,14 @@ ACharacterPC::ACharacterPC()
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 
 	// Create a camera boom (pulls in towards the player if there is a collision)
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 400.0f;		// The camera follows at this distance behind the character
-	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
+	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	SpringArm->SetupAttachment(RootComponent);
+	SpringArm->TargetArmLength = 400.0f;		// The camera follows at this distance behind the character
+	SpringArm->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
+	FollowCamera->SetupAttachment(SpringArm, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false;								// Camera does not rotate relative to arm
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character)
@@ -415,13 +415,13 @@ void ACharacterPC::SetRunZoomOutProp()
 //================================================================
 void ACharacterPC::ZoomInOut(float InDeltaTime)
 {
-	CameraBoom->TargetArmLength = FMath::FInterpTo(
-		CameraBoom->TargetArmLength,
+	SpringArm->TargetArmLength = FMath::FInterpTo(
+		SpringArm->TargetArmLength,
 		MyTargetArmLength,
 		InDeltaTime,
 		ZoomInterpTime);
-	CameraBoom->SetRelativeLocation(FMath::VInterpTo(
-		CameraBoom->GetRelativeLocation(),
+	SpringArm->SetRelativeLocation(FMath::VInterpTo(
+		SpringArm->GetRelativeLocation(),
 		MyTargetArmLocation,
 		InDeltaTime,
 		ZoomInterpTime));
@@ -430,7 +430,7 @@ void ACharacterPC::ZoomInOut(float InDeltaTime)
 		MyCameraLocation,
 		InDeltaTime,
 		ZoomInterpTime));
-	if (CameraBoom->TargetArmLength == MyTargetArmLength)
+	if (SpringArm->TargetArmLength == MyTargetArmLength)
 		CanZoom = false; // 줌인아웃이 완료되면 함수실행중지
 	
 }

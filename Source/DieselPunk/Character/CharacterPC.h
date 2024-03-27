@@ -30,7 +30,7 @@ class ACharacterPC : public ACharacterBase
 	
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent *CameraBoom;
+	class USpringArmComponent *SpringArm;
 
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -151,7 +151,7 @@ public:
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
 	
 	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent *GetCameraBoom() const { return CameraBoom; }
+	FORCEINLINE class USpringArmComponent *GetCameraBoom() const { return SpringArm; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent *GetFollowCamera() const { return FollowCamera; }
 
