@@ -230,18 +230,33 @@ void ACharacterHousing::UpgradeInstallation()
 	int32 lv = GetStat(ECharacterStatType::Level);
 	lv++;
 
-	if(lv >= UpgradeInfos.Num())
+	if(lv > UpgradeInfos.Num())
 	{
 		LOG_SCREEN(FColor::Yellow, TEXT("Upgrade Failed! Have not Upgrade Meshes"));
 		return;
 	}
+	const FStatDataTable* data = nullptr;
 	
-	const FStatDataTable* data = FDataTableManager::GetInstance()->GetData<FStatDataTable>(UpgradeInfos[lv - 1].UpgradeID);
-	if(data == nullptr)
+	if(UpgradeInfos[lv - 1].UpgradeID != 0)
 	{
-		LOG_SCREEN(FColor::Yellow, TEXT("Upgrade Failed! Have not Stat Info for UpgradeID:%d"), UpgradeInfos[lv - 1].UpgradeID);
-		return;
+		data = FDataTableManager::GetInstance()->GetData<FStatDataTable>(UpgradeInfos[lv - 1].UpgradeID);
+		if(data == nullptr)
+		{
+			LOG_SCREEN(FColor::Yellow, TEXT("Upgrade Failed! Have not Stat Info for UpgradeID:%d"), UpgradeInfos[lv - 1].UpgradeID);
+			return;
+		}
 	}
+	else
+	{
+		data = FDataTableManager::GetInstance()->GetData<FStatDataTable>(EDataTableType::Stat,UpgradeInfos[lv - 1].UpgradeName);
+		if(data == nullptr)
+		{
+			LOG_SCREEN(FColor::Yellow, TEXT("Upgrade Failed! Have not Stat Info for UpgradeName:%s"), *UpgradeInfos[lv - 1].UpgradeName);
+			return;
+		}
+	}
+	//캐릭터 명 변경
+	CharacterName = UpgradeInfos[lv-1].UpgradeName;
 
 	//메시 변경
 	GetMesh()->SetSkeletalMeshAsset(UpgradeInfos[lv - 1].UpgradeMesh);

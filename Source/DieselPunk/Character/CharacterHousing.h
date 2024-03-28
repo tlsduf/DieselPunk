@@ -19,6 +19,10 @@ struct FUpgardeInfo
 	//업그레이드할 스탯 정보를 불러오기 위한 ID값
 	UPROPERTY(EditDefaultsOnly)
 	int32 UpgradeID;
+
+	//업그레이드할 스탯 정보를 불러오기 위한 이름
+	UPROPERTY(EditDefaultsOnly)
+	FString UpgradeName;
 	
 	//업그레이드할 메시
 	UPROPERTY(EditDefaultsOnly)
