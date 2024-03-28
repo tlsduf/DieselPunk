@@ -32,11 +32,13 @@ void AWeapon::BeginPlay()
 	{
 		Skill_LM = NewObject<UPlayerSkill>(this, SkillInfo_LM);
 		Skill_LM->RegisterComponent();
+		Skill_LM->InitSkill();
 	}
 	if(SkillInfo_RM != nullptr)
 	{
 		Skill_RM = NewObject<UPlayerSkill>(this, SkillInfo_RM);
 		Skill_RM->RegisterComponent();
+		Skill_LM->InitSkill();
 	}
 
 	if(OwnerCharacter == nullptr)
