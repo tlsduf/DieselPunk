@@ -18,6 +18,9 @@
 #include <Components/BoxComponent.h>
 #include <Components/WidgetComponent.h>
 
+#include "Engine/SkeletalMesh.h"
+#include "Engine/SkinnedAssetCommon.h"
+
 
 struct FStatDataTable;
 // =============================================================
@@ -260,6 +263,14 @@ void ACharacterHousing::UpgradeInstallation()
 
 	//메시 변경
 	GetMesh()->SetSkeletalMeshAsset(UpgradeInfos[lv - 1].UpgradeMesh);
+	TArray<FSkeletalMaterial> materials = UpgradeInfos[lv - 1].UpgradeMesh->GetMaterials();
+	for(int i = 0; i < GetMesh()->GetMaterials().Num(); ++i)
+	{
+		if(i < materials.Num())
+			GetMesh()->SetMaterial(i, materials[i].MaterialInterface);
+		else
+			GetMesh()->SetMaterial(i, nullptr);
+	}
 
 	//스탯 변경
 	StatControlComponent->SetAllStatByStatDataTable(data);
