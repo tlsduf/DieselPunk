@@ -14,7 +14,10 @@ void UTurretAnimInstace::NativeUpdateAnimation(float InDeltaSeconds)
 	Super::NativeUpdateAnimation(InDeltaSeconds);
 
 	if(CurTarget.IsValid())
+	{
 		OwnerToTargetRot = (CurTarget->GetActorLocation() - GetOwningActor()->GetActorLocation()).Rotation() - GetOwningActor()->GetActorRotation();
+		OwnerToTargetDist = FVector::Dist(CurTarget->GetActorLocation(), GetOwningActor()->GetActorLocation());
+	}
 }
 
 // AbilityType에 따른 몽타주를 반환합니다. None입력시 기본 몽타주 반환

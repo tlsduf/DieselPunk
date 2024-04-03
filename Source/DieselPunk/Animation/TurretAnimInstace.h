@@ -22,6 +22,10 @@ private:
 	UPROPERTY(BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
 	FRotator OwnerToTargetRot = FRotator::ZeroRotator;
 
+	// 터렛위치와 타겟사이 거리
+	UPROPERTY(BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
+	float OwnerToTargetDist = 0;
+
 	UPROPERTY()
 	TWeakObjectPtr<ACharacterNPC> CurTarget = nullptr;
 
