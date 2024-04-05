@@ -146,9 +146,6 @@ public:
 	float DistanceSegmentToSelf(FVector inStart, FVector inEnd);
 	// '몬스터'의 GoalLoc를 갱신합니다. // GoalLoc는 경유지점입니다. // Tick , 조건
 	void UpdateEnemyGoalLoc();
-	
-	// 길이 막혔을 때, 파괴시 진행할 수 있는 포탑의 위치를 찾습니다. // 현재 사용x
-	bool FindShortestPath(const FVector& InEndLocation);
 
 	// 길이 막혔을 때, '몬스터'의 타겟을 지정합니다. // 현재 사용x
 	bool SetBlockedAttackTarget(TWeakObjectPtr<AActor> InTarget, const TArray<FVector>& InPath = TArray<FVector>(), int InIndex = -1);

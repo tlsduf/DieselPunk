@@ -460,15 +460,6 @@ void ACharacterNPC::UpdateEnemyGoalLoc()
 }
 
 // =============================================================
-// 길이 막혔을 때, 파괴시 진행할 수 있는 포탑의 위치를 찾습니다.
-// =============================================================
-bool ACharacterNPC::FindShortestPath(const FVector& InEndLocation)
-{
-	ShortestPath = FNavigationManager::GetInstance()->PathFinding(GetActorLocation(), InEndLocation, GridSizeHorizontal);
-	return !ShortestPath.IsEmpty();
-}
-
-// =============================================================
 // 길이 막혔을 때, '몬스터'의 타겟을 지정합니다.
 // =============================================================
 bool ACharacterNPC::SetBlockedAttackTarget(TWeakObjectPtr<AActor> InTarget, const TArray<FVector>& InPath, int InIndex)

@@ -74,17 +74,6 @@ void FNavigationManager::AddNavNode(int32 InX, int32 InY, FDpNavNode InNavNode)
 		navNode.NavNodeState = InNavNode.NavNodeState;
 }
 
-//리스트 안에 존재 여부 반환
-bool FNavigationManager::IsInList(int32 InX, int32 InY, const TArray<TPair<int32, int32>>& InList)
-{
-	const TPair<int32, int32>* find = InList.FindByPredicate([&InX, &InY](const TPair<int32, int32>& elem)
-	{
-		return elem.Key == InX && elem.Value == InY;
-	});
-
-	return find != nullptr;
-}
-
 //네비 노드 생성
 void FNavigationManager::BuildNavMap(TWeakObjectPtr<AFloorStaticMeshActor> InFloorStaticMeshActor,
                                       TArray<FDpBox> InBoxes)
@@ -435,95 +424,10 @@ void FNavigationManager::BuildNavGraph()
 	}
 }
 
-//최단 경로 찾기
-bool FNavigationManager::_PathFinding(int32 InStartX, int32 InStartY, int32 InEndX, int32 InEndY, const int32 InCharacterGridSize)
-{
-	if(!OpenList.IsEmpty())
-		OpenList.CreateIterator().RemoveCurrent();
-
-	CloseList.Add({InStartX, InStartY});
-
-	//인접 노드 조사
-	for(const TPair<int32, int32>& idx : NavMap.Find(InStartX)->Find(InStartY)->Road)
-	{
-		//인접 노드가 목적지라면 검색 종료
-		if(idx.Key == InEndX && idx.Value == InEndY)
-		{
-			NavMap[idx.Key][idx.Value].Parent = &NavMap[InStartX][InStartY];
-			return true;
-		}
-		if(NavMap[idx.Key][idx.Value].IsGoNodeState[InCharacterGridSize - 1] == ENavNodeState::BlockedByNonBreakable)
-			continue;
-
-		//목적지 노드가 아니라면 OpenList에 보관
-		if(!IsInList(idx.Key, idx.Value, OpenList) && !IsInList(idx.Key, idx.Value, CloseList))
-		{
-			NavMap[idx.Key][idx.Value].Parent = &NavMap[InStartX][InStartY];
-			OpenList.Add({idx.Key, idx.Value});
-		}
-	}
-
-	//찾을 수 있는 길이 없음
-	if(OpenList.IsEmpty())
-		return false;
-
-	//휴리스틱 조사식으로 정렬
-	double firstStartX = StartX;
-	double firstStartY = StartY;
-
-	const TMap<int32, TMap<int32, FDpNavNode>>& map = NavMap;
-	
-	OpenList.Sort([&map, &InCharacterGridSize, &firstStartX, &firstStartY, &InEndX, &InEndY](const TPair<int32, int32>& lhsIdx, const TPair<int32, int32>& rhsIdx)
-	{
-		FDpNavNode* parent = map[lhsIdx.Key][lhsIdx.Value].Parent;
-		int countBlockedByBreakable = 0;
-		while(parent != nullptr)
-		{
-			if(parent->NavNodeState == ENavNodeState::BlockedByBreakable || parent->IsGoNodeState[InCharacterGridSize - 1] == ENavNodeState::BlockedByBreakable)
-				countBlockedByBreakable++;
-			parent = parent->Parent;
-		}
-
-		int countBlockedByBreakableLhs = map[lhsIdx.Key][lhsIdx.Value].NavNodeState == ENavNodeState::BlockedByBreakable? countBlockedByBreakable + 1: countBlockedByBreakable;
-		int countBlockedByBreakableRhs = map[rhsIdx.Key][rhsIdx.Value].NavNodeState == ENavNodeState::BlockedByBreakable? countBlockedByBreakable + 1: countBlockedByBreakable;
-		
-		double distStartCurrentLhs = DistanceIndex(firstStartX, firstStartY, lhsIdx.Key, lhsIdx.Value);
-		double distCurrentEndLhs = DistanceIndex(lhsIdx.Key, lhsIdx.Value, InEndX, InEndY);
-
-		double distStartCurrentRhs = DistanceIndex(firstStartX, firstStartY, rhsIdx.Key, rhsIdx.Value);
-		double distCurrentEndRhs = DistanceIndex(rhsIdx.Key, rhsIdx.Value, InEndX, InEndY);
-
-		return distStartCurrentLhs + distCurrentEndLhs + countBlockedByBreakableLhs * 100 <= distStartCurrentRhs + distCurrentEndRhs + countBlockedByBreakableRhs * 100;
-		//return distCurrentEndLhs <= distCurrentEndRhs;
-	});
-
-	return _PathFinding(OpenList[0].Key, OpenList[0].Value, InEndX, InEndY, InCharacterGridSize);
-}
-
 //두 인덱스 사이 거리 측정
 double FNavigationManager::DistanceIndex(double InAx, double InAy, double InBx, double InBy)
 {
 	return sqrt((InAx - InBx) * (InAx - InBx) + (InAy - InBy) * (InAy - InBy));
-}
-
-//경로 생성
-TArray<FDpNavNode*> FNavigationManager::CreatePath(int32 InStartX, int32 InStartY, int32 InEndX, int32 InEndY)
-{
-	TArray<FDpNavNode*> outPath;
-	outPath.Add(&NavMap[InEndX][InEndY]);
-
-	FDpNavNode* parent = NavMap[InEndX][InEndY].Parent;
-
-	while(true)
-	{
-		if(parent->X == InStartX && parent->Y == InStartY)
-			break;
-
-		outPath.Add(parent);
-		parent = parent->Parent;
-	}
-
-	return outPath;
 }
 
 //포탑이 설치될 때 IsGoNodeState갱신
@@ -680,59 +584,6 @@ void FNavigationManager::DrawDebugNavMap()
 			}
 		}
 	}
-}
-
-//A-Star알고리즘을 통해 InStartLocation에서 InEndLocation까지의 최단거리 반환
-TArray<FVector> FNavigationManager::PathFinding(const FVector& InStartLocation, const FVector& InEndLocation, const int32 InCharacterGridSize)
-{
-	TArray<FVector> outPath;
-	
-	if(InCharacterGridSize > Character_MaxHalfGrid || InCharacterGridSize < 0)
-		return outPath;
-	
-	int32 startX = static_cast<int32>(InStartLocation.X) / GridSize;
-	int32 startY = static_cast<int32>(InStartLocation.Y) / GridSize;
-	int32 endX = static_cast<int32>(InEndLocation.X) / GridSize;
-	int32 endY = static_cast<int32>(InEndLocation.Y) / GridSize;
-
-	OpenList.Empty();
-	CloseList.Empty();
-
-	StartX = startX;
-	StartY = startY;
-	
-	//이미 도착한 경우
-	if(startX == endX && startY == endY)
-		return outPath;
-
-	//시작지점이 맵 외부이거나 갈 수 없는 노드일 경우
-	if(NavMap.Find(startX) == nullptr || NavMap.Find(startX)->Find(startY) == nullptr || NavMap.Find(startX)->Find(startY)->NavNodeState != ENavNodeState::Passable)
-		return outPath;
-
-	//도착지점이 맵 외부이거나 갈 수 없는 노드일 경우 
-	if(NavMap.Find(endX) == nullptr || NavMap.Find(endX)->Find(endY) == nullptr || NavMap.Find(endX)->Find(endY)->NavNodeState != ENavNodeState::Passable)
-		return outPath;
-
-	//길찾기 수행
-	if(!_PathFinding(startX, startY, endX, endY, InCharacterGridSize))
-		return outPath;
-
-	//경로 생성
-	TArray<FDpNavNode*> nodePath = CreatePath(StartX, StartY, endX, endY);
-	Algo::Reverse(nodePath);
-	for(const FDpNavNode* node : nodePath)
-		outPath.Add(node->Location);
-
-	//네비맵 초기화
-	for(TPair<int32, TMap<int32, FDpNavNode>>& nodes : NavMap)
-	{
-		for(TPair<int32, FDpNavNode>& node : nodes.Value)
-		{
-			node.Value.Parent = nullptr;
-		}
-	}
-
-	return outPath;
 }
 
 //터렛 설치 가능한지 검색
