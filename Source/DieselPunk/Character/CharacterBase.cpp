@@ -12,11 +12,11 @@
 #include <Components/WidgetComponent.h>
 #include <Components/StaticMeshComponent.h>
 #include <Components/CapsuleComponent.h>
+#include <Engine/Level.h>
+#include <Kismet/GameplayStatics.h>
 
 #include "ColorManagement/Public/ColorManagementDefines.h"
 
-#include "Engine/Level.h"
-#include "Kismet/GameplayStatics.h"
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(CharacterBase)

@@ -6,6 +6,8 @@
 #include "NPCAIController.generated.h"
 
 
+class UAnimSequence;
+
 UCLASS()
 class DIESELPUNK_API ANPCAIController : public AAIController
 {
@@ -14,11 +16,10 @@ class DIESELPUNK_API ANPCAIController : public AAIController
 private:
 	// 비헤비어 트리
 	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
-	UBehaviorTree *AIBehavior;
+	UBehaviorTree *AIBehavior = nullptr;
 
 	// SpawnTime 동안 Spawn 로직을 비헤비어 트리에서 실행
-	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
-	float SpawnTime = 1.0f;
+	float SpawnTime = 0.0f;
 
 	FTimerHandle SpawnAnimTHandle;
 

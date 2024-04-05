@@ -7,6 +7,8 @@
 #include <Navigation/PathFollowingComponent.h>
 #include <DrawDebugHelpers.h>
 
+#include "Components/SkeletalMeshComponent.h"
+
 const FName ANPCAIController::TargetKey(TEXT("Target"));
 
 void ANPCAIController::BeginPlay()
@@ -38,14 +40,31 @@ void ANPCAIController::OnPossess(APawn* InPawn)
 {
     Super::OnPossess(InPawn);
 
-    RunAi(InPawn, false);
-
-    // 스폰 애니메이션
-    TWeakObjectPtr<ANPCAIController> thisPtr = this;
-    GetWorld()->GetTimerManager().SetTimer(SpawnAnimTHandle, [thisPtr](){
-            if(thisPtr.IsValid())
-                thisPtr->bPlaySpawnAnim = false;
-        },SpawnTime, false);
+    //애니메이션 재생
+    SpawnTime = Cast<ACharacterNPC>(InPawn)->PlaySpawnAnim();
+    
+    if(SpawnTime > 0)
+    {
+        // 스폰 애니메이션이 완료되었을 때의 처리
+        TWeakObjectPtr<ANPCAIController> thisPtr = this;
+        TWeakObjectPtr<APawn> inPawn = InPawn;
+        GetWorld()->GetTimerManager().SetTimer(SpawnAnimTHandle, [thisPtr, inPawn](){
+                if(thisPtr.IsValid())
+                {
+                    thisPtr->bPlaySpawnAnim = false;
+                    if(inPawn.IsValid())
+                    {
+                        Cast<ACharacter>(inPawn)->GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+                        thisPtr->RunAi(inPawn.Get(), false);
+                    }
+                }
+            },SpawnTime, false);
+    }
+    else
+    {
+        bPlaySpawnAnim = false;
+        RunAi(InPawn, false);
+    }
 }
 
 //Ai를 실행합니다.

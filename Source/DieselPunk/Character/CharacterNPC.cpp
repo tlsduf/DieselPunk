@@ -16,6 +16,9 @@
 #include <Kismet/GameplayStatics.h>
 #include <Components/CapsuleComponent.h>
 
+#include "Animation/AnimSequence.h"
+#include "Components/SkeletalMeshComponent.h"
+
 
 // =============================================================
 // 생성자
@@ -547,5 +550,21 @@ void ACharacterNPC::UpdateSplinePathAll()
 		Cast<ACharacterNPC>(FObjectManager::GetInstance()->FindActor(ID))->UpdateSplinePath();
 	}
 	LOG_SCREEN(FColor::Red, TEXT("모든 적 경로 재탐색"))
+}
+
+
+//스폰 애니메이션을 실행하고 애니메이션의 길이를 반환합니다. 애니메이션이 없을 경우 0을 반환합니다.
+float ACharacterNPC::PlaySpawnAnim()
+{
+	if(SpawnAnimation == nullptr)
+		return 0.f;
+
+	USkeletalMeshComponent* mesh = GetMesh();
+	if(mesh == nullptr)
+		return 0.f;
+
+	mesh->PlayAnimation(SpawnAnimation, false);
+
+	return SpawnAnimation->GetPlayLength();
 }
 

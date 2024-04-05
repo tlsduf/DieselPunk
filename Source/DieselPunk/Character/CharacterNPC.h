@@ -105,6 +105,9 @@ protected:
 	TArray<FVector> ShortestPath;	//최단거리
 	FVector BlockedTargetLoc = FVector::ZeroVector;	// 공격할 타겟 위치
 	
+	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
+	UAnimSequence* SpawnAnimation = nullptr;
+	
 protected:
 	ACharacterNPC();
 	
@@ -176,4 +179,8 @@ public:
 	int32 GetGridSizeHorizontal() const { return GridSizeHorizontal; }
 	
 	FVector GetBlockedAttackTargetLoc() const { return BlockedTargetLoc; }
+
+	
+	//스폰 애니메이션을 실행하고 애니메이션의 길이를 반환합니다. 애니메이션이 없을 경우 0을 반환합니다.
+	float PlaySpawnAnim();
 };
