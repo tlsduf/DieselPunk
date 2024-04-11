@@ -128,7 +128,26 @@ void UHand::UnRegisterHand(int InIndex)
 		return;
 	}
 	card->SetVisibility(ESlateVisibility::Hidden);
-	FObjectManager::GetInstance()->GetPlayer()->DrawCard();
+	UUserWidgetBase* cards[FDeckHandler::MaxHand];
+	cards[0] = Hand0;
+	cards[1] = Hand1;
+	cards[2] = Hand2;
+	cards[3] = Hand3;
+	cards[4] = Hand4;
+
+	bool isDraw = true;
+
+	for(int i = 0; i < FDeckHandler::MaxHand; ++i)
+	{
+		if(cards[i]->GetVisibility() != ESlateVisibility::Hidden)
+		{
+			isDraw = false;
+			break;
+		}
+	}
+
+	if(isDraw)
+		FObjectManager::GetInstance()->GetPlayer()->DrawCard();
 }
 
 UWidgetAnimation* UHand::PlayHandToHangerAnimation(int InIndex)
