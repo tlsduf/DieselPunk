@@ -228,7 +228,7 @@ void ACharacterHousing::ChangeHousingMaterialParameterChange(bool InHousing)
 }
 
 // 터렛 업그레이드시 처리
-void ACharacterHousing::UpgradeInstallation()
+void ACharacterHousing::UpgradeInstallation(int32 InAceChance)
 {
 	int32 lv = GetStat(ECharacterStatType::Level);
 	lv++;
@@ -239,37 +239,76 @@ void ACharacterHousing::UpgradeInstallation()
 		return;
 	}
 	const FStatDataTable* data = nullptr;
+
+	int32 rand = FMath::RandRange(1,100);
 	
-	if(UpgradeInfos[lv - 1].UpgradeID != 0)
+	if(lv == UpgradeInfos.Num() && AceUpgradeInfo.UpgradeMesh != nullptr && rand <= InAceChance)
 	{
-		data = FDataTableManager::GetInstance()->GetData<FStatDataTable>(UpgradeInfos[lv - 1].UpgradeID);
-		if(data == nullptr)
+		if(AceUpgradeInfo.UpgradeID != 0)
 		{
-			LOG_SCREEN(FColor::Yellow, TEXT("Upgrade Failed! Have not Stat Info for UpgradeID:%d"), UpgradeInfos[lv - 1].UpgradeID);
-			return;
+			data = FDataTableManager::GetInstance()->GetData<FStatDataTable>(AceUpgradeInfo.UpgradeID);
+			if(data == nullptr)
+			{
+				LOG_SCREEN(FColor::Yellow, TEXT("Upgrade Failed! Have not Stat Info for UpgradeID:%d"), AceUpgradeInfo.UpgradeID);
+				return;
+			}
+		}
+		else
+		{
+			data = FDataTableManager::GetInstance()->GetData<FStatDataTable>(EDataTableType::Stat,AceUpgradeInfo.UpgradeName);
+			if(data == nullptr)
+			{
+				LOG_SCREEN(FColor::Yellow, TEXT("Upgrade Failed! Have not Stat Info for UpgradeName:%s"), *AceUpgradeInfo.UpgradeName);
+				return;
+			}
+		}
+		//캐릭터 명 변경
+		CharacterName = AceUpgradeInfo.UpgradeName;
+
+		//메시 변경
+		GetMesh()->SetSkeletalMeshAsset(AceUpgradeInfo.UpgradeMesh);
+		TArray<FSkeletalMaterial> materials = AceUpgradeInfo.UpgradeMesh->GetMaterials();
+		for(int i = 0; i < GetMesh()->GetMaterials().Num(); ++i)
+		{
+			if(i < materials.Num())
+				GetMesh()->SetMaterial(i, materials[i].MaterialInterface);
+			else
+				GetMesh()->SetMaterial(i, nullptr);
 		}
 	}
 	else
 	{
-		data = FDataTableManager::GetInstance()->GetData<FStatDataTable>(EDataTableType::Stat,UpgradeInfos[lv - 1].UpgradeName);
-		if(data == nullptr)
+		if(UpgradeInfos[lv - 1].UpgradeID != 0)
 		{
-			LOG_SCREEN(FColor::Yellow, TEXT("Upgrade Failed! Have not Stat Info for UpgradeName:%s"), *UpgradeInfos[lv - 1].UpgradeName);
-			return;
+			data = FDataTableManager::GetInstance()->GetData<FStatDataTable>(UpgradeInfos[lv - 1].UpgradeID);
+			if(data == nullptr)
+			{
+				LOG_SCREEN(FColor::Yellow, TEXT("Upgrade Failed! Have not Stat Info for UpgradeID:%d"), UpgradeInfos[lv - 1].UpgradeID);
+				return;
+			}
 		}
-	}
-	//캐릭터 명 변경
-	CharacterName = UpgradeInfos[lv-1].UpgradeName;
-
-	//메시 변경
-	GetMesh()->SetSkeletalMeshAsset(UpgradeInfos[lv - 1].UpgradeMesh);
-	TArray<FSkeletalMaterial> materials = UpgradeInfos[lv - 1].UpgradeMesh->GetMaterials();
-	for(int i = 0; i < GetMesh()->GetMaterials().Num(); ++i)
-	{
-		if(i < materials.Num())
-			GetMesh()->SetMaterial(i, materials[i].MaterialInterface);
 		else
-			GetMesh()->SetMaterial(i, nullptr);
+		{
+			data = FDataTableManager::GetInstance()->GetData<FStatDataTable>(EDataTableType::Stat,UpgradeInfos[lv - 1].UpgradeName);
+			if(data == nullptr)
+			{
+				LOG_SCREEN(FColor::Yellow, TEXT("Upgrade Failed! Have not Stat Info for UpgradeName:%s"), *UpgradeInfos[lv - 1].UpgradeName);
+				return;
+			}
+		}
+		//캐릭터 명 변경
+		CharacterName = UpgradeInfos[lv-1].UpgradeName;
+
+		//메시 변경
+		GetMesh()->SetSkeletalMeshAsset(UpgradeInfos[lv - 1].UpgradeMesh);
+		TArray<FSkeletalMaterial> materials = UpgradeInfos[lv - 1].UpgradeMesh->GetMaterials();
+		for(int i = 0; i < GetMesh()->GetMaterials().Num(); ++i)
+		{
+			if(i < materials.Num())
+				GetMesh()->SetMaterial(i, materials[i].MaterialInterface);
+			else
+				GetMesh()->SetMaterial(i, nullptr);
+		}
 	}
 
 	//스탯 변경

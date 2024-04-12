@@ -85,6 +85,7 @@ enum class ECharacterStatType : uint8
 	AttackMaxRange		UMETA( ToolTip = "최대사거리" ),
 	AttackMinRange		UMETA( ToolTip = "최소사거리" ),
 	Cost				UMETA( ToolTip = "코스트"),
+	AceChance			UMETA( ToolTip = "에이스 업그레이드 확률"),
 	Count
 };
 ENUM_RANGE_BY_COUNT(ECharacterStatType, ECharacterStatType::Count);

@@ -71,4 +71,8 @@ struct DIESELPUNK_API FStatDataTable : public FDPTableRowBase
 	// 코스트
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int Cost = 0;
+
+	// 에이스 강화 확률(100분율)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int AceChance = 10;
 };

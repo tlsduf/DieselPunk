@@ -79,6 +79,7 @@ void UStatControlComponent::BeginPlay()
 	SetStat(ECharacterStatType::AttackMaxRange,	 data->AttackMaxRange);
 	SetStat(ECharacterStatType::AttackMinRange,	 data->AttacMinRange);
 	SetStat(ECharacterStatType::Cost,			 data->Cost);
+	SetStat(ECharacterStatType::AceChance,		 data->AceChance);
 }
 
 void UStatControlComponent::SetStatDelegateFunction(TWeakObjectPtr<AActor> InActor, ECharacterStatType InStatType, int32 InValue)

@@ -209,7 +209,7 @@ void USkillInteractInstallation::SkillCanceled()
 		FObjectManager::GetInstance()->DestroyActor(turrets[1]->GetObjectId());
 
 		//포탑 업그레이드
-		InteractiveInstallation->UpgradeInstallation();
+		InteractiveInstallation->UpgradeInstallation(OwnerCharacterPC->GetStat(ECharacterStatType::AceChance));
 	}
 }
 

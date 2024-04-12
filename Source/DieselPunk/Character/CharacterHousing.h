@@ -56,7 +56,9 @@ class DIESELPUNK_API ACharacterHousing : public ACharacterNPC
 	
 	UPROPERTY(EditDefaultsOnly, Category="MYDP_Upgrade")
 	TArray<FUpgardeInfo> UpgradeInfos;
-	
+
+	UPROPERTY(EditDefaultsOnly, Category="MYDP_Upgrade")
+	FUpgardeInfo AceUpgradeInfo;
 	
 public:
 	ACharacterHousing();
@@ -74,7 +76,7 @@ public:
 	void ChangeHousingMaterialParameterChange(bool InHousing);
 
 	// 업그레이드시 처리
-	virtual void UpgradeInstallation();
+	virtual void UpgradeInstallation(int32 InAceChance);
 
 	void ShowInteractInstallationUI(bool InShow, bool InSelected);
 protected:
