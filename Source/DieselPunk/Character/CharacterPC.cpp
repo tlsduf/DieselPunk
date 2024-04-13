@@ -402,8 +402,8 @@ void ACharacterPC::SetZoomOutProp()
 void ACharacterPC::SetRunZoomOutProp()
 {
 	MyTargetArmLength = 600.0f;
-	MyTargetArmLocation = FVector(0, 40, 55);
-	MyCameraLocation = FVector(0, 40, 55);
+	MyTargetArmLocation = FVector(0, 0, 30);
+	MyCameraLocation = FVector(0, 50, 55);
 
 	IsZoomed = true;
 	ZoomInterpTime = 6;
