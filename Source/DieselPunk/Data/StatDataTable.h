@@ -23,6 +23,10 @@ struct DIESELPUNK_API FStatDataTable : public FDPTableRowBase
 	//공격력
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int Atk = 0;
+	
+	//대공 공격력
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int AtkForFly = 0;
 
 	//공격 속도
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -63,6 +67,10 @@ struct DIESELPUNK_API FStatDataTable : public FDPTableRowBase
 	// 최대 사거리
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int AttackMaxRange = 0;
+
+	// 대공 최대 사거리
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int AttackMaxRangeForFly = 0;
 
 	// 최소 사거리
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

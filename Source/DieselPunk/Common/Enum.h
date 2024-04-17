@@ -67,25 +67,27 @@ ENUM_RANGE_BY_COUNT(EDataTableType, EDataTableType::Count);
 UENUM( BlueprintType )
 enum class ECharacterStatType : uint8
 {
-	Level				UMETA( ToolTip = "레벨" ),
-	Exp					UMETA( ToolTip = "경험치" ),
-	MaxHp				UMETA( ToolTip = "최대체력" ),
-	Hp					UMETA( ToolTip = "현재체력" ),
-	HpRecoverySpeed		UMETA( ToolTip = "체력 회복 속도" ),
-	Atk					UMETA( ToolTip = "공격력" ),
-	AtkSpeed			UMETA( ToolTip = "공격속도" ),
-	Def					UMETA( ToolTip = "방어력" ),
-	ArmorPen			UMETA( ToolTip = "방어 관통력" ),
-	CriticalPer			UMETA( ToolTip = "치명타 확률" ),
-	CriticalAtk			UMETA( ToolTip = "치명타 공격력" ),
-	MoveSpeed			UMETA( ToolTip = "이동속도" ),
-	JumpCount			UMETA( ToolTip = "점프 횟수" ),
-	Luck				UMETA( ToolTip = "행운" ),
-	CoolDown			UMETA( ToolTip = "스킬 쿨타임 감소" ),
-	AttackMaxRange		UMETA( ToolTip = "최대사거리" ),
-	AttackMinRange		UMETA( ToolTip = "최소사거리" ),
-	Cost				UMETA( ToolTip = "코스트"),
-	AceChance			UMETA( ToolTip = "에이스 업그레이드 확률"),
+	Level					UMETA( ToolTip = "레벨" ),
+	Exp						UMETA( ToolTip = "경험치" ),
+	MaxHp					UMETA( ToolTip = "최대체력" ),
+	Hp						UMETA( ToolTip = "현재체력" ),
+	HpRecoverySpeed			UMETA( ToolTip = "체력 회복 속도" ),
+	Atk						UMETA( ToolTip = "공격력" ),
+	AtkForFly				UMETA( ToolTip = "대공 공격력" ),
+	AtkSpeed				UMETA( ToolTip = "공격속도" ),
+	Def						UMETA( ToolTip = "방어력" ),
+	ArmorPen				UMETA( ToolTip = "방어 관통력" ),
+	CriticalPer				UMETA( ToolTip = "치명타 확률" ),
+	CriticalAtk				UMETA( ToolTip = "치명타 공격력" ),
+	MoveSpeed				UMETA( ToolTip = "이동속도" ),
+	JumpCount				UMETA( ToolTip = "점프 횟수" ),
+	Luck					UMETA( ToolTip = "행운" ),
+	CoolDown				UMETA( ToolTip = "스킬 쿨타임 감소" ),
+	AttackMaxRange			UMETA( ToolTip = "최대사거리" ),
+	AttackMaxRangeForFly	UMETA( ToolTip = "대공 최대사거리" ),
+	AttackMinRange			UMETA( ToolTip = "최소사거리" ),
+	Cost					UMETA( ToolTip = "코스트"),
+	AceChance				UMETA( ToolTip = "에이스 업그레이드 확률"),
 	Count
 };
 ENUM_RANGE_BY_COUNT(ECharacterStatType, ECharacterStatType::Count);
@@ -179,4 +181,12 @@ enum class EBuffValueType : uint8
 {
 	Constant		UMETA( ToolTip = "상수" ),
 	Percentage		UMETA( ToolTip = "백분율" ),
+};
+
+// NPC 특성 타입
+UENUM( BlueprintType )
+enum class ENPCTraitType : uint8
+{
+	None			= 0,
+	Fly				= 1	UMETA( ToolTip = "상수" ),
 };

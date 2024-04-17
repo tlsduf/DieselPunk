@@ -34,6 +34,12 @@ void UStatControlComponent::BeginPlay()
 	Owner = GetOwner();
 	if(!Owner.IsValid())
 		return;
+
+	//특성 대입
+	for(ENPCTraitType trait : InitHaveTrait)
+	{
+		Trait |= static_cast<uint8>(trait);
+	}
 	
 	//스탯 초기화
 	for(ECharacterStatType statType : TEnumRange<ECharacterStatType>())
@@ -122,22 +128,24 @@ void UStatControlComponent::SetStat(ECharacterStatType InStatType, int32 InValue
 
 void UStatControlComponent::SetAllStatByStatDataTable(const FStatDataTable* InStatDataTable)
 {
-	SetStat(ECharacterStatType::MaxHp,			 InStatDataTable->Hp);
-	SetStat(ECharacterStatType::Hp,				 InStatDataTable->Hp);
-	SetStat(ECharacterStatType::HpRecoverySpeed, InStatDataTable->HpRecoverySpeed);
-	SetStat(ECharacterStatType::Atk,			 InStatDataTable->Atk);
-	SetStat(ECharacterStatType::AtkSpeed,		 InStatDataTable->AtkSpeed);
-	SetStat(ECharacterStatType::Def,			 InStatDataTable->Def);
-	SetStat(ECharacterStatType::ArmorPen,		 InStatDataTable->ArmorPen);
-	SetStat(ECharacterStatType::CriticalPer,	 InStatDataTable->CriticalPer);
-	SetStat(ECharacterStatType::CriticalAtk,	 InStatDataTable->CriticalAtk);
-	SetStat(ECharacterStatType::MoveSpeed,		 InStatDataTable->MoveSpeed);
-	SetStat(ECharacterStatType::JumpCount,		 InStatDataTable->JumpCount);
-	SetStat(ECharacterStatType::Luck,			 InStatDataTable->Luck);
-	SetStat(ECharacterStatType::CoolDown,		 InStatDataTable->CoolDown);
-	SetStat(ECharacterStatType::AttackMaxRange,	 InStatDataTable->AttackMaxRange);
-	SetStat(ECharacterStatType::AttackMinRange,	 InStatDataTable->AttacMinRange);
-	SetStat(ECharacterStatType::Cost,			 InStatDataTable->Cost);
+	SetStat(ECharacterStatType::MaxHp,			 		InStatDataTable->Hp);
+	SetStat(ECharacterStatType::Hp,				 		InStatDataTable->Hp);
+	SetStat(ECharacterStatType::HpRecoverySpeed, 		InStatDataTable->HpRecoverySpeed);
+	SetStat(ECharacterStatType::Atk,			 		InStatDataTable->Atk);
+	SetStat(ECharacterStatType::AtkForFly,		 		InStatDataTable->AtkForFly);
+	SetStat(ECharacterStatType::AtkSpeed,		 		InStatDataTable->AtkSpeed);
+	SetStat(ECharacterStatType::Def,			 		InStatDataTable->Def);
+	SetStat(ECharacterStatType::ArmorPen,		 		InStatDataTable->ArmorPen);
+	SetStat(ECharacterStatType::CriticalPer,	 		InStatDataTable->CriticalPer);
+	SetStat(ECharacterStatType::CriticalAtk,	 		InStatDataTable->CriticalAtk);
+	SetStat(ECharacterStatType::MoveSpeed,		 		InStatDataTable->MoveSpeed);
+	SetStat(ECharacterStatType::JumpCount,		 		InStatDataTable->JumpCount);
+	SetStat(ECharacterStatType::Luck,			 		InStatDataTable->Luck);
+	SetStat(ECharacterStatType::CoolDown,		 		InStatDataTable->CoolDown);
+	SetStat(ECharacterStatType::AttackMaxRange,	 		InStatDataTable->AttackMaxRange);
+	SetStat(ECharacterStatType::AttackMaxRangeForFly,	InStatDataTable->AttackMaxRangeForFly);
+	SetStat(ECharacterStatType::AttackMinRange,	 		InStatDataTable->AttacMinRange);
+	SetStat(ECharacterStatType::Cost,			 		InStatDataTable->Cost);
 }
 
 
@@ -179,4 +187,25 @@ void UStatControlComponent::AddBuff(const FString& InBuffName)
 		buff = new FBuff(this, InBuffName);
 		Buffs.Add(InBuffName, buff);
 	}
+}
+
+void UStatControlComponent::AddTrait(ENPCTraitType InTraitType)
+{
+	if(InTraitType == ENPCTraitType::None)
+		return;
+
+	Trait |= static_cast<uint8>(InTraitType);
+}
+
+void UStatControlComponent::RemoveTrait(ENPCTraitType InTraitType)
+{
+	if(InTraitType == ENPCTraitType::None)
+		return;
+
+	Trait &= !static_cast<uint8>(InTraitType);
+}
+
+bool UStatControlComponent::IsTrait(ENPCTraitType InTraitType)
+{
+	return Trait & static_cast<uint8>(InTraitType);
 }

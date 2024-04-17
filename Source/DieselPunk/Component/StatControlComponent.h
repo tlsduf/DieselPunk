@@ -31,6 +31,11 @@ protected:
 	FSetStatDelegate DelegateChangeStat;
 
 	TMap<FString, FBuff*> Buffs;
+
+	UPROPERTY(EditDefaultsOnly, Category="MYDP_Setting")
+	TArray<ENPCTraitType> InitHaveTrait;
+	
+	uint8 Trait = 0;
 public:
 	constexpr static int32 INVALID_STAT = -9999;
 public:	
@@ -56,6 +61,15 @@ public:
 	const int32& GetStat(ECharacterStatType InStatType);
 
 	void AddBuff(const FString& InBuffName);
+
+	//특성을 추가합니다.
+	void AddTrait(ENPCTraitType InTraitType);
+
+	//특성을 삭제합니다.
+	void RemoveTrait(ENPCTraitType InTraitType);
+
+	//특성을 가지고 있는 지 확인합니다.
+	bool IsTrait(ENPCTraitType InTraitType);
 
 	FSetStatDelegate& GetSetStatDelegate(){return DelegateChangeStat;}
 };

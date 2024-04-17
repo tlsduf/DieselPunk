@@ -10,6 +10,7 @@
 #include <Components/SkeletalMeshComponent.h>
 #include <Components/StaticMeshComponent.h>
 
+#include "DieselPunk/Component/StatControlComponent.h"
 
 
 // =============================================================
@@ -78,18 +79,37 @@ void ACharacterTurret::SetTurretTarget()
 		//1 기본 탐색 흐름 : 
 		//타입 조건에 맞는(Enemy) 액터 어레이 반환(ObjectManager)
 		TArray<int32> outActors;
-		FObjectManager::GetInstance()->FindActorArrayByPredicate(outActors, [](AActor* InActor)
+
+		//todo: 포탑이 대공 시너지를 가지고 있는 경우이나 지금은 공중 특성을 가지고 있을 때 처리하도록 만듦(THEQ)
+		if(StatControlComponent->IsTrait(ENPCTraitType::Fly))
 		{
-			if(ACharacterNPC* thisNPC = Cast<ACharacterNPC>(InActor))
-				if(thisNPC->GetNPCType() == ENPCType::Enemy)
-					return true;
-        
-			return false;
-		});
+			FObjectManager::GetInstance()->FindActorArrayByPredicate(outActors, [](AActor* InActor)
+			{
+				if(ACharacterNPC* thisNPC = Cast<ACharacterNPC>(InActor))
+					if(thisNPC->GetNPCType() == ENPCType::Enemy)
+						return true;
+				return false;
+			});
+		}
+		else
+		{
+			FObjectManager::GetInstance()->FindActorArrayByPredicate(outActors, [](AActor* InActor)
+			{
+				if(ACharacterNPC* thisNPC = Cast<ACharacterNPC>(InActor))
+				{
+					//공중 유닛은 제외하고 대상 찾기
+					if(thisNPC->GetNPCType() == ENPCType::Enemy && !thisNPC->GetStatControlComponent()->IsTrait(ENPCTraitType::Fly))
+						return true;
+				}
+				return false;
+			});
+		}
+		
 		//범위 조건에 맞는 액터 어레이 반환
 		TWeakObjectPtr<ACharacterTurret> thisPtr = this;
 		outActors.RemoveAll([thisPtr](int32 ID)
 		{
+			//todo: 공중 크리쳐의 경우에는 범위 내에 존재하는 지 확인하는 함수 따로 제작 필요(THEQ)
 			if(thisPtr.IsValid())
 				return !thisPtr->InValidSearchArea(FObjectManager::GetInstance()->FindActor(ID)->GetActorLocation());
 			return true;
