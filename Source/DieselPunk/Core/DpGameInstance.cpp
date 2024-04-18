@@ -3,8 +3,6 @@
 #include "DpGameInstance.h"
 
 #include <TimerManager.h>
-#include <Modules/ModuleManager.h>
-#include <PropertyEditorModule.h>
 
 #include "../Manager/DatatableManager.h"
 #include "../Manager/ObjectManager.h"
