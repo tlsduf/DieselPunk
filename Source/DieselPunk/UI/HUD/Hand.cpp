@@ -86,21 +86,34 @@ void UHand::RegisterHand(int InIndex, const CardInfo* InCardInfo)
 	brush.SetResourceObject(LoadObject<UTexture>(nullptr, *(InCardInfo->TexturePath[0])));
 	image->SetBrush(brush);
 
+	//카드 이름 설정
 	UTextBlock* text = Cast<UTextBlock>((*card)[TEXT("CardName")]);
 	if(text == nullptr)
 		return;
-	if(InCardInfo->TexturePath[0].Find(TEXT("TestSmall")) != INDEX_NONE)
-	{
-		text->SetVisibility(ESlateVisibility::Visible);
-		text->SetText(FText::FromString(InCardInfo->CardName));
-	}
-	else
-	{
-		text->SetVisibility(ESlateVisibility::Collapsed);
-		UTextBlock* cost = Cast<UTextBlock>((*card)[TEXT("Cost")]);
-		if(cost)
-			cost->SetText(FText::FromString(FString::FromInt(InCardInfo->Cost)));
-	}
+	
+	text->SetVisibility(ESlateVisibility::Visible);
+	text->SetText(FText::FromString(InCardInfo->CardUIName));
+
+	//카드 설명 설정
+	UTextBlock* desc = Cast<UTextBlock>((*card)[TEXT("CardDescription")]);
+	if(desc == nullptr)
+		return;
+	
+	desc->SetVisibility(ESlateVisibility::Visible);
+	desc->SetText(InCardInfo->CardUIDescription);
+
+	//카드 단축키 설정
+	UTextBlock* shortcut = Cast<UTextBlock>((*card)[TEXT("ShortcutKey")]);
+	if(shortcut == nullptr)
+		return;
+	
+	shortcut->SetVisibility(ESlateVisibility::Visible);
+	shortcut->SetText(FText::FromString(FString::FromInt(InIndex + 1)));
+	
+	
+	UTextBlock* cost = Cast<UTextBlock>((*card)[TEXT("Cost")]);
+	if(cost)
+		cost->SetText(FText::FromString(FString::FromInt(InCardInfo->Cost)));
 }
 
 //카드 등록 해제합니다. Visibility를 Hidden으로 변경합니다.

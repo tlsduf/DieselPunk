@@ -15,6 +15,8 @@ FCard::FCard(int32 InKey, const FString& InCardName, TWeakObjectPtr<ACharacterPC
 	const FCardDataTable* data = FDataTableManager::GetInstance()->GetData<FCardDataTable>(EDataTableType::Card, Info.CardName);
 	for(const FString& name : data->ImageNames)
 		Info.TexturePath.Add(UtilPath::GetDeckInterfaceUIPath(*name));
+	Info.CardUIName = data->CardUIName;
+	Info.CardUIDescription = data->CardUIDescription;
 }
 
 FCard::~FCard()

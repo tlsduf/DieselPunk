@@ -11,6 +11,13 @@ USTRUCT()
 struct DIESELPUNK_API FCardDataTable : public FDPTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
+	//UI 카드 네임
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString CardUIName = TEXT("");
+	
+	//UI 카드 설명
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(MultiLine=true))
+	FText CardUIDescription = FText();
 	
 	//카드 타입
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

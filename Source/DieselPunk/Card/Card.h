@@ -11,6 +11,8 @@ class ACharacterPC;
 struct CardInfo
 {
 	FString CardName;				//카드 이름
+	FString CardUIName;				//UI에 표시될 카드 이름
+	FText CardUIDescription;		//UI에 표시될 카드 설명
 	ECardType CardType;				//카드 타입
 	int32 Cost;						//카드 코스트
 	FDateTime GetTime;				//획득 시간
