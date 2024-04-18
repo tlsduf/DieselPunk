@@ -106,4 +106,11 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("PlaySpawnAnim"), true);
     else
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("PlaySpawnAnim"), false);
+
+    //공격 속도 적용
+    int32 shotPerMin = AICharacter->GetStat(ECharacterStatType::AtkSpeed);
+    float shorPerSec = shotPerMin / 60.f;
+    float waitTime = 1.f / shorPerSec;
+    
+    OwnerComp.GetBlackboardComponent()->SetValueAsFloat(TEXT("WaitTime"), waitTime);
 }

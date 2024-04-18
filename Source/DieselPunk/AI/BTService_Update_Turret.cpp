@@ -42,6 +42,13 @@ void UBTService_Update_Turret::TickNode(UBehaviorTreeComponent &OwnerComp, uint8
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("PlaySpawnAnim"), true);
     else
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("PlaySpawnAnim"), false);
+
+    int32 shotPerMin = AICharacter->GetStat(ECharacterStatType::AtkSpeed);
+    float shorPerSec = shotPerMin / 60.f;
+    float waitTime = 1.f / shorPerSec;
+    
+    OwnerComp.GetBlackboardComponent()->SetValueAsFloat(TEXT("WaitTime"), waitTime);
+    OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("PlaySpawnAnim"), false);
 }
 
 
