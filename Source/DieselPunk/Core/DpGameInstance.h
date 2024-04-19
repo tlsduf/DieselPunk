@@ -21,6 +21,8 @@ public:
 	// 소멸자
 	virtual ~UDpGameInstance();
 
+	virtual void OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld) override;
+
 private:
 	void LoadSingletons();
 
