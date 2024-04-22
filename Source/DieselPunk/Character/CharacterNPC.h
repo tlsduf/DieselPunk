@@ -131,6 +131,8 @@ public:
 	void DoMeleeAttack();
 	void DoProjectileAttack();
 	void DoTargetAttack();
+
+	void InitSkills();
 	
 	// '몬스터'의 Target을 설정합니다. // Tcik , 조건
 	void UpdateEnemyTarget();
