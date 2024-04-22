@@ -220,6 +220,18 @@ void ACharacterNPC::DoTargetAttack()
 		TargetAttack->AbilityStart(Target.Get());
 }
 
+void ACharacterNPC::InitSkills()
+{
+	if(MeleeAttack != nullptr)
+		MeleeAttack->InitSkill();
+
+	if(ProjectileAttack != nullptr)
+		ProjectileAttack->InitSkill();
+	
+	if(TargetAttack != nullptr)
+		TargetAttack->InitSkill();
+}
+
 // =============================================================
 // '몬스터'의 Target을 설정합니다.
 // =============================================================

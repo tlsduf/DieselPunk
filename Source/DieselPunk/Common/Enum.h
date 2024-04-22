@@ -58,6 +58,7 @@ enum class EDataTableType : uint8
 	WaveModule		UMETA( ToolTip = "웨이브 모듈 정보" ),
 	StageWave		UMETA( ToolTip = "스테이지 웨이브 정보" ),
 	Buff			UMETA( ToolTip = "버프 정보" ),
+	LevelBgm		UMETA( ToolTip = "레벨 BGM 정보" ),
 	Count
 };
 ENUM_RANGE_BY_COUNT(EDataTableType, EDataTableType::Count);
