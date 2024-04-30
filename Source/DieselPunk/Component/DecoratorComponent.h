@@ -28,13 +28,14 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	void StartEffect(EEffectPlayType InEffectPlayType, FName InBoneName = "");
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
+	void StartEffect(EEffectPlayType InEffectPlayType, FName InBoneName = "");
+	
 	UFUNCTION(BlueprintCallable, Category="MYDP_Effect")
 	void PlayWalkEffect(FName InBoneName);
 };

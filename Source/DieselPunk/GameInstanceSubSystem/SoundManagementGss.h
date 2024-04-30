@@ -27,8 +27,15 @@ public:
 public:
 	bool PlaySound2D(FString InAssetName, float InVolumeMultiplier = 1.f, float InPitchMultiplier = 1.f, float InStartTime = 0.f,
 		USoundConcurrency* InConcurrencySettings = nullptr, const AActor* InOwningActor = nullptr, bool InbIsUISound = true);
+
+	bool PlaySound2D(USoundBase* InSoundBase, float InVolumeMultiplier = 1.f, float InPitchMultiplier = 1.f, float InStartTime = 0.f,
+		USoundConcurrency* InConcurrencySettings = nullptr, const AActor* InOwningActor = nullptr, bool InbIsUISound = true);
 	
 	bool PlaySoundAtLocation(FString InAssetName, FVector InLocation, FRotator InRotation, float InVolumeMultiplier = 1.f, float InPitchMultiplier = 1.f,
+		float InStartTime = 0.f, USoundAttenuation* InAttenuationSettings = nullptr, USoundConcurrency* InConcurrencySettings = nullptr,
+		const AActor* InOwningActor = nullptr, const UInitialActiveSoundParams* InInitialParams = nullptr);
+	
+	bool PlaySoundAtLocation(USoundBase* InSoundBase, FVector InLocation, FRotator InRotation, float InVolumeMultiplier = 1.f, float InPitchMultiplier = 1.f,
 		float InStartTime = 0.f, USoundAttenuation* InAttenuationSettings = nullptr, USoundConcurrency* InConcurrencySettings = nullptr,
 		const AActor* InOwningActor = nullptr, const UInitialActiveSoundParams* InInitialParams = nullptr);
 private:

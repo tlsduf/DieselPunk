@@ -104,6 +104,8 @@ void UDecoratorComponent::StartEffect(EEffectPlayType InEffectPlayType, FName In
 				{
 					TArray<FName> names;
 					comp[i]->GetBoneNames(names);
+					names.Append(comp[i]->GetAllSocketNames());
+					
 
 					auto boneIndex = names.Find(effect.AttachBoneName);
 					if(boneIndex != INDEX_NONE)
@@ -113,10 +115,28 @@ void UDecoratorComponent::StartEffect(EEffectPlayType InEffectPlayType, FName In
 					}
 				}
 
+				if(mesh == nullptr)
+				{
+					LOG_SCREEN(FColor::Red, TEXT("%s에 해당하는 소켓/본이 없습니다."), *effect.AttachBoneName.ToString())
+					return;
+				}
+
 				FEffectTransform transform;
-				transform.Location = mesh->GetBoneLocation(effect.AttachBoneName, EBoneSpaces::WorldSpace);
+				
+				TArray<FName> boneNames;
+				mesh->GetBoneNames(boneNames);
+				
+				if(boneNames.Find(effect.AttachBoneName) != INDEX_NONE)
+					transform.Location = mesh->GetBoneLocation(effect.AttachBoneName, EBoneSpaces::WorldSpace);
+				else if(mesh->GetAllSocketNames().Find(effect.AttachBoneName) != INDEX_NONE)
+					transform.Location = mesh->GetSocketLocation(effect.AttachBoneName);
+				
 				transform.Rotation = Owner->GetActorRotation();
 				transform.Scale = Owner->GetActorScale();
+
+				transform.Location += effect.Offset.GetLocation();
+				transform.Rotation += effect.Offset.GetRotation().Rotator();
+				transform.Scale *= effect.Offset.GetScale3D();
 		
 				if (effect.N_Effect)
 					UtilEffect::SpawnNiagaraEffect(GetWorld(), effect.N_Effect, transform);

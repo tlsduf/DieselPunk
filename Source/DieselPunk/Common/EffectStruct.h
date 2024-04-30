@@ -27,6 +27,14 @@ struct FEffectData
 	//사운드
 	UPROPERTY(EditAnywhere)
 	USoundBase* Sound;
+	
+	//볼륨 곱연산
+	UPROPERTY(EditAnywhere)
+	float VolumeMultiplier = 1.f;
+
+	//피치 곱연산
+	UPROPERTY(EditAnywhere)
+	float PitchMultiplier = 1.f;
 
 	//어태치 할것인가
 	UPROPERTY(EditAnywhere)

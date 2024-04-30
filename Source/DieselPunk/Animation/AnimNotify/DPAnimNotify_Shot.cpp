@@ -3,8 +3,10 @@
 
 #include "DPAnimNotify_Shot.h"
 
-#include "Components/SkeletalMeshComponent.h"
-#include "DieselPunk/GameInstanceSubSystem/SoundManagementGss.h"
+#include "../../Component/DecoratorComponent.h"
+#include "../../GameInstanceSubSystem/SoundManagementGss.h"
+#include <Components/SkeletalMeshComponent.h>
+#include <GameFramework/Character.h>
 
 void UDPAnimNotify_Shot::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
                                 const FAnimNotifyEventReference& EventReference)
@@ -18,13 +20,13 @@ void UDPAnimNotify_Shot::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceB
 	UGameInstance* instance = world->GetGameInstance();
 	if(instance == nullptr)
 		return;
-
-	USoundManagementGss* gss = instance->GetSubsystem<USoundManagementGss>();
-	if(gss)
+	
+	if(ACharacter* character = Cast<ACharacter>(MeshComp->GetOwner()))
 	{
-		FVector location = MeshComp->GetSocketLocation(FName(TEXT("Grenade_socket")));
-		FRotator rotation = MeshComp->GetSocketRotation(FName(TEXT("Grenade_socket")));
-		gss->PlaySoundAtLocation(SoundInfo.SoundAssetName, location + SoundInfo.OffsetLocation, rotation + SoundInfo.OffsetRotation,
-			SoundInfo.VolumeMultiplier, SoundInfo.PitchMultiplier);
+		UActorComponent* comp = character->GetComponentByClass(UDecoratorComponent::StaticClass());
+		if(UDecoratorComponent* decorator = Cast<UDecoratorComponent>(comp))
+		{
+			decorator->StartEffect(EEffectPlayType::Shot, FName(TEXT("Grenade_socket")));
+		}
 	}
 }

@@ -152,6 +152,7 @@ enum class EEffectPlayType : uint8
 	Spawn	UMETA( ToolTip = "스폰 시"),
 	Death	UMETA( ToolTip = "사망 시"),
 	Walk	UMETA( ToolTip = "걸을 때 마다"),
+	Shot	UMETA( ToolTip = "발사체를 쏠 때 마다"),
 	None,
 };
 

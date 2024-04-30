@@ -41,10 +41,20 @@ bool USoundManagementGss::PlaySound2D(FString InAssetName, float InVolumeMultipl
 	return true;
 }
 
+bool USoundManagementGss::PlaySound2D(USoundBase* InSoundBase, float InVolumeMultiplier, float InPitchMultiplier,
+	float InStartTime, USoundConcurrency* InConcurrencySettings, const AActor* InOwningActor, bool InbIsUISound)
+{
+	if(InSoundBase == nullptr)
+		return false;
+	
+	UGameplayStatics::PlaySound2D(GetWorld(), InSoundBase, InVolumeMultiplier, InPitchMultiplier, InStartTime, InConcurrencySettings, InOwningActor, InbIsUISound);
+	return true;
+}
+
 bool USoundManagementGss::PlaySoundAtLocation(FString InAssetName, FVector InLocation, FRotator InRotation,
-	float InVolumeMultiplier, float InPitchMultiplier, float InStartTime, USoundAttenuation* InAttenuationSettings,
-	USoundConcurrency* InConcurrencySettings, const AActor* InOwningActor,
-	const UInitialActiveSoundParams* InInitialParams)
+                                              float InVolumeMultiplier, float InPitchMultiplier, float InStartTime, USoundAttenuation* InAttenuationSettings,
+                                              USoundConcurrency* InConcurrencySettings, const AActor* InOwningActor,
+                                              const UInitialActiveSoundParams* InInitialParams)
 {
 	USoundWave** sound = SoundDatas.Find(InAssetName);
 	if(sound == nullptr)
@@ -53,6 +63,18 @@ bool USoundManagementGss::PlaySoundAtLocation(FString InAssetName, FVector InLoc
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), *sound, InLocation, InRotation, InVolumeMultiplier, InPitchMultiplier, InStartTime, InAttenuationSettings, InConcurrencySettings, InOwningActor, InInitialParams);
 
 	return true;
+}
+
+bool USoundManagementGss::PlaySoundAtLocation(USoundBase* InSoundBase, FVector InLocation, FRotator InRotation,
+	float InVolumeMultiplier, float InPitchMultiplier, float InStartTime, USoundAttenuation* InAttenuationSettings,
+	USoundConcurrency* InConcurrencySettings, const AActor* InOwningActor,
+	const UInitialActiveSoundParams* InInitialParams)
+{
+	if(InSoundBase == nullptr)
+		return false;
+	
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), InSoundBase, InLocation, InRotation, InVolumeMultiplier, InPitchMultiplier, InStartTime, InAttenuationSettings, InConcurrencySettings, InOwningActor, InInitialParams);
+return true;
 }
 
 
