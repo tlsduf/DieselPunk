@@ -51,25 +51,11 @@ void ACharacterNPC::BeginPlay()
 	}
 
 	// Skill Instancing , SKill Stat Initialize
-	if(MeleeAttackClass)
+	if(NPCSkillClass != nullptr)
 	{
-		MeleeAttack = NewObject<USkillBase>(this, MeleeAttackClass);
-		MeleeAttack->RegisterComponent();
-		MeleeAttack->InitSkill();
-	}
-
-	if(ProjectileAttackClass)
-	{
-		ProjectileAttack = NewObject<USkillBase>(this, ProjectileAttackClass);
-		ProjectileAttack->RegisterComponent();
-		ProjectileAttack->InitSkill();
-	}
-
-	if(TargetAttackClass)
-	{
-		TargetAttack = NewObject<USkillBase>(this, TargetAttackClass);
-		TargetAttack->RegisterComponent();
-		TargetAttack->InitSkill();
+		NPCSkill = NewObject<USkillBase>(this, NPCSkillClass);
+		NPCSkill->RegisterComponent();
+		NPCSkill->InitSkill();
 	}
 }
 
@@ -202,34 +188,12 @@ void ACharacterNPC::HandleStatusUI()
 // =============================================================
 // 몬스터 스킬
 // =============================================================
-void ACharacterNPC::DoMeleeAttack()
-{
-	//if(MeleeAttack != nullptr)
-		//MeleeAttack->AbilityStart();
-}
 
-void ACharacterNPC::DoProjectileAttack()
+void ACharacterNPC::InitSkill()
 {
-	if(ProjectileAttack != nullptr)
-		ProjectileAttack->AbilityStart(Target.Get());
-}
-
-void ACharacterNPC::DoTargetAttack()
-{
-	if(TargetAttack != nullptr)
-		TargetAttack->AbilityStart(Target.Get());
-}
-
-void ACharacterNPC::InitSkills()
-{
-	if(MeleeAttack != nullptr)
-		MeleeAttack->InitSkill();
-
-	if(ProjectileAttack != nullptr)
-		ProjectileAttack->InitSkill();
 	
-	if(TargetAttack != nullptr)
-		TargetAttack->InitSkill();
+	if(NPCSkill != nullptr)
+		NPCSkill->InitSkill();
 }
 
 // =============================================================
@@ -578,5 +542,18 @@ float ACharacterNPC::PlaySpawnAnim()
 	mesh->PlayAnimation(SpawnAnimation, false);
 
 	return SpawnAnimation->GetPlayLength();
+}
+
+void ACharacterNPC::DoNPCSkill()
+{
+	if(NPCSkill)
+		NPCSkill->AbilityStart(Target.Get());
+}
+
+void ACharacterNPC::AbilityShot()
+{
+	Super::AbilityShot();
+
+	NPCSkill->AbilityShot(Target.Get());
 }
 

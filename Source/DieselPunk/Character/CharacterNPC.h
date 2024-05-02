@@ -63,23 +63,11 @@ protected:
 
 	const float SearchPlayerDEGREE = 30;
 
-	UPROPERTY(EditAnywhere, Category = "MYDP_Skill")
-	TSubclassOf<USkillBase> MeleeAttackClass;
+	UPROPERTY(EditAnywhere, Category="MYDP_Skill")
+	TSubclassOf<USkillBase> NPCSkillClass;
 
-	UPROPERTY(EditAnywhere, Category = "MYDP_Skill")
-	TSubclassOf<USkillBase> ProjectileAttackClass;
-	
-	UPROPERTY(EditAnywhere, Category = "MYDP_Skill")
-	TSubclassOf<USkillBase> TargetAttackClass;
-	
 	UPROPERTY()
-	TObjectPtr<USkillBase> MeleeAttack;
-	
-	UPROPERTY()
-	TObjectPtr<USkillBase> ProjectileAttack;
-	
-	UPROPERTY()
-	TObjectPtr<USkillBase> TargetAttack;
+	TObjectPtr<USkillBase> NPCSkill;
 	
 	
 	//포탑의 세로 사이즈입니다. 1그리드 = 100입니다.
@@ -98,6 +86,7 @@ protected:
 	TMap<FVector, FRoutingLine> RoutingLines;	// GoalLoc를 업데이트 해주기 위한 선분과 경유지점 TMap입니다.
 	
 	TWeakObjectPtr<AActor> Target = nullptr;	// 공격할 타겟
+	
 	int32 TargetedTurretID = -9997;				// 공격할 터렛 ID
 
 	bool InRange = false;		// 타겟이 범위 안에 있으면 true
@@ -127,12 +116,8 @@ protected:
 	void HandleStatusUI();
 
 public:
-	// 몬스터 스킬
-	void DoMeleeAttack();
-	void DoProjectileAttack();
-	void DoTargetAttack();
 
-	void InitSkills();
+	void InitSkill();
 	
 	// '몬스터'의 Target을 설정합니다. // Tcik , 조건
 	void UpdateEnemyTarget();
@@ -185,4 +170,8 @@ public:
 	
 	//스폰 애니메이션을 실행하고 애니메이션의 길이를 반환합니다. 애니메이션이 없을 경우 0을 반환합니다.
 	float PlaySpawnAnim();
+public:
+	void DoNPCSkill();
+	
+	virtual void AbilityShot() override;
 };

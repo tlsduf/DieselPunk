@@ -59,9 +59,11 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
 
-	// 몬스터클래스가 오버라이드하여 사용합니다.
-	virtual void AbilityStart(AActor* inTarget);
-	
+	// 스킬을 재생합니다. 보통 애니메이션 재생을 다룹니다.
+	virtual void AbilityStart(AActor* InTarget = nullptr);
+
+	// 스킬을 발동합니다. 보통 발사체 생성 및 데미지 처리를 다룹니다.
+	virtual void AbilityShot(AActor* InTarget = nullptr){}
 	// 스킬이 어떠한 이유로 인해 캔슬될 때 호출됩니다.
 	virtual void CancelSkill(){};
 

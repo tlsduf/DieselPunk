@@ -60,3 +60,13 @@ float UDPAnimInstance::CalYawDelta(float InDeltaSeconds)
 	6.0);
 }
 
+void UDPAnimInstance::AttackSign(EAbilityType InUseSkillType)
+{
+	UseSkillType = InUseSkillType;
+}
+
+void UDPAnimInstance::AttackEndSign()
+{
+	UseSkillType = EAbilityType::None;
+}
+

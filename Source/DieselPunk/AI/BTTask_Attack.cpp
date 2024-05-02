@@ -25,9 +25,7 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent &OwnerCom
     if (Character == nullptr)
         return EBTNodeResult::Failed;
 
-    Character->DoProjectileAttack();
-    Character->DoMeleeAttack();
-    Character->DoTargetAttack();
+    Character->DoNPCSkill();
 
     return EBTNodeResult::Succeeded;
 

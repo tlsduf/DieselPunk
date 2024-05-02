@@ -315,7 +315,7 @@ void ACharacterHousing::UpgradeInstallation(int32 InAceChance)
 	StatControlComponent->SetAllStatByStatDataTable(data);
 	ChangeStat(ECharacterStatType::Level, 1);
 
-	InitSkills();
+	InitSkill();
 	
 	LOG_SCREEN(FColor::Yellow, TEXT("Upgrade Complete!"))
 }
