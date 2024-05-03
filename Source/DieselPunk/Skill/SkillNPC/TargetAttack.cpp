@@ -20,25 +20,35 @@ void UTargetAttack::BeginPlay()
 	Super::BeginPlay();
 }
 
-void UTargetAttack::AbilityStart(AActor* inTarget)
+void UTargetAttack::AbilityStart(AActor* InTarget)
 {
-	Super::AbilityStart(inTarget);
+	Super::AbilityStart(InTarget);
 
 	if(AtkCoefficient <= 0)
 		return;
 	
-	if(inTarget == nullptr)
+	if(InTarget == nullptr)
 	{
 		LOG_SCREEN(FColor::Red, TEXT("타겟정보 NULL"));
 		return;
 	}
 	
-	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
+	auto ownerPawn = Cast<ACharacterBase>(OwnerCharacter);
+	if(UDPAnimInstance* animInst = Cast<UDPAnimInstance>(ownerPawn->GetMesh()->GetAnimInstance()))	
+		animInst->AttackSign(EAbilityType::MouseLM);
+}
 
-	//애니메이션 재생?
-	if(UTurretAnimInstace* animInst = Cast<UTurretAnimInstace>(ownerPawn->GetMesh()->GetAnimInstance()))	
-		animInst->AttackSign();
-	
+void UTargetAttack::AbilityShot(AActor* InTarget)
+{
+	Super::AbilityShot(InTarget);
+
+	if(InTarget == nullptr)
+	{
+		LOG_SCREEN(FColor::Red, TEXT("타겟정보 NULL"));
+		return;
+	}
+
+	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
 	
 	// Shot Effect
 	FEffectTransform shotET;
@@ -52,7 +62,7 @@ void UTargetAttack::AbilityStart(AActor* inTarget)
 	
 	// Hit Effect
 	FEffectTransform hitET;
-	hitET.Location = HitEffectFTransform.Location + inTarget->GetActorLocation();
+	hitET.Location = HitEffectFTransform.Location + InTarget->GetActorLocation();
 	hitET.Rotation = HitEffectFTransform.Rotation + ownerPawn->GetMesh()->GetSocketRotation("Grenade_socket").GetInverse();
 	hitET.Scale = HitEffectFTransform.Scale;
 	if (N_HitEffect)
@@ -61,5 +71,5 @@ void UTargetAttack::AbilityStart(AActor* inTarget)
 		UtilEffect::SpawnParticleEffect(GetWorld(), HitEffect, hitET);
 
 	
-	UGameplayStatics::ApplyDamage(inTarget, Damage, OwnerController, ownerPawn, nullptr);
+	UGameplayStatics::ApplyDamage(InTarget, Damage, OwnerController, ownerPawn, nullptr);
 }

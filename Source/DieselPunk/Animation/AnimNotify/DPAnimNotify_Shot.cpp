@@ -5,8 +5,10 @@
 
 #include "../../Component/DecoratorComponent.h"
 #include "../../GameInstanceSubSystem/SoundManagementGss.h"
+#include "../../Character/CharacterBase.h"
 #include <Components/SkeletalMeshComponent.h>
-#include <GameFramework/Character.h>
+
+#include "DieselPunk/Animation/DPAnimInstance.h"
 
 void UDPAnimNotify_Shot::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
                                 const FAnimNotifyEventReference& EventReference)
@@ -21,12 +23,15 @@ void UDPAnimNotify_Shot::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceB
 	if(instance == nullptr)
 		return;
 	
-	if(ACharacter* character = Cast<ACharacter>(MeshComp->GetOwner()))
+	if(ACharacterBase* character = Cast<ACharacterBase>(MeshComp->GetOwner()))
 	{
 		UActorComponent* comp = character->GetComponentByClass(UDecoratorComponent::StaticClass());
 		if(UDecoratorComponent* decorator = Cast<UDecoratorComponent>(comp))
 		{
 			decorator->StartEffect(EEffectPlayType::Shot, FName(TEXT("Grenade_socket")));
 		}
+		if(UDPAnimInstance* animInst = Cast<UDPAnimInstance>(MeshComp->GetAnimInstance()))
+			animInst->AttackEndSign();
+		character->AbilityShot();
 	}
 }

@@ -72,7 +72,7 @@ protected:
 
 	// 디버그on/off
 	UPROPERTY(EditAnywhere, Category = "MYDP_Util")
-	bool DebugOnOff = false;				
+	bool DebugOnOff = false;
 	
 public:
 	//생성자
@@ -155,4 +155,6 @@ public:
 	void SetInCombat(bool inBool) { InCombat = inBool; }
 
 	bool GetDebugOnOff() const { return DebugOnOff; }
+
+	virtual void AbilityShot(){}
 };

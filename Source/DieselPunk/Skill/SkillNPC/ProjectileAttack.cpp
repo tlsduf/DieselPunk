@@ -40,7 +40,7 @@ void UProjectileAttack::Fire(AActor* inTarget)
 
 	//애니메이션 재생?
 	if(UTurretAnimInstace* animInst = Cast<UTurretAnimInstace>(ownerPawn->GetMesh()->GetAnimInstance()))	
-		animInst->AttackSign();
+		animInst->AttackSign(EAbilityType::MouseLM);
 	
 	// projectile spawn
 	if(ProjectileBaseClass)

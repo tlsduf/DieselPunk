@@ -130,6 +130,8 @@ public:
 
 	TObjectPtr<AWeapon> Weapon;
 
+	TWeakObjectPtr<UPlayerSkill> CurrentCachedSkill = nullptr;
+
 protected:
 	void CheckViewMiddleForInteractInstallationUI();
 	
@@ -263,5 +265,8 @@ public:
 	void DestroyDecalComponent();
 
 	void OnPossessWeapon(AWeapon* InWeapon);
+
+public:
+	virtual void AbilityShot() override;
 };
 

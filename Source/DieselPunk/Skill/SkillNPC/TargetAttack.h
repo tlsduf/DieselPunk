@@ -42,8 +42,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	virtual void AbilityStart(AActor* inTarget) override;
-	
-	void TargetAttack(AActor* inTarget);
-	
+	virtual void AbilityStart(AActor* InTarget = nullptr) override;
+
+	virtual void AbilityShot(AActor* InTarget = nullptr) override;
 };

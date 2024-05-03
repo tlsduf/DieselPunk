@@ -483,13 +483,20 @@ void ACharacterPC::SkillStarted(const EAbilityType inAbilityType)
 {
 	if(Skills.Find(inAbilityType) != nullptr)
 		if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
+		{
 			ability->SkillStarted();
+			CurrentCachedSkill = Skills[inAbilityType];
+		}
+	
 }
 void ACharacterPC::SkillOngoing(const EAbilityType inAbilityType)
 {
 	if(Skills.Find(inAbilityType) != nullptr)
 		if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
+		{
 			ability->SkillOngoing();
+			CurrentCachedSkill = Skills[inAbilityType];
+		}
 }
 void ACharacterPC::SkillTriggered(const EAbilityType inAbilityType)
 {
@@ -498,20 +505,29 @@ void ACharacterPC::SkillTriggered(const EAbilityType inAbilityType)
 		{
 			HandleCombatState();
 			if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
+			{
 				ability->SkillTriggered();
+				CurrentCachedSkill = Skills[inAbilityType];
+			}
 		}
 }
 void ACharacterPC::SkillCompleted(const EAbilityType inAbilityType)
 {
 	if(Skills.Find(inAbilityType) != nullptr)
 		if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
+		{
 			ability->SkillCompleted();
+			CurrentCachedSkill = Skills[inAbilityType];
+		}
 }
 void ACharacterPC::SkillCanceled(const EAbilityType inAbilityType)
 {
 	if(Skills.Find(inAbilityType) != nullptr)
 		if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
+		{
 			ability->SkillCanceled();
+			CurrentCachedSkill = Skills[inAbilityType];
+		}
 }
 
 //================================================================
@@ -747,4 +763,12 @@ void ACharacterPC::OnPossessWeapon(AWeapon* InWeapon)
 	
 	Skills.FindOrAdd(EAbilityType::MouseRM) = InWeapon->GetSkill_RM();
 	CachedSkills.FindOrAdd(EAbilityType::MouseRM) = InWeapon->GetSkill_RM();
+}
+
+void ACharacterPC::AbilityShot()
+{
+	Super::AbilityShot();
+
+	if(CurrentCachedSkill.IsValid())
+		CurrentCachedSkill->AbilityShot();
 }

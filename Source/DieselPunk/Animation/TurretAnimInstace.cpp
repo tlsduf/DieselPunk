@@ -79,14 +79,3 @@ void UTurretAnimInstace::SetCurTarget(TWeakObjectPtr<ACharacterNPC> InCharacter)
 	else
 		CurTarget = nullptr;
 }
-
-// 터렛이 공격하면 신호를 줍니다.
-void UTurretAnimInstace::AttackSign()
-{
-	bAttack = true;
-	TWeakObjectPtr<UTurretAnimInstace> thisPtr = this;
-	GetWorld()->GetTimerManager().SetTimer(AttackTHandle, [thisPtr](){
-			if(thisPtr.IsValid())
-				thisPtr->bAttack = false;
-		},0.1f, false);
-}

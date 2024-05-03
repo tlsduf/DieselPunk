@@ -55,6 +55,12 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "MYDP", Meta = (AllowPrivateAccess = true))
 	bool OnRail = false;
 	
+	// 터렛 공격 애니메이션 노드 조건
+	UPROPERTY(BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
+	EAbilityType UseSkillType = EAbilityType::None;
+
+	FTimerHandle AttackTHandle;
+	
 public:
 	// 생성자
 	UDPAnimInstance();
@@ -70,4 +76,7 @@ public:
 	/////////////////////////////////////////////////////////////////////
 	// Getter, Setter //
 	void SetOnRail(const bool inBool) { OnRail = inBool; }
+	
+	void AttackSign(EAbilityType InUseSkillType);
+	void AttackEndSign();
 };

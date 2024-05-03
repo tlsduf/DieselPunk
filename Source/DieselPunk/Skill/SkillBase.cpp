@@ -3,9 +3,11 @@
 
 #include "SkillBase.h"
 #include "../Character/CharacterBase.h"
-#include "DieselPunk/Actor/Weapon.h"
+#include "../Actor/Weapon.h"
+#include "../Animation/DPAnimInstance.h"
 
 
+#include <Components/SkeletalMeshComponent.h>
 #include "Tests/AutomationTestSettings.h"
 
 
@@ -49,11 +51,8 @@ void USkillBase::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-// 몬스터클래스가 오버라이드하여 사용합니다.
-void USkillBase::AbilityStart(AActor* inTarget)
+void USkillBase::AbilityStart(AActor* InTarget)
 {
-	if(inTarget == nullptr)
-		return;
 }
 
 // CharacterBase의 Stat.Initialize 후 호출
