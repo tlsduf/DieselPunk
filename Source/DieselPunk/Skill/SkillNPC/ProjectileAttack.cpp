@@ -23,17 +23,26 @@ void UProjectileAttack::BeginPlay()
 	Super::BeginPlay();
 }
 
-void UProjectileAttack::AbilityStart(AActor* inTarget)
+void UProjectileAttack::AbilityStart(AActor* InTarget)
 {
-	Super::AbilityStart(inTarget);
+	Super::AbilityStart(InTarget);
 
-	Fire(inTarget);
+	if(InTarget == nullptr)
+	{
+		LOG_SCREEN(FColor::Red, TEXT("타겟정보 NULL"));
+		return;
+	}
+	
+	auto ownerPawn = Cast<ACharacterBase>(OwnerCharacter);
+	if(UDPAnimInstance* animInst = Cast<UDPAnimInstance>(ownerPawn->GetMesh()->GetAnimInstance()))	
+		animInst->AttackSign(EAbilityType::MouseLM);
+	LOG_SCREEN(FColor::White, TEXT("를 사용합니다."))
 }
 
 // 설정된 Transform으로 투사체를 생성합니다.
-void UProjectileAttack::Fire(AActor* inTarget)
+void UProjectileAttack::AbilityShot(AActor* InTarget)
 {
-	if(inTarget == nullptr)
+	if(InTarget == nullptr)
 		return;
 	
 	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
@@ -54,7 +63,7 @@ void UProjectileAttack::Fire(AActor* inTarget)
 		FSplinePath splinePath;
 		if(bHowitzer)
 		{
-			splinePath = MakeSplinePath(inTarget);
+			splinePath = MakeSplinePath(InTarget);
 			ProjectileBase->SetSplinePath(splinePath);
 			//ProjectileBase->SplineLength = FVector::Dist(ownerPawn->GetActorLocation(), inTarget->GetActorLocation());
 			if(ownerPawn->GetDebugOnOff())
@@ -65,7 +74,7 @@ void UProjectileAttack::Fire(AActor* inTarget)
 		}
 		if(bDirectFireEffect)
 		{
-			splinePath = MakeSplinePathForDirectFire(inTarget);
+			splinePath = MakeSplinePathForDirectFire(InTarget);
 			ProjectileBase->SetSplinePath(splinePath);
 			//ProjectileBase->SplineLength = FVector::Dist(ownerPawn->GetActorLocation(), inTarget->GetActorLocation());
 			if(ownerPawn->GetDebugOnOff())
@@ -79,26 +88,26 @@ void UProjectileAttack::Fire(AActor* inTarget)
 }
 
 // Target의 위치를 기반으로 곡사궤도를 생성하고, Projectile에 Spline정보를 줍니다.
-FSplinePath UProjectileAttack::MakeSplinePath(AActor* inTarget)
+FSplinePath UProjectileAttack::MakeSplinePath(AActor* InTarget)
 {
 	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
 	FVector shotLocation = ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket");
 	
 	FSplinePath SplinePath;
 	
-	if(inTarget == nullptr)
+	if(InTarget == nullptr)
 		return SplinePath;
 
-	auto monster = Cast<ACharacterNPC>(inTarget);
+	auto monster = Cast<ACharacterNPC>(InTarget);
 	float capsuleHalfHeight = monster->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 	
 	SplinePath.ClearSplinePoints();
 	SplinePath.AddSplinePoint(shotLocation, ESplineCoordinateSpace::World, ESplinePointType::Curve);
-	FVector middlePoint = (shotLocation + inTarget->GetActorLocation()) / 2;
-	float distToTarget = FVector::Dist(ownerPawn->GetActorLocation(), inTarget->GetActorLocation());
+	FVector middlePoint = (shotLocation + InTarget->GetActorLocation()) / 2;
+	float distToTarget = FVector::Dist(ownerPawn->GetActorLocation(), InTarget->GetActorLocation());
 	FVector height  = FVector(0, 0, 0.6 * distToTarget);
 	SplinePath.AddSplinePoint(middlePoint + height, ESplineCoordinateSpace::World, ESplinePointType::Curve);
-	SplinePath.AddSplinePoint(inTarget->GetActorLocation() + FVector(0, 0, -capsuleHalfHeight), ESplineCoordinateSpace::World, ESplinePointType::Curve);
+	SplinePath.AddSplinePoint(InTarget->GetActorLocation() + FVector(0, 0, -capsuleHalfHeight), ESplineCoordinateSpace::World, ESplinePointType::Curve);
 	SplinePath.UpdateSpline();
 
 	// Set clamp tangent
@@ -120,44 +129,44 @@ FSplinePath UProjectileAttack::MakeSplinePath(AActor* inTarget)
 	return SplinePath;
 }
 
-FSplinePath UProjectileAttack::MakeSplinePathForDirectFire(AActor* inTarget)
+FSplinePath UProjectileAttack::MakeSplinePathForDirectFire(AActor* InTarget)
 {
 	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
 	FVector shotLocation = ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket");
 	
 	FSplinePath SplinePath;
 	
-	if(inTarget == nullptr)
+	if(InTarget == nullptr)
 		return SplinePath;
 	
 	SplinePath.ClearSplinePoints();
 	SplinePath.AddSplinePoint(shotLocation, ESplineCoordinateSpace::World, ESplinePointType::Linear);
-	FVector middlePoint = (shotLocation + inTarget->GetActorLocation()) / 2;
+	FVector middlePoint = (shotLocation + InTarget->GetActorLocation()) / 2;
 	SplinePath.AddSplinePoint(middlePoint, ESplineCoordinateSpace::World, ESplinePointType::Linear);
-	SplinePath.AddSplinePoint(inTarget->GetActorLocation(), ESplineCoordinateSpace::World, ESplinePointType::Linear);
+	SplinePath.AddSplinePoint(InTarget->GetActorLocation(), ESplineCoordinateSpace::World, ESplinePointType::Linear);
 	SplinePath.UpdateSpline();
 
 	return SplinePath;
 }
 
 // 경로 DrawDebug
-void UProjectileAttack::DrawDebugSpline(FSplinePath inSpline)
+void UProjectileAttack::DrawDebugSpline(FSplinePath InSpline)
 {
 	// Spline 경로
-	double splineLength = inSpline.Path.GetSplineLength();
+	double splineLength = InSpline.Path.GetSplineLength();
 	double sectionLength = 1000.0 / 10;
 	int value = static_cast<int>(splineLength / sectionLength);
 	for(int i = 0 ; i < value; ++i)
 	{
-		FVector location = inSpline.GetLocationAtDistanceAlongSpline(i * sectionLength);
-		FRotator rotation = inSpline.GetRotationAtDistanceAlongSpline(i * sectionLength);
+		FVector location = InSpline.GetLocationAtDistanceAlongSpline(i * sectionLength);
+		FRotator rotation = InSpline.GetRotationAtDistanceAlongSpline(i * sectionLength);
 		DrawDebugDirectionalArrow(GetWorld(),
 			location - 10 * rotation.Vector(),
 			location + 20 * rotation.Vector(),
 			10, FColor::Red, false, 3, 0, 3);
 	}
-	DrawDebugPoint(GetWorld(), inSpline.Path.Position.Points[0].OutVal, 5, FColor::Black, false, 3);
-	DrawDebugPoint(GetWorld(), inSpline.Path.Position.Points[1].OutVal, 5, FColor::Black, false, 3);
-	DrawDebugPoint(GetWorld(), inSpline.Path.Position.Points[2].OutVal, 5, FColor::Black, false, 3);
+	DrawDebugPoint(GetWorld(), InSpline.Path.Position.Points[0].OutVal, 5, FColor::Black, false, 3);
+	DrawDebugPoint(GetWorld(), InSpline.Path.Position.Points[1].OutVal, 5, FColor::Black, false, 3);
+	DrawDebugPoint(GetWorld(), InSpline.Path.Position.Points[2].OutVal, 5, FColor::Black, false, 3);
 }
 

@@ -14,30 +14,7 @@ UCLASS()
 class DIESELPUNK_API UProjectileAttack : public USkillBase
 {
 	GENERATED_BODY()
-
-public:
-	// 생성자
-	UProjectileAttack();
-
-protected:
-	virtual void BeginPlay() override;
-
-public:
-	virtual void AbilityStart(AActor* inTarget) override;
-
-	// 설정된 Transform으로 투사체를 생성합니다.
-	void Fire(AActor* inTarget);
-
-	// Target의 위치를 기반으로 곡사궤도를 생성하고, Projectile에 Spline정보를 줍니다.
-	FSplinePath MakeSplinePath(AActor* inTarget);
-
-	// Target의 위치를 기반으로 곡사궤도를 생성하고, Projectile에 Spline정보를 줍니다.
-	FSplinePath MakeSplinePathForDirectFire(AActor* inTarget);
-
-	// 경로 DrawDebug
-	void DrawDebugSpline(FSplinePath inSpline);
-
-private:
+	
 	// 체크하면 곡사로 쏩니다.
 	UPROPERTY(EditAnywhere, Category = "MYDP_Combat")
 	bool bHowitzer = false;
@@ -48,4 +25,25 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
 	TSubclassOf<AProjectileBase> ProjectileBaseClass;
+
+public:
+	// 생성자
+	UProjectileAttack();
+
+protected:
+	virtual void BeginPlay() override;
+
+public:
+	virtual void AbilityStart(AActor* InTarget = nullptr) override;
+
+	virtual void AbilityShot(AActor* InTarget = nullptr) override;
+
+	// Target의 위치를 기반으로 곡사궤도를 생성하고, Projectile에 Spline정보를 줍니다.
+	FSplinePath MakeSplinePath(AActor* InTarget);
+
+	// Target의 위치를 기반으로 곡사궤도를 생성하고, Projectile에 Spline정보를 줍니다.
+	FSplinePath MakeSplinePathForDirectFire(AActor* InTarget);
+
+	// 경로 DrawDebug
+	void DrawDebugSpline(FSplinePath InSpline);
 };
