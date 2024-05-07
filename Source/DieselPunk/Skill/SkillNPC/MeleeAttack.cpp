@@ -18,27 +18,25 @@ void UMeleeAttack::BeginPlay()
 	Super::BeginPlay();
 }
 
-void UMeleeAttack::AbilityStart(AActor* inTarget)
+void UMeleeAttack::AbilityStart(AActor* InTarget)
 {
-	Super::AbilityStart(inTarget);
-
-	Attack();
-}
-
-float UMeleeAttack::PlayAnim()
-{
-	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
-
-	//애니메이션 재생?
-	UMonsterAnimInstance* animInst = Cast<UMonsterAnimInstance>(ownerPawn->GetMesh()->GetAnimInstance());
-	if (!animInst)
-		return 0;
+	Super::AbilityStart(InTarget);
 	
-	return animInst->PlayMontage(EAbilityType::None, EMonsterSkillMontageType::Attack);
+	if(InTarget == nullptr)
+	{
+		LOG_SCREEN(FColor::Red, TEXT("타겟정보 NULL"));
+		return;
+	}
+	
+	auto ownerPawn = Cast<ACharacterBase>(OwnerCharacter);
+	if(UDPAnimInstance* animInst = Cast<UDPAnimInstance>(ownerPawn->GetMesh()->GetAnimInstance()))	
+		animInst->AttackSign(EAbilityType::MouseLM);
 }
 
-void UMeleeAttack::Attack()
+void UMeleeAttack::AbilityShot(AActor* InTarget)
 {
+	Super::AbilityShot(InTarget);
+
 	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
 
 	// 충돌 검사

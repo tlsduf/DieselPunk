@@ -2,9 +2,11 @@
 
 #include "HitscanFire.h"
 #include "../../Character/CharacterNPC.h"
-#include "../../Util/UtilCollision.h"
+#include "DieselPunk/Animation/DPAnimInstance.h"
 
 #include <Kismet/GameplayStatics.h>
+#include <Components/SkeletalMeshComponent.h>
+
 
 UHitscanFire::UHitscanFire()
 {
@@ -16,14 +18,24 @@ void UHitscanFire::BeginPlay()
 	Super::BeginPlay();
 }
 
-void UHitscanFire::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
+void UHitscanFire::AbilityStart(AActor* InTarget)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	Super::AbilityStart(InTarget);
+	
+	if(InTarget == nullptr)
+	{
+		LOG_SCREEN(FColor::Red, TEXT("타겟정보 NULL"));
+		return;
+	}
+	
+	auto ownerPawn = Cast<ACharacterBase>(OwnerCharacter);
+	if(UDPAnimInstance* animInst = Cast<UDPAnimInstance>(ownerPawn->GetMesh()->GetAnimInstance()))	
+		animInst->AttackSign(EAbilityType::MouseLM);
 }
 
-void UHitscanFire::AbilityStart(AActor* inTarget)
+void UHitscanFire::AbilityShot(AActor* InTarget)
 {
-	Super::AbilityStart(inTarget);
+	Super::AbilityShot(InTarget);
 
 	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
 

@@ -14,14 +14,6 @@ class DIESELPUNK_API UHitscanFire : public USkillBase
 {
 	GENERATED_BODY()
 
-	UHitscanFire();
-	
-public:
-	virtual void BeginPlay() override;
-
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
-private:
-
 	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
 	float AttackRange = 10000;
 	
@@ -33,7 +25,15 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
 	FEffectTransform HitEffectFTransform = FEffectTransform();
+
+public:
+	UHitscanFire();
+	
+protected:
+	virtual void BeginPlay() override;
 	
 public:
-	virtual void AbilityStart(AActor* inTarget) override;
+	virtual void AbilityStart(AActor* InTarget = nullptr) override;
+
+	virtual void AbilityShot(AActor* InTarget = nullptr) override;
 };

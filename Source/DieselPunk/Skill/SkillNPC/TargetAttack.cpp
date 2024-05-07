@@ -23,9 +23,6 @@ void UTargetAttack::BeginPlay()
 void UTargetAttack::AbilityStart(AActor* InTarget)
 {
 	Super::AbilityStart(InTarget);
-
-	if(AtkCoefficient <= 0)
-		return;
 	
 	if(InTarget == nullptr)
 	{

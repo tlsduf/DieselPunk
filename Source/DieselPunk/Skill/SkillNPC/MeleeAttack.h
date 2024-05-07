@@ -16,13 +16,6 @@ class DIESELPUNK_API UMeleeAttack : public USkillBase
 {
 	GENERATED_BODY()
 
-	UMeleeAttack();
-	
-public:
-	virtual void BeginPlay() override;
-
-private:
-
 	// 소유한 액터의 위치와 캡슐이 스윕을 시작하는 위치 사이의 거리
 	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
 	float AttackStartPoint = 50.f;
@@ -36,9 +29,13 @@ private:
 	float AttackRadius = 50.f;
 
 public:
-	virtual void AbilityStart(AActor* inTarget) override;
-
-	float PlayAnim();
+	UMeleeAttack();
 	
-	void Attack();
+protected:
+	virtual void BeginPlay() override;
+
+public:
+	virtual void AbilityStart(AActor* InTarget = nullptr) override;
+
+	virtual void AbilityShot(AActor* InTarget = nullptr) override;
 };
