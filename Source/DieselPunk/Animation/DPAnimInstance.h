@@ -26,13 +26,7 @@ protected:
 	FVector Velocity = FVector();
 
 	UPROPERTY(BlueprintReadOnly, Category = "MYDP_Movement", Meta = (AllowPrivateAccess = true))
-	FRotator ActorRotation = FRotator();
-
-	UPROPERTY(BlueprintReadOnly, Category = "MYDP_Movement", Meta = (AllowPrivateAccess = true))
-	FRotator BaseAimRotation = FRotator();
-
-	UPROPERTY(BlueprintReadOnly, Category = "MYDP_Movement", Meta = (AllowPrivateAccess = true))
-	FRotator DeltaRotation = FRotator();
+	FRotator Rotation = FRotator();
 
 	UPROPERTY(BlueprintReadOnly, Category = "MYDP_Movement", Meta = (AllowPrivateAccess = true))
 	FRotator CharacterDirectionRotation = FRotator();

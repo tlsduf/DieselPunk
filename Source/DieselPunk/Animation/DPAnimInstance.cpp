@@ -5,7 +5,6 @@
 #include "../Character/CharacterBase.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Kismet/KismetMathLibrary.h"
 
 UDPAnimInstance::UDPAnimInstance()
 {
@@ -29,11 +28,9 @@ void UDPAnimInstance::NativeUpdateAnimation(float InDeltaSeconds)
 	
 	Velocity = Character->GetCharacterMovement()->Velocity;
 	
-	ActorRotation = Character->GetActorRotation();
-	BaseAimRotation = Character->GetBaseAimRotation();
-	DeltaRotation = UKismetMathLibrary::NormalizedDeltaRotator(BaseAimRotation, ActorRotation);
+	Rotation = Character->GetActorRotation();
 	
-	CharacterDirectionRotation = Character->GetBaseAimRotation() - ActorRotation;
+	CharacterDirectionRotation = Character->GetBaseAimRotation() - Rotation;
 	CharacterDirectionRotation.Normalize();
 		
 	Speed = Velocity.Length();

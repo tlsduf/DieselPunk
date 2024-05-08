@@ -110,7 +110,7 @@ void USoldierAnimInstance::UpdateVelocityBlend(float InDeltaSeconds , FVelocityB
 {
 	FVector normalVector = Velocity;
 	normalVector.Normalize(0.1);
-	FVector locRelativeVelocityDir = ActorRotation.UnrotateVector(normalVector);
+	FVector locRelativeVelocityDir = Rotation.UnrotateVector(normalVector);
 	float sum = abs(locRelativeVelocityDir.X) + abs(locRelativeVelocityDir.Y) + abs(locRelativeVelocityDir.Z);
 	FVector relativeDirection = (sum > 0) ? (locRelativeVelocityDir / sum) : locRelativeVelocityDir ;
 	
