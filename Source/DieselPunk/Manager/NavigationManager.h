@@ -73,6 +73,8 @@ public:
 	//터렛 설치
 	bool PlacementTurret(FVector& InOutLocation, int32 InGridSizeVertical, int32 InGridSizeHorizontal, TArray<TPair<int32, int32>>& OutIndex, TWeakObjectPtr<AActor> InTurret);
 
+	void UpdateNodeAfterTurretMove(FVector InLocation, int32 InGridSizeVertical, int32 InGridSizeHorizontal, TArray<TPair<int32, int32>>& InOutIndex, TWeakObjectPtr<AActor> InTurret);
+
 	//터렛 부서질 때 노드 복구
 	void RestoreNavNodeByDestructedTurret(const TArray<TPair<int32, int32>>& InIndex);
 

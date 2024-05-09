@@ -704,6 +704,35 @@ bool FNavigationManager::PlacementTurret(FVector& InOutLocation, int32 InGridSiz
 	return true;
 }
 
+void FNavigationManager::UpdateNodeAfterTurretMove(FVector InLocation, int32 InGridSizeVertical,
+	int32 InGridSizeHorizontal, TArray<TPair<int32, int32>>& InOutIndex, TWeakObjectPtr<AActor> InTurret)
+{
+	RestoreNavNodeByDestructedTurret(InOutIndex);
+
+	double minX, minY, maxX, maxY;
+	minX = (InLocation.X - InGridSizeVertical / 2.0 * GridSize) / GridSize;
+	minY = (InLocation.Y - InGridSizeHorizontal / 2.0 * GridSize) / GridSize;
+	maxX = (InLocation.X + InGridSizeVertical / 2.0 * GridSize) / GridSize;
+	maxY = (InLocation.Y + InGridSizeHorizontal / 2.0 * GridSize) / GridSize;
+
+	int32 minIdxX = minX == 0.0 ? static_cast<int32>(minX) : FMath::CeilToInt32(FMath::Abs(minX)) * (minX / FMath::Abs(minX));
+	int32 minIdxY = minY == 0.0 ? static_cast<int32>(minY) : FMath::CeilToInt32(FMath::Abs(minY)) * (minY / FMath::Abs(minY));
+	int32 maxIdxX = maxX == 0.0 ? static_cast<int32>(maxX) : FMath::CeilToInt32(FMath::Abs(maxX)) * (maxX / FMath::Abs(maxX));
+	int32 maxIdxY = maxY == 0.0 ? static_cast<int32>(maxY) : FMath::CeilToInt32(FMath::Abs(maxY)) * (maxY / FMath::Abs(maxY));
+
+	for(int32 i = minIdxX; i <= maxIdxX; ++i)
+	{
+		for(int32 j = minIdxY; j <= maxIdxY; ++j)
+		{
+			if(NavMap.Find(i) == nullptr || NavMap.Find(i)->Find(j) == nullptr)
+				continue;
+			NavMap[i][j].NavNodeState = ENavNodeState::BlockedByBreakable;
+			NavMap[i][j].BuildActor = InTurret;
+			//DrawDebugNavNode(i, j, FColor::Yellow);
+		}	
+	}
+}
+
 void FNavigationManager::RestoreNavNodeByDestructedTurret(const TArray<TPair<int32, int32>>& InIndex)
 {
 	int32 minX = MAX_int32, minY = MAX_int32, maxX = MIN_int32, maxY = MIN_int32;
