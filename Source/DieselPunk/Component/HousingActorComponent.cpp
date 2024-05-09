@@ -12,6 +12,8 @@
 #include <GameFramework/PlayerController.h>
 #include <Components/CapsuleComponent.h>
 
+#include "GameFramework/CharacterMovementComponent.h"
+
 // Sets default values for this component's properties
 UHousingActorComponent::UHousingActorComponent()
 {
@@ -131,6 +133,24 @@ void UHousingActorComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	}
 }
 
+void UHousingActorComponent::EventMovementChanged(ACharacter* InCharacter, EMovementMode InPrevMovementMode,
+	uint8 InPreviousCustomMode)
+{
+	if(bMovementChangedFirst)
+	{
+		bMovementChangedFirst = false;
+		return;
+	}
+	
+	ACharacterHousing* charHouse = Cast<ACharacterHousing>(GetOwner());
+
+	if(InPrevMovementMode == EMovementMode::MOVE_Falling)
+		if(UCharacterMovementComponent* moveComp = Cast<UCharacterMovementComponent>(charHouse->GetMovementComponent()))
+			if(moveComp->MovementMode.GetValue() == EMovementMode::MOVE_Walking)
+				FNavigationManager::GetInstance()->UpdateNodeAfterTurretMove(charHouse->GetActorLocation(),
+					charHouse->GetGridSizeVertical(), charHouse->GetGridSizeHorizontal(), NavIndex, charHouse);
+}
+
 bool UHousingActorComponent::IsArrangeTurret()
 {
 	ACharacterPC* charPc = FObjectManager::GetInstance()->GetPlayer(); 
@@ -188,6 +208,10 @@ bool UHousingActorComponent::CompleteHousingTurret()
 		location.Z += owner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 		GetOwner()->SetActorLocation(location);
 		SetComponentTickEnabled(false);
+
+		//포탑 생성완료 시 이동 변경에 의해 노드를 다시 찾습니다.
+		Cast<ACharacterHousing>(GetOwner())->MovementModeChangedDelegate.AddDynamic(this, &UHousingActorComponent::EventMovementChanged);
+		
 		return true;
 	}
 	return false;

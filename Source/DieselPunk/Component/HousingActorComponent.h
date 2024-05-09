@@ -18,6 +18,8 @@ private:
 	//네비게이션 인덱스
 	TArray<TPair<int32, int32>> NavIndex;
 
+	bool bMovementChangedFirst = true;
+
 public:	
 	// Sets default values for this component's properties
 	UHousingActorComponent();
@@ -31,6 +33,9 @@ public:
 	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
+	UFUNCTION()
+	void EventMovementChanged(ACharacter* InCharacter, EMovementMode InPrevMovementMode, uint8 InPreviousCustomMode);
 
 private:
 	bool IsArrangeTurret();
