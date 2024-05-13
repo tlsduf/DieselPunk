@@ -252,6 +252,7 @@ void ACharacterHousing::UpgradeInstallation(int32 InAceChance)
 				LOG_SCREEN(FColor::Yellow, TEXT("Upgrade Failed! Have not Stat Info for UpgradeID:%d"), AceUpgradeInfo.UpgradeID);
 				return;
 			}
+			LOG_SCREEN(FColor::Green, TEXT("Ace Upgrade Success! Turret Name: %s"), *GetName());
 		}
 		else
 		{
@@ -261,6 +262,7 @@ void ACharacterHousing::UpgradeInstallation(int32 InAceChance)
 				LOG_SCREEN(FColor::Yellow, TEXT("Upgrade Failed! Have not Stat Info for UpgradeName:%s"), *AceUpgradeInfo.UpgradeName);
 				return;
 			}
+			LOG_SCREEN(FColor::Green, TEXT("Ace Upgrade Success! Turret Name: %s"), *GetName());
 		}
 		//캐릭터 명 변경
 		CharacterName = AceUpgradeInfo.UpgradeName;
