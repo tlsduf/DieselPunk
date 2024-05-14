@@ -31,6 +31,4 @@ protected:
 	virtual void SkillOngoing() override;
 	virtual void SkillTriggered() override;
 	virtual void SkillCanceled() override;
-
-	bool CheckInteractive(FHitResult& InHitResult, int32 InRange, TArray<const AActor*> InIgnoreActor);
 };

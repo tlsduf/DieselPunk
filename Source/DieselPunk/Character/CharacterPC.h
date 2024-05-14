@@ -250,7 +250,9 @@ public:
 	FDelegate_ChangeDeckCount& GetDelegateChangeDeckCount(){return DelegateChangeDeckCount;}
 
 	void SetSelectInstallation(TWeakObjectPtr<ACharacterHousing> InInstallation);
-	const ACharacterHousing* GetSelectInstallation() const {return SelectInstallation.Get();}
+	ACharacterHousing* GetSelectInstallation() {return SelectInstallation.Get();}
+	ACharacterHousing* GetLookInstallation() {return LookInstallation.Get();}
+	
 
 	void BindSkillUseCard();
 	void UnBindSkillUseCard();

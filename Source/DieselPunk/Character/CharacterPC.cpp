@@ -29,6 +29,7 @@
 #include "DieselPunk/Actor/Weapon.h"
 #include "DieselPunk/Manager/ObjectManager.h"
 #include "DieselPunk/Skill/SkillPC/SkillSpawnTurret.h"
+#include "DieselPunk/UI/HUD/DPHud.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -39,32 +40,21 @@ void ACharacterPC::CheckViewMiddleForInteractInstallationUI()
 	FHitResult result;
 	TArray<const AActor*> ignore;
 	ignore.Add(this);
+	
 	if(UtilCollision::GetViewMiddle(GetWorld(), Cast<APlayerController>(GetController()), result, 99999, ignore))
 	{
 		ACharacterHousing* housing = Cast<ACharacterHousing>(result.GetActor());
-		if(housing == nullptr)
-		{
-			if(!LookInstallation.IsValid())
-				return;
-			LookInstallation->ShowInteractInstallationUI(false, false);
-			LookInstallation = nullptr;
-			return;
-		}
-
-		if(LookInstallation != housing)
-		{
-			if(LookInstallation.IsValid())
-				LookInstallation->ShowInteractInstallationUI(false, false);
-			LookInstallation = housing;
-			LookInstallation->ShowInteractInstallationUI(true, LookInstallation == SelectInstallation);
-		}
+		LookInstallation = housing;
 	}
 	else
 	{
-		if(!LookInstallation.IsValid())
-			return;
-		LookInstallation->ShowInteractInstallationUI(false, false);
 		LookInstallation = nullptr;
+	}
+	TWeakObjectPtr<UDPHud> hud = Cast<UDPHud>(FindWidgetBase(Cast<APlayerControllerBase>(Controller)->GetHUDId()));
+	if(hud.IsValid())
+	{
+		hud->SetViewInteractionUI(LookInstallation.IsValid() || SelectInstallation.IsValid());
+		hud->SelectedInteractionUI(SelectInstallation.IsValid());
 	}
 }
 
@@ -663,16 +653,6 @@ void ACharacterPC::DrawCard()
 
 void ACharacterPC::SetSelectInstallation(TWeakObjectPtr<ACharacterHousing> InInstallation)
 {
-	if(InInstallation == nullptr)
-	{
-		if(SelectInstallation.IsValid())
-			SelectInstallation->ShowInteractInstallationUI(true, false);
-	}
-	else
-	{
-		if(InInstallation == LookInstallation)
-			InInstallation->ShowInteractInstallationUI(true, true);
-	}
 	SelectInstallation = InInstallation;
 }
 

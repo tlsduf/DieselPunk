@@ -25,6 +25,8 @@
 #include <Engine/Level.h>
 #include <Animation/WidgetAnimation.h>
 
+#include "DieselPunk/UI/HUD/DPHud.h"
+
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PlayerControllerBase)
 
 // =============================================================
@@ -60,17 +62,19 @@ void APlayerControllerBase::BeginPlay()
 	if(HUDClass)
 	{
 		HUDId = FUIManager::GetInstance()->CreateWidgetBase(HUDClass, TEXT("HUD"));
-		HUD = FindWidgetBase(HUDId).Get();
+		HUD = Cast<UDPHud>(FindWidgetBase(HUDId).Get());
 	}
 	if (HUD)
-		HUD->AddToViewport();
-	Hand = Cast<UHand>((*HUD)[TEXT("WBP_Hand")]);
-	if(Hand == nullptr)
 	{
-		LOG_SCREEN(FColor::Red, TEXT("APlayerControllerBase::BeginPlay(): WBP_Hand에 해당하는 위젯을 찾지 못했습니다."))
-		return;
+		HUD->AddToViewport();
+		Hand = Cast<UHand>((*HUD)[TEXT("WBP_Hand")]);
+		if(Hand == nullptr)
+		{
+			LOG_SCREEN(FColor::Red, TEXT("APlayerControllerBase::BeginPlay(): WBP_Hand에 해당하는 위젯을 찾지 못했습니다."))
+			return;
+		}
+		Hand->OnCreated();
 	}
-	Hand->OnCreated();
 
 	DeckInterfaceOpen = false;
 

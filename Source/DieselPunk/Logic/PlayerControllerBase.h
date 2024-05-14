@@ -6,6 +6,7 @@
 #include <GameFramework/PlayerController.h>
 #include "PlayerControllerBase.generated.h"
 
+class UDPHud;
 enum class ETriggerEvent : uint8;
 class UInputAction;
 class UInputMappingContext;
@@ -95,7 +96,7 @@ private:
 	TSubclassOf<UUserWidgetBase> DeckInterfaceClass;
 	
 	UPROPERTY()
-	UUserWidgetBase* HUD;
+	UDPHud* HUD;
 
 	UPROPERTY(EditAnywhere, Category="MYDP_UI")
 	TSubclassOf<UUserWidgetBase> HUDClass;

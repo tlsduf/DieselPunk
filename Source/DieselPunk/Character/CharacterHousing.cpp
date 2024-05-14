@@ -44,16 +44,6 @@ ACharacterHousing::ACharacterHousing()
 	Box->SetAreaClassOverride(NavArea);*/
 	Box->SetupAttachment(GetCapsuleComponent());
 	Box->bHiddenInGame = false;
-
-	InteractInstallationWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("InteractWidgetComponent"));
-	if (InteractInstallationWidgetComponent)
-	{
-		InteractInstallationWidgetComponent->SetupAttachment(GetRootComponent());
-		InteractInstallationWidgetComponent->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-		InteractInstallationWidgetComponent->SetGenerateOverlapEvents(false);
-		InteractInstallationWidgetComponent->SetSimulatePhysics(false);
-		InteractInstallationWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
-	}
 }
 
 // =============================================================
@@ -116,16 +106,6 @@ void ACharacterHousing::BeginPlay()
 				GetCapsuleComponent()->GetScaledCapsuleHalfHeight()));
 		}
 	}
-
-	int32 uiKey = FUIManager::GetInstance()->CreateWidgetBase(TEXT(""), TEXT("WBP_InteractInstallation"), TEXT("InteractInstallation"));
-	InteractInstallationUI = Cast<UInteractInstallation>(FUIManager::GetInstance()->GetWidgetBase(uiKey));
-
-	if(!InteractInstallationWidgetComponent || !InteractInstallationUI.IsValid())
-		return;
-
-	InteractInstallationWidgetComponent->SetWidget(InteractInstallationUI.Get());
-	InteractInstallationWidgetComponent->SetDrawSize(FVector2d(200.f, 150.f));
-	InteractInstallationWidgetComponent->SetHiddenInGame(true);
 }
 
 // =============================================================
@@ -264,13 +244,4 @@ bool ACharacterHousing::UpgradeInstallation(int32 InAceChance)
 	
 	LOG_SCREEN(FColor::Yellow, TEXT("Upgrade Complete!"))
 	return true;
-}
-
-void ACharacterHousing::ShowInteractInstallationUI(bool InShow, bool InSelected)
-{
-	InteractInstallationWidgetComponent->SetHiddenInGame(!InShow);
-	if(InShow)
-		InteractInstallationUI->Selected(InSelected);
-	else
-		InteractInstallationUI->Selected(false);
 }

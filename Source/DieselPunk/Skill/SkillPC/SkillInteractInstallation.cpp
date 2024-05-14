@@ -23,63 +23,51 @@ void USkillInteractInstallation::SkillStarted()
 {
 	Super::SkillStarted();
 	
-	FHitResult hit;
-	TArray<const AActor*> ignore;
-	ignore.Add(OwnerCharacter);
-	
-	if(CheckInteractive(hit, 99999, ignore))
-	{
-		if(Cast<ACharacterHousing>(hit.GetActor()) == nullptr)
-			return;
-		InteractiveInstallation = Cast<ACharacterHousing>(hit.GetActor());
-		Distance = hit.Distance;
-		IsValid = true;
-	}
+	InteractiveInstallation = OwnerCharacterPC->GetSelectInstallation();
+	IsValid = InteractiveInstallation.IsValid();
+	if(IsValid)
+		Distance = FVector::Distance(InteractiveInstallation->GetActorLocation(), OwnerCharacterPC->GetActorLocation());
 	else
-		IsValid = false;
+	{
+		InteractiveInstallation = OwnerCharacterPC->GetLookInstallation();
+		IsValid = InteractiveInstallation.IsValid();
+		if(IsValid)
+			Distance = FVector::Distance(InteractiveInstallation->GetActorLocation(), OwnerCharacterPC->GetActorLocation());
+	}
 }
 
 void USkillInteractInstallation::SkillOngoing()
 {
 	Super::SkillOngoing();
-	FHitResult hit;
-	TArray<const AActor*> ignore;
-	ignore.Add(OwnerCharacter);
-	
-	if(CheckInteractive(hit, 99999, ignore))
-	{
-		if(Cast<ACharacterHousing>(hit.GetActor()) == nullptr)
-			return;
 
-		if(InteractiveInstallation != hit.GetActor())
-			IsValid = false;
-		else
-			Distance = hit.Distance;
-	}
+	InteractiveInstallation = OwnerCharacterPC->GetSelectInstallation();
+	IsValid = InteractiveInstallation.IsValid();
+	if(IsValid)
+		Distance = FVector::Distance(InteractiveInstallation->GetActorLocation(), OwnerCharacterPC->GetActorLocation());
 	else
-		IsValid = false;
+	{
+		InteractiveInstallation = OwnerCharacterPC->GetLookInstallation();
+		IsValid = InteractiveInstallation.IsValid();
+		if(IsValid)
+			Distance = FVector::Distance(InteractiveInstallation->GetActorLocation(), OwnerCharacterPC->GetActorLocation());
+	}
 }
 
 void USkillInteractInstallation::SkillTriggered()
 {
 	Super::SkillTriggered();
-
-	FHitResult hit;
-	TArray<const AActor*> ignore;
-	ignore.Add(OwnerCharacter);
 	
-	if(CheckInteractive(hit, 99999, ignore))
-	{
-		if(Cast<ACharacterHousing>(hit.GetActor()) == nullptr)
-			return;
-
-		if(InteractiveInstallation != hit.GetActor())
-			IsValid = false;
-		else
-			Distance = hit.Distance;
-	}
+	InteractiveInstallation = OwnerCharacterPC->GetSelectInstallation();
+	IsValid = InteractiveInstallation.IsValid();
+	if(IsValid)
+		Distance = FVector::Distance(InteractiveInstallation->GetActorLocation(), OwnerCharacterPC->GetActorLocation());
 	else
-		IsValid = false;
+	{
+		InteractiveInstallation = OwnerCharacterPC->GetLookInstallation();
+		IsValid = InteractiveInstallation.IsValid();
+		if(IsValid)
+			Distance = FVector::Distance(InteractiveInstallation->GetActorLocation(), OwnerCharacterPC->GetActorLocation());
+	}
 
 	//중간에 커서를 다른 곳으로 옮겼을 시 아무일 없게
 	if(IsValid == false)
@@ -93,7 +81,7 @@ void USkillInteractInstallation::SkillTriggered()
 	if(OwnerCharacterPC->GetSelectInstallation() == nullptr)
 	{
 		//포탑 수리
-		LOG_SCREEN(FColor::Yellow, TEXT("Fix Turret"))
+		LOG_SCREEN(FColor::Yellow, TEXT("Fix Turret: %s"), *InteractiveInstallation->GetName())
 
 		//최대 체력으로 복구
 		int32 hp = InteractiveInstallation->GetStat(ECharacterStatType::MaxHp) - InteractiveInstallation->GetStat(ECharacterStatType::Hp);
@@ -102,7 +90,7 @@ void USkillInteractInstallation::SkillTriggered()
 	else
 	{
 		//포탑 판매
-		LOG_SCREEN(FColor::Yellow, TEXT("Sold Turret"))
+		LOG_SCREEN(FColor::Yellow, TEXT("Sold Turret: %s"), *InteractiveInstallation->GetName())
 
 		//ToDo: 포탑 판매 시 일정 금액 돌려받기
 		UDataTable* table = FDataTableManager::GetInstance()->GetDataRow(EDataTableType::Card);
@@ -134,23 +122,18 @@ void USkillInteractInstallation::SkillTriggered()
 void USkillInteractInstallation::SkillCanceled()
 {
 	Super::SkillCanceled();
-
-	FHitResult hit;
-	TArray<const AActor*> ignore;
-	ignore.Add(OwnerCharacter);
 	
-	if(CheckInteractive(hit, 99999, ignore))
-	{
-		if(Cast<ACharacterHousing>(hit.GetActor()) == nullptr)
-			return;
-
-		if(InteractiveInstallation != hit.GetActor())
-			IsValid = false;
-		else
-			Distance = hit.Distance;
-	}
+	InteractiveInstallation = OwnerCharacterPC->GetSelectInstallation();
+	IsValid = InteractiveInstallation.IsValid();
+	if(IsValid)
+		Distance = FVector::Distance(InteractiveInstallation->GetActorLocation(), OwnerCharacterPC->GetActorLocation());
 	else
-		IsValid = false;
+	{
+		InteractiveInstallation = OwnerCharacterPC->GetLookInstallation();
+		IsValid = InteractiveInstallation.IsValid();
+		if(IsValid)
+			Distance = FVector::Distance(InteractiveInstallation->GetActorLocation(), OwnerCharacterPC->GetActorLocation());
+	}
 
 	//중간에 커서를 다른 곳으로 옮겼을 시 아무일 없게
 	if(IsValid == false)
@@ -164,7 +147,7 @@ void USkillInteractInstallation::SkillCanceled()
 	if(OwnerCharacterPC->GetSelectInstallation() == nullptr)
 	{
 		//상호작용(탑승, 기믹 등)
-		LOG_SCREEN(FColor::Yellow, TEXT("Interactive"))
+		LOG_SCREEN(FColor::Yellow, TEXT("Interactive Turret: %s"), *InteractiveInstallation->GetName())
 	}
 	else
 	{
@@ -194,7 +177,7 @@ void USkillInteractInstallation::SkillCanceled()
 		//포탑 갯수 확인
 		if(turrets.Num() < 2)
 		{
-			LOG_SCREEN(FColor::Yellow, TEXT("포탑 강화에 필요한 포탑 갯수가 부족합니다."))
+			LOG_SCREEN(FColor::Yellow, TEXT("%s 포탑 강화에 필요한 포탑 갯수가 부족합니다."), *InteractiveInstallation->GetName())
 			return;
 		}
 
@@ -210,14 +193,8 @@ void USkillInteractInstallation::SkillCanceled()
 			//재료 포탑 제거
 			FObjectManager::GetInstance()->DestroyActor(turrets[0]->GetObjectId());
 			FObjectManager::GetInstance()->DestroyActor(turrets[1]->GetObjectId());
-			LOG_SCREEN(FColor::Yellow, TEXT("Upgrade Turret"))
+			LOG_SCREEN(FColor::Yellow, TEXT("Upgrade Turret: %s"), *InteractiveInstallation->GetName())
 		}
 	}
-}
-
-bool USkillInteractInstallation::CheckInteractive(FHitResult& InHitResult, int32 InRange,
-	TArray<const AActor*> InIgnoreActor)
-{
-	return UtilCollision::GetViewMiddle(GetWorld(), Cast<APlayerController>(OwnerController), InHitResult, 99999, InIgnoreActor);
 }
 
