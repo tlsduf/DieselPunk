@@ -258,7 +258,7 @@ bool ACharacterHousing::UpgradeInstallation(int32 InAceChance)
 	}
 
 	//스탯 변경
-	StatControlComponent->SetStat(ECharacterStatType::Level, upgradeIdx);
+	StatControlComponent->SetStat(ECharacterStatType::Level, upgradeIdx + 1);
 
 	InitSkill();
 	

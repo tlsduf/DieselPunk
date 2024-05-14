@@ -53,12 +53,6 @@ class DIESELPUNK_API ACharacterHousing : public ACharacterNPC
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UWidgetComponent> InteractInstallationWidgetComponent;
-	
-	UPROPERTY(EditDefaultsOnly, Category="MYDP_Upgrade")
-	TArray<FUpgardeInfo> UpgradeInfos;
-
-	UPROPERTY(EditDefaultsOnly, Category="MYDP_Upgrade")
-	FUpgardeInfo AceUpgradeInfo;
 
 	static constexpr int32 MaxLv = 3;
 	

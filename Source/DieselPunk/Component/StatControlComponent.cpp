@@ -105,7 +105,7 @@ void UStatControlComponent::SetStatDelegateFunction(TWeakObjectPtr<AActor> InAct
 	}
 	else if(InStatType == ECharacterStatType::Level)
 	{
-		ChangeStatForLevelUp(InValue);
+		ChangeStatForLevelUp(InValue - 1);
 	}
 }
 

@@ -34,8 +34,6 @@ void USkillSoldierLM::SkillTriggered()
 void USkillSoldierLM::AbilityStart(AActor* InTarget)
 {
 	Super::AbilityStart(InTarget);
-
-	LOG_SCREEN(FColor::White, TEXT("LM Start"))
 	
 	// 쿨타임
 	CoolTimeHandler->SetCoolTime(CoolTime);
@@ -48,8 +46,6 @@ void USkillSoldierLM::AbilityStart(AActor* InTarget)
 void USkillSoldierLM::AbilityShot(AActor* InTarget)
 {
 	Super::AbilityShot(InTarget);
-
-	LOG_SCREEN(FColor::White, TEXT("LM Shot"))
 	
 	// 라인트레이스로 최종경로설정
 	FVector lineTraceLocation;
