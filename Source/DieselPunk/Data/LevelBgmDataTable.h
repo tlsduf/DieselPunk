@@ -20,9 +20,9 @@ struct DIESELPUNK_API FLevelBgmDataTable : public FDPTableRowBase
 	
 	//볼륨 곱연산
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float VolumeMultiplier;
+	float VolumeMultiplier = 1.f;
 
 	//피치 곱연산
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float PitchMultiplier;
+	float PitchMultiplier = 1.f;;
 };

@@ -31,6 +31,9 @@ void UDpGameInstance::OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld)
 {
     Super::OnWorldChanged(OldWorld, NewWorld);
 
+    if(!NewWorld)
+        return;
+
     const FLevelBgmDataTable* table = FDataTableManager::GetInstance()->GetData<FLevelBgmDataTable>(EDataTableType::LevelBgm, NewWorld->GetName());
     if(table == nullptr)
         return;
