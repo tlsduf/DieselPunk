@@ -57,10 +57,9 @@ void UStatControlComponent::BeginPlay()
 		LOG_SCREEN(FColor::Red, TEXT("%s의 ActorName이 등록되지 않았습니다. 데이터 테이블에서 스탯을 불러올 수 없습니다."), *Owner->GetName())
 		return;
 	}
+	StatData = FDataTableManager::GetInstance()->GetData<FStatDataTable>(EDataTableType::Stat, ActorName);
 
-	const FStatDataTable* data = FDataTableManager::GetInstance()->GetData<FStatDataTable>(EDataTableType::Stat, ActorName);
-
-	if(!data)
+	if(!StatData)
 	{
 		LOG_SCREEN(FColor::Red, TEXT("ActorName: %s에 해당하는 데이터 열이 없습니다. 데이터 테이블에서 스탯을 불러올 수 없습니다."), *Owner->GetName())
 		return;
@@ -69,23 +68,23 @@ void UStatControlComponent::BeginPlay()
 	SetStat(ECharacterStatType::Level, 1);
 	SetStat(ECharacterStatType::Exp, 0);
 
-	SetStat(ECharacterStatType::MaxHp,			 data->Hp);
-	SetStat(ECharacterStatType::Hp,				 data->Hp);
-	SetStat(ECharacterStatType::HpRecoverySpeed, data->HpRecoverySpeed);
-	SetStat(ECharacterStatType::Atk,			 data->Atk);
-	SetStat(ECharacterStatType::AtkSpeed,		 data->AtkSpeed);
-	SetStat(ECharacterStatType::Def,			 data->Def);
-	SetStat(ECharacterStatType::ArmorPen,		 data->ArmorPen);
-	SetStat(ECharacterStatType::CriticalPer,	 data->CriticalPer);
-	SetStat(ECharacterStatType::CriticalAtk,	 data->CriticalAtk);
-	SetStat(ECharacterStatType::MoveSpeed,		 data->MoveSpeed);
-	SetStat(ECharacterStatType::JumpCount,		 data->JumpCount);
-	SetStat(ECharacterStatType::Luck,			 data->Luck);
-	SetStat(ECharacterStatType::CoolDown,		 data->CoolDown);
-	SetStat(ECharacterStatType::AttackMaxRange,	 data->AttackMaxRange);
-	SetStat(ECharacterStatType::AttackMinRange,	 data->AttacMinRange);
-	SetStat(ECharacterStatType::Cost,			 data->Cost);
-	SetStat(ECharacterStatType::AceChance,		 data->AceChance);
+	SetStat(ECharacterStatType::MaxHp,			 StatData->StatInfos[0].Hp);
+	SetStat(ECharacterStatType::Hp,				 StatData->StatInfos[0].Hp);
+	SetStat(ECharacterStatType::HpRecoverySpeed, StatData->StatInfos[0].HpRecoverySpeed);
+	SetStat(ECharacterStatType::Atk,			 StatData->StatInfos[0].Atk);
+	SetStat(ECharacterStatType::AtkSpeed,		 StatData->StatInfos[0].AtkSpeed);
+	SetStat(ECharacterStatType::Def,			 StatData->StatInfos[0].Def);
+	SetStat(ECharacterStatType::ArmorPen,		 StatData->StatInfos[0].ArmorPen);
+	SetStat(ECharacterStatType::CriticalPer,	 StatData->StatInfos[0].CriticalPer);
+	SetStat(ECharacterStatType::CriticalAtk,	 StatData->StatInfos[0].CriticalAtk);
+	SetStat(ECharacterStatType::MoveSpeed,		 StatData->StatInfos[0].MoveSpeed);
+	SetStat(ECharacterStatType::JumpCount,		 StatData->StatInfos[0].JumpCount);
+	SetStat(ECharacterStatType::Luck,			 StatData->StatInfos[0].Luck);
+	SetStat(ECharacterStatType::CoolDown,		 StatData->StatInfos[0].CoolDown);
+	SetStat(ECharacterStatType::AttackMaxRange,	 StatData->StatInfos[0].AttackMaxRange);
+	SetStat(ECharacterStatType::AttackMinRange,	 StatData->StatInfos[0].AttacMinRange);
+	SetStat(ECharacterStatType::Cost,			 StatData->StatInfos[0].Cost);
+	SetStat(ECharacterStatType::AceChance,		 StatData->AceChance);
 }
 
 void UStatControlComponent::SetStatDelegateFunction(TWeakObjectPtr<AActor> InActor, ECharacterStatType InStatType, int32 InValue)
@@ -103,6 +102,10 @@ void UStatControlComponent::SetStatDelegateFunction(TWeakObjectPtr<AActor> InAct
 		UCharacterMovementComponent* movementComponent = Cast<UCharacterMovementComponent>(comp);
 		movementComponent->MaxWalkSpeed = InValue;
 		movementComponent->MaxWalkSpeedCrouched = InValue / 2;
+	}
+	else if(InStatType == ECharacterStatType::Level)
+	{
+		ChangeStatForLevelUp(InValue);
 	}
 }
 
@@ -126,26 +129,30 @@ void UStatControlComponent::SetStat(ECharacterStatType InStatType, int32 InValue
 		DelegateChangeStat.Broadcast(Owner, InStatType, *stat);
 }
 
-void UStatControlComponent::SetAllStatByStatDataTable(const FStatDataTable* InStatDataTable)
+void UStatControlComponent::ChangeStatForLevelUp(int32 InLv)
 {
-	SetStat(ECharacterStatType::MaxHp,			 		InStatDataTable->Hp);
-	SetStat(ECharacterStatType::Hp,				 		InStatDataTable->Hp);
-	SetStat(ECharacterStatType::HpRecoverySpeed, 		InStatDataTable->HpRecoverySpeed);
-	SetStat(ECharacterStatType::Atk,			 		InStatDataTable->Atk);
-	SetStat(ECharacterStatType::AtkForFly,		 		InStatDataTable->AtkForFly);
-	SetStat(ECharacterStatType::AtkSpeed,		 		InStatDataTable->AtkSpeed);
-	SetStat(ECharacterStatType::Def,			 		InStatDataTable->Def);
-	SetStat(ECharacterStatType::ArmorPen,		 		InStatDataTable->ArmorPen);
-	SetStat(ECharacterStatType::CriticalPer,	 		InStatDataTable->CriticalPer);
-	SetStat(ECharacterStatType::CriticalAtk,	 		InStatDataTable->CriticalAtk);
-	SetStat(ECharacterStatType::MoveSpeed,		 		InStatDataTable->MoveSpeed);
-	SetStat(ECharacterStatType::JumpCount,		 		InStatDataTable->JumpCount);
-	SetStat(ECharacterStatType::Luck,			 		InStatDataTable->Luck);
-	SetStat(ECharacterStatType::CoolDown,		 		InStatDataTable->CoolDown);
-	SetStat(ECharacterStatType::AttackMaxRange,	 		InStatDataTable->AttackMaxRange);
-	SetStat(ECharacterStatType::AttackMaxRangeForFly,	InStatDataTable->AttackMaxRangeForFly);
-	SetStat(ECharacterStatType::AttackMinRange,	 		InStatDataTable->AttacMinRange);
-	SetStat(ECharacterStatType::Cost,			 		InStatDataTable->Cost);
+	if(InLv >= StatData->StatInfos.Num())
+		return;
+	
+	SetStat(ECharacterStatType::Exp, 0);
+	SetStat(ECharacterStatType::MaxHp,			 		StatData->StatInfos[InLv].Hp);
+	SetStat(ECharacterStatType::Hp,				 		StatData->StatInfos[InLv].Hp);
+	SetStat(ECharacterStatType::HpRecoverySpeed, 		StatData->StatInfos[InLv].HpRecoverySpeed);
+	SetStat(ECharacterStatType::Atk,			 		StatData->StatInfos[InLv].Atk);
+	SetStat(ECharacterStatType::AtkForFly,		 		StatData->StatInfos[InLv].AtkForFly);
+	SetStat(ECharacterStatType::AtkSpeed,		 		StatData->StatInfos[InLv].AtkSpeed);
+	SetStat(ECharacterStatType::Def,			 		StatData->StatInfos[InLv].Def);
+	SetStat(ECharacterStatType::ArmorPen,		 		StatData->StatInfos[InLv].ArmorPen);
+	SetStat(ECharacterStatType::CriticalPer,	 		StatData->StatInfos[InLv].CriticalPer);
+	SetStat(ECharacterStatType::CriticalAtk,	 		StatData->StatInfos[InLv].CriticalAtk);
+	SetStat(ECharacterStatType::MoveSpeed,		 		StatData->StatInfos[InLv].MoveSpeed);
+	SetStat(ECharacterStatType::JumpCount,		 		StatData->StatInfos[InLv].JumpCount);
+	SetStat(ECharacterStatType::Luck,			 		StatData->StatInfos[InLv].Luck);
+	SetStat(ECharacterStatType::CoolDown,		 		StatData->StatInfos[InLv].CoolDown);
+	SetStat(ECharacterStatType::AttackMaxRange,	 		StatData->StatInfos[InLv].AttackMaxRange);
+	SetStat(ECharacterStatType::AttackMaxRangeForFly,	StatData->StatInfos[InLv].AttackMaxRangeForFly);
+	SetStat(ECharacterStatType::AttackMinRange,	 		StatData->StatInfos[InLv].AttacMinRange);
+	SetStat(ECharacterStatType::Cost,			 		StatData->StatInfos[InLv].Cost);
 }
 
 

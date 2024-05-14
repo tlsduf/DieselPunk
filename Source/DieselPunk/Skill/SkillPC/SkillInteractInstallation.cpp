@@ -169,7 +169,6 @@ void USkillInteractInstallation::SkillCanceled()
 	else
 	{
 		//포탑 강화
-		LOG_SCREEN(FColor::Yellow, TEXT("Upgrade Turret"))
 
 		//터렛 가져오기
 		TArray<int32> ids;
@@ -186,8 +185,9 @@ void USkillInteractInstallation::SkillCanceled()
 				continue;
 			ACharacterHousing* installation = Cast<ACharacterHousing>(FObjectManager::GetInstance()->FindActor(id));
 			
-			//같은 포탑 종류 추가
-			if(InteractiveInstallation->GetCharacterName() == installation->GetCharacterName())
+			//같은 포탑,레벨 종류 추가
+			if(InteractiveInstallation->GetCharacterName() == installation->GetCharacterName()
+				&& InteractiveInstallation->GetStat(ECharacterStatType::Level) == installation->GetStat(ECharacterStatType::Level))
 				turrets.Add(installation);
 		}
 
@@ -204,12 +204,14 @@ void USkillInteractInstallation::SkillCanceled()
 			return lhs.GetCreateTime() < rhs.GetCreateTime();
 		});
 
-		//재료 포탑 제거
-		FObjectManager::GetInstance()->DestroyActor(turrets[0]->GetObjectId());
-		FObjectManager::GetInstance()->DestroyActor(turrets[1]->GetObjectId());
-
 		//포탑 업그레이드
-		InteractiveInstallation->UpgradeInstallation(OwnerCharacterPC->GetStat(ECharacterStatType::AceChance));
+		if(InteractiveInstallation->UpgradeInstallation(OwnerCharacterPC->GetStat(ECharacterStatType::AceChance)))
+		{
+			//재료 포탑 제거
+			FObjectManager::GetInstance()->DestroyActor(turrets[0]->GetObjectId());
+			FObjectManager::GetInstance()->DestroyActor(turrets[1]->GetObjectId());
+			LOG_SCREEN(FColor::Yellow, TEXT("Upgrade Turret"))
+		}
 	}
 }
 

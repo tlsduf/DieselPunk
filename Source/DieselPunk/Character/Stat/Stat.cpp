@@ -28,22 +28,22 @@ void FStat::Initialize(ACharacterBase* InOwner, const FString& InCharacterName)
 	SetStat(ECharacterStatType::Level, 1);
 	SetStat(ECharacterStatType::Exp, 0);
 
-	SetStat(ECharacterStatType::MaxHp,			 data->Hp);
-	SetStat(ECharacterStatType::Hp,				 data->Hp);
-	SetStat(ECharacterStatType::HpRecoverySpeed, data->HpRecoverySpeed);
-	SetStat(ECharacterStatType::Atk,			 data->Atk);
-	SetStat(ECharacterStatType::AtkSpeed,		 data->AtkSpeed);
-	SetStat(ECharacterStatType::Def,			 data->Def);
-	SetStat(ECharacterStatType::ArmorPen,		 data->ArmorPen);
-	SetStat(ECharacterStatType::CriticalPer,	 data->CriticalPer);
-	SetStat(ECharacterStatType::CriticalAtk,	 data->CriticalAtk);
-	SetStat(ECharacterStatType::MoveSpeed,		 data->MoveSpeed);
-	SetStat(ECharacterStatType::JumpCount,		 data->JumpCount);
-	SetStat(ECharacterStatType::Luck,			 data->Luck);
-	SetStat(ECharacterStatType::CoolDown,		 data->CoolDown);
-	SetStat(ECharacterStatType::AttackMaxRange,	 data->AttackMaxRange);
-	SetStat(ECharacterStatType::AttackMinRange,	 data->AttacMinRange);
-	SetStat(ECharacterStatType::Cost,			 data->Cost);
+	SetStat(ECharacterStatType::MaxHp,			 data->StatInfos[0].Hp);
+	SetStat(ECharacterStatType::Hp,				 data->StatInfos[0].Hp);
+	SetStat(ECharacterStatType::HpRecoverySpeed, data->StatInfos[0].HpRecoverySpeed);
+	SetStat(ECharacterStatType::Atk,			 data->StatInfos[0].Atk);
+	SetStat(ECharacterStatType::AtkSpeed,		 data->StatInfos[0].AtkSpeed);
+	SetStat(ECharacterStatType::Def,			 data->StatInfos[0].Def);
+	SetStat(ECharacterStatType::ArmorPen,		 data->StatInfos[0].ArmorPen);
+	SetStat(ECharacterStatType::CriticalPer,	 data->StatInfos[0].CriticalPer);
+	SetStat(ECharacterStatType::CriticalAtk,	 data->StatInfos[0].CriticalAtk);
+	SetStat(ECharacterStatType::MoveSpeed,		 data->StatInfos[0].MoveSpeed);
+	SetStat(ECharacterStatType::JumpCount,		 data->StatInfos[0].JumpCount);
+	SetStat(ECharacterStatType::Luck,			 data->StatInfos[0].Luck);
+	SetStat(ECharacterStatType::CoolDown,		 data->StatInfos[0].CoolDown);
+	SetStat(ECharacterStatType::AttackMaxRange,	 data->StatInfos[0].AttackMaxRange);
+	SetStat(ECharacterStatType::AttackMinRange,	 data->StatInfos[0].AttacMinRange);
+	SetStat(ECharacterStatType::Cost,			 data->StatInfos[0].Cost);
 	SetStat(ECharacterStatType::AceChance,		 data->AceChance);
 }
 

@@ -36,6 +36,8 @@ protected:
 	TArray<ENPCTraitType> InitHaveTrait;
 	
 	uint8 Trait = 0;
+
+	const FStatDataTable* StatData = nullptr;
 public:
 	constexpr static int32 INVALID_STAT = -9999;
 public:	
@@ -56,7 +58,7 @@ public:
 
 	void SetStat(ECharacterStatType InStatType, int32 InValue);
 
-	void SetAllStatByStatDataTable(const FStatDataTable* InStatDataTable);
+	void ChangeStatForLevelUp(int32 InLv);
 
 	const int32& GetStat(ECharacterStatType InStatType);
 
@@ -72,4 +74,6 @@ public:
 	bool IsTrait(ENPCTraitType InTraitType);
 
 	FSetStatDelegate& GetSetStatDelegate(){return DelegateChangeStat;}
+
+	const FStatDataTable* GetStatData(){return StatData;}
 };
