@@ -46,10 +46,6 @@ void UProjectileAttack::AbilityShot(AActor* InTarget)
 		return;
 	
 	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
-
-	//애니메이션 재생?
-	if(UTurretAnimInstace* animInst = Cast<UTurretAnimInstace>(ownerPawn->GetMesh()->GetAnimInstance()))	
-		animInst->AttackSign(EAbilityType::MouseLM);
 	
 	// projectile spawn
 	if(ProjectileBaseClass)
