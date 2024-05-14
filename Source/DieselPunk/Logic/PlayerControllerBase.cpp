@@ -689,6 +689,9 @@ void APlayerControllerBase::RegisterHands(TArray<FCard*> InCard)
 
 void APlayerControllerBase::ReplaceCard()
 {
+	if(Hand->GetIsPlayingAnimation())
+		return;
+	
 	//리플레이스 적용
 	TArray<int32> toHangerIndex;
 	if(PC->ReplaceCard(toHangerIndex) == false)
@@ -705,7 +708,7 @@ void APlayerControllerBase::ReplaceCard()
 	IsCardActivate = false;
 
 	//카드 버리는 애니메이션 재생
-	UWidgetAnimation* anim = nullptr;
+	const UWidgetAnimation* anim = nullptr;
 	for(const int32& index : toHangerIndex)
 		 anim = Hand->PlayHandToHangerAnimation(index);
 

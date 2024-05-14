@@ -52,16 +52,17 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
 	UTextBlock* TextDeckCount;
 
+	int32 PlayingAnimationCount = 0;
+	
 	int32 Cost;
+
+	FWidgetAnimationDynamicEvent EventEndAnimation;
 
 public:
 	// 생성자
 	virtual void OnCreated() override;
 
 	void Initailize(ACharacterPC* InPlayer);
-
-	// 틱
-	virtual void NativeTick( const FGeometry& MyGeometry, float InDeltaTime ) override;
 
 public:
 	//카드들을 등록합니다
@@ -88,5 +89,10 @@ public:
 
 	UFUNCTION()
 	void ChangeDeckCount(int32 InValue);
+
+	bool GetIsPlayingAnimation(){return PlayingAnimationCount > 0;}
+
+	UFUNCTION()
+	void FinishAnimation();
 };
 

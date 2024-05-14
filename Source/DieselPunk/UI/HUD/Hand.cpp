@@ -30,14 +30,15 @@ void UHand::Initailize(ACharacterPC* InPlayer)
 {
 	InPlayer->GetStatControlComponent()->GetSetStatDelegate().AddUObject(this, &UHand::ChangeCredit);
 	InPlayer->GetDelegateChangeDeckCount().AddUObject(this, &UHand::ChangeDeckCount);
-}
 
-// =============================================================
-// 틱
-// =============================================================
-void UHand::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
-{
-	Super::NativeTick(MyGeometry, InDeltaTime);
+	EventEndAnimation.Clear();
+	EventEndAnimation.BindUFunction(this, FName(FString(TEXT("FinishAnimation"))));
+	BindToAnimationFinished(Hand0ToHanger, EventEndAnimation);
+	BindToAnimationFinished(Hand1ToHanger, EventEndAnimation);
+	BindToAnimationFinished(Hand2ToHanger, EventEndAnimation);
+	BindToAnimationFinished(Hand3ToHanger, EventEndAnimation);
+	BindToAnimationFinished(Hand4ToHanger, EventEndAnimation);
+	BindToAnimationFinished(DrawAnimation, EventEndAnimation);
 }
 
 //카드들을 등록합니다
@@ -188,13 +189,15 @@ UWidgetAnimation* UHand::PlayHandToHangerAnimation(int InIndex)
 	}
 	
 	PlayAnimation(anim, 0.0f, 1, EUMGSequencePlayMode::Forward, 1, true);
-	return anim; 
+	++PlayingAnimationCount;
+	return anim;
 }
 
 //드로우 애니메이션을 재생합니다.
 void UHand::PlayDrawAnimation()
 {
 	PlayAnimation(DrawAnimation);
+	++PlayingAnimationCount;
 }
 
 //카드의 사이즈를 변경합니다.
@@ -242,4 +245,9 @@ void UHand::ChangeCredit(TWeakObjectPtr<AActor> InCharacter, ECharacterStatType 
 void UHand::ChangeDeckCount(int32 InValue)
 {
 	TextDeckCount->SetText(FText::FromString(FString::Printf(TEXT("%d"), InValue)));
+}
+
+void UHand::FinishAnimation()
+{
+	--PlayingAnimationCount;
 }
