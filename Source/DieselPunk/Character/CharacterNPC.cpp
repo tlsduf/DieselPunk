@@ -289,8 +289,8 @@ bool ACharacterNPC::bPlayerTargeting()
 
 	// 유효 수직 거리안에 위치
 	const int zRange = 300;
-	auto zDif = GetActorLocation().Z < playerLoc.Z ? playerLoc.Z - GetActorLocation().Z : GetActorLocation().Z - playerLoc.Z ;
-	bool inZRange = zDif <= zRange;
+	auto zDif = abs(playerLoc.Z - GetActorLocation().Z);
+	bool inZRange = (zDif <= zRange);
 	if(!inZRange)
 		return inZRange;
 	
@@ -320,8 +320,9 @@ bool ACharacterNPC::bPlayerTargeting()
 		params.AddIgnoredActor(FObjectManager::GetInstance()->FindActor(ID));
 	
 	bool bIsWall = false;
-	// 캡슐반지름 크기의 구로 스윕하여 맵 오브젝트가 있는지 확인. 있으면 true
-	if(GetWorld()->SweepMultiByChannel(hits, GetActorLocation(), playerLoc, FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeSphere(GetCapsuleComponent()->GetScaledCapsuleRadius()), params))
+	// y길이가 캡슐반지름*2인 박스로 스윕하여 맵 오브젝트가 있는지 확인. 있으면 true
+	FVector boxSize = FVector(1,GetCapsuleComponent()->GetScaledCapsuleRadius(),1);
+	if(GetWorld()->SweepMultiByChannel(hits, GetActorLocation(), playerLocXY, FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeBox(boxSize), params))
 	{
 		if(DebugOnOff)
 			DrawDebugLine(GetWorld(), GetActorLocation(), playerLoc, FColor::Black, false);
@@ -334,7 +335,8 @@ bool ACharacterNPC::bPlayerTargeting()
 			bIsWall = true;
 		}
 	}
-	
+
+	LOG_SCREEN(FColor::Red, TEXT(" %hhd %hhd %hhd %hhd"), inRange, inZRange, inDegree, !bIsWall);
 	return inRange && inZRange && inDegree && !bIsWall;
 }
 
