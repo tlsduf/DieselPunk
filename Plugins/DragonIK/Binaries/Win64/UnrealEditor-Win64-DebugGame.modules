@@ -1,0 +1,8 @@
+{
+	"BuildId": "27405482",
+	"Modules": 
+	{
+		"DragonIKPlugin": "UnrealEditor-DragonIKPlugin-Win64-DebugGame.dll",
+		"DragonIKPluginEditor": "UnrealEditor-DragonIKPluginEditor-Win64-DebugGame.dll"
+	}
+}

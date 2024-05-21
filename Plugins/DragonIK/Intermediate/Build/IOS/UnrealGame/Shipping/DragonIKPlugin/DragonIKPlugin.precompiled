@@ -1,0 +1,14 @@
+{
+	"OutputFiles": [
+		"../../../arm64/UnrealGame/Shipping/DragonIKPlugin/Module.DragonIKPlugin.1.cpp.o",
+		"../../../arm64/UnrealGame/Shipping/DragonIKPlugin/Module.DragonIKPlugin.2.cpp.o",
+		"../../../arm64/UnrealGame/Shipping/DragonIKPlugin/Module.DragonIKPlugin.3.cpp.o",
+		"../../../arm64/UnrealGame/Shipping/DragonIKPlugin/Module.DragonIKPlugin.4.cpp.o",
+		"../../../arm64/UnrealGame/Shipping/DragonIKPlugin/Module.DragonIKPlugin.5.cpp.o",
+		"../../../arm64/UnrealGame/Shipping/DragonIKPlugin/Module.DragonIKPlugin.1.cpp.o",
+		"../../../arm64/UnrealGame/Shipping/DragonIKPlugin/Module.DragonIKPlugin.2.cpp.o",
+		"../../../arm64/UnrealGame/Shipping/DragonIKPlugin/Module.DragonIKPlugin.3.cpp.o",
+		"../../../arm64/UnrealGame/Shipping/DragonIKPlugin/Module.DragonIKPlugin.4.cpp.o",
+		"../../../arm64/UnrealGame/Shipping/DragonIKPlugin/Module.DragonIKPlugin.5.cpp.o"
+	]
+}

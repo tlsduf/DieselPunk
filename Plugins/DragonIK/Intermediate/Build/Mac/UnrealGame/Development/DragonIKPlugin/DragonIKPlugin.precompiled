@@ -1,0 +1,24 @@
+{
+	"OutputFiles": [
+		"../../../arm64/UnrealGame/Development/DragonIKPlugin/Module.DragonIKPlugin.1.cpp.o",
+		"../../../arm64/UnrealGame/Development/DragonIKPlugin/Module.DragonIKPlugin.2.cpp.o",
+		"../../../arm64/UnrealGame/Development/DragonIKPlugin/Module.DragonIKPlugin.3.cpp.o",
+		"../../../arm64/UnrealGame/Development/DragonIKPlugin/Module.DragonIKPlugin.4.cpp.o",
+		"../../../arm64/UnrealGame/Development/DragonIKPlugin/Module.DragonIKPlugin.5.cpp.o",
+		"../../../arm64/UnrealGame/Development/DragonIKPlugin/Module.DragonIKPlugin.1.cpp.o",
+		"../../../arm64/UnrealGame/Development/DragonIKPlugin/Module.DragonIKPlugin.2.cpp.o",
+		"../../../arm64/UnrealGame/Development/DragonIKPlugin/Module.DragonIKPlugin.3.cpp.o",
+		"../../../arm64/UnrealGame/Development/DragonIKPlugin/Module.DragonIKPlugin.4.cpp.o",
+		"../../../arm64/UnrealGame/Development/DragonIKPlugin/Module.DragonIKPlugin.5.cpp.o",
+		"../../../x64/UnrealGame/Development/DragonIKPlugin/Module.DragonIKPlugin.1.cpp.o",
+		"../../../x64/UnrealGame/Development/DragonIKPlugin/Module.DragonIKPlugin.2.cpp.o",
+		"../../../x64/UnrealGame/Development/DragonIKPlugin/Module.DragonIKPlugin.3.cpp.o",
+		"../../../x64/UnrealGame/Development/DragonIKPlugin/Module.DragonIKPlugin.4.cpp.o",
+		"../../../x64/UnrealGame/Development/DragonIKPlugin/Module.DragonIKPlugin.5.cpp.o",
+		"../../../x64/UnrealGame/Development/DragonIKPlugin/Module.DragonIKPlugin.1.cpp.o",
+		"../../../x64/UnrealGame/Development/DragonIKPlugin/Module.DragonIKPlugin.2.cpp.o",
+		"../../../x64/UnrealGame/Development/DragonIKPlugin/Module.DragonIKPlugin.3.cpp.o",
+		"../../../x64/UnrealGame/Development/DragonIKPlugin/Module.DragonIKPlugin.4.cpp.o",
+		"../../../x64/UnrealGame/Development/DragonIKPlugin/Module.DragonIKPlugin.5.cpp.o"
+	]
+}

@@ -1,0 +1,12 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UnrealEditor-DragonIKPluginEditor-Win64-DebugGame.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"D:\Project\DieselPunk\Intermediate\Build\Win64\x64\DieselPunkEditor\DebugGame\UnrealEd\SharedPCH.UnrealEd.NonOptimized.Cpp17.InclOrderUnreal5_1.h.obj"
+"D:\Project\DieselPunk\Plugins\DragonIK\Intermediate\Build\Win64\x64\UnrealEditor\DebugGame\DragonIKPluginEditor\Module.DragonIKPluginEditor.cpp.obj"
+"D:\Project\DieselPunk\Plugins\DragonIK\Intermediate\Build\Win64\x64\UnrealEditor\DebugGame\DragonIKPluginEditor\Default.rc2.res"
+/OUT:"D:\Project\DieselPunk\Plugins\DragonIK\Intermediate\Build\Win64\x64\UnrealEditor\DebugGame\DragonIKPluginEditor\UnrealEditor-DragonIKPluginEditor-Win64-DebugGame.lib"
