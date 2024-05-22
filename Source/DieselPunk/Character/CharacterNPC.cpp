@@ -270,20 +270,24 @@ bool ACharacterNPC::bPlayerTargeting()
 	FVector playerLoc = Player->GetActorLocation();
 	FVector playerLocXY = FVector(playerLoc.X, playerLoc.Y, GetActorLocation().Z);
 
-	const int range = 1500;
+	const int rangeMax = GetStat(ECharacterStatType::AttackMaxRange);
+	const int rangeMin = GetStat(ECharacterStatType::AttackMinRange);
+	const int rangeDist = rangeMax - rangeMin;
 	// DrawDebug
 	if(DebugOnOff)
 	{
-		DrawDebugCircleArc(GetWorld(), GetActorLocation(), range, GetActorForwardVector(), 0.523, 8, FColor::Red, false);
+		DrawDebugCircleArc(GetWorld(), GetActorLocation(), rangeMax, GetActorForwardVector(), 0.523, 8, FColor::Red, false);
+		DrawDebugCircleArc(GetWorld(), GetActorLocation(), rangeMin, GetActorForwardVector(), 0.523, 8, FColor::Red, false);
 		FVector rightVector = (GetActorForwardVector().GetSafeNormal().Rotation() + FRotator(0, 30, 0)).Vector().GetSafeNormal();
 		FVector leftVector = (GetActorForwardVector().GetSafeNormal().Rotation() - FRotator(0, 30, 0)).Vector().GetSafeNormal();
-		DrawDebugLine(GetWorld(), GetActorLocation(), GetActorLocation() + rightVector * range, FColor::Red, false);
-		DrawDebugLine(GetWorld(), GetActorLocation(), GetActorLocation() + leftVector * range, FColor::Red, false);
+		DrawDebugLine(GetWorld(), GetActorLocation() + rightVector * rangeMin, GetActorLocation() + rightVector * rangeDist, FColor::Red, false);
+		DrawDebugLine(GetWorld(), GetActorLocation() + rightVector * rangeMin, GetActorLocation() + leftVector * rangeDist, FColor::Red, false);
 	}
 	
 	// 플레이어가 유효 사거리 안에 위치
 	//const int range = 1500;
-	bool inRange = FVector::Dist(GetActorLocation(), playerLoc) <= range;
+	bool inRange = FVector::Dist(GetActorLocation(), playerLoc) <= rangeMax;
+	inRange = inRange && FVector::Dist(GetActorLocation(), playerLoc) >= rangeMin;
 	if(!inRange)
 		return inRange;
 
