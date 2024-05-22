@@ -37,7 +37,7 @@ protected:
 	
 	uint8 Trait = 0;
 
-	const FStatDataTable* StatData = nullptr;
+	TMap<int32, FStatDataTable*> StatDatas;
 public:
 	constexpr static int32 INVALID_STAT = -9999;
 public:	
@@ -75,5 +75,5 @@ public:
 
 	FSetStatDelegate& GetSetStatDelegate(){return DelegateChangeStat;}
 
-	const FStatDataTable* GetStatData(){return StatData;}
+	const TMap<int32, FStatDataTable*>& GetStatData(){return StatDatas;}
 };

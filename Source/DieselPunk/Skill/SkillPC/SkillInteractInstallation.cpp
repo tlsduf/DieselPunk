@@ -188,7 +188,7 @@ void USkillInteractInstallation::SkillCanceled()
 		});
 
 		//포탑 업그레이드
-		if(InteractiveInstallation->UpgradeInstallation(OwnerCharacterPC->GetStat(ECharacterStatType::AceChance)))
+		if(InteractiveInstallation->UpgradeInstallation())
 		{
 			//재료 포탑 제거
 			FObjectManager::GetInstance()->DestroyActor(turrets[0]->GetObjectId());

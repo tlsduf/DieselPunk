@@ -208,27 +208,33 @@ void ACharacterHousing::ChangeHousingMaterialParameterChange(bool InHousing)
 }
 
 // 터렛 업그레이드시 처리
-bool ACharacterHousing::UpgradeInstallation(int32 InAceChance)
+bool ACharacterHousing::UpgradeInstallation()
 {
 	int32 lv = GetStat(ECharacterStatType::Level);
 	lv++;
 
-	if(lv > MaxLv)
+	if(lv > TURRET_MAX_LV)
 	{
 		LOG_SCREEN(FColor::Yellow, TEXT("Upgrade Failed! Turret is Already Max Level"));
 		return false;
 	}
-
-	int32 rand = FMath::RandRange(1,100);
-	int32 upgradeIdx = -1;
-	if(lv == StatControlComponent->GetStatData()->StatInfos.Num() && rand <= InAceChance)
-		upgradeIdx = MaxLv - 1;
-	else
-		upgradeIdx = lv - 1;
+	int32 upgradeIdx = lv;
+	if(lv == TURRET_MAX_LV)
+	{
+		int32 randAce = FMath::RandRange(0,StatControlComponent->GetStatData().Num() - TURRET_MAX_LV);
+		upgradeIdx += randAce;
+	}
+	
+	FStatDataTable* statDataTable = StatControlComponent->GetStatData()[upgradeIdx];
+	if(!statDataTable)
+	{
+		LOG_SCREEN(FColor::Red, TEXT("Upgrade Failed! UpgradeInfo Not Setting"));
+		return false;
+	}
 
 	//메시 변경
-	GetMesh()->SetSkeletalMeshAsset(StatControlComponent->GetStatData()->StatInfos[upgradeIdx].UpgradeMesh);
-	TArray<FSkeletalMaterial> materials = StatControlComponent->GetStatData()->StatInfos[upgradeIdx].UpgradeMesh->GetMaterials();
+	GetMesh()->SetSkeletalMeshAsset(statDataTable->UpgradeMesh);
+	TArray<FSkeletalMaterial> materials = statDataTable->UpgradeMesh->GetMaterials();
 	for(int i = 0; i < GetMesh()->GetMaterials().Num(); ++i)
 	{
 		if(i < materials.Num())
@@ -238,7 +244,7 @@ bool ACharacterHousing::UpgradeInstallation(int32 InAceChance)
 	}
 
 	//스탯 변경
-	StatControlComponent->SetStat(ECharacterStatType::Level, upgradeIdx + 1);
+	StatControlComponent->SetStat(ECharacterStatType::Level, upgradeIdx);
 
 	InitSkill();
 	

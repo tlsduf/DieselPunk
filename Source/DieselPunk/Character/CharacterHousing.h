@@ -30,8 +30,6 @@ class DIESELPUNK_API ACharacterHousing : public ACharacterNPC
 
 	UPROPERTY(EditAnywhere)
 	UBoxComponent* Box;
-
-	static constexpr int32 MaxLv = 3;
 	
 public:
 	ACharacterHousing();
@@ -49,7 +47,7 @@ public:
 	void ChangeHousingMaterialParameterChange(bool InHousing);
 
 	// 업그레이드시 처리
-	virtual bool UpgradeInstallation(int32 InAceChance);
+	virtual bool UpgradeInstallation();
 	
 protected:
 	virtual void BeginPlay() override;

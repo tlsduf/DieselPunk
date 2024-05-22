@@ -2,6 +2,7 @@
 
 #pragma once
 
+#define TURRET_MAX_LV 3
 
 //언리얼 에디터에 로그를 띄웁니다.
 #define LOG_SCREEN(Color, Text, ...)			\
