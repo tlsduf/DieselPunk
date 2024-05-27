@@ -1,0 +1,21 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\users\\user\\desktop\\unreal\\dieselpunk\\plugins\\dragonik\\intermediate\\build\\win64\\unrealeditor\\inc\\dragonikplugin\\uht\\dragonikphysicsholder.gen.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\users\\user\\desktop\\unreal\\dieselpunk\\intermediate\\build\\win64\\x64\\dieselpunkeditor\\debuggame\\unrealed\\sharedpch.unrealed.nonoptimized.cpp17.inclorderunreal5_1.h.pch",
+        "Includes": [
+            "c:\\users\\user\\desktop\\unreal\\dieselpunk\\plugins\\dragonik\\intermediate\\build\\win64\\x64\\unrealeditor\\debuggame\\dragonikplugin\\definitions.dragonikplugin.h",
+            "c:\\users\\user\\desktop\\unreal\\dieselpunk\\plugins\\dragonik\\source\\dragonikplugin\\public\\dragonikphysicsholder.h",
+            "c:\\program files\\epic games\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\physicsengine\\physicshandlecomponent.h",
+            "c:\\program files\\epic games\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\physicshandlecomponent.generated.h",
+            "c:\\program files\\epic games\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\components\\spherecomponent.h",
+            "c:\\program files\\epic games\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\components\\shapecomponent.h",
+            "c:\\program files\\epic games\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\shapecomponent.generated.h",
+            "c:\\program files\\epic games\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\spherecomponent.generated.h",
+            "c:\\users\\user\\desktop\\unreal\\dieselpunk\\plugins\\dragonik\\intermediate\\build\\win64\\unrealeditor\\inc\\dragonikplugin\\uht\\dragonikphysicsholder.generated.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

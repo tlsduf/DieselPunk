@@ -339,8 +339,6 @@ bool ACharacterNPC::bPlayerTargeting()
 			bIsWall = true;
 		}
 	}
-
-	LOG_SCREEN(FColor::Red, TEXT(" %hhd %hhd %hhd %hhd"), inRange, inZRange, inDegree, !bIsWall);
 	return inRange && inZRange && inDegree && !bIsWall;
 }
 

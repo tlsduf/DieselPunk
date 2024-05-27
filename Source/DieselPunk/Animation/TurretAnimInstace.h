@@ -18,9 +18,13 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP", Meta = (AllowPrivateAccess = true))
 	TSoftObjectPtr<UAnimMontage> MonsterMontage;
 
-	// 터렛위치와 타겟위치 각도
+	// 터렛위치와 타겟위치 로테이션 차이
 	UPROPERTY(BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
 	FRotator OwnerToTargetRot = FRotator::ZeroRotator;
+
+	// 터렛위치와 타겟위치 updown 각도
+	UPROPERTY(BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
+	float UpDownDegree = 0;
 
 	// 터렛위치와 타겟사이 거리
 	UPROPERTY(BlueprintReadOnly, Meta = (AllowPrivateAccess = true))

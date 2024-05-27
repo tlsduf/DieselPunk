@@ -1,0 +1,13 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\users\\user\\desktop\\unreal\\dieselpunk\\plugins\\dragonik\\intermediate\\build\\win64\\unrealeditor\\inc\\dragonikplugin\\uht\\dragonikplugin.init.gen.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\users\\user\\desktop\\unreal\\dieselpunk\\intermediate\\build\\win64\\x64\\dieselpunkeditor\\debuggame\\unrealed\\sharedpch.unrealed.nonoptimized.cpp17.inclorderunreal5_1.h.pch",
+        "Includes": [
+            "c:\\users\\user\\desktop\\unreal\\dieselpunk\\plugins\\dragonik\\intermediate\\build\\win64\\x64\\unrealeditor\\debuggame\\dragonikplugin\\definitions.dragonikplugin.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

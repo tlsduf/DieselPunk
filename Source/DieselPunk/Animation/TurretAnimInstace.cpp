@@ -17,6 +17,8 @@ void UTurretAnimInstace::NativeUpdateAnimation(float InDeltaSeconds)
 	{
 		OwnerToTargetRot = (CurTarget->GetActorLocation() - GetOwningActor()->GetActorLocation()).Rotation() - GetOwningActor()->GetActorRotation();
 		OwnerToTargetDist = FVector::Dist(CurTarget->GetActorLocation(), GetOwningActor()->GetActorLocation());
+		float adjacent = CurTarget->GetActorLocation().Z - GetOwningActor()->GetActorLocation().Z;
+		UpDownDegree = asin(adjacent / OwnerToTargetDist) * 100;
 	}
 }
 

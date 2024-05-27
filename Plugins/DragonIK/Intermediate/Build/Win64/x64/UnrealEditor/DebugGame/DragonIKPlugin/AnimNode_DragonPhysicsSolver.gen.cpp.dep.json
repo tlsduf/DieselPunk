@@ -1,0 +1,37 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\users\\user\\desktop\\unreal\\dieselpunk\\plugins\\dragonik\\intermediate\\build\\win64\\unrealeditor\\inc\\dragonikplugin\\uht\\animnode_dragonphysicssolver.gen.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\users\\user\\desktop\\unreal\\dieselpunk\\intermediate\\build\\win64\\x64\\dieselpunkeditor\\debuggame\\unrealed\\sharedpch.unrealed.nonoptimized.cpp17.inclorderunreal5_1.h.pch",
+        "Includes": [
+            "c:\\users\\user\\desktop\\unreal\\dieselpunk\\plugins\\dragonik\\intermediate\\build\\win64\\x64\\unrealeditor\\debuggame\\dragonikplugin\\definitions.dragonikplugin.h",
+            "c:\\users\\user\\desktop\\unreal\\dieselpunk\\plugins\\dragonik\\source\\dragonikplugin\\public\\animnode_dragonphysicssolver.h",
+            "c:\\users\\user\\desktop\\unreal\\dieselpunk\\plugins\\dragonik\\source\\dragonikplugin\\public\\dragonikplugin.h",
+            "c:\\program files\\epic games\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\kismet\\kismetmathlibrary.h",
+            "c:\\program files\\epic games\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\kismetmathlibrary.generated.h",
+            "c:\\program files\\epic games\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\kismet\\kismetmathlibrary.inl",
+            "c:\\program files\\epic games\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\physicsengine\\physicshandlecomponent.h",
+            "c:\\program files\\epic games\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\physicshandlecomponent.generated.h",
+            "c:\\users\\user\\desktop\\unreal\\dieselpunk\\plugins\\dragonik\\source\\dragonikplugin\\public\\dragonikphysicscomponent.h",
+            "c:\\users\\user\\desktop\\unreal\\dieselpunk\\plugins\\dragonik\\source\\dragonikplugin\\public\\dragonikphysicsholder.h",
+            "c:\\program files\\epic games\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\components\\spherecomponent.h",
+            "c:\\program files\\epic games\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\components\\shapecomponent.h",
+            "c:\\program files\\epic games\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\shapecomponent.generated.h",
+            "c:\\program files\\epic games\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\spherecomponent.generated.h",
+            "c:\\users\\user\\desktop\\unreal\\dieselpunk\\plugins\\dragonik\\intermediate\\build\\win64\\unrealeditor\\inc\\dragonikplugin\\uht\\dragonikphysicsholder.generated.h",
+            "c:\\program files\\epic games\\ue_5.3\\engine\\source\\runtime\\engine\\public\\net\\unrealnetwork.h",
+            "c:\\program files\\epic games\\ue_5.3\\engine\\source\\runtime\\net\\core\\public\\net\\core\\propertyconditions\\propertyconditions.h",
+            "c:\\users\\user\\desktop\\unreal\\dieselpunk\\plugins\\dragonik\\intermediate\\build\\win64\\unrealeditor\\inc\\dragonikplugin\\uht\\dragonikphysicscomponent.generated.h",
+            "c:\\program files\\epic games\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\animation\\inputscalebias.h",
+            "c:\\program files\\epic games\\ue_5.3\\engine\\source\\runtime\\engine\\public\\animation\\animinstanceproxy.h",
+            "c:\\program files\\epic games\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\animinstanceproxy.generated.h",
+            "c:\\program files\\epic games\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\inputscalebias.generated.h",
+            "c:\\users\\user\\desktop\\unreal\\dieselpunk\\plugins\\dragonik\\source\\dragonikplugin\\public\\animnode_dragoncontrolbase.h",
+            "c:\\users\\user\\desktop\\unreal\\dieselpunk\\plugins\\dragonik\\intermediate\\build\\win64\\unrealeditor\\inc\\dragonikplugin\\uht\\animnode_dragoncontrolbase.generated.h",
+            "c:\\users\\user\\desktop\\unreal\\dieselpunk\\plugins\\dragonik\\intermediate\\build\\win64\\unrealeditor\\inc\\dragonikplugin\\uht\\animnode_dragonphysicssolver.generated.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}
