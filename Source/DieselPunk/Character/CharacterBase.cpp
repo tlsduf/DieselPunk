@@ -146,11 +146,14 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 					
 					auto DamageCauserPlayer = Cast<ACharacterBase>(DamageCauser);
 					// 플레이어의 경험치를 1 올림
-					DamageCauserPlayer->ChangeStat(ECharacterStatType::Exp, 1);
-					if(DamageCauserPlayer->GetStat(ECharacterStatType::Level) != UtilLevelCal::LevelCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Exp)))
-						DamageCauserPlayer->ChangeStat(ECharacterStatType::Level, UtilLevelCal::LevelCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Exp)));
-					if(DamageCauserPlayer->GetStat(ECharacterStatType::MaxHp) != UtilLevelCal::MaxHealthCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Level)))
-						DamageCauserPlayer->ChangeStat(ECharacterStatType::MaxHp , UtilLevelCal::MaxHealthCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Level)));
+					if(Cast<ACharacterPC>(DamageCauser))
+					{
+						DamageCauserPlayer->ChangeStat(ECharacterStatType::Exp, 1);
+						if(DamageCauserPlayer->GetStat(ECharacterStatType::Level) != UtilLevelCal::LevelCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Exp)))
+							DamageCauserPlayer->ChangeStat(ECharacterStatType::Level, UtilLevelCal::LevelCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Exp)));
+						if(DamageCauserPlayer->GetStat(ECharacterStatType::MaxHp) != UtilLevelCal::MaxHealthCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Level)))
+							DamageCauserPlayer->ChangeStat(ECharacterStatType::MaxHp , UtilLevelCal::MaxHealthCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Level)));
+					}
 				}
 				// 포탑 파괴시 모든 적의 경로를 재탐색합니다.
 				if(NPC->GetNPCType() == ENPCType::Alliance)
