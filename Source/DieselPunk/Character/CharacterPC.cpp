@@ -581,7 +581,7 @@ bool ACharacterPC::ExecuteCardActivate()
 	
 	int32 value = controller->PostActivateCard();
 	
-	LOG_SCREEN(FColor::White, TEXT("%d카드를 사용합니다."), value)
+	//LOG_SCREEN(FColor::White, TEXT("%d카드를 사용합니다."), value)
 	
 	DelegateCardActivate.Unbind();
 	return true;
@@ -600,7 +600,7 @@ bool ACharacterPC::ExecuteCardCancel()
 
 	int32 value = controller->PostCancelCard();
 
-	LOG_SCREEN(FColor::White, TEXT("캔슬 완료"))
+	//LOG_SCREEN(FColor::White, TEXT("캔슬 완료"))
 
 	DelegateCardComplete.Unbind();
 
@@ -626,7 +626,7 @@ bool ACharacterPC::ExecuteCardComplete()
 	ChangeStat(ECharacterStatType::Cost, -DeckHandler->GetHands()[value]->GetCardInfo().Cost);
 	DeckHandler->UseCard(value);
 
-	LOG_SCREEN(FColor::White, TEXT("사용 완료"))
+	//LOG_SCREEN(FColor::White, TEXT("사용 완료"))
 
 	DelegateCardComplete.Unbind();
 	return true;

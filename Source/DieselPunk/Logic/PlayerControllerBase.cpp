@@ -26,6 +26,7 @@
 #include <Animation/WidgetAnimation.h>
 
 #include "DieselPunk/UI/HUD/DPHud.h"
+#include "DieselPunk/UI/StartMenu/DpStartMenu.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PlayerControllerBase)
 
@@ -54,9 +55,15 @@ void APlayerControllerBase::BeginPlay()
 	
 	// 시작 메뉴 생성
 	if(StartMenuClass)
-		StartMenu = CreateWidget(this, StartMenuClass);
-	if (StartMenu)
+	{
+		StartMenuId = FUIManager::GetInstance()->CreateWidgetBase(StartMenuClass, TEXT("StartMenu"));
+		StartMenu = Cast<UDpStartMenu>(FindWidgetBase(StartMenuId).Get());
+	}
+	if(StartMenu)
+	{
+		StartMenu->SetPlayerControllerBase(this);
 		StartMenu->AddToViewport();
+	}
 	
 	// HUD 생성
 	if(HUDClass)
@@ -74,6 +81,8 @@ void APlayerControllerBase::BeginPlay()
 			return;
 		}
 		Hand->OnCreated();
+
+		HUD->SetVisibility(ESlateVisibility::Collapsed);
 	}
 
 	DeckInterfaceOpen = false;
@@ -349,7 +358,7 @@ void APlayerControllerBase::UseCard(int32 InCardIndex)
 	if(handler->GetHands()[InCardIndex] == nullptr)
 		return;
 
-	LOG_SCREEN(FColor::White, TEXT("%d카드가 등록되었습니다. Key : %d"), InCardIndex, handler->GetHands()[InCardIndex]->GetCardInfo().Key)
+	//LOG_SCREEN(FColor::White, TEXT("%d카드가 등록되었습니다. Key : %d"), InCardIndex, handler->GetHands()[InCardIndex]->GetCardInfo().Key)
 	
 	for(int i = 0; i < FDeckHandler::MaxHand; ++i)
 	{
@@ -724,5 +733,11 @@ void APlayerControllerBase::ReplaceCard()
 				thisPtr->RenewHand();
 		}, time, false);
 	}
+}
+
+void APlayerControllerBase::SetVisibilityHud(ESlateVisibility InSlateVisibilty)
+{
+	if(HUD)
+		HUD->SetVisibility(InSlateVisibilty);
 }
 

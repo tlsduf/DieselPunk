@@ -6,7 +6,9 @@
 #include <GameFramework/PlayerController.h>
 #include "PlayerControllerBase.generated.h"
 
+enum class ESlateVisibility : uint8;
 class UDPHud;
+class UDpStartMenu;
 enum class ETriggerEvent : uint8;
 class UInputAction;
 class UInputMappingContext;
@@ -84,10 +86,12 @@ class DIESELPUNK_API APlayerControllerBase : public APlayerController
 
 private:
 	UPROPERTY()
-	UUserWidget* StartMenu;
+	UDpStartMenu* StartMenu;
 
 	UPROPERTY(EditAnywhere, Category="MYDP_UI")
-	TSubclassOf<UUserWidget> StartMenuClass;
+	TSubclassOf<UDpStartMenu> StartMenuClass;
+
+	int32 StartMenuId = -9999;
 
 	UPROPERTY()
 	UDeck* DeckInterface;
@@ -104,7 +108,7 @@ private:
 	UPROPERTY()
 	UHand* Hand;
 
-	int32 HUDId;
+	int32 HUDId = -9999;
 	
 	bool DeckInterfaceOpen = false;
 
@@ -217,4 +221,6 @@ public:
 	int32 GetHUDId(){return HUDId;}
 
 	void ReplaceCard();
+
+	void SetVisibilityHud(ESlateVisibility InSlateVisibilty);
 };
