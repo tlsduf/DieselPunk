@@ -187,7 +187,9 @@ UWidgetAnimation* UHand::PlayHandToHangerAnimation(int InIndex)
 	default:
 		return nullptr;
 	}
-	
+
+	if(IsAnimationPlaying(anim))
+		FinishAnimation();
 	PlayAnimation(anim, 0.0f, 1, EUMGSequencePlayMode::Forward, 1, true);
 	++PlayingAnimationCount;
 	return anim;
@@ -196,6 +198,8 @@ UWidgetAnimation* UHand::PlayHandToHangerAnimation(int InIndex)
 //드로우 애니메이션을 재생합니다.
 void UHand::PlayDrawAnimation()
 {
+	if(IsAnimationPlaying(DrawAnimation))
+		FinishAnimation();
 	PlayAnimation(DrawAnimation);
 	++PlayingAnimationCount;
 }
