@@ -15,10 +15,10 @@ class DIESELPUNK_API ASkillActor : public AActor, public IDpManagementTargetInte
 
 protected:
 	UPROPERTY()
-	ACharacterBase* OwnerCharacter = nullptr;	// 소유자
+	TWeakObjectPtr<ACharacterBase> OwnerCharacter = nullptr;	// 소유자
 	
 	UPROPERTY()
-	AController* OwnerController = nullptr;		// 소유 컨트롤러
+	TWeakObjectPtr<AController> OwnerController = nullptr;		// 소유 컨트롤러
 
 	UPROPERTY(EditAnywhere, Category = "MYDP_Location")
 	bool FixOwnerPosition = false;	// 다른 포지션 위치가 아닌 오너(플레이어)의 위치에 스폰 고정합니다.
@@ -39,7 +39,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	void SetOwnerPlayer(ACharacterBase* InOwner) {OwnerCharacter = InOwner;}
+	void SetOwnerPlayer(TWeakObjectPtr<ACharacterBase> InOwner) {OwnerCharacter = InOwner;}
 	
 	// 설정한 OffsetTransform만큼 이동하여 초기 위치를 설정합니다.
 	virtual void InitTransformOffset();

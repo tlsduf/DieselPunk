@@ -31,7 +31,7 @@ void ASkillActor::BeginPlay()
 		if(AWeapon* weapon = Cast<AWeapon>(GetOwner()))
 		{
 			OwnerCharacter = weapon->GetOwnerPlayer();
-			if(OwnerCharacter)
+			if(OwnerCharacter.IsValid())
 				OwnerController = OwnerCharacter->GetController();
 		}
 	}
@@ -48,7 +48,7 @@ void ASkillActor::Tick(float DeltaTime)
 // 설정한 OffsetTransform만큼 이동하여 초기 위치를 설정합니다.
 void ASkillActor::InitTransformOffset()
 {
-	if(FixOwnerPosition && OwnerCharacter)
+	if(FixOwnerPosition && OwnerCharacter.IsValid())
 		SetActorLocation(OwnerCharacter->GetActorLocation());
 	AddActorLocalTransform(OffsetTransform);
 }

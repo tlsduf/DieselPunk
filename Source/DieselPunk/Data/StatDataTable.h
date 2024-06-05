@@ -114,24 +114,24 @@ struct DIESELPUNK_API FStatDataTable : public FDPTableRowBase
 
 	// 최대 사거리
 	UPROPERTY(EditAnywhere)
-	int AttackMaxRange = 0;
+	int AtkMaxRange = 0;
 
 	// 대공 최대 사거리
 	UPROPERTY(EditAnywhere)
-	int AttackMaxRangeForFly = 0;
+	int AtkMaxRangeForFly = 0;
 
 	// 최소 사거리
 	UPROPERTY(EditAnywhere)
-	int AttacMinRange = 0;
+	int AtkMinRange = 0;
 
 	// 코스트
 	UPROPERTY(EditAnywhere)
 	int Cost = 0;
+
+	// Shell Fall
+	UPROPERTY(EditAnywhere)
+	int32 ShellFall = 20;
 	
 	UPROPERTY(EditAnywhere)
 	USkeletalMesh* UpgradeMesh = nullptr;
-
-	// 에이스 강화 확률(100분율)
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int AceChance = 10;
 };

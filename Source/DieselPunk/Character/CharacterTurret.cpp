@@ -161,8 +161,8 @@ void ACharacterTurret::MakeSearchArea()
 {
 	float wide = GridSizeHorizontal * FNavigationManager::GridSize;
 	FVector firstPoint = GetActorLocation() + (GetActorRightVector() * wide);
-	FVector secondPoint = GetActorLocation() + (GetActorRightVector() * wide) + GetActorForwardVector() * GetStat(ECharacterStatType::AttackMaxRange);
-	FVector thirdPoint = GetActorLocation() + (-1 * GetActorRightVector() * wide) + GetActorForwardVector() * GetStat(ECharacterStatType::AttackMaxRange);
+	FVector secondPoint = GetActorLocation() + (GetActorRightVector() * wide) + GetActorForwardVector() * GetStat(ECharacterStatType::AtkMaxRange);
+	FVector thirdPoint = GetActorLocation() + (-1 * GetActorRightVector() * wide) + GetActorForwardVector() * GetStat(ECharacterStatType::AtkMaxRange);
 	FVector fourthPoint = GetActorLocation() + (-1 * GetActorRightVector() * wide);
 
 	// Set RectanglePoints
@@ -181,8 +181,8 @@ bool ACharacterTurret::InValidSearchArea(FVector inLocation)
 	if(TurretSearchAreaType == ESearchAreaType::Circle)
 	{
 		float distance = FVector::Dist(GetActorLocation(), inLocation);
-		bool inMaxDistance = distance < GetStat(ECharacterStatType::AttackMaxRange);		// 최대거리 안에 위치?
-		bool inMinDistance = distance > GetStat(ECharacterStatType::AttackMinRange);		//최소거리 밖에 위치?
+		bool inMaxDistance = distance < GetStat(ECharacterStatType::AtkMaxRange);		// 최대거리 안에 위치?
+		bool inMinDistance = distance > GetStat(ECharacterStatType::AtkMinRange);		//최소거리 밖에 위치?
 
 		float forwardDir = GetActorForwardVector().GetSafeNormal().Rotation().Yaw;
 		float toTargetDir = (inLocation - GetActorLocation()).GetSafeNormal().Rotation().Yaw;
@@ -267,8 +267,8 @@ void ACharacterTurret::DrawDebugSearchArea()
 {
 	if(TurretSearchAreaType == ESearchAreaType::Circle)
 	{
-		DrawDebugCircle(GetWorld(), GetActorLocation(), GetStat(ECharacterStatType::AttackMaxRange), 16, FColor::Red, false, -1, 0, 3, FVector(0,1,0), FVector(1,0,0), true);
-		DrawDebugCircle(GetWorld(), GetActorLocation(), GetStat(ECharacterStatType::AttackMinRange), 16, FColor::Green, false, -1, 0, 3, FVector(0,1,0), FVector(1,0,0), true);
+		DrawDebugCircle(GetWorld(), GetActorLocation(), GetStat(ECharacterStatType::AtkMaxRange), 16, FColor::Red, false, -1, 0, 3, FVector(0,1,0), FVector(1,0,0), true);
+		DrawDebugCircle(GetWorld(), GetActorLocation(), GetStat(ECharacterStatType::AtkMinRange), 16, FColor::Green, false, -1, 0, 3, FVector(0,1,0), FVector(1,0,0), true);
 
 		/*float dif = GetStat().GetStat(ECharacterStatType::AttackMaxRange) - GetStat().GetStat(ECharacterStatType::AttackMinRange);
 		float colorDif = 255 / 4;

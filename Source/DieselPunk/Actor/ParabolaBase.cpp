@@ -37,6 +37,9 @@ AParabolaBase::AParabolaBase()
 void AParabolaBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if(!ensure(OwnerCharacter.IsValid()))
+		return;
 	
 	// 콜리전 반응 설정
 	SetCapsuleCollisionResponses();
@@ -62,6 +65,13 @@ void AParabolaBase::BeginPlay()
 	Damage = OwnerCharacter->GetStat(ECharacterStatType::Atk);
 
 	StartLocation = GetActorLocation();
+
+	DistanceAtGoal = FVector::Distance(GoalLocation, StartLocation);
+
+	FlightTime = MinFlightTime + ParabolaArrivalTimeCoefficient *
+		(DistanceAtGoal - OwnerCharacter->GetStat(ECharacterStatType::AtkMinRange)) / OwnerCharacter->GetStat(ECharacterStatType::ShellFall);
+
+	FallTime = FlightTime * 0.5f;
 	
 	Direction = ((GoalLocation - StartLocation) / 3 + FVector(0.0, 0.0, Speed));
 	Direction.Normalize();
@@ -80,7 +90,6 @@ void AParabolaBase::Tick(float DeltaTime)
 
 	if(DeltaFlightTime >= FlightTime - FallTime && !IsFalling)
 	{
-		LOG_SCREEN(FColor::White, TEXT("Fall"))
 		Direction = FVector(0.0, 0.0, -1.0);
 		SetActorRotation(Direction.Rotation());
 		SetActorLocation(GoalLocation - Direction * Speed * FallTime);
@@ -101,7 +110,8 @@ void AParabolaBase::Tick(float DeltaTime)
 	}
 
 	FCollisionQueryParams param;
-	param.AddIgnoredActor(OwnerCharacter);
+	if(OwnerCharacter.IsValid())
+		param.AddIgnoredActor(OwnerCharacter.Get());
 	FHitResult result;
 	if(GetWorld()->LineTraceSingleByChannel(result, OldLocation, GetActorLocation(), ECC_WorldStatic, param))
 	{
@@ -138,7 +148,7 @@ void AParabolaBase::DestroyEvent()
 	{
 		for (auto it = sweepResults.CreateIterator(); it; it++)
 		{
-			UGameplayStatics::ApplyDamage(it->GetActor(), Damage, OwnerController, OwnerCharacter, nullptr);
+			UGameplayStatics::ApplyDamage(it->GetActor(), Damage, OwnerController.Get(), OwnerCharacter.Get(), nullptr);
 		}
 	}
 	TArray<FHitResult> sweepSecondResults;
@@ -154,7 +164,7 @@ void AParabolaBase::DestroyEvent()
 			}) != nullptr)
 				continue;
 			
-			UGameplayStatics::ApplyDamage(it->GetActor(), Damage * 0.5, OwnerController, OwnerCharacter, nullptr);
+			UGameplayStatics::ApplyDamage(it->GetActor(), Damage * 0.5f, OwnerController.Get(), OwnerCharacter.Get(), nullptr);
 		}
 	}
 

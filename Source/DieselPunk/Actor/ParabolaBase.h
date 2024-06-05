@@ -95,6 +95,14 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "MYDP_Physics")
 	float Speed = 5000.f;
 
+	//최소 체공 시간
+	UPROPERTY(EditAnywhere, Category = "MYDP_Physics")
+	float MinFlightTime = 1.f;
+
+	//자주포 도달시간 계산식의 계수
+	UPROPERTY(EditAnywhere, Category = "MYDP_Physics")
+	float ParabolaArrivalTimeCoefficient = 0.05f;
+
 	//낙하 속도
 	float FallSpeed = 0.f;
 
@@ -111,20 +119,22 @@ protected:
 	FVector Direction = FVector::ZeroVector;
 
 	//총 체공 시간
-	UPROPERTY(EditAnywhere, Category = "MYDP_Physics")
 	float FlightTime = 3.f;
 
 	//낙하 시간
-	UPROPERTY(EditAnywhere, Category = "MYDP_Physics")
-	float FallTime = 1.f;
+	float FallTime = 1.5f;
 
 	//현재까지 체공 시간
 	float DeltaFlightTime = 0.f;
 
+	//현재 떨어지는 중인가?
 	bool IsFalling = false;
 
 	//이전 프레임 위치
 	FVector OldLocation = FVector::ZeroVector;
+
+	//시작지점부터 골까지의 거리
+	float DistanceAtGoal = 0.f;
 	
 public:
 	// Sets default values for this actor's properties

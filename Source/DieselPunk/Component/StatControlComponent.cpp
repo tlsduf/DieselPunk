@@ -126,11 +126,11 @@ void UStatControlComponent::BeginPlay()
 	SetStat(ECharacterStatType::CriticalPer,	 		StatDatas[1]->CriticalPer);
 	SetStat(ECharacterStatType::CriticalAtk,	 		StatDatas[1]->CriticalAtk);
 	SetStat(ECharacterStatType::MoveSpeed,		 		StatDatas[1]->MoveSpeed);
-	SetStat(ECharacterStatType::AttackMaxRange,	 		StatDatas[1]->AttackMaxRange);
-	SetStat(ECharacterStatType::AttackMaxRangeForFly,	StatDatas[1]->AttackMaxRangeForFly);
-	SetStat(ECharacterStatType::AttackMinRange,	 		StatDatas[1]->AttacMinRange);
+	SetStat(ECharacterStatType::AtkMaxRange,	 		StatDatas[1]->AtkMaxRange);
+	SetStat(ECharacterStatType::AtkMaxRangeForFly,		StatDatas[1]->AtkMaxRangeForFly);
+	SetStat(ECharacterStatType::AtkMinRange,	 		StatDatas[1]->AtkMinRange);
 	SetStat(ECharacterStatType::Cost,			 		StatDatas[1]->Cost);
-	SetStat(ECharacterStatType::AceChance,		 		StatDatas[1]->AceChance);
+	SetStat(ECharacterStatType::ShellFall,		 		StatDatas[1]->ShellFall);
 }
 
 void UStatControlComponent::SetStatDelegateFunction(TWeakObjectPtr<AActor> InActor, ECharacterStatType InStatType, int32 InValue)
@@ -193,10 +193,11 @@ void UStatControlComponent::ChangeStatForLevelUp(int32 InLv)
 	SetStat(ECharacterStatType::CriticalPer,	 		table->CriticalPer);
 	SetStat(ECharacterStatType::CriticalAtk,	 		table->CriticalAtk);
 	SetStat(ECharacterStatType::MoveSpeed,		 		table->MoveSpeed);
-	SetStat(ECharacterStatType::AttackMaxRange,	 		table->AttackMaxRange);
-	SetStat(ECharacterStatType::AttackMaxRangeForFly,	table->AttackMaxRangeForFly);
-	SetStat(ECharacterStatType::AttackMinRange,	 		table->AttacMinRange);
+	SetStat(ECharacterStatType::AtkMaxRange,	 		table->AtkMaxRange);
+	SetStat(ECharacterStatType::AtkMaxRangeForFly,		table->AtkMaxRangeForFly);
+	SetStat(ECharacterStatType::AtkMinRange,	 		table->AtkMinRange);
 	SetStat(ECharacterStatType::Cost,			 		table->Cost);
+	SetStat(ECharacterStatType::ShellFall,		 		table->ShellFall);
 
 	Stat[ECharacterStatType::Level] = Stat[ECharacterStatType::Level] > TURRET_MAX_LV ? TURRET_MAX_LV : Stat[ECharacterStatType::Level];
 }

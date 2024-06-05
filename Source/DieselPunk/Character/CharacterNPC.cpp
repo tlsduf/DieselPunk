@@ -237,7 +237,7 @@ void ACharacterNPC::UpdateEnemyTarget()
 	}
 	
 	float distance = FVector::Dist(GetActorLocation(), nexus->GetActorLocation());
-	if(distance > GetStat(ECharacterStatType::AttackMaxRange))
+	if(distance > GetStat(ECharacterStatType::AtkMaxRange))
 		ChangeTarget(nullptr);
 	else
 		ChangeTarget(nexus);
@@ -270,8 +270,8 @@ bool ACharacterNPC::bPlayerTargeting()
 	FVector playerLoc = Player->GetActorLocation();
 	FVector playerLocXY = FVector(playerLoc.X, playerLoc.Y, GetActorLocation().Z);
 
-	const int rangeMax = GetStat(ECharacterStatType::AttackMaxRange);
-	const int rangeMin = GetStat(ECharacterStatType::AttackMinRange);
+	const int rangeMax = GetStat(ECharacterStatType::AtkMaxRange);
+	const int rangeMin = GetStat(ECharacterStatType::AtkMinRange);
 	const int rangeDist = rangeMax - rangeMin;
 	// DrawDebug
 	if(DebugOnOff)
@@ -353,7 +353,7 @@ void ACharacterNPC::SetInRange()
 	{
 		FVector VRange = GetActorLocation() - GetAttackTarget()->GetActorLocation();
 		float FRange = VRange.Size();
-		InRange = (GetStat(ECharacterStatType::AttackMaxRange) < FRange) ? false : true;
+		InRange = (GetStat(ECharacterStatType::AtkMaxRange) < FRange) ? false : true;
 	}
 	else
 		InRange = false;

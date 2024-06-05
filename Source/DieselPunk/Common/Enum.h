@@ -79,11 +79,11 @@ enum class ECharacterStatType : uint8
 	CriticalPer				UMETA( ToolTip = "치명타 확률" ),
 	CriticalAtk				UMETA( ToolTip = "치명타 공격력" ),
 	MoveSpeed				UMETA( ToolTip = "이동속도" ),
-	AttackMaxRange			UMETA( ToolTip = "최대사거리" ),
-	AttackMaxRangeForFly	UMETA( ToolTip = "대공 최대사거리" ),
-	AttackMinRange			UMETA( ToolTip = "최소사거리" ),
+	AtkMaxRange				UMETA( ToolTip = "최대사거리" ),
+	AtkMaxRangeForFly		UMETA( ToolTip = "대공 최대사거리" ),
+	AtkMinRange				UMETA( ToolTip = "최소사거리" ),
 	Cost					UMETA( ToolTip = "코스트"),
-	AceChance				UMETA( ToolTip = "에이스 업그레이드 확률"),
+	ShellFall				UMETA( ToolTip = "ShellFall"),
 	Count
 };
 ENUM_RANGE_BY_COUNT(ECharacterStatType, ECharacterStatType::Count);

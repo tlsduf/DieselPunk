@@ -132,13 +132,13 @@ void AMineBase::_BeginOverlapEvent(UPrimitiveComponent* InOverlappedComponent, A
 				for (auto It = sweepResults.CreateIterator(); It; It++)
 				{
 					InOtherActor = It->GetActor();
-					UGameplayStatics::ApplyDamage(InOtherActor, Damage, OwnerController, OwnerCharacter, nullptr);
+					UGameplayStatics::ApplyDamage(InOtherActor, Damage, OwnerController.Get(), OwnerCharacter.Get(), nullptr);
 				}
 			}
 		}
 		else
 		{
-			UGameplayStatics::ApplyDamage(InOtherActor, Damage, OwnerController, OwnerCharacter, nullptr);
+			UGameplayStatics::ApplyDamage(InOtherActor, Damage, OwnerController.Get(), OwnerCharacter.Get(), nullptr);
 		}
 	}
 

@@ -127,7 +127,7 @@ void AProjectileBase::DestroyEvent()
 		{
 			for (auto it = sweepResults.CreateIterator(); it; it++)
 			{
-				UGameplayStatics::ApplyDamage(it->GetActor(), Damage, OwnerController, OwnerCharacter, nullptr);
+				UGameplayStatics::ApplyDamage(it->GetActor(), Damage, OwnerController.Get(), OwnerCharacter.Get(), nullptr);
 			}
 		}
 	}
@@ -212,13 +212,13 @@ void AProjectileBase::_OnHit(UPrimitiveComponent* InHitComp, AActor* InOtherActo
 					for (auto It = sweepResults.CreateIterator(); It; It++)
 					{
 						InOtherActor = It->GetActor();
-						UGameplayStatics::ApplyDamage(InOtherActor, Damage, OwnerController, OwnerCharacter, nullptr);
+						UGameplayStatics::ApplyDamage(InOtherActor, Damage, OwnerController.Get(), OwnerCharacter.Get(), nullptr);
 					}
 				}
 			}
 			else
 			{
-				UGameplayStatics::ApplyDamage(InOtherActor, Damage, OwnerController, OwnerCharacter, nullptr);
+				UGameplayStatics::ApplyDamage(InOtherActor, Damage, OwnerController.Get(), OwnerCharacter.Get(), nullptr);
 			}
 		}
 	}
@@ -270,13 +270,13 @@ void AProjectileBase::_BeginOverlapEvent(UPrimitiveComponent* InOverlappedCompon
 				for (auto It = sweepResults.CreateIterator(); It; It++)
 				{
 					InOtherActor = It->GetActor();
-					UGameplayStatics::ApplyDamage(InOtherActor, Damage, OwnerController, OwnerCharacter, nullptr);
+					UGameplayStatics::ApplyDamage(InOtherActor, Damage, OwnerController.Get(), OwnerCharacter.Get(), nullptr);
 				}
 			}
 		}
 		else
 		{
-			UGameplayStatics::ApplyDamage(InOtherActor, Damage, OwnerController, OwnerCharacter, nullptr);
+			UGameplayStatics::ApplyDamage(InOtherActor, Damage, OwnerController.Get(), OwnerCharacter.Get(), nullptr);
 		}
 	}
 
