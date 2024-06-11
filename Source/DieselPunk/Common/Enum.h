@@ -170,6 +170,7 @@ enum class ESearchAreaType : uint8
 {
 	Circle			UMETA( ToolTip = "원 파생 범위" ),
 	Rectangle		UMETA( ToolTip = "사각형 파생 범위 " ),
+	Arc				UMETA( ToolTip = "호 파생 범위")
 };
 
 // 버프 밸류 적용 타입

@@ -6,6 +6,7 @@
 #include "StatDataTable.generated.h"
 
 class USkeletalMesh;
+class USkillBase;
 
 USTRUCT(BlueprintType)
 struct FStatDataInfo
@@ -134,4 +135,7 @@ struct DIESELPUNK_API FStatDataTable : public FDPTableRowBase
 	
 	UPROPERTY(EditAnywhere)
 	USkeletalMesh* UpgradeMesh = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<USkillBase> UpgradeSkillClass = nullptr;
 };

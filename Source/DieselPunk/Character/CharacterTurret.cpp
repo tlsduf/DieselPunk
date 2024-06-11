@@ -11,6 +11,7 @@
 #include <Components/StaticMeshComponent.h>
 
 #include "DieselPunk/Component/StatControlComponent.h"
+#include "DieselPunk/Skill/SkillBase.h"
 
 
 // =============================================================
@@ -18,6 +19,22 @@
 // =============================================================
 ACharacterTurret::ACharacterTurret()
 {
+}
+
+void ACharacterTurret::UpgradeSkill(TSubclassOf<USkillBase> InUpgradeSkillClass)
+{
+	if(NPCSkill)
+	{
+		NPCSkill->UnregisterComponent();
+		NPCSkill->DestroyComponent();
+		NPCSkill = nullptr;
+	}
+	if(InUpgradeSkillClass)
+	{
+		NPCSkill = NewObject<USkillBase>(this, InUpgradeSkillClass);
+		NPCSkill->RegisterComponent();
+		NPCSkill->InitSkill();
+	}
 }
 
 // =============================================================
@@ -173,26 +190,45 @@ void ACharacterTurret::MakeSearchArea()
 	RectanglePoints.Add(fourthPoint);
 }
 
+void ACharacterTurret::InitializeForwardVector()
+{
+	InitForwardVector = GetActorForwardVector();
+}
+
 // =============================================================
 // inLocation이 유효 범위 안에 있으면 True 반환
 // =============================================================
-bool ACharacterTurret::InValidSearchArea(FVector inLocation)
+bool ACharacterTurret::InValidSearchArea(FVector InLocation)
 {
 	if(TurretSearchAreaType == ESearchAreaType::Circle)
 	{
-		float distance = FVector::Dist(GetActorLocation(), inLocation);
+		float distance = FVector::Dist(GetActorLocation(), InLocation);
 		bool inMaxDistance = distance < GetStat(ECharacterStatType::AtkMaxRange);		// 최대거리 안에 위치?
 		bool inMinDistance = distance > GetStat(ECharacterStatType::AtkMinRange);		//최소거리 밖에 위치?
 
 		float forwardDir = GetActorForwardVector().GetSafeNormal().Rotation().Yaw;
-		float toTargetDir = (inLocation - GetActorLocation()).GetSafeNormal().Rotation().Yaw;
+		float toTargetDir = (InLocation - GetActorLocation()).GetSafeNormal().Rotation().Yaw;
 		bool inDegree = true; // ( -30 < (forwardDir - toTargetDir) ) && ( (forwardDir - toTargetDir) < 30 );	// 각도 내에 위치?
 	
 		return inMaxDistance && inMinDistance && inDegree;
 	}
+	else if(TurretSearchAreaType == ESearchAreaType::Rectangle)
+	{
+		return IsInPolygon(InLocation.X, InLocation.Y);
+	}
+	else if(TurretSearchAreaType == ESearchAreaType::Arc)
+	{
+		float distance = FVector::Distance(GetActorLocation(), InLocation);
 
-	if(TurretSearchAreaType == ESearchAreaType::Rectangle)
-		return IsInPolygon(inLocation.X, inLocation.Y);
+		InitForwardVector.Normalize();
+		FVector targetDir = InLocation - GetActorLocation();
+		targetDir.Normalize();
+		double dot = FVector::DotProduct(InitForwardVector, targetDir);
+
+		return distance < GetStat(ECharacterStatType::AtkMaxRange)
+			&& distance > GetStat(ECharacterStatType::AtkMinRange)
+			&& dot > FMath::Cos(FMath::DegreesToRadians(Degree * 0.5));
+	}
 	
 	return false;
 }
@@ -277,8 +313,7 @@ void ACharacterTurret::DrawDebugSearchArea()
 			DrawDebugCircle(GetWorld(), GetActorLocation(), GetStat().GetStat(ECharacterStatType::AttackMaxRange) - (dif * i / 4), 16, FColor(255 - (colorDif * i),colorDif * i,0), false, -1, 0, 3, FVector(0,1,0), FVector(1,0,0), false);
 		}*/
 	}
-
-	if(TurretSearchAreaType == ESearchAreaType::Rectangle)
+	else if(TurretSearchAreaType == ESearchAreaType::Rectangle)
 	{
 		if(RectanglePoints.IsEmpty())
 			return;
@@ -289,5 +324,34 @@ void ACharacterTurret::DrawDebugSearchArea()
 			else
 				DrawDebugLine( GetWorld(),RectanglePoints[i],RectanglePoints[i + 1],FColor::Red, false, -1, 0, 3);
 		}
+	}
+	else if(TurretSearchAreaType == ESearchAreaType::Arc)
+	{
+		FRotator right = InitForwardVector.Rotation() + FRotator(0.0, Degree * 0.5, 0.0);
+		FRotator left = InitForwardVector.Rotation() + FRotator(0.0, Degree * -0.5, 0.0);
+		DrawDebugLine(GetWorld(),
+			GetActorLocation() + left.Vector() * GetStat(ECharacterStatType::AtkMinRange),
+			GetActorLocation() + left.Vector() * GetStat(ECharacterStatType::AtkMaxRange),
+			FColor::Red, false, -1, 0, 3);
+
+		
+		DrawDebugLine(GetWorld(),
+			GetActorLocation() + right.Vector() * GetStat(ECharacterStatType::AtkMinRange),
+			GetActorLocation() + right.Vector() * GetStat(ECharacterStatType::AtkMaxRange),
+			FColor::Red, false, -1, 0, 3);
+
+		DrawDebugCircleArc(GetWorld(),
+			GetActorLocation(),
+			GetStat(ECharacterStatType::AtkMinRange),
+			InitForwardVector,
+			FMath::DegreesToRadians(Degree * 0.5),
+			12, FColor::Red, false, -1, 0, 3);
+		
+		DrawDebugCircleArc(GetWorld(),
+			GetActorLocation(),
+			GetStat(ECharacterStatType::AtkMaxRange),
+			InitForwardVector,
+			FMath::DegreesToRadians(Degree * 0.5),
+			12, FColor::Red, false, -1, 0, 3);
 	}
 }
