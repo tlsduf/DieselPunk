@@ -18,6 +18,7 @@
 
 #include "Animation/AnimSequence.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "DieselPunk/Animation/DPAnimInstance.h"
 
 
 // =============================================================
@@ -592,6 +593,8 @@ void ACharacterNPC::DoNPCSkill(EAbilityType InAbilityType)
 	{
 		(*skill)->AbilityStart(Target.Get());
 		CurrentUseAbilityType = InAbilityType;
+		if(UDPAnimInstance* animInst = Cast<UDPAnimInstance>(GetMesh()->GetAnimInstance()))	
+			animInst->AttackSign(InAbilityType);
 	}
 }
 
