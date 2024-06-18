@@ -188,3 +188,12 @@ enum class ENPCTraitType : uint8
 	None			= 0,
 	Fly				= 1	UMETA( ToolTip = "상수" ),
 };
+
+// 발사체 타격 타입
+UENUM( BlueprintType )
+enum class EProjectileType : uint8
+{
+	TargetAttack	UMETA( ToolTip = "발사체 없음, 무조건 타격" ),
+	Straight		UMETA( ToolTip = "직사포" ),
+	Parabola		UMETA( ToolTip = "곡사포" )
+};
