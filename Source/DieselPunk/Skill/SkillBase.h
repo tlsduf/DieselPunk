@@ -42,6 +42,17 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
 	float AtkCoefficient = 1.f;					// 데미지 계수
 
+	UPROPERTY(EditAnywhere, Category="MYDP_Setting")
+	float CoolDown = 0.f;
+
+	float CoolDownDelta = 0.f;
+
+	UPROPERTY(EditAnywhere, Category="MYDP_Setting")
+	ESkillDistanceType SkillRangeType = ESkillDistanceType::RangedAttack;
+
+	//사거리
+	UPROPERTY(EditAnywhere, Category="MYDP_Setting")
+	float MaxRange = 1000.f;
 	
 	
 protected:
@@ -63,12 +74,15 @@ public:
 	virtual void AbilityStart(AActor* InTarget = nullptr);
 
 	// 스킬을 발동합니다. 보통 발사체 생성 및 데미지 처리를 다룹니다.
-	virtual void AbilityShot(AActor* InTarget = nullptr){}
+	virtual void AbilityShot(AActor* InTarget = nullptr);
 	// 스킬이 어떠한 이유로 인해 캔슬될 때 호출됩니다.
 	virtual void CancelSkill(){};
 
 	// ActorComponent의 BeginPlay가 Character의 BeginPlay 보다 먼저 호출됨
 	// CharacterBase의 Stat.Initialize 후 호출
 	void InitSkill();
-	
+
+	virtual bool IsUseableSkill(const TWeakObjectPtr<AActor>& InTarget);
+
+	const ESkillDistanceType& GetSkillDistanceType() const {return SkillRangeType;}
 };

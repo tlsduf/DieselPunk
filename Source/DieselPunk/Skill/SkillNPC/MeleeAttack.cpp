@@ -11,6 +11,7 @@
 UMeleeAttack::UMeleeAttack()
 {
 	PrimaryComponentTick.bCanEverTick = false; // 일단 Tick은 OFF 해두었습니다.
+	SkillRangeType = ESkillDistanceType::MeleeAttack;
 }
 
 void UMeleeAttack::BeginPlay()

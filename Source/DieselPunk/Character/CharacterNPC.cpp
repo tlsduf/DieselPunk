@@ -57,6 +57,18 @@ void ACharacterNPC::BeginPlay()
 		NPCSkill->RegisterComponent();
 		NPCSkill->InitSkill();
 	}
+
+	if(!NPCSkillClasses.IsEmpty())
+	{
+		for(const auto& [key, skillClass] : NPCSkillClasses)
+		{
+			USkillBase* skill = NewObject<USkillBase>(this, skillClass);
+			skill->RegisterComponent();
+			skill->InitSkill();
+			NPCSkills.Add(key, skill);
+		}
+		UseableSkills.Reserve(NPCSkills.Num());
+	}
 }
 
 // =============================================================
@@ -96,6 +108,8 @@ void ACharacterNPC::Tick(float DeltaTime)
 		if(DebugOnOff)
 			DPNavigationComponent->DrawDebugSpline();
 	}
+	
+	FindUseableAbilityType();
 }
 
 // =============================================================
@@ -185,15 +199,32 @@ void ACharacterNPC::HandleStatusUI()
 	}
 }
 
+void ACharacterNPC::FindUseableAbilityType()
+{
+	UseableSkills.Empty();
+
+	if(!Target.IsValid())
+		return;
+	
+	for(const auto& [key, skill] : NPCSkills)
+	{
+		if(skill->IsUseableSkill(Target))
+			UseableSkills.Add(key);
+	}
+}
+
 // =============================================================
 // 몬스터 스킬
 // =============================================================
 
 void ACharacterNPC::InitSkill()
 {
-	
 	if(NPCSkill != nullptr)
 		NPCSkill->InitSkill();
+
+	if(!NPCSkills.IsEmpty())
+		for(const auto& [key, skill] : NPCSkills)
+			skill->InitSkill();
 }
 
 // =============================================================
@@ -554,10 +585,38 @@ void ACharacterNPC::DoNPCSkill()
 		NPCSkill->AbilityStart(Target.Get());
 }
 
+void ACharacterNPC::DoNPCSkill(EAbilityType InAbilityType)
+{
+	TObjectPtr<USkillBase>* skill = NPCSkills.Find(InAbilityType);
+	if(skill && *skill)
+	{
+		(*skill)->AbilityStart(Target.Get());
+		CurrentUseAbilityType = InAbilityType;
+	}
+}
+
 void ACharacterNPC::AbilityShot()
 {
 	Super::AbilityShot();
+	if(NPCSkill)
+		NPCSkill->AbilityShot(Target.Get());
+	if(CurrentUseAbilityType != EAbilityType::None)
+	{
+		TObjectPtr<USkillBase>* skill = NPCSkills.Find(CurrentUseAbilityType);
+		if(skill && *skill)
+		{
+			(*skill)->AbilityShot(Target.Get());
+			CurrentUseAbilityType = EAbilityType::None;
+		}
+	}
+}
 
-	NPCSkill->AbilityShot(Target.Get());
+const USkillBase* ACharacterNPC::GetNPCSkill(EAbilityType InAbilityType)
+{
+	TObjectPtr<USkillBase>* skillPtr = NPCSkills.Find(InAbilityType);
+	if(skillPtr)
+		return *skillPtr;
+
+	return nullptr;
 }
 

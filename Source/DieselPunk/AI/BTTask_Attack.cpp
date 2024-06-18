@@ -6,6 +6,8 @@
 
 #include <AIController.h>
 
+#include "BehaviorTree/BlackboardComponent.h"
+
 
 UBTTask_Attack::UBTTask_Attack()
 {
@@ -26,6 +28,11 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent &OwnerCom
         return EBTNodeResult::Failed;
 
     Character->DoNPCSkill();
+
+    FString abilityTypeStr = OwnerComp.GetBlackboardComponent()->GetValueAsString(TEXT("AbilityType"));
+    EAbilityType abilityType = UtilPath::StringToEnum<EAbilityType>(abilityTypeStr);
+    if(abilityType != EAbilityType::None)
+        Character->DoNPCSkill(abilityType);
 
     return EBTNodeResult::Succeeded;
 

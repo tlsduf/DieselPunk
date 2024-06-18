@@ -19,6 +19,7 @@ enum class EAbilityType : uint8
 	SkillR			UMETA( ToolTip = "R 스킬"),
 	Interact		UMETA( ToolTip = "설치물 인터렉션"),
 	None			UMETA( ToolTip = "지정되지 않음"),
+	Max
 };
 ENUM_RANGE_BY_COUNT( EAbilityType, EAbilityType::None );
 
@@ -196,4 +197,12 @@ enum class EProjectileType : uint8
 	TargetAttack	UMETA( ToolTip = "발사체 없음, 무조건 타격" ),
 	Straight		UMETA( ToolTip = "직사포" ),
 	Parabola		UMETA( ToolTip = "곡사포" )
+};
+
+// 스킬 거리 타입
+UENUM( BlueprintType )
+enum class ESkillDistanceType : uint8
+{
+	RangedAttack	UMETA( ToolTip = "원거리" ),
+	MeleeAttack		UMETA( ToolTip = "근거리" )
 };

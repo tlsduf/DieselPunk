@@ -66,9 +66,18 @@ protected:
 	UPROPERTY(EditAnywhere, Category="MYDP_Skill")
 	TSubclassOf<USkillBase> NPCSkillClass;
 
+	UPROPERTY(EditAnywhere, Category="MYDP_Skill")
+	TMap<EAbilityType, TSubclassOf<USkillBase>> NPCSkillClasses;
+
 	UPROPERTY()
 	TObjectPtr<USkillBase> NPCSkill;
-	
+
+	UPROPERTY()
+	TMap<EAbilityType, TObjectPtr<USkillBase>> NPCSkills;
+
+	TArray<EAbilityType> UseableSkills;
+
+	EAbilityType CurrentUseAbilityType = EAbilityType::None;	
 	
 	//포탑의 세로 사이즈입니다. 1그리드 = 100입니다.
 	UPROPERTY(EditDefaultsOnly, Category="MYDP_Setting", meta=(AllowPrivateAccess="true"))
@@ -114,6 +123,8 @@ protected:
 
 	// UI 타이머 컨트롤
 	void HandleStatusUI();
+
+	void FindUseableAbilityType();
 
 public:
 
@@ -172,6 +183,10 @@ public:
 	float PlaySpawnAnim();
 public:
 	void DoNPCSkill();
+	void DoNPCSkill(EAbilityType InAbilityType);
 	
 	virtual void AbilityShot() override;
+
+	const TArray<EAbilityType>& GetUseableSkills(){return UseableSkills;}
+	const USkillBase* GetNPCSkill(EAbilityType InAbilityType);
 };

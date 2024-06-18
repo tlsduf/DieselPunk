@@ -84,5 +84,6 @@ public:
 	void SetOnRail(const bool inBool) { OnRail = inBool; }
 	
 	void AttackSign(EAbilityType InUseSkillType);
+	EAbilityType GetAttackSign(){return UseSkillType;}
 	void AttackEndSign();
 };

@@ -49,10 +49,16 @@ void USkillBase::BeginDestroy()
 void USkillBase::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	CoolDownDelta = CoolDownDelta - DeltaTime < 0.f ? 0.f : CoolDownDelta - DeltaTime;
 }
 
 void USkillBase::AbilityStart(AActor* InTarget)
 {
+}
+
+void USkillBase::AbilityShot(AActor* InTarget)
+{
+	CoolDownDelta = CoolDown;
 }
 
 // CharacterBase의 Stat.Initialize 후 호출
@@ -61,5 +67,16 @@ void USkillBase::InitSkill()
 	if(OwnerCharacter)
 		CharacterStatAtk = static_cast<float>(OwnerCharacter->GetStat(ECharacterStatType::Atk));
 	Damage = CharacterStatAtk * AtkCoefficient;
+}
+
+bool USkillBase::IsUseableSkill(const TWeakObjectPtr<AActor>& InTarget)
+{
+	if(UDPAnimInstance* animInst = Cast<UDPAnimInstance>(OwnerCharacter->GetMesh()->GetAnimInstance()))
+	{
+		float distance = FVector::Distance(InTarget->GetActorLocation(), OwnerCharacter->GetActorLocation());
+		return distance <= MaxRange && animInst->GetAttackSign() == EAbilityType::None && CoolDownDelta <= 0.f;
+	}
+	
+	return false;	
 }
 

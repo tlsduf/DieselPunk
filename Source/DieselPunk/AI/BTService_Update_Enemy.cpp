@@ -11,6 +11,7 @@
 #include <AIController.h>
 #include <Navigation/PathFollowingComponent.h>
 
+#include "DieselPunk/Skill/SkillBase.h"
 #include "Interfaces/ITargetDevice.h"
 
 
@@ -29,6 +30,8 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
     // AIController , self
     AAIController *AIController = OwnerComp.GetAIOwner();
     ACharacterNPC* AICharacter = Cast<ACharacterNPC>(AIController->GetPawn());
+    if(AICharacter == nullptr)
+        return;
 
     // 타겟 SET
     if(AICharacter->GetAttackTarget().IsValid())
@@ -92,6 +95,37 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InRange"), true);
     else
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InRange"), false);
+
+    TArray<EAbilityType> melee;
+    TArray<EAbilityType> ranged;
+    
+    for(const EAbilityType& useableSkill : AICharacter->GetUseableSkills())
+    {
+        const USkillBase* skillBase = AICharacter->GetNPCSkill(useableSkill);
+        if(skillBase->GetSkillDistanceType() == ESkillDistanceType::MeleeAttack)
+            melee.Add(useableSkill);
+        else if(skillBase->GetSkillDistanceType() == ESkillDistanceType::RangedAttack)
+            ranged.Add(useableSkill);
+    }
+
+    if(!melee.IsEmpty())
+    {
+        int32 random = FMath::RandRange(0, melee.Num() - 1);
+        OwnerComp.GetBlackboardComponent()->SetValueAsString(TEXT("AbilityType"), UtilPath::EnumToString(melee[random]));
+    }
+    else
+    {
+        if(!ranged.IsEmpty())
+        {
+            int32 random = FMath::RandRange(0, ranged.Num() - 1);
+            OwnerComp.GetBlackboardComponent()->SetValueAsString(TEXT("AbilityType"), UtilPath::EnumToString(ranged[random]));
+        }
+        else
+        {
+            OwnerComp.GetBlackboardComponent()->SetValueAsString(TEXT("AbilityType"), UtilPath::EnumToString(EAbilityType::None));
+        }
+    }
+    
 
     
     // 죽음 시 블랙보드 제어
