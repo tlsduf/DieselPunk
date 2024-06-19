@@ -17,6 +17,8 @@
 #include <Components/CapsuleComponent.h>
 
 #include "Animation/AnimSequence.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BehaviorTreeComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "DieselPunk/Animation/DPAnimInstance.h"
 
@@ -621,5 +623,30 @@ const USkillBase* ACharacterNPC::GetNPCSkill(EAbilityType InAbilityType)
 		return *skillPtr;
 
 	return nullptr;
+}
+
+void ACharacterNPC::ThrowReady()
+{
+	IThrowableInterface::ThrowReady();
+	if(AAIController* aiController = Cast<AAIController>(GetController()))
+	{
+		UBehaviorTreeComponent* btTree = Cast<UBehaviorTreeComponent>(aiController->GetBrainComponent());
+		if(btTree)
+		{
+			CachedBehaviorTree = btTree->GetCurrentTree();
+			btTree->StopTree(EBTStopMode::Type::Safe);
+		}
+	}
+}
+
+void ACharacterNPC::ThrowComplete()
+{
+	IThrowableInterface::ThrowComplete();
+	if(AAIController* aiController = Cast<AAIController>(GetController()))
+	{
+		UBehaviorTreeComponent* btTree = Cast<UBehaviorTreeComponent>(aiController->GetBrainComponent());
+		if(btTree && CachedBehaviorTree.IsValid())
+			btTree->StartTree(*CachedBehaviorTree, EBTExecutionMode::Looped);
+	}
 }
 

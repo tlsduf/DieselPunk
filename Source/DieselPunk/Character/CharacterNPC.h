@@ -4,6 +4,7 @@
 
 #include "AIController.h"
 #include "CharacterPC.h"
+#include "DieselPunk/Interface/ThrowableInterface.h"
 #include "CharacterNPC.generated.h"
 
 class UHousingActorComponent;
@@ -27,7 +28,7 @@ struct FRoutingLine
 };
 
 UCLASS()
-class DIESELPUNK_API ACharacterNPC : public ACharacterBase
+class DIESELPUNK_API ACharacterNPC : public ACharacterBase, public IThrowableInterface
 {
 	GENERATED_BODY()
 
@@ -105,6 +106,9 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
 	UAnimSequence* SpawnAnimation = nullptr;
+
+	UPROPERTY()
+	TWeakObjectPtr<UBehaviorTree> CachedBehaviorTree = nullptr;
 	
 protected:
 	ACharacterNPC();
@@ -189,4 +193,7 @@ public:
 
 	const TArray<EAbilityType>& GetUseableSkills(){return UseableSkills;}
 	const USkillBase* GetNPCSkill(EAbilityType InAbilityType);
+
+	virtual void ThrowReady() override;
+	virtual void ThrowComplete() override;
 };
