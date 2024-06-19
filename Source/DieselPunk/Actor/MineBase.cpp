@@ -119,7 +119,7 @@ void AMineBase::_BeginOverlapEvent(UPrimitiveComponent* InOverlappedComponent, A
 		UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetActorLocation());
 
 	// 데미지 전달
-	if (InOtherActor != nullptr && InOtherActor != OwnerCharacter)
+	if (OwnerCharacter.IsValid() && InOtherActor != nullptr && InOtherActor != OwnerCharacter)
 	{
 		if(DoRadialDamage)
 		{

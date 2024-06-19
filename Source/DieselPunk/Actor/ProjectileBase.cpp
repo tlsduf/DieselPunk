@@ -115,7 +115,7 @@ void AProjectileBase::DestroyEvent()
 	if (HitSound)
 		UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetActorLocation());
 	
-	if(DoRadialDamage)
+	if(OwnerCharacter.IsValid() && DoRadialDamage)
 	{
 		TArray<FHitResult> sweepResults;
 		FVector startLocation = GetActorLocation();
@@ -197,7 +197,7 @@ void AProjectileBase::_OnHit(UPrimitiveComponent* InHitComp, AActor* InOtherActo
 		UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetActorLocation());
 
 	// 데미지 전달
-	if (InOtherActor && InOtherActor != this && InOtherActor != GetOwner())
+	if (OwnerCharacter.IsValid() && InOtherActor && InOtherActor != this && InOtherActor != GetOwner())
 	{
 		if(Cast<AWeapon>(GetOwner()) == nullptr || InOtherActor != Cast<AWeapon>(GetOwner())->GetOwnerPlayer())
 		{
@@ -257,7 +257,7 @@ void AProjectileBase::_BeginOverlapEvent(UPrimitiveComponent* InOverlappedCompon
 		UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetActorLocation());
 
 	// 데미지 전달
-	if (InOtherActor && InOtherActor != this && InOtherActor != GetOwner())
+	if (OwnerCharacter.IsValid() && InOtherActor && InOtherActor != this && InOtherActor != GetOwner())
 	{
 		if(DoRadialDamage)
 		{

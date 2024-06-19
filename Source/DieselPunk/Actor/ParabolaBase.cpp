@@ -138,6 +138,9 @@ void AParabolaBase::DestroyEvent()
 	TArray<FHitResult> sweepResults;
 	FVector startLocation = GetActorLocation();
 	FVector endLocation = startLocation;
+	if(!OwnerCharacter.IsValid())
+		return;
+	
 	if(OwnerCharacter->GetDebugOnOff())
 	{
 		DrawDebugSphere(GetWorld(), startLocation, FirstRadialDamageRange, 16, FColor::Red, false, 3, 0, 1);
