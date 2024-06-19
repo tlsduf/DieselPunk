@@ -21,10 +21,10 @@ UDpGameInstance::UDpGameInstance()
 
 UDpGameInstance::~UDpGameInstance()
 {
-    FUIManager::GetInstance()->DestroyInstance();
-    FNavigationManager::GetInstance()->DestroyInstance();
-    FObjectManager::GetInstance()->DestroyInstance();
-    FDataTableManager::GetInstance()->DestroyInstance();
+    FUIManager::DestroyInstance();
+    FNavigationManager::DestroyInstance();
+    FObjectManager::DestroyInstance();
+    FDataTableManager::DestroyInstance();
 }
 
 void UDpGameInstance::OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld)

@@ -153,6 +153,11 @@ void UStatControlComponent::SetStatDelegateFunction(TWeakObjectPtr<AActor> InAct
 	{
 		ChangeStatForLevelUp(InValue);
 	}
+	else if(InStatType == ECharacterStatType::Hp)
+	{
+		if(InValue <= 0)
+			Owner->Destroy();
+	}
 }
 
 void UStatControlComponent::BeginDestroy()

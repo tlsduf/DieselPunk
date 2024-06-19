@@ -123,7 +123,7 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 		damage = FMath::Min(GetStat(ECharacterStatType::Hp), (int)damage);
 		
 		_UpdateHp(GetStat(ECharacterStatType::Hp) - damage, GetStat(ECharacterStatType::MaxHp));
-		ChangeStat(ECharacterStatType::Hp , -damage);
+		
 		CreateDamageActor(damage);
 		
 		//================================================================
@@ -132,7 +132,7 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 
 		//================================================================
 		// 3.죽음구현
-		if (IsDead())
+		if (GetStat(ECharacterStatType::Hp) - damage <= 0)
 		{
 			if(auto NPC = Cast<ACharacterNPC>(this))
 			{
@@ -160,12 +160,13 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 					NPC->UpdateSplinePathAll();
 			}
 			
-			Destroy();
+			//Destroy();
 			
 			// 레벨관리
 			if(ADPLevelScriptActor* level = Cast<ADPLevelScriptActor>(this->GetLevel()->GetLevelScriptActor()))
 				level->CheckWaveCleared();
 		}
+		ChangeStat(ECharacterStatType::Hp , -damage);
 		return damage;
 	}
 	else // DamageImmunity가 true 일 때 Damage = 0

@@ -23,14 +23,14 @@ ACharacterTurret::ACharacterTurret()
 
 void ACharacterTurret::UpgradeSkill(TSubclassOf<USkillBase> InUpgradeSkillClass)
 {
-	if(NPCSkill)
-	{
-		NPCSkill->UnregisterComponent();
-		NPCSkill->DestroyComponent();
-		NPCSkill = nullptr;
-	}
 	if(InUpgradeSkillClass)
 	{
+		if(NPCSkill)
+		{
+			NPCSkill->UnregisterComponent();
+			NPCSkill->DestroyComponent();
+			NPCSkill = nullptr;
+		}
 		NPCSkill = NewObject<USkillBase>(this, InUpgradeSkillClass);
 		NPCSkill->RegisterComponent();
 		NPCSkill->InitSkill();
