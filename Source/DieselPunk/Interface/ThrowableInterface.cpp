@@ -5,6 +5,11 @@
 
 #include "Components/CapsuleComponent.h"
 
+void IThrowableInterface::ThrowReady(TWeakObjectPtr<AActor> InThrowingOwner)
+{
+	ThrowingOwner = InThrowingOwner;
+}
+
 // Add default functionality here for any IPlayerInputInterface functions that are not pure virtual.
 void IThrowableInterface::ThrowExecute(TWeakObjectPtr<AActor> InThrowingOwner)
 {
@@ -12,10 +17,20 @@ void IThrowableInterface::ThrowExecute(TWeakObjectPtr<AActor> InThrowingOwner)
 	if(!thisPtr.IsValid() || !InThrowingOwner.IsValid())
 		return;
 
+	if(ThrowingOwner != InThrowingOwner)
+	{
+		//이런 경우는 일어날 수 없음
+		return;
+	}
+		
 	ThrowingOwner = InThrowingOwner;
 	
-	UShapeComponent* capsuleComp = Cast<UShapeComponent>(thisPtr->GetComponentByClass(UShapeComponent::StaticClass()));
-	capsuleComp->OnComponentHit.AddDynamic(this, &IThrowableInterface::OnHit);
+	UShapeComponent* shapeComp = Cast<UShapeComponent>(thisPtr->GetComponentByClass(UShapeComponent::StaticClass()));
+	if(!shapeComp)
+		return;
+	
+	shapeComp->OnComponentHit.AddDynamic(this, &IThrowableInterface::OnHit);
+	shapeComp->OnComponentBeginOverlap.AddDynamic(this, &IThrowableInterface::OnBeginOverlap);
 }
 
 void IThrowableInterface::ThrowComplete()
@@ -25,12 +40,23 @@ void IThrowableInterface::ThrowComplete()
 		return;
 	
 	UShapeComponent* capsuleComp = Cast<UShapeComponent>(thisPtr->GetComponentByClass(UShapeComponent::StaticClass()));
+	if(capsuleComp->OnComponentHit.IsBound())
+		capsuleComp->OnComponentHit.Clear();
 	if(capsuleComp->OnComponentBeginOverlap.IsBound())
 		capsuleComp->OnComponentBeginOverlap.Clear();
 }
 
+void IThrowableInterface::OnBeginOverlap(UPrimitiveComponent* InOverlappedComponent, AActor* InOtherActor,
+	UPrimitiveComponent* InOtherComp, int32 InOtherBodyIndex, bool InbFromSweep, const FHitResult& InSweepResult)
+{
+	if(InOtherActor == ThrowingOwner)
+		return;
+
+	ThrowComplete();
+}
+
 void IThrowableInterface::OnHit(UPrimitiveComponent* InHitComponent, AActor* InOtherActor,
-	UPrimitiveComponent* InOtherComp, FVector InNormalImpulse, const FHitResult& InHit)
+                                UPrimitiveComponent* InOtherComp, FVector InNormalImpulse, const FHitResult& InHit)
 {
 	if(InOtherActor == ThrowingOwner)
 		return;

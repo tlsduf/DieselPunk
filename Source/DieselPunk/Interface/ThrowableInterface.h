@@ -18,12 +18,16 @@ class UThrowableInterface : public UInterface
 class DIESELPUNK_API IThrowableInterface
 {
 	GENERATED_BODY()
+protected:
 	TWeakObjectPtr<AActor> ThrowingOwner = nullptr;
 public:
-	virtual void ThrowReady(){}
+	virtual void ThrowReady(TWeakObjectPtr<AActor> InThrowingOwner);
 	virtual void ThrowExecute(TWeakObjectPtr<AActor> InThrowingOwner);
 	virtual void ThrowComplete();
 public:
+	UFUNCTION()
+	virtual void OnBeginOverlap(UPrimitiveComponent* InOverlappedComponent, AActor* InOtherActor, UPrimitiveComponent* InOtherComp, int32 InOtherBodyIndex, bool InbFromSweep, const FHitResult& InSweepResult);
+	
 	UFUNCTION()
 	virtual void OnHit(UPrimitiveComponent* InHitComponent, AActor* InOtherActor, UPrimitiveComponent* InOtherComp, FVector InNormalImpulse, const FHitResult& InHit);
 };

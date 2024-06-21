@@ -10,6 +10,7 @@
 #include <DrawDebugHelpers.h>
 
 #include "Components/CapsuleComponent.h"
+#include "DieselPunk/Actor/ThrowableActor.h"
 #include "DieselPunk/Manager/ObjectManager.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/MovementComponent.h"
@@ -54,7 +55,10 @@ void UThrowingAttack::AbilityStart(AActor* InTarget)
 	AActor* throwActor = FObjectManager::GetInstance()->FindActor(ThrowActorId);
 	IThrowableInterface* throwInterface = Cast<IThrowableInterface>(throwActor);
 	if(throwInterface)
-		throwInterface->ThrowReady();
+		throwInterface->ThrowReady(OwnerCharacter);
+	AThrowableActor* throwableActor = Cast<AThrowableActor>(throwActor);
+	if(throwableActor)
+		throwableActor->SetDamage(Damage);
 	throwActor->AttachToComponent(OwnerCharacter->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("ThrowingActorSocket"));
 	
 	LOG_SCREEN(FColor::White, TEXT("를 사용합니다."))

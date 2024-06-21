@@ -625,9 +625,9 @@ const USkillBase* ACharacterNPC::GetNPCSkill(EAbilityType InAbilityType)
 	return nullptr;
 }
 
-void ACharacterNPC::ThrowReady()
+void ACharacterNPC::ThrowReady(TWeakObjectPtr<AActor> InThrowingOwner)
 {
-	IThrowableInterface::ThrowReady();
+	IThrowableInterface::ThrowReady(InThrowingOwner);
 	if(AAIController* aiController = Cast<AAIController>(GetController()))
 	{
 		UBehaviorTreeComponent* btTree = Cast<UBehaviorTreeComponent>(aiController->GetBrainComponent());
