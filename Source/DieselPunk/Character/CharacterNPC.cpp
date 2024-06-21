@@ -637,6 +637,21 @@ void ACharacterNPC::ThrowReady()
 			btTree->StopTree(EBTStopMode::Type::Safe);
 		}
 	}
+	if(UCharacterMovementComponent* charMovementComp = Cast<UCharacterMovementComponent>(GetMovementComponent()))
+	{
+		charMovementComp->Deactivate();
+	}
+}
+
+void ACharacterNPC::ThrowExecute(TWeakObjectPtr<AActor> InThrowingOwner)
+{
+	IThrowableInterface::ThrowExecute(InThrowingOwner);
+	if(UCharacterMovementComponent* charMovementComp = Cast<UCharacterMovementComponent>(GetMovementComponent()))
+	{
+		charMovementComp->Activate();
+		CachedMass = charMovementComp->Mass;
+		charMovementComp->Mass = 1.f;
+	}
 }
 
 void ACharacterNPC::ThrowComplete()
@@ -647,6 +662,10 @@ void ACharacterNPC::ThrowComplete()
 		UBehaviorTreeComponent* btTree = Cast<UBehaviorTreeComponent>(aiController->GetBrainComponent());
 		if(btTree && CachedBehaviorTree.IsValid())
 			btTree->StartTree(*CachedBehaviorTree, EBTExecutionMode::Looped);
+	}
+	if(UCharacterMovementComponent* charMovementComp = Cast<UCharacterMovementComponent>(GetMovementComponent()))
+	{
+		charMovementComp->Mass = CachedMass;
 	}
 }
 

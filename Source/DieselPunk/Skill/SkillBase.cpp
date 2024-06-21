@@ -71,6 +71,9 @@ void USkillBase::InitSkill()
 
 bool USkillBase::IsUseableSkill(const TWeakObjectPtr<AActor>& InTarget)
 {
+	if(!InTarget.IsValid())
+		return false;
+	
 	if(UDPAnimInstance* animInst = Cast<UDPAnimInstance>(OwnerCharacter->GetMesh()->GetAnimInstance()))
 	{
 		float distance = FVector::Distance(InTarget->GetActorLocation(), OwnerCharacter->GetActorLocation());

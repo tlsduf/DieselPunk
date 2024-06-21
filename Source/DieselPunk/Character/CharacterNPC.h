@@ -109,6 +109,10 @@ protected:
 
 	UPROPERTY()
 	TWeakObjectPtr<UBehaviorTree> CachedBehaviorTree = nullptr;
+
+	float CachedMass = 100.f;
+
+	bool IsThrowingActor = false;
 	
 protected:
 	ACharacterNPC();
@@ -195,5 +199,6 @@ public:
 	const USkillBase* GetNPCSkill(EAbilityType InAbilityType);
 
 	virtual void ThrowReady() override;
+	virtual void ThrowExecute(TWeakObjectPtr<AActor> InThrowingOwner) override;
 	virtual void ThrowComplete() override;
 };

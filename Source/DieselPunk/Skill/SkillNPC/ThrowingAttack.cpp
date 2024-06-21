@@ -11,7 +11,10 @@
 
 #include "Components/CapsuleComponent.h"
 #include "DieselPunk/Manager/ObjectManager.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/MovementComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 
 UThrowingAttack::UThrowingAttack() : Super()
@@ -22,65 +25,6 @@ UThrowingAttack::UThrowingAttack() : Super()
 void UThrowingAttack::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	for(TMap<int32, FThrowActorSplineInfo>::TIterator iter(ThrowActorInfos.CreateIterator()); iter; ++iter)
-	{
-		AActor* actor = FObjectManager::GetInstance()->FindActor(iter.Key());
-		if(actor == nullptr)
-			iter.RemoveCurrent();
-		
-		iter.Value().FlightDelta += DeltaTime;
-
-		float value = iter.Value().FlightTime <= 0 ? 1.f : iter.Value().FlightDelta / iter.Value().FlightTime;
-
-		float dist = iter.Value().SplinePath.GetSplineLength() * value;
-		FVector newLocation = iter.Value().SplinePath.GetLocationAtDistanceAlongSpline(dist);
-
-
-		if(UActorComponent* actorCompMovement = actor->GetComponentByClass(UMovementComponent::StaticClass()))
-		{
-			FVector oldLocation = actor->GetActorLocation();
-			FVector movement = newLocation - oldLocation;
-			movement.Normalize();
-			UMovementComponent* movementComp = Cast<UMovementComponent>(actorCompMovement);
-			movementComp->Velocity = movement * iter.Value().SplinePath.GetSplineLength() / iter.Value().FlightTime;
-
-			if(UActorComponent* actorCompCapsule = actor->GetComponentByClass(UCapsuleComponent::StaticClass()))
-			{
-				UCapsuleComponent* capsuleComp = Cast<UCapsuleComponent>(actorCompCapsule);
-				TArray<FOverlapResult> overlapResults;
-				FCollisionQueryParams param;
-				param.AddIgnoredActor(OwnerCharacter);
-				if(GetWorld()->OverlapMultiByChannel(overlapResults,
-													actor->GetActorLocation(),
-													actor->GetActorQuat(),
-													ECollisionChannel::ECC_WorldStatic,
-													FCollisionShape::MakeCapsule(capsuleComp->GetScaledCapsuleRadius(), capsuleComp->GetScaledCapsuleHalfHeight()),
-													param))
-				{
-					IThrowableInterface* throwInterface = Cast<IThrowableInterface>(actor);
-					if(throwInterface)
-						throwInterface->ThrowComplete();
-
-					iter.RemoveCurrent();
-				}
-			}
-		}
-		else
-		{
-			if(!actor->SetActorLocation(newLocation, true))
-			{
-				IThrowableInterface* throwInterface = Cast<IThrowableInterface>(actor);
-				if(throwInterface)
-					throwInterface->ThrowComplete();
-
-				iter.RemoveCurrent();
-			}
-		}
-
-		if(iter.Value().FlightDelta >= iter.Value().FlightTime)
-			iter.RemoveCurrent();
-	}
 }
 
 void UThrowingAttack::BeginPlay()
@@ -111,7 +55,7 @@ void UThrowingAttack::AbilityStart(AActor* InTarget)
 	IThrowableInterface* throwInterface = Cast<IThrowableInterface>(throwActor);
 	if(throwInterface)
 		throwInterface->ThrowReady();
-	throwActor->AttachToComponent(OwnerCharacter->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("KeepRelativeTransform"));
+	throwActor->AttachToComponent(OwnerCharacter->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("ThrowingActorSocket"));
 	
 	LOG_SCREEN(FColor::White, TEXT("를 사용합니다."))
 }
@@ -127,55 +71,56 @@ void UThrowingAttack::AbilityShot(AActor* InTarget)
 		LOG_SCREEN(FColor::Red, TEXT("액터: %s의 ThrowingAttack: %s의 MaxRange가 0보다 작습니다."), *OwnerCharacter->GetName(), *GetName())
 		return;
 	}
+
+	if(!FObjectManager::IsValidId(ThrowActorId))
+		return;
 	
 	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
 
-	FThrowActorSplineInfo splineInfo;
 	
-	FVector startLocation = ownerPawn->GetMesh()->GetSocketLocation(TEXT("ThrowingSpawn"));
+	FVector startLocation = ownerPawn->GetMesh()->GetSocketLocation(TEXT("ThrowingActorSocket"));
 	FVector goalLocation = InTarget->GetActorLocation();
-	splineInfo.FlightTime = FVector::Distance(startLocation, goalLocation) * MaxFlightTime / MaxRange;
-	splineInfo.FlightDelta = 0.f;
-	if(MakeSplinePath(InTarget, splineInfo.FlightTime, &splineInfo.SplinePath))
+	FVector outVelocity = FVector::ZeroVector;
+	//if(UGameplayStatics::SuggestProjectileVelocity(this, outVelocity, startLocation, goalLocation, InitSpeed, HighArc, 0, GetWorld()->GetGravityZ(), ESuggestProjVelocityTraceOption::DoNotTrace))
+	if(UGameplayStatics::SuggestProjectileVelocity_CustomArc(this, outVelocity, startLocation, goalLocation, GetWorld()->GetGravityZ(), ArcValue))
 	{
-		if(FObjectManager::GetInstance()->IsValidId(ThrowActorId))
-			ThrowActorInfos.Add(ThrowActorId, splineInfo);
+		float flightTime = FVector::Distance(startLocation, goalLocation) * MaxFlightTime / MaxRange;
+		FPredictProjectilePathParams predictParams(20.f, startLocation, outVelocity, flightTime);
+		predictParams.DrawDebugTime = flightTime;
+		predictParams.DrawDebugType = EDrawDebugTrace::Type::ForDuration;
+		predictParams.OverrideGravityZ = GetWorld()->GetGravityZ();
+		FPredictProjectilePathResult result;
+		UGameplayStatics::PredictProjectilePath(this, predictParams, result);
+
+		if(AActor* throwActor = FObjectManager::GetInstance()->FindActor(ThrowActorId))
+		{
+			throwActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+			
+			IThrowableInterface* throwInterface = Cast<IThrowableInterface>(throwActor);
+			if(!throwInterface)
+				return;
+
+			throwInterface->ThrowExecute(OwnerCharacter);
+				
+			UActorComponent* actorComp = throwActor->GetComponentByClass(UMovementComponent::StaticClass());
+			if(UCharacterMovementComponent* charMovementComp = Cast<UCharacterMovementComponent>(actorComp))
+			{
+				TWeakObjectPtr<UCharacterMovementComponent> moveCompPtr = charMovementComp;
+				throwActor->GetWorldTimerManager().SetTimerForNextTick([moveCompPtr, outVelocity]()
+				{
+					if(moveCompPtr.IsValid())
+						moveCompPtr->AddImpulse(outVelocity);
+				});
+			}
+			else if(UProjectileMovementComponent* projMovementComp = Cast<UProjectileMovementComponent>(actorComp))
+			{
+				TWeakObjectPtr<UProjectileMovementComponent> moveCompPtr = projMovementComp;
+				throwActor->GetWorldTimerManager().SetTimerForNextTick([moveCompPtr, outVelocity]()
+				{
+					if(moveCompPtr.IsValid())
+						moveCompPtr->Velocity += outVelocity;
+				});
+			}
+		}
 	}
-}
-
-bool UThrowingAttack::MakeSplinePath(AActor* InTarget, float InFlightTime, FSplinePath* OutSplinePath)
-{
-	if(InTarget == nullptr || OwnerCharacter == nullptr)
-		return false;
-	
-	FVector shotLocation = OwnerCharacter->GetMesh()->GetSocketLocation("ThrowingSpawn");
-	auto target = Cast<ACharacterBase>(InTarget);
-	float capsuleHalfHeight = target->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
-	
-	OutSplinePath->ClearSplinePoints();
-	OutSplinePath->AddSplinePoint(shotLocation, ESplineCoordinateSpace::World, ESplinePointType::Curve);
-	FVector middlePoint = (shotLocation + target->GetActorLocation()) / 2;
-	middlePoint.Z += HeightCoefficient * InFlightTime / MaxFlightTime;
-	float distToTarget = FVector::Dist(OwnerCharacter->GetActorLocation(), InTarget->GetActorLocation());
-	OutSplinePath->AddSplinePoint(middlePoint, ESplineCoordinateSpace::World, ESplinePointType::Curve);
-	OutSplinePath->AddSplinePoint(InTarget->GetActorLocation() + FVector(0, 0, -capsuleHalfHeight), ESplineCoordinateSpace::World, ESplinePointType::Curve);
-	OutSplinePath->UpdateSpline();
-
-	// Set clamp tangent
-	FSplineCurves& path = OutSplinePath->Path;
-	path.Position.Points[0].LeaveTangent = path.Position.Points[0].LeaveTangent.GetClampedToMaxSize(0);
-	path.Position.Points[0].ArriveTangent = path.Position.Points[0].ArriveTangent.GetClampedToMaxSize(0);
-	path.Position.Points[0].InterpMode = CIM_CurveUser;
-	
-	const float dist = 10 * distToTarget;
-	path.Position.Points[1].LeaveTangent = path.Position.Points[1].LeaveTangent.GetClampedToMaxSize(dist);
-	path.Position.Points[1].ArriveTangent = path.Position.Points[1].ArriveTangent.GetClampedToMaxSize(dist);
-	path.Position.Points[1].InterpMode = CIM_CurveUser;
-	
-	path.Position.Points[2].LeaveTangent = path.Position.Points[2].LeaveTangent.GetClampedToMaxSize(0);
-	path.Position.Points[2].ArriveTangent = path.Position.Points[2].ArriveTangent.GetClampedToMaxSize(0);
-	path.Position.Points[2].InterpMode = CIM_CurveUser;
-	OutSplinePath->UpdateSpline();
-
-	return true;
 }

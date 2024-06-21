@@ -18,8 +18,12 @@ class UThrowableInterface : public UInterface
 class DIESELPUNK_API IThrowableInterface
 {
 	GENERATED_BODY()
-
+	TWeakObjectPtr<AActor> ThrowingOwner = nullptr;
 public:
 	virtual void ThrowReady(){}
-	virtual void ThrowComplete(){}
+	virtual void ThrowExecute(TWeakObjectPtr<AActor> InThrowingOwner);
+	virtual void ThrowComplete();
+public:
+	UFUNCTION()
+	virtual void OnHit(UPrimitiveComponent* InHitComponent, AActor* InOtherActor, UPrimitiveComponent* InOtherComp, FVector InNormalImpulse, const FHitResult& InHit);
 };
