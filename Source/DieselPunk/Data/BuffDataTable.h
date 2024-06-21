@@ -18,7 +18,7 @@ struct FBuffStatInfo
 	UPROPERTY(EditAnywhere)
 	bool IsStore = false;
 	
-	//버프 배율 타입(백분율/상수)
+	//버프 배율 타입(곱연산/합연산)
 	UPROPERTY(EditAnywhere)
 	EBuffValueType BuffValueType = EBuffValueType::Sum;
 
