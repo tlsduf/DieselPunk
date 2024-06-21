@@ -15,8 +15,10 @@
 #include <Engine/Level.h>
 #include <Kismet/GameplayStatics.h>
 
+#include "Animation/AnimInstance.h"
+#include "Animation/AnimMontage.h"
 #include "ColorManagement/Public/ColorManagementDefines.h"
-
+#include "Components/SkeletalMeshComponent.h"
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(CharacterBase)
@@ -273,6 +275,38 @@ void ACharacterBase::_UpdateHp(int InCurHp, int InMaxHp)
 bool ACharacterBase::IsDead()
 {
 	return GetStat(ECharacterStatType::Hp) <= 0;
+}
+
+float ACharacterBase::PlayCharacterStatusEffectAnimMontage(float InPlayRate, const FName& InSectionName)
+{
+	UAnimInstance* animInstance = GetMesh()->GetAnimInstance();
+	if(animInstance == nullptr || StatusEffectAnimMontage == nullptr)
+		return -1.f;
+
+	if(InSectionName == NAME_None || !StatusEffectAnimMontage->IsValidSectionName(InSectionName))
+		return -1.f;
+
+	_OnInterruptSkillAnimation();
+	
+	UAnimMontage* curMontage = animInstance->GetCurrentActiveMontage();
+	if(curMontage != StatusEffectAnimMontage || curMontage->RateScale != InPlayRate)
+		if(animInstance->Montage_Play(StatusEffectAnimMontage, InPlayRate, EMontagePlayReturnType::Duration) <= 0.f)
+			return -1.f;
+
+	animInstance->Montage_JumpToSection(InSectionName);
+	
+	int32 index = StatusEffectAnimMontage->GetSectionIndex(InSectionName);
+	return StatusEffectAnimMontage->GetSectionLength(index) / InPlayRate;
+}
+
+void ACharacterBase::StopCharacterStatusEffectAnimMontage(float InBlendOutTime)
+{
+	UAnimInstance* animInstance = GetMesh()->GetAnimInstance();
+	if(animInstance == nullptr || StatusEffectAnimMontage == nullptr)
+		return;
+
+	if(animInstance->Montage_IsPlaying(StatusEffectAnimMontage))
+		animInstance->Montage_Stop(InBlendOutTime, StatusEffectAnimMontage);
 }
 
 //================================================================

@@ -30,7 +30,7 @@ protected:
 	//스탯 변경 시 호출될 델리게이트
 	FSetStatDelegate DelegateChangeStat;
 
-	TMap<FString, FBuff*> Buffs;
+	TMap<FName, FBuff*> Buffs;
 
 	UPROPERTY(EditDefaultsOnly, Category="MYDP_Setting")
 	TArray<ENPCTraitType> InitHaveTrait;
@@ -62,7 +62,7 @@ public:
 
 	const int32& GetStat(ECharacterStatType InStatType);
 
-	void AddBuff(const FString& InBuffName);
+	void AddBuff(const FName& InBuffName);
 
 	//특성을 추가합니다.
 	void AddTrait(ENPCTraitType InTraitType);

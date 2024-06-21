@@ -3,39 +3,27 @@
 #include "Buff.h"
 #include "../Component/StatControlComponent.h"
 #include "../Data/BuffDataTable.h"
-#include "DieselPunk/Manager/DatatableManager.h"
 
 
-FBuff::FBuff(TWeakObjectPtr<UStatControlComponent> InOwnerComp, const FString& InBuffName)
+FBuff::FBuff(TWeakObjectPtr<UStatControlComponent> InOwnerComp, const FBuffDataTable* InBuffTable)
 	: OwnerComp(InOwnerComp)
 {
-	const FBuffDataTable* data = FDataTableManager::GetInstance()->GetData<FBuffDataTable>(EDataTableType::Buff, InBuffName);
-	if(!data)
-	{
-		UE_LOG(LogLoad, Error, TEXT("InBuffName: %s에 해당하는 데이터 열이 없습니다. 데이터 테이블에서 버프를 불러올 수 없습니다."), *InBuffName)
+	if(!InBuffTable)
 		return;
-	}
 
 	//버프 초기 데이터
-	StatContrlType	= data->CharacterStatType;
-	IsStore			= data->IsStore;
-	IsTick			= data->IsTick;
-	BuffValueType	= data->BuffValueType;
-	Value			= data->Value;
-	BuffTime		= data->BuffTime;
-	Frequency		= data->Frequency;
+	BuffDuplicateTimeType	= InBuffTable->BuffDuplicateTime;
+	BuffTime				= InBuffTable->BuffTime;
+	Frequency				= InBuffTable->Frequency;
+	IsTick					= BuffTime != Frequency;
 
 	//버프 데이터
-	TotalValue = 0.0;
-	Count = 0;
 	DeltaTime = 0.0;
-
-	Initialize();
+	FirstBuff = true;
 }
 
 FBuff::~FBuff()
 {
-	Release();
 }
 
 bool FBuff::Tick(float InDeltaTime)
@@ -48,6 +36,7 @@ bool FBuff::Tick(float InDeltaTime)
 		{
 			DeltaTime = 0.f;
 			ApplyBuff();
+			--Count;
 			if(Count <= 0)
 				return true;
 		}
@@ -61,29 +50,53 @@ bool FBuff::Tick(float InDeltaTime)
 
 void FBuff::Initialize()
 {
+	//틱으로 작동할 경우
 	if(IsTick)
 	{
-		Count += static_cast<int32>(BuffTime / Frequency);
+		//시간이 더해질 때
+		if(BuffDuplicateTimeType == EBuffDuplicateTimeType::AddTime)
+		{
+			int32 localCount = Frequency != 0 ? static_cast<int32>(BuffTime / Frequency) : 0;
+			Count += localCount;
+		}
+		//시간이 초기화될 때
+		else if(BuffDuplicateTimeType == EBuffDuplicateTimeType::ResetTime)
+		{
+			int32 localCount = Frequency != 0 ? static_cast<int32>(BuffTime / Frequency) : 0;
+			Count = localCount;
+		}
+		TickBuffInitialize();
 	}
+	//틱으로 작동하지 않을 경우
 	else
 	{
-		ApplyBuff();
+		if(BuffDuplicateTimeType == EBuffDuplicateTimeType::AddTime)
+			BuffTime += BuffTime;
+		if(BuffDuplicateTimeType == EBuffDuplicateTimeType::ResetTime)
+			DeltaTime = 0.f;
+		
+		if(FirstBuff)
+		{
+			ImmediatelyBuffInitialize();
+			
+			ApplyBuff();
+			FirstBuff = false;
+		}
 	}
+
+	if(DelegateBuffStart.IsBound())
+		DelegateBuffStart.Broadcast(OwnerComp, this);
 }
 
 void FBuff::Release()
 {
-	if(IsStore)
-	{
-		OwnerComp->SetStat(StatContrlType, OwnerComp->GetStat(StatContrlType) - TotalValue);
-	}
+	_ReleaseBuff();
+	if(DelegateBuffEnd.IsBound())
+		DelegateBuffEnd.Broadcast(OwnerComp, this);
 }
 
 void FBuff::ApplyBuff()
 {
-	OwnerComp->SetStat(StatContrlType, OwnerComp->GetStat(StatContrlType) + Value);
-	TotalValue += Value;
-	if(IsTick)
-		--Count;
+	_ApplyBuff();
 }
 

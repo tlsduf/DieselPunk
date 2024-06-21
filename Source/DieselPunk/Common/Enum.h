@@ -178,8 +178,8 @@ enum class ESearchAreaType : uint8
 UENUM( BlueprintType )
 enum class EBuffValueType : uint8
 {
-	Constant		UMETA( ToolTip = "상수" ),
-	Percentage		UMETA( ToolTip = "백분율" ),
+	Mulitple	UMETA(ToolTip = "곱연산, Value의 값을 현재 스탯에 곱한 후, 해당 값을 더합니다."),
+	Sum			UMETA(ToolTip = "합연산, Value의 값을 현재 스탯에 더합니다."),
 };
 
 // NPC 특성 타입
@@ -205,4 +205,20 @@ enum class ESkillDistanceType : uint8
 {
 	RangedAttack	UMETA( ToolTip = "원거리" ),
 	MeleeAttack		UMETA( ToolTip = "근거리" )
+};
+
+// 버프 중첩 시간 타입 
+UENUM(BlueprintType)
+enum class EBuffDuplicateTimeType : uint8
+{
+	AddTime		UMETA(ToolTip = "버프 중첩 시 시간이 더해집니다. ex)3초 남은 점화에 동일한 5초의 점화가 적용될 시 8초 동안 점화됩니다."),
+	ResetTime	UMETA(ToolTip = "버프 중첩 시 시간이 초기화됩니다.. ex)3초 남은 점화에 동일한 5초의 점화가 적용될 시 5초 동안 점화됩니다.")
+};
+
+// 버프 타입 
+UENUM(BlueprintType)
+enum class EBuffType : uint8
+{
+	Stat			UMETA(ToolTip = "스탯 버프"),
+	StatusEffect	UMETA(ToolTip = "상태이상")
 };

@@ -8,6 +8,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/SphereComponent.h"
+#include "DieselPunk/Component/StatControlComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -102,6 +103,8 @@ void AThrowableActor::ThrowComplete()
 					{
 						//데미지 처리, CC기 처리
 						UGameplayStatics::ApplyDamage(hitCharacter, Damage, charThrowing->GetController(), charThrowing, nullptr);
+						for(const FName& name : BuffNames)
+							hitCharacter->GetStatControlComponent()->AddBuff(name);
 					}
 				}
 				else if(charThrowing->GetCharacterType() == ECharacterType::Monster)
@@ -112,6 +115,8 @@ void AThrowableActor::ThrowComplete()
 					{
 						//데미지 처리, CC기 처리
 						UGameplayStatics::ApplyDamage(hitCharacter, Damage, charThrowing->GetController(), charThrowing, nullptr);
+						for(const FName& name : BuffNames)
+							hitCharacter->GetStatControlComponent()->AddBuff(name);
 					}
 				}
 			}

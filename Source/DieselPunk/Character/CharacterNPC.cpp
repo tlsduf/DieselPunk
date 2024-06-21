@@ -584,14 +584,14 @@ float ACharacterNPC::PlaySpawnAnim()
 
 void ACharacterNPC::DoNPCSkill()
 {
-	if(NPCSkill)
+	if(NPCSkill && CanAttack)
 		NPCSkill->AbilityStart(Target.Get());
 }
 
 void ACharacterNPC::DoNPCSkill(EAbilityType InAbilityType)
 {
 	TObjectPtr<USkillBase>* skill = NPCSkills.Find(InAbilityType);
-	if(skill && *skill)
+	if(skill && *skill && CanAttack)
 	{
 		(*skill)->AbilityStart(Target.Get());
 		CurrentUseAbilityType = InAbilityType;

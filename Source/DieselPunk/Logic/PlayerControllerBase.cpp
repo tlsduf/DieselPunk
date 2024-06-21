@@ -217,7 +217,7 @@ const EAbilityType APlayerControllerBase::GetAbilityKeyFromAction(const FInputAc
 // =============================================================
 void APlayerControllerBase::OnInputSkillStarted(const FInputActionInstance& inInstance)
 {
-	if (PC.IsValid())
+	if (PC.IsValid() && PC->GetCanAttack())
 	{
 		const EAbilityType abilityKey = GetAbilityKeyFromAction(inInstance);
 		if (abilityKey != EAbilityType::None)
@@ -227,7 +227,7 @@ void APlayerControllerBase::OnInputSkillStarted(const FInputActionInstance& inIn
 
 void APlayerControllerBase::OnInputSkillOngoing(const FInputActionInstance& inInstance)
 {
-	if (PC.IsValid())
+	if (PC.IsValid() && PC->GetCanAttack())
 	{
 		const EAbilityType abilityKey = GetAbilityKeyFromAction(inInstance);
 		if (abilityKey != EAbilityType::None)
@@ -237,7 +237,7 @@ void APlayerControllerBase::OnInputSkillOngoing(const FInputActionInstance& inIn
 
 void APlayerControllerBase::OnInputSkillTriggered(const FInputActionInstance& inInstance)
 {
-	if (PC.IsValid())
+	if (PC.IsValid() && PC->GetCanAttack())
 	{
 		const EAbilityType abilityKey = GetAbilityKeyFromAction(inInstance);
 		if (abilityKey != EAbilityType::None)
@@ -247,7 +247,7 @@ void APlayerControllerBase::OnInputSkillTriggered(const FInputActionInstance& in
 
 void APlayerControllerBase::OnInputSkillCompleted(const FInputActionInstance& inInstance)
 {
-	if (PC.IsValid())
+	if (PC.IsValid() && PC->GetCanAttack())
 	{
 		const EAbilityType abilityKey = GetAbilityKeyFromAction(inInstance);
 		if (abilityKey != EAbilityType::None)
@@ -257,7 +257,7 @@ void APlayerControllerBase::OnInputSkillCompleted(const FInputActionInstance& in
 
 void APlayerControllerBase::OnInputSkillCanceled(const FInputActionInstance& inInstance)
 {
-	if (PC.IsValid())
+	if (PC.IsValid() && PC->GetCanAttack())
 	{
 		const EAbilityType abilityKey = GetAbilityKeyFromAction(inInstance);
 		if (abilityKey != EAbilityType::None)
@@ -335,6 +335,9 @@ void APlayerControllerBase::OpenCloseDeckInterface()
 
 void APlayerControllerBase::UseCard(int32 InCardIndex)
 {
+	if(!PC.IsValid() || !PC->GetCanAttack())
+		return;
+	
 	//바인딩 예정 중일 경우에는 카드 선택이 불가능 하도록 변경
 	if(PC->CardSkillIsExpectedUnBind() || IsExpectedUnBindByUnUse)
 		return;
@@ -497,6 +500,8 @@ void APlayerControllerBase::SetZoomOutProp()
 
 void APlayerControllerBase::WheelUpCardSelect()
 {
+	if(!PC.IsValid() || !PC->GetCanAttack())
+		return;
 	const FDeckHandler* handler = PC->GetDeckHandler();
 	if(handler == nullptr)
 		return;
@@ -521,6 +526,8 @@ void APlayerControllerBase::WheelUpCardSelect()
 
 void APlayerControllerBase::WheelDownCardSelect()
 {
+	if(!PC.IsValid() || !PC->GetCanAttack())
+		return;
 	const FDeckHandler* handler = PC->GetDeckHandler();
 	if(handler == nullptr)
 		return;
@@ -698,6 +705,8 @@ void APlayerControllerBase::RegisterHands(TArray<FCard*> InCard)
 
 void APlayerControllerBase::ReplaceCard()
 {
+	if(!PC.IsValid() || !PC->GetCanAttack())
+		return;
 	if(Hand->GetIsPlayingAnimation())
 		return;
 	

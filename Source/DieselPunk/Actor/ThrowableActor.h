@@ -31,6 +31,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovementComponent = nullptr;
 
+	UPROPERTY(EditDefaultsOnly, Category="MYDP_Buff")
+	TArray<FName> BuffNames;
+
 	FTimerHandle NextTickDestroyHandle;
 
 	float CachedMass = 100.f;

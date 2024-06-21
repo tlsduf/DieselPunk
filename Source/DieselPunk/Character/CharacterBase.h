@@ -54,6 +54,9 @@ protected:
 	bool CanTakeDamageAnim = true;
 	FTimerHandle TakeDamageHandle;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="MYDP_Animation")
+	TObjectPtr<UAnimMontage> StatusEffectAnimMontage = nullptr;
+
 	/////////////////////////////////////////////////////////////////////
 	// for State //
 	
@@ -73,6 +76,9 @@ protected:
 	// 디버그on/off
 	UPROPERTY(EditAnywhere, Category = "MYDP_Util")
 	bool DebugOnOff = false;
+
+	bool CanAttack = true;
+	bool CanRotate = true;
 	
 public:
 	//생성자
@@ -135,6 +141,10 @@ public:
 	UFUNCTION(BlueprintPure)
 	bool IsDead();
 
+	float PlayCharacterStatusEffectAnimMontage(float InPlayRate, const FName& InSectionName);
+	virtual void _OnInterruptSkillAnimation(){}
+	void StopCharacterStatusEffectAnimMontage(float InBlendOutTime);
+
 	
 	/////////////////////////////////////////////////////////////////////
 	// for State //
@@ -156,5 +166,13 @@ public:
 
 	bool GetDebugOnOff() const { return DebugOnOff; }
 
+	void SetCanAttack(bool InCanAttack){CanAttack = InCanAttack;}
+	bool GetCanAttack(){return CanAttack;}
+
+	void SetCanRotate(bool InCanRotate){CanRotate = InCanRotate;}
+	bool GetCanRotate(){return CanRotate;}
+
+	/////////////////////////////////////////////////////////////////////
+	// Skill //
 	virtual void AbilityShot(){}
 };

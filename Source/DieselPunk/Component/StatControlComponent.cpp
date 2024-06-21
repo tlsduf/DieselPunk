@@ -8,8 +8,11 @@
 #include <GameFramework/CharacterMovementComponent.h>
 
 #include "DieselPunk/Character/CharacterTurret.h"
+#include "DieselPunk/Data/BuffDataTable.h"
 #include "DieselPunk/Data/StatDataTable.h"
 #include "DieselPunk/Manager/DatatableManager.h"
+#include "DieselPunk/Raw/BuffStat.h"
+#include "DieselPunk/Raw/BuffStatusEffect.h"
 
 // Sets default values for this component's properties
 UStatControlComponent::UStatControlComponent()
@@ -218,10 +221,15 @@ void UStatControlComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 
 	// ...
 
-	for(TMap<FString, FBuff*>::TIterator iter = Buffs.CreateIterator(); iter; ++iter)
+	for(TMap<FName, FBuff*>::TIterator iter = Buffs.CreateIterator(); iter; ++iter)
 	{
 		if(iter->Value->Tick(DeltaTime))
+		{
+			iter->Value->Release();
+			delete iter->Value;
+			iter->Value = nullptr;
 			iter.RemoveCurrent();
+		}
 	}
 }
 
@@ -234,7 +242,7 @@ const int32& UStatControlComponent::GetStat(ECharacterStatType InStatType)
 	return *stat;
 }
 
-void UStatControlComponent::AddBuff(const FString& InBuffName)
+void UStatControlComponent::AddBuff(const FName& InBuffName)
 {
 	FBuff** findTemp = Buffs.Find(InBuffName);
 	
@@ -246,8 +254,24 @@ void UStatControlComponent::AddBuff(const FString& InBuffName)
 	}
 	else
 	{
-		buff = new FBuff(this, InBuffName);
-		Buffs.Add(InBuffName, buff);
+		const FBuffDataTable* buffData = FDataTableManager::GetInstance()->GetData<FBuffDataTable>(EDataTableType::Buff, InBuffName.ToString());
+		if(!buffData)
+			return;
+
+		switch (buffData->BuffType)
+		{
+		case EBuffType::Stat:
+			buff = new FBuffStat(this, buffData);
+			break;
+		case EBuffType::StatusEffect:
+			buff = new FBuffStatusEffect(this, buffData);
+			break;
+		}
+		if(buff)
+		{
+			buff->Initialize();
+			Buffs.Add(InBuffName, buff);
+		}
 	}
 }
 
