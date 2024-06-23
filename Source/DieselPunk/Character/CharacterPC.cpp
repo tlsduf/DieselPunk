@@ -196,12 +196,18 @@ void ACharacterPC::Tick(float DeltaTime)
 		//줌아웃
 		if (IsZoomed)
 			SetZoomOutProp();
-		
+
+		//애니메이션 테스트를 위해 잠시 주석
 		if(GetCharacterMovement()->GetCurrentAcceleration().Length() == 0)
+		{
+			GetCharacterMovement()->bOrientRotationToMovement = true;	//캐릭터의 자연스러운 회전을 위해 '무브먼트 방향으로 회전 조정' true
 			RotatePawn(DeltaTime);
+		}
 		else
-			SetActorRotation(FRotator(0, GetController()->GetControlRotation().Yaw, 0));
+			GetCharacterMovement()->bOrientRotationToMovement = false;	//캐릭터의 자연스러운 회전을 위해 '무브먼트 방향으로 회전 조정' false
 	}
+	else
+		GetCharacterMovement()->bOrientRotationToMovement = true;	//캐릭터의 자연스러운 회전을 위해 '무브먼트 방향으로 회전 조정' true
 
 	// 레벨이 올랐음을 감지하는 구문.
 	if(TempLevel != GetStat(ECharacterStatType::Level))

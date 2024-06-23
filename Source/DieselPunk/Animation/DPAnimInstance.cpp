@@ -31,7 +31,7 @@ void UDPAnimInstance::NativeUpdateAnimation(float InDeltaSeconds)
 	
 	ActorRotation = Character->GetActorRotation();
 	BaseAimRotation = Character->GetBaseAimRotation();
-	DeltaRotation = UKismetMathLibrary::NormalizedDeltaRotator(BaseAimRotation, ActorRotation);
+	DeltaRotation = UKismetMathLibrary::NormalizedDeltaRotator( BaseAimRotation, ActorRotation);
 	
 	CharacterDirectionRotation = Character->GetBaseAimRotation() - ActorRotation;
 	CharacterDirectionRotation.Normalize();
