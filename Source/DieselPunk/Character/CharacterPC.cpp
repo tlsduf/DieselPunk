@@ -161,7 +161,6 @@ void ACharacterPC::BeginPlay()
 		if(actor == nullptr)
 			return;
 		Weapon = Cast<AWeapon>(actor);
-		
 	}
 }
 
@@ -355,8 +354,6 @@ void ACharacterPC::RotatePawn(float DeltaTime)
 	const FRotator toRotation = Controller->GetControlRotation();
 	
 	const FRotator yawRotation(0, toRotation.Yaw, 0);
-
-	//SetActorRotation(yawRotation);
 
 	SetActorRotation(FMath::RInterpTo(
 		rotation,
