@@ -205,10 +205,7 @@ void UMokoshMeleeAttack::AbilityShot(AActor* InTarget)
 				UCharacterMovementComponent* movementComponent = Cast<UCharacterMovementComponent>(Cast<ACharacterBase>(result.GetActor())->GetMovementComponent());
 				if(RadialImpulse && movementComponent)
 				{
-					FVector orginLoc = ownerPawn->GetActorLocation();
-					orginLoc.Z -= ownerPawn->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
-					movementComponent->AddRadialImpulse(orginLoc, MaxRange, RadialImpulseStrength, RIF_Constant, true);
-					DrawDebugSphere(GetWorld(), orginLoc, MaxRange, 12, FColor::Blue, false, 2, 0, 3);
+					movementComponent->AddRadialImpulse(ownerPawn->GetActorLocation(), MaxRange, RadialImpulseStrength, RIF_Constant, true);
 				}
 
 				//버프
