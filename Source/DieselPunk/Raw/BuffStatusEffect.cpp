@@ -17,6 +17,7 @@ FBuffStatusEffect::FBuffStatusEffect(TWeakObjectPtr<UStatControlComponent> InOwn
 	PlaySectionName		= InBuffTable->BuffStatusEffectInfo.PlaySectionName;
 	IsMove				= InBuffTable->BuffStatusEffectInfo.IsMove;
 	IsAttack			= InBuffTable->BuffStatusEffectInfo.IsAttack;
+	IsSkill				= InBuffTable->BuffStatusEffectInfo.IsSkill;
 }
 
 FBuffStatusEffect::~FBuffStatusEffect()
@@ -31,12 +32,15 @@ void FBuffStatusEffect::_ReleaseBuff()
 	character->StopCharacterStatusEffectAnimMontage(0.2f);
 	if(!IsMove)
 	{
-		character->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+		character->SetBuffStatusEffectRoleType(EBuffStatusEffectRoleType::Move, true);
 	}
 	if(!IsAttack)
 	{
-		character->SetCanRotate(true);
-		character->SetCanAttack(true);
+		character->SetBuffStatusEffectRoleType(EBuffStatusEffectRoleType::Attack, true);
+	}
+	if(!IsSkill)
+	{
+		character->SetBuffStatusEffectRoleType(EBuffStatusEffectRoleType::Skill, true);
 	}
 }
 
@@ -51,12 +55,15 @@ void FBuffStatusEffect::_ApplyBuff()
 	}
 	if(!IsMove)
 	{
-		character->GetCharacterMovement()->SetMovementMode(MOVE_None);
+		character->SetBuffStatusEffectRoleType(EBuffStatusEffectRoleType::Move, false);
 	}
 	if(!IsAttack)
 	{
-		character->SetCanRotate(false);
-		character->SetCanAttack(false);
+		character->SetBuffStatusEffectRoleType(EBuffStatusEffectRoleType::Attack, false);
+	}
+	if(!IsSkill)
+	{
+		character->SetBuffStatusEffectRoleType(EBuffStatusEffectRoleType::Skill, false);
 	}
 }
 

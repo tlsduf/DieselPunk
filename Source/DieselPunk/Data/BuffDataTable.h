@@ -40,9 +40,13 @@ struct FBuffStatusEffectInfo
 	UPROPERTY(EditAnywhere)
 	bool IsMove = false;
 
-	//상태이상 중 공격이 가능한가
+	//상태이상 중 기본 공격이 가능한가
 	UPROPERTY(EditAnywhere)
 	bool IsAttack = false;
+	
+	//상태이상 중 스킬 사용이 가능한가
+	UPROPERTY(EditAnywhere)
+	bool IsSkill = false;
 };
 
 /**

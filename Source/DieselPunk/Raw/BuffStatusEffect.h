@@ -16,6 +16,7 @@ protected:
 	FName PlaySectionName = NAME_None;
 	bool IsMove = false;
 	bool IsAttack = false;
+	bool IsSkill = false;
 	
 public:
 	FBuffStatusEffect(TWeakObjectPtr<UStatControlComponent> InOwnerComp, const FBuffDataTable* InBuffTable);

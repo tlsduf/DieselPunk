@@ -77,8 +77,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "MYDP_Util")
 	bool DebugOnOff = false;
 
+	bool CanMove = true;
 	bool CanAttack = true;
-	bool CanRotate = true;
+	bool CanSkill = true;
 	
 public:
 	//생성자
@@ -165,12 +166,17 @@ public:
 	void SetInCombat(bool inBool) { InCombat = inBool; }
 
 	bool GetDebugOnOff() const { return DebugOnOff; }
+	
+	virtual void SetBuffStatusEffectRoleType(EBuffStatusEffectRoleType InBuffStatusEffectRolType, bool InCan);
+
+	void SetCanMove(bool InCanMove){CanMove = InCanMove;}
+	bool GetCanMove(){return CanMove;}
 
 	void SetCanAttack(bool InCanAttack){CanAttack = InCanAttack;}
 	bool GetCanAttack(){return CanAttack;}
 
-	void SetCanRotate(bool InCanRotate){CanRotate = InCanRotate;}
-	bool GetCanRotate(){return CanRotate;}
+	void SetCanSkill(bool InCanSkill){CanSkill = InCanSkill;}
+	bool GetCanSkill(){return CanSkill;}
 
 	/////////////////////////////////////////////////////////////////////
 	// Skill //

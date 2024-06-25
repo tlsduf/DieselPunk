@@ -337,3 +337,16 @@ void ACharacterBase::HandleCombatState()
 			},5.0f, false);
 	}
 }
+
+void ACharacterBase::SetBuffStatusEffectRoleType(EBuffStatusEffectRoleType InBuffStatusEffectRolType, bool InCan)
+{
+	if(InBuffStatusEffectRolType < EBuffStatusEffectRoleType::Move || InBuffStatusEffectRolType >= EBuffStatusEffectRoleType::Max)
+		return;
+
+	if(InBuffStatusEffectRolType == EBuffStatusEffectRoleType::Move)
+		CanMove = InCan;
+	else if(InBuffStatusEffectRolType == EBuffStatusEffectRoleType::Attack)
+		CanAttack = InCan;
+	else if(InBuffStatusEffectRolType == EBuffStatusEffectRoleType::Skill)
+		CanSkill = InCan;
+}

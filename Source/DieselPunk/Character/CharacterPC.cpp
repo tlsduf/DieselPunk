@@ -64,9 +64,9 @@ ACharacterPC::ACharacterPC()
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 	
 	// Don't rotate when the controller rotates. Let that just affect the camera.
-	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = false;
-	bUseControllerRotationRoll = false;
+	bUseControllerRotationPitch = true;
+	bUseControllerRotationYaw = true;
+	bUseControllerRotationRoll = true;
 
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true;			 // Character moves in the direction of input...
@@ -253,6 +253,8 @@ void ACharacterPC::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
 
 void ACharacterPC::Move(const FInputActionValue &Value)
 {
+	if(!CanMove)
+		return;
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
@@ -280,16 +282,24 @@ void ACharacterPC::Move(const FInputActionValue &Value)
 }
 void ACharacterPC::Look(const FInputActionValue &Value)
 {
-	if(!CanRotate)
-		return;
 	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
-
-	if (Controller != nullptr && CanCameraControl)
+	APlayerController* playerController = Cast<APlayerController>(Controller);
+	if (playerController != nullptr && CanCameraControl)
 	{
-		// add yaw and pitch input to controller
-		AddControllerYawInput(LookAxisVector.X);
-		AddControllerPitchInput(LookAxisVector.Y);
+		if(!CanMove && !CanAttack && !CanSkill)
+		{
+			FRotator newRotator = GetCameraBoom()->GetRelativeRotation();
+			newRotator.Yaw += LookAxisVector.X * playerController->InputYawScale_DEPRECATED;
+			newRotator.Pitch = FMath::Clamp(newRotator.Pitch + LookAxisVector.Y * playerController->InputPitchScale_DEPRECATED, -80.f, 80.f);
+			GetCameraBoom()->SetRelativeRotation(newRotator);
+		}
+		else
+		{
+			// add yaw and pitch input to controller
+			AddControllerYawInput(LookAxisVector.X);
+			AddControllerPitchInput(LookAxisVector.Y);
+		}
 	}
 }
 
@@ -476,6 +486,12 @@ void ACharacterPC::InitSkills()
 // =============================================================
 void ACharacterPC::SkillStarted(const EAbilityType inAbilityType)
 {
+	if(inAbilityType == EAbilityType::MouseLM && !CanAttack)
+		return;
+
+	if(inAbilityType != EAbilityType::MouseLM && !CanSkill)
+		return;
+	
 	if(Skills.Find(inAbilityType) != nullptr)
 		if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
 		{
@@ -486,6 +502,12 @@ void ACharacterPC::SkillStarted(const EAbilityType inAbilityType)
 }
 void ACharacterPC::SkillOngoing(const EAbilityType inAbilityType)
 {
+	if(inAbilityType == EAbilityType::MouseLM && !CanAttack)
+		return;
+
+	if(inAbilityType != EAbilityType::MouseLM && !CanSkill)
+		return;
+	
 	if(Skills.Find(inAbilityType) != nullptr)
 		if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
 		{
@@ -495,6 +517,12 @@ void ACharacterPC::SkillOngoing(const EAbilityType inAbilityType)
 }
 void ACharacterPC::SkillTriggered(const EAbilityType inAbilityType)
 {
+	if(inAbilityType == EAbilityType::MouseLM && !CanAttack)
+		return;
+
+	if(inAbilityType != EAbilityType::MouseLM && !CanSkill)
+		return;
+	
 	if(Skills.Find(inAbilityType) != nullptr)
 		if (Skills[inAbilityType]->CanActivateAbility() && !GetOtherSkillActivating(inAbilityType))
 		{
@@ -508,6 +536,12 @@ void ACharacterPC::SkillTriggered(const EAbilityType inAbilityType)
 }
 void ACharacterPC::SkillCompleted(const EAbilityType inAbilityType)
 {
+	if(inAbilityType == EAbilityType::MouseLM && !CanAttack)
+		return;
+
+	if(inAbilityType != EAbilityType::MouseLM && !CanSkill)
+		return;
+	
 	if(Skills.Find(inAbilityType) != nullptr)
 		if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
 		{
@@ -517,6 +551,12 @@ void ACharacterPC::SkillCompleted(const EAbilityType inAbilityType)
 }
 void ACharacterPC::SkillCanceled(const EAbilityType inAbilityType)
 {
+	if(inAbilityType == EAbilityType::MouseLM && !CanAttack)
+		return;
+
+	if(inAbilityType != EAbilityType::MouseLM && !CanSkill)
+		return;
+	
 	if(Skills.Find(inAbilityType) != nullptr)
 		if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
 		{
@@ -756,4 +796,32 @@ void ACharacterPC::AbilityShot()
 
 	if(CurrentCachedSkill.IsValid())
 		CurrentCachedSkill->AbilityShot();
+}
+
+void ACharacterPC::SetBuffStatusEffectRoleType(EBuffStatusEffectRoleType InBuffStatusEffectRolType, bool InCan)
+{
+	Super::SetBuffStatusEffectRoleType(InBuffStatusEffectRolType, InCan);
+
+	if(!CanSkill)
+	{
+		APlayerControllerBase* controller = Cast<APlayerControllerBase>(GetController());
+		if(controller == nullptr)
+			return;
+
+		if(controller->GetIsCardActivate())
+			ExecuteCardCancel();
+	}
+
+	if(CanMove && CanAttack && CanSkill)
+	{
+		FRotator springArmRotation = SpringArm->GetRelativeRotation();
+		SpringArm->bUsePawnControlRotation = true;
+		GetController()->SetControlRotation(GetController()->GetControlRotation() + springArmRotation);
+	}
+	else if(!CanMove && !CanAttack && !CanSkill)
+	{
+		FRotator controllerRotation = GetController()->GetControlRotation();
+		SpringArm->bUsePawnControlRotation = false;
+		SpringArm->SetWorldRotation(controllerRotation);
+	}
 }

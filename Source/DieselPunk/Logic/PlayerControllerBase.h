@@ -223,4 +223,6 @@ public:
 	void ReplaceCard();
 
 	void SetVisibilityHud(ESlateVisibility InSlateVisibilty);
+
+	bool GetIsCardActivate(){return IsCardActivate;}
 };

@@ -270,5 +270,7 @@ public:
 
 public:
 	virtual void AbilityShot() override;
+
+	virtual void SetBuffStatusEffectRoleType(EBuffStatusEffectRoleType InBuffStatusEffectRolType, bool InCan) override;
 };
 

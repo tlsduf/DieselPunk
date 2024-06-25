@@ -222,3 +222,13 @@ enum class EBuffType : uint8
 	Stat			UMETA(ToolTip = "스탯 버프"),
 	StatusEffect	UMETA(ToolTip = "상태이상")
 };
+
+// 버프 상태이상 기능 타입 
+UENUM(BlueprintType)
+enum class EBuffStatusEffectRoleType : uint8
+{
+	Move = 0	UMETA(ToolTip = "이동 불가"),
+	Attack		UMETA(ToolTip = "기본 공격 불가"),
+	Skill		UMETA(ToolTip = "스킬 사용 불가"),
+	Max
+};
