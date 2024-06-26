@@ -21,6 +21,9 @@ void USoldierAnimInstance::NativeUpdateAnimation(float InDeltaSeconds)
 	Super::NativeUpdateAnimation(InDeltaSeconds);
 
 	UpdateVelocityBlend(InDeltaSeconds, VelocityBlend);
+
+	if(Cast<ACharacterPC>(TryGetPawnOwner()))
+		isJog = Cast<ACharacterPC>(TryGetPawnOwner())->IsJog;
 }
 
 // AbilityType에 따른 몽타주를 반환합니다. None입력시 기본 몽타주 반환

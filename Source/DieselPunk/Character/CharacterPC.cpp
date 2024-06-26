@@ -14,6 +14,7 @@
 #include <Components/CapsuleComponent.h>
 #include <GameFramework/SpringArmComponent.h>
 #include <GameFramework/CharacterMovementComponent.h>
+#include <Components/SkeletalMeshComponent.h>
 
 #include <GameFramework/Controller.h>
 #include <EnhancedInputComponent.h>
@@ -26,7 +27,9 @@
 #include "../UI/UserWidgetBase.h"
 #include "../UI/HUD/Hand.h"
 #include "Components/DecalComponent.h"
+
 #include "DieselPunk/Actor/Weapon.h"
+#include "DieselPunk/Animation/SoldierAnimInstance.h"
 #include "DieselPunk/Manager/ObjectManager.h"
 #include "DieselPunk/Skill/SkillPC/SkillSpawnTurret.h"
 #include "DieselPunk/UI/HUD/DPHud.h"
@@ -69,8 +72,8 @@ ACharacterPC::ACharacterPC()
 	bUseControllerRotationRoll = true;
 
 	// Configure character movement
-	GetCharacterMovement()->bOrientRotationToMovement = true;			 // Character moves in the direction of input...
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); // ...at this rotation rate
+	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+	GetCharacterMovement()->bOrientRotationToMovement = false;			 // Character moves in the direction of input...
 
 	// Note: For faster iteration times these variables, and many more, can be tweaked in the Character Blueprint
 	// instead of recompiling to adjust them
@@ -174,12 +177,16 @@ void ACharacterPC::Tick(float DeltaTime)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = GetStat(ECharacterStatType::MoveSpeed) * 2;
 		SetRunZoomOutProp();
+		bUseControllerRotationYaw = false;	// 컨트롤러에 의한 캐릭터 yaw 회전
+		GetCharacterMovement()->bOrientRotationToMovement = true;			 // Character moves in the direction of input...
 	}
 	else
 	{
 		GetCharacterMovement()->MaxWalkSpeed = GetStat(ECharacterStatType::MoveSpeed);
-		IsJog = false;
 		SetZoomOutProp();
+		bUseControllerRotationYaw = true;	// 컨트롤러에 의한 캐릭터 yaw 회전
+		GetCharacterMovement()->bOrientRotationToMovement = false;			 // Character moves in the direction of input...
+		IsJog = false;
 	}
 
 	// 줌을 해도 되는지 판별
@@ -195,18 +202,8 @@ void ACharacterPC::Tick(float DeltaTime)
 		//줌아웃
 		if (IsZoomed)
 			SetZoomOutProp();
-
-		//애니메이션 테스트를 위해 잠시 주석
-		if(GetCharacterMovement()->GetCurrentAcceleration().Length() == 0)
-		{
-			GetCharacterMovement()->bOrientRotationToMovement = true;	//캐릭터의 자연스러운 회전을 위해 '무브먼트 방향으로 회전 조정' true
-			RotatePawn(DeltaTime);
-		}
-		else
-			GetCharacterMovement()->bOrientRotationToMovement = false;	//캐릭터의 자연스러운 회전을 위해 '무브먼트 방향으로 회전 조정' false
 	}
-	else
-		GetCharacterMovement()->bOrientRotationToMovement = true;	//캐릭터의 자연스러운 회전을 위해 '무브먼트 방향으로 회전 조정' true
+
 
 	// 레벨이 올랐음을 감지하는 구문.
 	if(TempLevel != GetStat(ECharacterStatType::Level))
@@ -322,10 +319,14 @@ void ACharacterPC::Landed(const FHitResult& Hit)
 }
 
 //================================================================
-// Jog //W가 눌린 상태일때만 뛸 수 있음 //W 때면 jog중지
+// Jog //W가 눌린 상태일때만 뛸 수 있음 
 //================================================================
 void ACharacterPC::StartJog()
 {
+	IsJog = true;
+	InCombat = false;
+
+	/*
 	//Player의 이동방향
 	FVector playerMovementDirection = GetMovementComponent()->Velocity;
 	playerMovementDirection.Z = 0;
@@ -341,18 +342,15 @@ void ACharacterPC::StartJog()
 	
 	if (dotResult > 0.01)
 	{
-		GetCharacterMovement()->MaxWalkSpeed = GetStat(ECharacterStatType::MoveSpeed) * 2;
 		IsJog = true;
-		SetRunZoomOutProp();
 		InCombat = false;
 	}
+	*/
 }
 
 void ACharacterPC::StopJog()
 {
-	GetCharacterMovement()->MaxWalkSpeed = GetStat(ECharacterStatType::MoveSpeed);
 	IsJog = false;
-	SetZoomOutProp();
 }
 
 //================================================================
@@ -541,6 +539,10 @@ void ACharacterPC::SkillCompleted(const EAbilityType inAbilityType)
 
 	if(inAbilityType != EAbilityType::MouseLM && !CanSkill)
 		return;
+
+	if(inAbilityType == EAbilityType::MouseLM)
+		if(USoldierAnimInstance* soldierAnimInst = Cast<USoldierAnimInstance>(GetMesh()->GetAnimInstance()))
+			soldierAnimInst->AttackEndSign();
 	
 	if(Skills.Find(inAbilityType) != nullptr)
 		if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))

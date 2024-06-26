@@ -23,7 +23,18 @@ void USkillSoldierShift::SkillTriggered()
 {
 	Super::SkillTriggered();
 
-	//Player의 이동방향
+	OwnerCharacterPC->StartJog();
+	//StartDash();
+}
+
+void USkillSoldierShift::SkillCompleted()
+{
+	OwnerCharacterPC->StopJog();
+}
+
+void USkillSoldierShift::StartDash()
+{
+		//Player의 이동방향
 	FVector playerMovementDirection = OwnerCharacterPC->GetMovementComponent()->Velocity;
 	playerMovementDirection.Z = 0;
 	playerMovementDirection.Normalize();
@@ -54,10 +65,8 @@ void USkillSoldierShift::SkillTriggered()
 	float currentAccelLength = currentAcceleration.SizeSquared();
 	if (CanDash && currentAccelLength > 0 )
 	{
-		// 화면 와이드 아웃(Run)
-		OwnerCharacterPC->SetInCombat(false);
-		//ownerPawn->SetRunZoomOutProp();
-		OwnerCharacterPC->IsJog = true;
+		// (Run)
+		OwnerCharacterPC->StartJog();
 		
 		// 카메라방향으로 대쉬
 		const FRotator rotation = OwnerController->GetControlRotation();	//카메라방향으로 대쉬
@@ -103,6 +112,7 @@ void USkillSoldierShift::SkillTriggered()
 		}
 	}
 }
+
 void USkillSoldierShift::StopDashing()
 {
 	OwnerCharacterPC->GetCharacterMovement()->StopMovementImmediately();
