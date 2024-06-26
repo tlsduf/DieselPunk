@@ -82,7 +82,7 @@ void FCard::Cancel()
 	_Cancel();
 }
 
-void FCard::RotateInstallation(int32 RotateAngle)
+void FCard::RotateInstallation(double InRotateAngle)
 {
-	_RotateInstallation(RotateAngle);
+	_RotateInstallation(InRotateAngle);
 }

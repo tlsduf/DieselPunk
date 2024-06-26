@@ -46,7 +46,7 @@ public:
 	//바인딩을 위한 카드 사용 완료 함수
 	void Complete(bool& OutSuccess, int32 InCost);
 	//바인딩을 위한 설치물 회전 함수
-	void RotateInstallation(int32 RotateAngle);
+	void RotateInstallation(double InRotateAngle);
 
 public:
 	const CardInfo& GetCardInfo() const {return Info;}
@@ -59,6 +59,6 @@ private:
 	//카드 사용 완료 함수
 	virtual void _Complete(bool& OutSuccess, int32 InCost){}
 	//설치물 회전 함수
-	virtual void _RotateInstallation(int32 InRotateAngle){}
+	virtual void _RotateInstallation(double InRotateAngle){}
 	
 };

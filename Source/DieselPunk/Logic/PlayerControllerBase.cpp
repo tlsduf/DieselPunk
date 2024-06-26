@@ -679,7 +679,15 @@ void APlayerControllerBase::RotateInstallationCW()
 	if(!PC.IsValid())
 		return;
 
-	PC->ExecuteRotateInstallation(90);
+	//PC->ExecuteRotateInstallation(90.0);
+	if(UseCardNum != -1)
+	{
+		const FDeckHandler* handler = PC->GetDeckHandler();
+		if(handler == nullptr)
+			return;
+
+		handler->GetHands()[UseCardNum]->RotateInstallation(TurretRotateAngle);
+	}
 }
 
 void APlayerControllerBase::RotateInstallationCCW()
@@ -687,7 +695,15 @@ void APlayerControllerBase::RotateInstallationCCW()
 	if(!PC.IsValid())
 		return;
 
-	PC->ExecuteRotateInstallation(-90);
+	//PC->ExecuteRotateInstallation(-90.0);
+	if(UseCardNum != -1)
+	{
+		const FDeckHandler* handler = PC->GetDeckHandler();
+		if(handler == nullptr)
+			return;
+
+		handler->GetHands()[UseCardNum]->RotateInstallation(-TurretRotateAngle);
+	}
 }
 
 //드로우 한 후 카드 정보를 갱신합니다.

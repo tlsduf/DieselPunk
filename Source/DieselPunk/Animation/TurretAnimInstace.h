@@ -30,6 +30,10 @@ private:
 	UPROPERTY(BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
 	float OwnerToTargetDist = 0;
 
+	// 터렛 레벨
+	UPROPERTY(BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
+	int32 TurretLevel = 0;
+
 	UPROPERTY()
 	TWeakObjectPtr<ACharacterNPC> CurTarget = nullptr;
 

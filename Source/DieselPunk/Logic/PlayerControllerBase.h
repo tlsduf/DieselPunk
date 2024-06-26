@@ -121,6 +121,9 @@ private:
 	
 	//바인딩 된 인풋 액션 핸들
 	TMap<EAbilityType, TMap<ETriggerEvent, int32>> BindInputActionHandle;
+
+	UPROPERTY(EditAnywhere, Category="MYDP_TurretRotate")
+	double TurretRotateAngle = 90.0;
 	
 protected:
 	APlayerControllerBase();

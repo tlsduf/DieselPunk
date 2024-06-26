@@ -25,5 +25,5 @@ private:
 	//카드 사용 완료 함수
 	virtual void _Complete(bool& OutSuccess, int32 InCost) override;
 	//설치물 회전 함수
-	virtual void _RotateInstallation(int32 InRotateAngle) override;
+	virtual void _RotateInstallation(double InRotateAngle) override;
 };

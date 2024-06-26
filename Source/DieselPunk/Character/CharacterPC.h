@@ -14,7 +14,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FDelegate_ChangeDeckCount, int32)
 DECLARE_DELEGATE_TwoParams(FDelegate_CardActivate, bool&, int32)
 DECLARE_DELEGATE_TwoParams(FDelegate_CardComplete, bool&, int32)
 DECLARE_DELEGATE(FDelegate_CardCancel)
-DECLARE_DELEGATE_OneParam(FDelegate_RotateInstallation, int32)
+DECLARE_DELEGATE_OneParam(FDelegate_RotateInstallation, double)
 
 
 class UPlayerSkill;

@@ -20,6 +20,10 @@ void UTurretAnimInstace::NativeUpdateAnimation(float InDeltaSeconds)
 		float adjacent = CurTarget->GetActorLocation().Z - GetOwningActor()->GetActorLocation().Z;
 		UpDownDegree = asin(adjacent / OwnerToTargetDist) * 100;
 	}
+	
+	ACharacterBase* owner = Cast<ACharacterBase>(TryGetPawnOwner());
+	if(owner)
+		TurretLevel = owner->GetStat(ECharacterStatType::Level);
 }
 
 // AbilityType에 따른 몽타주를 반환합니다. None입력시 기본 몽타주 반환

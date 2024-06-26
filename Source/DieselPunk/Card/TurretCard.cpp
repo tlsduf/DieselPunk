@@ -100,7 +100,7 @@ void FTurretCard::_Complete(bool& OutSuccess, int32 InCost)
 	OutSuccess = true;
 }
 
-void FTurretCard::_RotateInstallation(int32 InRotateAngle)
+void FTurretCard::_RotateInstallation(double InRotateAngle)
 {
 	ACharacterHousing* controlTurret = Cast<ACharacterHousing>(FObjectManager::GetInstance()->FindActor(ControlTurretId));
 	if(!controlTurret)
@@ -109,8 +109,13 @@ void FTurretCard::_RotateInstallation(int32 InRotateAngle)
 		return;
 	}
 	
-	FRotator rotator;
-	rotator.Yaw = InRotateAngle;
+	//FRotator rotator;
+	//rotator.Pitch = 0.0;
+	//rotator.Yaw = InRotateAngle;
+	//rotator.Roll = 0.0;
+	//controlTurret->AddActorWorldRotation(rotator);
 
-	controlTurret->AddActorWorldRotation(rotator);
+	FRotator rotator = controlTurret->GetActorRotation();
+	rotator.Yaw += InRotateAngle;
+	controlTurret->SetActorRotation(rotator);
 }
