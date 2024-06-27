@@ -32,12 +32,12 @@ void UDPAnimNotify_Shot::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceB
 		{
 			decorator->StartEffect(EEffectPlayType::Shot, FName(TEXT("Grenade_socket")));
 		}
-		if(UDPAnimInstance* animInst = Cast<UDPAnimInstance>(MeshComp->GetAnimInstance()))
-		{
-			ACharacterPC* pc = Cast<ACharacterPC>(character);
-			if(!pc || !Cast<USkillSoldierLM>(pc->GetCurrentCachedSkill()))
-				animInst->AttackEndSign();
-		}
+		//if(UDPAnimInstance* animInst = Cast<UDPAnimInstance>(MeshComp->GetAnimInstance()))
+		//{
+		//	ACharacterPC* pc = Cast<ACharacterPC>(character);
+		//	if(!pc || !Cast<USkillSoldierLM>(pc->GetCurrentCachedSkill()))
+		//		animInst->AttackEndSign();
+		//}
 		character->AbilityShot();
 	}
 }

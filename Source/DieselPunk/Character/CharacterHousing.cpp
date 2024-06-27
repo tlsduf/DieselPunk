@@ -148,6 +148,10 @@ bool ACharacterHousing::CompleteHousingTurret()
 					}
 				},spawnTime, false);
 		}
+		else
+		{
+			RunAi();
+		}
 		//RunAi();
 		ChangeMaterialByHousingEffect(false);
 
