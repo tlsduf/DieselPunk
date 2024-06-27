@@ -39,32 +39,35 @@ void ANPCAIController::Tick(float DeltaTime)
 void ANPCAIController::OnPossess(APawn* InPawn)
 {
     Super::OnPossess(InPawn);
+    
+    bPlaySpawnAnim = false;
+    RunAi(InPawn, false);
 
     //애니메이션 재생
-    SpawnTime = Cast<ACharacterNPC>(InPawn)->PlaySpawnAnim();
-    
-    if(SpawnTime > 0)
-    {
-        // 스폰 애니메이션이 완료되었을 때의 처리
-        TWeakObjectPtr<ANPCAIController> thisPtr = this;
-        TWeakObjectPtr<APawn> inPawn = InPawn;
-        GetWorld()->GetTimerManager().SetTimer(SpawnAnimTHandle, [thisPtr, inPawn](){
-                if(thisPtr.IsValid())
-                {
-                    thisPtr->bPlaySpawnAnim = false;
-                    if(inPawn.IsValid())
-                    {
-                        Cast<ACharacter>(inPawn)->GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-                        thisPtr->RunAi(inPawn.Get(), false);
-                    }
-                }
-            },SpawnTime, false);
-    }
-    else
-    {
-        bPlaySpawnAnim = false;
-        RunAi(InPawn, false);
-    }
+    //SpawnTime = Cast<ACharacterNPC>(InPawn)->PlaySpawnAnim();
+    //
+    //if(SpawnTime > 0)
+    //{
+    //    // 스폰 애니메이션이 완료되었을 때의 처리
+    //    TWeakObjectPtr<ANPCAIController> thisPtr = this;
+    //    TWeakObjectPtr<APawn> inPawn = InPawn;
+    //    GetWorld()->GetTimerManager().SetTimer(SpawnAnimTHandle, [thisPtr, inPawn](){
+    //            if(thisPtr.IsValid())
+    //            {
+    //                thisPtr->bPlaySpawnAnim = false;
+    //                if(inPawn.IsValid())
+    //                {
+    //                    Cast<ACharacter>(inPawn)->GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+    //                    thisPtr->RunAi(inPawn.Get(), false);
+    //                }
+    //            }
+    //        },SpawnTime, false);
+    //}
+    //else
+    //{
+    //    bPlaySpawnAnim = false;
+    //    RunAi(InPawn, false);
+    //}
 }
 
 //Ai를 실행합니다.

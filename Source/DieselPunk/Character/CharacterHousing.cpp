@@ -131,7 +131,24 @@ bool ACharacterHousing::CompleteHousingTurret()
 {
 	if(HousingActorComponent->CompleteHousingTurret())
 	{
-		RunAi();
+		float spawnTime = PlaySpawnAnim();
+		if(spawnTime > 0)
+		{
+			// 스폰 애니메이션이 완료되었을 때의 처리
+			TWeakObjectPtr<ACharacterHousing> thisPtr = this;
+			FTimerHandle timerHandle;
+			GetWorld()->GetTimerManager().SetTimer(timerHandle, [thisPtr](){
+					if(thisPtr.IsValid())
+					{
+						if(thisPtr.IsValid())
+						{
+							thisPtr->GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+							thisPtr->RunAi();
+						}
+					}
+				},spawnTime, false);
+		}
+		//RunAi();
 		ChangeMaterialByHousingEffect(false);
 
 		GetCapsuleComponent()->SetGenerateOverlapEvents(true);
