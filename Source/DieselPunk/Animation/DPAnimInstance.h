@@ -48,7 +48,7 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "MYDP_Movement", Meta = (AllowPrivateAccess = true))
 	bool IsAccelerating = false;
-
+	
 
 	UPROPERTY(BlueprintReadOnly, Category = "MYDP_State", Meta = (AllowPrivateAccess = true))
 	bool InCombat = false;

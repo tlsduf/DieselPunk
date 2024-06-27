@@ -17,8 +17,10 @@ void UTurretAnimInstace::NativeUpdateAnimation(float InDeltaSeconds)
 	{
 		OwnerToTargetRot = (CurTarget->GetActorLocation() - GetOwningActor()->GetActorLocation()).Rotation() - GetOwningActor()->GetActorRotation();
 		OwnerToTargetDist = FVector::Dist(CurTarget->GetActorLocation(), GetOwningActor()->GetActorLocation());
-		float adjacent = CurTarget->GetActorLocation().Z - GetOwningActor()->GetActorLocation().Z;
-		UpDownDegree = asin(adjacent / OwnerToTargetDist) * 100;
+		float l =  FVector::Dist(FVector(CurTarget->GetActorLocation().X, CurTarget->GetActorLocation().Y, 0),
+		FVector(GetOwningActor()->GetActorLocation().X, GetOwningActor()->GetActorLocation().Y, 0));
+		float h = CurTarget->GetActorLocation().Z - GetOwningActor()->GetActorLocation().Z;
+		UpDownDegree = atan(h / l) * 180 / PI;
 	}
 	
 	ACharacterBase* owner = Cast<ACharacterBase>(TryGetPawnOwner());

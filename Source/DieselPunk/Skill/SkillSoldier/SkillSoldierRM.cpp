@@ -3,6 +3,7 @@
 #include "SkillSoldierRM.h"
 #include "../../Actor\ProjectileBase.h"
 #include "..\..\Character\CharacterPC.h"
+#include "../../Animation/SoldierAnimInstance.h"
 #include "../../Handler/CoolTimeHandler.h"
 
 #include <GameFramework/PlayerController.h>
@@ -21,6 +22,25 @@ void USkillSoldierRM::BeginPlay()
 void USkillSoldierRM::SkillTriggered()
 {
 	Super::SkillTriggered();
+
+	AbilityStart();
+}
+
+void USkillSoldierRM::AbilityStart(AActor* InTarget)
+{
+	Super::AbilityStart(InTarget);
+	
+	// 쿨타임
+	CoolTimeHandler->SetCoolTime(CoolTime);
+	
+	auto ownerPawn = Cast<ACharacterBase>(OwnerCharacter);
+	if(UDPAnimInstance* animInst = Cast<UDPAnimInstance>(ownerPawn->GetMesh()->GetAnimInstance()))	
+		animInst->AttackSign(EAbilityType::MouseRM);
+}
+
+void USkillSoldierRM::AbilityShot(AActor* InTarget)
+{
+	Super::AbilityShot(InTarget);
 	
 	// 쿨타임 && 스킬플레이타임
 	CoolTimeHandler->SetCoolTime(CoolTime);

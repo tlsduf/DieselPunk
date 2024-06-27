@@ -54,7 +54,6 @@ public:
 	/////////////////////////////////////////////////////////////////////
 	// for movement //
 	
-	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	bool IsJog = false;				// w눌린상태>달리기가능   달리는상태>w때기>달리기종료
 
 	bool CanJog = true;				// Jog 가능여부
@@ -267,6 +266,8 @@ public:
 	void DestroyDecalComponent();
 
 	void OnPossessWeapon(AWeapon* InWeapon);
+
+	TWeakObjectPtr<UPlayerSkill> GetCurrentCachedSkill() {return CurrentCachedSkill;}
 
 public:
 	virtual void AbilityShot() override;

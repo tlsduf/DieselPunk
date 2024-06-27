@@ -21,6 +21,7 @@ protected:
 
 public:
 	virtual void SkillTriggered() override;
+	virtual void SkillCompleted() override;
 
 private:
 	bool IsDash = false;				// 대쉬중이면 true
@@ -36,6 +37,7 @@ private:
 	FTimerHandle PlaySkillTHandle;
 	FTimerHandle DashTHandle;
 
+	void StartDash();
 	void StopDashing();
 	void ResetDash();
 };

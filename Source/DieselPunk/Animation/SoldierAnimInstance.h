@@ -31,6 +31,9 @@ class DIESELPUNK_API USoldierAnimInstance : public UDPAnimInstance
 	GENERATED_BODY()
 	
 private:
+	UPROPERTY(BlueprintReadOnly, Category = "MYDP_Movement", Meta = (AllowPrivateAccess = true))
+	bool isJog = false;
+	
 	// 캐릭터가 사용할 애님 몽타주 Shift
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP", Meta = (AllowPrivateAccess = true))
 	TSoftObjectPtr<UAnimMontage> ShiftMontage;

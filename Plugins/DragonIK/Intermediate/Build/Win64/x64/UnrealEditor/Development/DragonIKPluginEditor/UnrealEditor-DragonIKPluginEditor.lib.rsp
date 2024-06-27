@@ -6,7 +6,7 @@
 /NAME:"UnrealEditor-DragonIKPluginEditor.dll"
 /IGNORE:4221
 /NODEFAULTLIB
-"D:\Project\DieselPunk\Intermediate\Build\Win64\x64\DieselPunkEditor\Development\UnrealEd\SharedPCH.UnrealEd.Cpp17.InclOrderUnreal5_1.h.obj"
-"D:\Project\DieselPunk\Plugins\DragonIK\Intermediate\Build\Win64\x64\UnrealEditor\Development\DragonIKPluginEditor\Module.DragonIKPluginEditor.cpp.obj"
-"D:\Project\DieselPunk\Plugins\DragonIK\Intermediate\Build\Win64\x64\UnrealEditor\Development\DragonIKPluginEditor\Default.rc2.res"
-/OUT:"D:\Project\DieselPunk\Plugins\DragonIK\Intermediate\Build\Win64\x64\UnrealEditor\Development\DragonIKPluginEditor\UnrealEditor-DragonIKPluginEditor.lib"
+"C:\Users\user\Desktop\Unreal\DieselPunk\Intermediate\Build\Win64\x64\DieselPunkEditor\Development\UnrealEd\SharedPCH.UnrealEd.Cpp17.InclOrderUnreal5_1.h.obj"
+"C:\Users\user\Desktop\Unreal\DieselPunk\Plugins\DragonIK\Intermediate\Build\Win64\x64\UnrealEditor\Development\DragonIKPluginEditor\Module.DragonIKPluginEditor.cpp.obj"
+"C:\Users\user\Desktop\Unreal\DieselPunk\Plugins\DragonIK\Intermediate\Build\Win64\x64\UnrealEditor\Development\DragonIKPluginEditor\Default.rc2.res"
+/OUT:"C:\Users\user\Desktop\Unreal\DieselPunk\Plugins\DragonIK\Intermediate\Build\Win64\x64\UnrealEditor\Development\DragonIKPluginEditor\UnrealEditor-DragonIKPluginEditor.lib"

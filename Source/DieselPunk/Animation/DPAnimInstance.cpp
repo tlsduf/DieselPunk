@@ -44,7 +44,7 @@ void UDPAnimInstance::NativeUpdateAnimation(float InDeltaSeconds)
 	RotationLastTick = Character->GetActorRotation();
 	
 	IsAccelerating = Character->GetCharacterMovement()->GetCurrentAcceleration().Length() > 0;
-
+	
 	InCombat = Character->GetInCombat();
 	
 	IsDead = Character->IsDead();
