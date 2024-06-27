@@ -270,7 +270,7 @@ public:
 	TWeakObjectPtr<UPlayerSkill> GetCurrentCachedSkill() {return CurrentCachedSkill;}
 
 public:
-	virtual void AbilityShot() override;
+	virtual void AbilityShot(double InDamageCoefficient) override;
 
 	virtual void SetBuffStatusEffectRoleType(EBuffStatusEffectRoleType InBuffStatusEffectRolType, bool InCan) override;
 };

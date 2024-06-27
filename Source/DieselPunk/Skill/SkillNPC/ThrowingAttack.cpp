@@ -65,8 +65,10 @@ void UThrowingAttack::AbilityStart(AActor* InTarget)
 }
 
 // 설정된 Transform으로 투사체를 생성합니다.
-void UThrowingAttack::AbilityShot(AActor* InTarget)
+void UThrowingAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 {
+	Super::AbilityShot(InDamageCoefficient, InTarget);
+	
 	if(InTarget == nullptr)
 		return;
 

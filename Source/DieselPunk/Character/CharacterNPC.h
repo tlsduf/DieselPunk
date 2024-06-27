@@ -193,7 +193,7 @@ public:
 	void DoNPCSkill();
 	void DoNPCSkill(EAbilityType InAbilityType);
 	
-	virtual void AbilityShot() override;
+	virtual void AbilityShot(double InDamageCoefficient) override;
 
 	const TArray<EAbilityType>& GetUseableSkills(){return UseableSkills;}
 	const USkillBase* GetNPCSkill(EAbilityType InAbilityType);

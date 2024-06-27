@@ -36,7 +36,7 @@ protected:
 public:
 	virtual void AbilityStart(AActor* InTarget = nullptr) override;
 
-	virtual void AbilityShot(AActor* InTarget = nullptr) override;
+	virtual void AbilityShot(double InDamageCoefficient, AActor* InTarget = nullptr) override;
 
 	// Target의 위치를 기반으로 곡사궤도를 생성하고, Projectile에 Spline정보를 줍니다.
 	FSplinePath MakeSplinePath(AActor* InTarget);

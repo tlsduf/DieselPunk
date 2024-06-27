@@ -180,5 +180,5 @@ public:
 
 	/////////////////////////////////////////////////////////////////////
 	// Skill //
-	virtual void AbilityShot(){}
+	virtual void AbilityShot(double InDamageCoefficient){}
 };

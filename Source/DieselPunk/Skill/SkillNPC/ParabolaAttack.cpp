@@ -37,9 +37,9 @@ void UParabolaAttack::AbilityStart(AActor* InTarget)
 		animInst->AttackSign(EAbilityType::MouseLM);
 }
 
-void UParabolaAttack::AbilityShot(AActor* InTarget)
+void UParabolaAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 {
-	Super::AbilityShot(InTarget);
+	Super::AbilityShot(InDamageCoefficient, InTarget);
 
 	if(InTarget == nullptr)
 	{

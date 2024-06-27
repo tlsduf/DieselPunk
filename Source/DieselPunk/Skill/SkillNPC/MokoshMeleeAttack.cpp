@@ -38,9 +38,9 @@ void UMokoshMeleeAttack::AbilityStart(AActor* InTarget)
 		animInst->AttackSign(EAbilityType::MouseLM);
 }
 
-void UMokoshMeleeAttack::AbilityShot(AActor* InTarget)
+void UMokoshMeleeAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 {
-	Super::AbilityShot(InTarget);
+	Super::AbilityShot(InDamageCoefficient, InTarget);
 
 	if(InTarget == nullptr)
 	{
@@ -90,7 +90,7 @@ void UMokoshMeleeAttack::AbilityShot(AActor* InTarget)
 
 			for(const FOverlapResult& result : filterResults)
 			{
-				UGameplayStatics::ApplyDamage(result.GetActor(), Damage, OwnerController, ownerPawn, nullptr);
+				UGameplayStatics::ApplyDamage(result.GetActor(), Damage * InDamageCoefficient, OwnerController, ownerPawn, nullptr);
 				// Hit Effect
 				FEffectTransform hitET;
 				hitET.Location = HitEffectFTransform.Location + result.GetActor()->GetActorLocation();
@@ -135,7 +135,7 @@ void UMokoshMeleeAttack::AbilityShot(AActor* InTarget)
 
 			for(const FOverlapResult& result : filterResults)
 			{
-				UGameplayStatics::ApplyDamage(result.GetActor(), Damage, OwnerController, ownerPawn, nullptr);
+				UGameplayStatics::ApplyDamage(result.GetActor(), Damage * InDamageCoefficient, OwnerController, ownerPawn, nullptr);
 				// Hit Effect
 				FEffectTransform hitET;
 				hitET.Location = HitEffectFTransform.Location + result.GetActor()->GetActorLocation();
@@ -190,7 +190,7 @@ void UMokoshMeleeAttack::AbilityShot(AActor* InTarget)
 
 			for(const FOverlapResult& result : filterResults)
 			{
-				UGameplayStatics::ApplyDamage(result.GetActor(), Damage, OwnerController, ownerPawn, nullptr);
+				UGameplayStatics::ApplyDamage(result.GetActor(), Damage * InDamageCoefficient, OwnerController, ownerPawn, nullptr);
 				// Hit Effect
 				FEffectTransform hitET;
 				hitET.Location = HitEffectFTransform.Location + result.GetActor()->GetActorLocation();

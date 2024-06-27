@@ -74,7 +74,7 @@ public:
 	virtual void AbilityStart(AActor* InTarget = nullptr);
 
 	// 스킬을 발동합니다. 보통 발사체 생성 및 데미지 처리를 다룹니다.
-	virtual void AbilityShot(AActor* InTarget = nullptr);
+	virtual void AbilityShot(double InDamageCoefficient, AActor* InTarget = nullptr);
 	// 스킬이 어떠한 이유로 인해 캔슬될 때 호출됩니다.
 	virtual void CancelSkill(){};
 

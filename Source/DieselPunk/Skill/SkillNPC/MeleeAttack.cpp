@@ -34,9 +34,9 @@ void UMeleeAttack::AbilityStart(AActor* InTarget)
 		animInst->AttackSign(EAbilityType::MouseLM);
 }
 
-void UMeleeAttack::AbilityShot(AActor* InTarget)
+void UMeleeAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 {
-	Super::AbilityShot(InTarget);
+	Super::AbilityShot(InDamageCoefficient, InTarget);
 
 	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
 
@@ -53,7 +53,7 @@ void UMeleeAttack::AbilityShot(AActor* InTarget)
 		for (auto It = sweepResults.CreateIterator(); It; It++)
 		{
 			hitActor = It->GetActor();
-			UGameplayStatics::ApplyDamage(hitActor, Damage, OwnerController, ownerPawn, nullptr);
+			UGameplayStatics::ApplyDamage(hitActor, Damage * InDamageCoefficient, OwnerController, ownerPawn, nullptr);
 		}
 	}
 }

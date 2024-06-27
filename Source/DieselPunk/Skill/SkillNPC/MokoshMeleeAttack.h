@@ -81,5 +81,5 @@ protected:
 public:
 	virtual void AbilityStart(AActor* InTarget = nullptr) override;
 
-	virtual void AbilityShot(AActor* InTarget = nullptr) override;
+	virtual void AbilityShot(double InDamageCoefficient, AActor* InTarget = nullptr) override;
 };

@@ -56,7 +56,7 @@ void USkillBase::AbilityStart(AActor* InTarget)
 {
 }
 
-void USkillBase::AbilityShot(AActor* InTarget)
+void USkillBase::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 {
 	CoolDownDelta = CoolDown;
 }

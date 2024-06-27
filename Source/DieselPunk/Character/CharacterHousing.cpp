@@ -257,14 +257,17 @@ bool ACharacterHousing::UpgradeInstallation()
 	}
 
 	//메시 변경
-	GetMesh()->SetSkeletalMeshAsset(statDataTable->UpgradeMesh);
-	TArray<FSkeletalMaterial> materials = statDataTable->UpgradeMesh->GetMaterials();
-	for(int i = 0; i < GetMesh()->GetMaterials().Num(); ++i)
+	if(statDataTable->UpgradeMesh != nullptr)
 	{
-		if(i < materials.Num())
-			GetMesh()->SetMaterial(i, materials[i].MaterialInterface);
-		else
-			GetMesh()->SetMaterial(i, nullptr);
+		GetMesh()->SetSkeletalMeshAsset(statDataTable->UpgradeMesh);
+		TArray<FSkeletalMaterial> materials = statDataTable->UpgradeMesh->GetMaterials();
+		for(int i = 0; i < GetMesh()->GetMaterials().Num(); ++i)
+		{
+			if(i < materials.Num())
+				GetMesh()->SetMaterial(i, materials[i].MaterialInterface);
+			else
+				GetMesh()->SetMaterial(i, nullptr);
+		}
 	}
 
 	//스탯 변경

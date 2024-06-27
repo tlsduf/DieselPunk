@@ -33,9 +33,9 @@ void UHitscanFire::AbilityStart(AActor* InTarget)
 		animInst->AttackSign(EAbilityType::MouseLM);
 }
 
-void UHitscanFire::AbilityShot(AActor* InTarget)
+void UHitscanFire::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 {
-	Super::AbilityShot(InTarget);
+	Super::AbilityShot(InDamageCoefficient, InTarget);
 
 	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
 
@@ -48,7 +48,7 @@ void UHitscanFire::AbilityShot(AActor* InTarget)
 	
 	// 데미지 정보 전달
 	if (hitActor != nullptr && hitActor != ownerPawn)
-		UGameplayStatics::ApplyDamage(hitActor, damage, OwnerController, ownerPawn, nullptr);
+		UGameplayStatics::ApplyDamage(hitActor, damage * InDamageCoefficient, OwnerController, ownerPawn, nullptr);
 
 	HitEffectFTransform.Location = hit.Location;
 	if (HitParticles)

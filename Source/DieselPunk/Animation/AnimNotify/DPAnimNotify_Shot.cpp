@@ -38,6 +38,6 @@ void UDPAnimNotify_Shot::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceB
 		//	if(!pc || !Cast<USkillSoldierLM>(pc->GetCurrentCachedSkill()))
 		//		animInst->AttackEndSign();
 		//}
-		character->AbilityShot();
+		character->AbilityShot(DamageCoefficient);
 	}
 }

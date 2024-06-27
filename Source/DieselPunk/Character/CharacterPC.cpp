@@ -792,12 +792,12 @@ void ACharacterPC::OnPossessWeapon(AWeapon* InWeapon)
 	CachedSkills.FindOrAdd(EAbilityType::MouseRM) = InWeapon->GetSkill_RM();
 }
 
-void ACharacterPC::AbilityShot()
+void ACharacterPC::AbilityShot(double InDamageCoefficient)
 {
-	Super::AbilityShot();
+	Super::AbilityShot(InDamageCoefficient);
 
 	if(CurrentCachedSkill.IsValid())
-		CurrentCachedSkill->AbilityShot();
+		CurrentCachedSkill->AbilityShot(InDamageCoefficient);
 }
 
 void ACharacterPC::SetBuffStatusEffectRoleType(EBuffStatusEffectRoleType InBuffStatusEffectRolType, bool InCan)

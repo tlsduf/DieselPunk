@@ -29,12 +29,12 @@ void USuicideBomb::AbilityStart(AActor* InTarget)
 	if(UDPAnimInstance* animInst = Cast<UDPAnimInstance>(ownerPawn->GetMesh()->GetAnimInstance()))	
 		animInst->AttackSign(EAbilityType::MouseLM);
 
-	AbilityShot(InTarget);
+	Super::AbilityShot(1.0, InTarget);
 }
 
-void USuicideBomb::AbilityShot(AActor* InTarget)
+void USuicideBomb::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 {
-	Super::AbilityShot(InTarget);
+	Super::AbilityShot(InDamageCoefficient, InTarget);
 
 	auto ownerPawn = Cast<ACharacterBase>(OwnerCharacter);
 	if(!ownerPawn)
@@ -54,14 +54,14 @@ void USuicideBomb::AbilityShot(AActor* InTarget)
 			if(ownerPawn->GetCharacterType() == ECharacterType::Player || ownerPawn->GetCharacterType() == ECharacterType::Turret)
 			{
 				if(charBase->GetCharacterType() == ECharacterType::Monster)
-					UGameplayStatics::ApplyDamage(charBase, Damage, OwnerController, ownerPawn, nullptr);
+					UGameplayStatics::ApplyDamage(charBase, Damage * InDamageCoefficient, OwnerController, ownerPawn, nullptr);
 			}
 			else if(ownerPawn->GetCharacterType() == ECharacterType::Monster)
 			{
 				if(charBase->GetCharacterType() == ECharacterType::Player
 				|| charBase->GetCharacterType() == ECharacterType::Turret
 				|| charBase->GetCharacterType() == ECharacterType::Installation)
-					UGameplayStatics::ApplyDamage(charBase, Damage, OwnerController, ownerPawn, nullptr);
+					UGameplayStatics::ApplyDamage(charBase, Damage * InDamageCoefficient, OwnerController, ownerPawn, nullptr);
 			}
 		}
 	}

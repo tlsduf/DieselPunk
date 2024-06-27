@@ -39,5 +39,5 @@ public:
 	virtual void AbilityStart(AActor* InTarget = nullptr) override;
 
 	// 스킬을 발동합니다. 보통 발사체 생성 및 데미지 처리를 다룹니다.
-	virtual void AbilityShot(AActor* InTarget = nullptr) override;
+	virtual void AbilityShot(double InDamageCoefficient, AActor* InTarget = nullptr) override;
 };

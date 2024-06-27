@@ -16,6 +16,9 @@ class DIESELPUNK_API UDPAnimNotify_Shot : public UAnimNotify
 {
 	GENERATED_BODY()
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Damage")
+	double DamageCoefficient = 1.0;
+public:
 
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
 };

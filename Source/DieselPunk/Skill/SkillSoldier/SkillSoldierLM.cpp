@@ -43,9 +43,9 @@ void USkillSoldierLM::AbilityStart(AActor* InTarget)
 		animInst->AttackSign(EAbilityType::MouseLM);
 }
 
-void USkillSoldierLM::AbilityShot(AActor* InTarget)
+void USkillSoldierLM::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 {
-	Super::AbilityShot(InTarget);
+	Super::AbilityShot(InDamageCoefficient, InTarget);
 	
 	// 라인트레이스로 최종경로설정
 	FVector lineTraceLocation;

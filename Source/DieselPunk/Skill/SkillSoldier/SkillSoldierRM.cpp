@@ -38,9 +38,9 @@ void USkillSoldierRM::AbilityStart(AActor* InTarget)
 		animInst->AttackSign(EAbilityType::MouseRM);
 }
 
-void USkillSoldierRM::AbilityShot(AActor* InTarget)
+void USkillSoldierRM::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 {
-	Super::AbilityShot(InTarget);
+	Super::AbilityShot(InDamageCoefficient, InTarget);
 	
 	// 쿨타임 && 스킬플레이타임
 	CoolTimeHandler->SetCoolTime(CoolTime);

@@ -35,9 +35,9 @@ void UTargetAttack::AbilityStart(AActor* InTarget)
 		animInst->AttackSign(EAbilityType::MouseLM);
 }
 
-void UTargetAttack::AbilityShot(AActor* InTarget)
+void UTargetAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 {
-	Super::AbilityShot(InTarget);
+	Super::AbilityShot(InDamageCoefficient, InTarget);
 
 	if(InTarget == nullptr)
 	{
@@ -68,5 +68,5 @@ void UTargetAttack::AbilityShot(AActor* InTarget)
 		UtilEffect::SpawnParticleEffect(GetWorld(), HitEffect, hitET);
 
 	
-	UGameplayStatics::ApplyDamage(InTarget, Damage, OwnerController, ownerPawn, nullptr);
+	UGameplayStatics::ApplyDamage(InTarget, Damage * InDamageCoefficient, OwnerController, ownerPawn, nullptr);
 }

@@ -40,8 +40,10 @@ void UProjectileAttack::AbilityStart(AActor* InTarget)
 }
 
 // 설정된 Transform으로 투사체를 생성합니다.
-void UProjectileAttack::AbilityShot(AActor* InTarget)
+void UProjectileAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 {
+	Super::AbilityShot(InDamageCoefficient, InTarget);
+	
 	if(InTarget == nullptr)
 		return;
 	

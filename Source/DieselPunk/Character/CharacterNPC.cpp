@@ -600,17 +600,17 @@ void ACharacterNPC::DoNPCSkill(EAbilityType InAbilityType)
 	}
 }
 
-void ACharacterNPC::AbilityShot()
+void ACharacterNPC::AbilityShot(double InDamageCoefficient)
 {
-	Super::AbilityShot();
+	Super::AbilityShot(InDamageCoefficient);
 	if(NPCSkill)
-		NPCSkill->AbilityShot(Target.Get());
+		NPCSkill->AbilityShot(InDamageCoefficient, Target.Get());
 	if(CurrentUseAbilityType != EAbilityType::None)
 	{
 		TObjectPtr<USkillBase>* skill = NPCSkills.Find(CurrentUseAbilityType);
 		if(skill && *skill)
 		{
-			(*skill)->AbilityShot(Target.Get());
+			(*skill)->AbilityShot(InDamageCoefficient, Target.Get());
 			CurrentUseAbilityType = EAbilityType::None;
 		}
 	}
