@@ -6,6 +6,9 @@
 
 #include <Animation/AnimMontage.h>
 
+#include "DieselPunk/Character/CharacterTurret.h"
+#include "DieselPunk/Skill/SkillNPC/ParabolaAttack.h"
+
 UTurretAnimInstace::UTurretAnimInstace(){}
 
 // 틱마다 호출되는 함수
@@ -16,6 +19,20 @@ void UTurretAnimInstace::NativeUpdateAnimation(float InDeltaSeconds)
 	if(CurTarget.IsValid())
 	{
 		OwnerToTargetRot = (CurTarget->GetActorLocation() - GetOwningActor()->GetActorLocation()).Rotation() - GetOwningActor()->GetActorRotation();
+		BarrelYaw = OwnerToTargetRot.Yaw;
+
+		if(ACharacterTurret* turret = Cast<ACharacterTurret>(GetOwningActor()))
+		{
+			if(Cast<UParabolaAttack>(turret->GetNPCSkill()))
+			{
+				FVector direction = (CurTarget->GetActorLocation() - GetOwningActor()->GetActorLocation()) / 3 + FVector(0.0, 0.0, 10000.0);
+				direction.Normalize();
+				BarrelPitch = direction.Rotation().Pitch;
+			}
+			else
+				BarrelPitch = OwnerToTargetRot.Pitch;
+		}
+		
 		OwnerToTargetDist = FVector::Dist(CurTarget->GetActorLocation(), GetOwningActor()->GetActorLocation());
 		float l =  FVector::Dist(FVector(CurTarget->GetActorLocation().X, CurTarget->GetActorLocation().Y, 0),
 		FVector(GetOwningActor()->GetActorLocation().X, GetOwningActor()->GetActorLocation().Y, 0));

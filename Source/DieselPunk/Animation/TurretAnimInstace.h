@@ -22,6 +22,14 @@ private:
 	UPROPERTY(BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
 	FRotator OwnerToTargetRot = FRotator::ZeroRotator;
 
+	// 터렛 포신 Pitch
+	UPROPERTY(BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
+	float BarrelPitch = 0.f;
+
+	// 터렛 포신 Yaw
+	UPROPERTY(BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
+	float BarrelYaw = 0.f;
+
 	// 터렛위치와 타겟위치 updown 각도
 	UPROPERTY(BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
 	float UpDownDegree = 0;

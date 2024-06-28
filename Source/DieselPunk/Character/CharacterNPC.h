@@ -197,6 +197,7 @@ public:
 
 	const TArray<EAbilityType>& GetUseableSkills(){return UseableSkills;}
 	const USkillBase* GetNPCSkill(EAbilityType InAbilityType);
+	const USkillBase* GetNPCSkill(){return NPCSkill;}
 
 	virtual void ThrowReady(TWeakObjectPtr<AActor> InThrowingOwner) override;
 	virtual void ThrowExecute(TWeakObjectPtr<AActor> InThrowingOwner) override;
