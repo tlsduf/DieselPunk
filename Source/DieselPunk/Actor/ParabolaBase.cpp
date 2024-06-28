@@ -120,32 +120,21 @@ void AParabolaBase::Tick(float DeltaTime)
 }
 
 // =============================================================
-// 파괴 시 이펙트 및 효과 적용
+// 파괴 시 효과 적용
 // =============================================================
 void AParabolaBase::DestroyEvent()
 {
 	// Effect
-	HitEffectFTransform.Location = HitEffectFTransform.Location + GetActorLocation();
-	HitEffectFTransform.Rotation = HitEffectFTransform.Rotation + GetActorRotation();
-
-	if (N_HitEffect)
-		UtilEffect::SpawnNiagaraEffect(GetWorld(), N_HitEffect, HitEffectFTransform);
-	if (HitEffect)
-		UtilEffect::SpawnParticleEffect(GetWorld(), HitEffect, HitEffectFTransform);
-	if (HitSound)
-		UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetActorLocation());
-	
 	TArray<FHitResult> sweepResults;
 	FVector startLocation = GetActorLocation();
 	FVector endLocation = startLocation;
-	if(!OwnerCharacter.IsValid())
-		return;
 	
-	if(OwnerCharacter->GetDebugOnOff())
+	if(OwnerCharacter.IsValid() && OwnerCharacter->GetDebugOnOff())
 	{
 		DrawDebugSphere(GetWorld(), startLocation, FirstRadialDamageRange, 16, FColor::Red, false, 3, 0, 1);
 		DrawDebugSphere(GetWorld(), startLocation, SecondRadialDamageRange, 16, FColor::Yellow, false, 3, 0, 1);
 	}
+	
 	UtilCollision::CapsuleSweepMulti(GetWorld(), sweepResults, startLocation, endLocation, FirstRadialDamageRange, ProjectileOwnerType, DebugOnOff);
 	if(!sweepResults.IsEmpty())
 	{
@@ -158,7 +147,7 @@ void AParabolaBase::DestroyEvent()
 	UtilCollision::CapsuleSweepMulti(GetWorld(), sweepSecondResults, startLocation, endLocation, SecondRadialDamageRange, ProjectileOwnerType, DebugOnOff);
 	if(!sweepSecondResults.IsEmpty())
 	{
-		for (auto it = sweepResults.CreateIterator(); it; it++)
+		for (auto it = sweepSecondResults.CreateIterator(); it; it++)
 		{
 			AActor* hitActor = it->GetActor();
 			if(sweepResults.FindByPredicate([hitActor](const FHitResult& hit)
@@ -170,8 +159,6 @@ void AParabolaBase::DestroyEvent()
 			UGameplayStatics::ApplyDamage(it->GetActor(), Damage * 0.5f, OwnerController.Get(), OwnerCharacter.Get(), nullptr);
 		}
 	}
-
-	FObjectManager::GetInstance()->DestroyActor(this);
 }
 
 // =============================================================
@@ -209,6 +196,8 @@ void AParabolaBase::_OnHit(UPrimitiveComponent* InHitComp, AActor* InOtherActor,
 			DestroyEvent();
 		}
 	}
+
+	FObjectManager::GetInstance()->DestroyActor(this);
 }
 
 // =============================================================
@@ -249,6 +238,8 @@ void AParabolaBase::_BeginOverlapEvent(UPrimitiveComponent* InOverlappedComponen
 			DestroyEvent();
 		}
 	}
+
+	FObjectManager::GetInstance()->DestroyActor(this);
 }
 
 void AParabolaBase::SetCapsuleCollisionResponses()
