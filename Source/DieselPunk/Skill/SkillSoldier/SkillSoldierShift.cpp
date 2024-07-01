@@ -19,6 +19,13 @@ void USkillSoldierShift::BeginPlay()
 	Super::BeginPlay();
 }
 
+void USkillSoldierShift::SkillStarted()
+{
+	Super::SkillStarted();
+	
+	//OwnerCharacterPC->StartJog();
+}
+
 void USkillSoldierShift::SkillTriggered()
 {
 	Super::SkillTriggered();

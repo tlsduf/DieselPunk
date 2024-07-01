@@ -171,7 +171,8 @@ void ACharacterPC::BeginPlay()
 void ACharacterPC::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
+	//LOG_SCREEN(FColor::White, TEXT("isjog : %hhd Incombat : %hhd"), IsJog, InCombat);
 	// 뛰는 상태인지 판별하여 MaxWalkSpeed 초기화.
 	if (IsJog)
 	{
@@ -186,7 +187,7 @@ void ACharacterPC::Tick(float DeltaTime)
 		SetZoomOutProp();
 		bUseControllerRotationYaw = true;	// 컨트롤러에 의한 캐릭터 yaw 회전
 		GetCharacterMovement()->bOrientRotationToMovement = false;			 // Character moves in the direction of input...
-		IsJog = false;
+		//StopJog();
 	}
 
 	// 줌을 해도 되는지 판별
@@ -197,7 +198,7 @@ void ACharacterPC::Tick(float DeltaTime)
 	if (InCombat)
 	{
 		//전투상태면 뛰는걸 멈춤
-		IsJog = false;
+		StopJog();
 
 		//줌아웃
 		if (IsZoomed)
@@ -323,8 +324,9 @@ void ACharacterPC::Landed(const FHitResult& Hit)
 //================================================================
 void ACharacterPC::StartJog()
 {
-	IsJog = true;
 	InCombat = false;
+	IsJog = true;
+	
 
 	/*
 	//Player의 이동방향
@@ -491,12 +493,14 @@ void ACharacterPC::SkillStarted(const EAbilityType inAbilityType)
 		return;
 	
 	if(Skills.Find(inAbilityType) != nullptr)
-		if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
+		if (Skills[inAbilityType]->CanActivateAbility() && !GetOtherSkillActivating(inAbilityType))
 		{
-			ability->SkillStarted();
-			CurrentCachedSkill = Skills[inAbilityType];
+			if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
+			{
+				ability->SkillStarted();
+				CurrentCachedSkill = Skills[inAbilityType];
+			}
 		}
-	
 }
 void ACharacterPC::SkillOngoing(const EAbilityType inAbilityType)
 {
@@ -524,7 +528,8 @@ void ACharacterPC::SkillTriggered(const EAbilityType inAbilityType)
 	if(Skills.Find(inAbilityType) != nullptr)
 		if (Skills[inAbilityType]->CanActivateAbility() && !GetOtherSkillActivating(inAbilityType))
 		{
-			HandleCombatState();
+			if(inAbilityType != EAbilityType::Shift)
+				HandleCombatState();
 			if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
 			{
 				ability->SkillTriggered();
@@ -545,10 +550,13 @@ void ACharacterPC::SkillCompleted(const EAbilityType inAbilityType)
 			soldierAnimInst->AttackEndSign();
 	
 	if(Skills.Find(inAbilityType) != nullptr)
-		if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
+		if (Skills[inAbilityType]->CanActivateAbility() && !GetOtherSkillActivating(inAbilityType))
 		{
-			ability->SkillCompleted();
-			CurrentCachedSkill = Skills[inAbilityType];
+			if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
+			{
+				ability->SkillCompleted();
+				CurrentCachedSkill = Skills[inAbilityType];
+			}
 		}
 }
 void ACharacterPC::SkillCanceled(const EAbilityType inAbilityType)
@@ -575,7 +583,7 @@ bool ACharacterPC::GetOtherSkillActivating(EAbilityType inType)
 	switch(inType)
 	{
 	case EAbilityType::MouseLM :
-		return ( SkillActivating[EAbilityType::MouseRM]|| SkillActivating[EAbilityType::Shift]|| SkillActivating[EAbilityType::SkillQ] || SkillActivating[EAbilityType::SkillE] );
+		return ( SkillActivating[EAbilityType::MouseRM]|| SkillActivating[EAbilityType::Shift]|| SkillActivating[EAbilityType::SkillQ] || SkillActivating[EAbilityType::SkillE]|| SkillActivating[EAbilityType::SkillR] );
 	case EAbilityType::MouseRM :
 		return ( SkillActivating[EAbilityType::MouseLM]|| SkillActivating[EAbilityType::Shift]|| SkillActivating[EAbilityType::SkillQ] || SkillActivating[EAbilityType::SkillE]|| SkillActivating[EAbilityType::SkillR]);
 	case EAbilityType::Shift :

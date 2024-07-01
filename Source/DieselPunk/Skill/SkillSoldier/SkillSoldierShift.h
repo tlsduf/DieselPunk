@@ -20,6 +20,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	virtual void SkillStarted() override;
 	virtual void SkillTriggered() override;
 	virtual void SkillCompleted() override;
 
