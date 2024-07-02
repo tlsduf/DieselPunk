@@ -43,13 +43,18 @@ FNavPathSharedPtr UDPNavigationComponent::SearchPathTo(const FVector& inStartLoc
 
 	// 내비게이션 리빌드
 	//NavSys->Build();
-	
-	ANavigationData* NavData = Cast<ANavigationData>(NavSys->GetNavDataForActor(*Owner));
+
+	// 커스텀 에이전트 설정을 위한 NavAgentPropertiesRef 변수를 추가합니다. // 에이전트 반경을 설정합니다.
+	FNavAgentProperties CustomNavAgentProperties = Owner->GetNavAgentPropertiesRef();
+	//CustomNavAgentProperties.AgentRadius = Owner->GetCharacterRadius();
+
+	// ANavigationData를 커스텀 에이전트 속성으로 가져옵니다.
+	ANavigationData* NavData = Cast<ANavigationData>(NavSys->GetNavDataForProps(CustomNavAgentProperties, Owner->GetActorLocation()));
 	if (NavData == nullptr)
 		return nullptr;
 
 	if (!MyNavData && GetWorld() && GetWorld()->GetNavigationSystem())
-		MyNavData = NavSys->GetNavDataForProps(Owner->GetNavAgentPropertiesRef(), Owner->GetActorLocation());
+		MyNavData = NavSys->GetNavDataForProps(CustomNavAgentProperties, Owner->GetActorLocation());
 
 	FPathFindingQuery Query = BuildPathFindingQuery(inStartLoc, inEndLoc);
 	
@@ -61,7 +66,7 @@ FNavPathSharedPtr UDPNavigationComponent::SearchPathTo(const FVector& inStartLoc
 	Query.CostLimit = FPathFindingQuery::ComputeCostLimitFromHeuristic(Query.StartLocation, Query.EndLocation, HeuristicScale, CostLimitFactor, MinimumCostLimit);
 
 	EPathFindingMode::Type Mode = EPathFindingMode::Regular;
-	FPathFindingResult Result = NavSys->FindPathSync(Owner->GetNavAgentPropertiesRef(), Query, Mode);
+	FPathFindingResult Result = NavSys->FindPathSync(CustomNavAgentProperties, Query, Mode);
 	
 	return Result.Path;
 }
