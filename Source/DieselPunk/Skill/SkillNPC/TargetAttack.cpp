@@ -58,15 +58,34 @@ void UTargetAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 		UtilEffect::SpawnParticleEffect(GetWorld(), ShotEffect, shotET);
 	
 	// Hit Effect
-	FEffectTransform hitET;
-	hitET.Location = HitEffectFTransform.Location + InTarget->GetActorLocation();
-	hitET.Rotation = HitEffectFTransform.Rotation + ownerPawn->GetMesh()->GetSocketRotation("Grenade_socket").GetInverse();
-	hitET.Scale = HitEffectFTransform.Scale;
-	if (N_HitEffect)
-		UtilEffect::SpawnNiagaraEffect(GetWorld(), N_HitEffect, hitET);
-	if (HitEffect)
-		UtilEffect::SpawnParticleEffect(GetWorld(), HitEffect, hitET);
+	TArray<FHitResult> results;
+	if(ownerPawn->GetCharacterType() == ECharacterType::Player || ownerPawn->GetCharacterType() == ECharacterType::Turret)
+	{
+		GetWorld()->LineTraceMultiByChannel(results, ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket"), InTarget->GetActorLocation()
+		, ECC_GameTraceChannel7);
+	}
+	else if(ownerPawn->GetCharacterType() == ECharacterType::Monster)
+	{
+		GetWorld()->LineTraceMultiByChannel(results, ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket"), InTarget->GetActorLocation()
+		, ECC_GameTraceChannel8);
+	}
 
-	
+	if(!results.IsEmpty())
+	{
+		for(const FHitResult& hitResult : results)
+		{
+			if(hitResult.GetActor() == InTarget)
+			{
+				FEffectTransform hitET;
+				hitET.Location = HitEffectFTransform.Location + hitResult.Location;
+				hitET.Rotation = HitEffectFTransform.Rotation + ownerPawn->GetMesh()->GetSocketRotation("Grenade_socket").GetInverse();
+				hitET.Scale = HitEffectFTransform.Scale;
+				if (N_HitEffect)
+					UtilEffect::SpawnNiagaraEffect(GetWorld(), N_HitEffect, hitET);
+				if (HitEffect)
+					UtilEffect::SpawnParticleEffect(GetWorld(), HitEffect, hitET);
+			}
+		}
+	}
 	UGameplayStatics::ApplyDamage(InTarget, Damage * InDamageCoefficient, OwnerController, ownerPawn, nullptr);
 }
