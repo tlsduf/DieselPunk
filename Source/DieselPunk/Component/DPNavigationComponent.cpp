@@ -321,6 +321,8 @@ void UDPNavigationComponent::AddForceAlongSplinePath()
 	if( 50 < FVector::Dist(nearestSplineLocation, feetLocation) )
 		addForceDir = (addForceDir + toSplineDir).GetSafeNormal();
 
+	ForceDirection = addForceDir;
+
 	constexpr int scaleValue = 100;
 	Owner->AddMovementInput(addForceDir, scaleValue);
 

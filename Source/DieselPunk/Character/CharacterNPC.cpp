@@ -103,7 +103,13 @@ void ACharacterNPC::Tick(float DeltaTime)
 			return;
 		// 몬스터 AddMovementInput
 		if(!InRange && !bPlayerTargeting())
+		{
 			DPNavigationComponent->AddForceAlongSplinePath();
+			if(GetCharacterName() == TEXT("E_Mokosh"))
+			{
+				SetActorRotation(DPNavigationComponent->GetForceDirection().Rotation());
+			}
+		}
 		/*if(!InRange && !bPlayerTargeting())
 			if(AIController)
 				AIController->MoveToLocation(DPNavigationComponent->MoveToAlongSplinePath(), 1, false, false);*/

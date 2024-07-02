@@ -25,6 +25,8 @@ private:
 	TArray<FVector> MyPathPoints;	// 몬스터의 PathPoint를 담을 배열
 	
 	FSplinePath SplinePath;			// MyPathPoints를 기반으로 생성된 Curve Spline
+
+	FVector ForceDirection = FVector::ZeroVector;
 	
 	
 	// inStartLoc to inEndLoc 경로탐색 // 기존의 경로탐색 로직을 그대로 따라합니다.(아마도)
@@ -51,6 +53,8 @@ public:
 
 	// 경로 DrawDebug
 	void DrawDebugSpline();
+
+	FVector GetForceDirection(){return ForceDirection;}
 
 public:	
 	// Sets default values for this component's properties
