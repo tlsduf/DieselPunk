@@ -116,7 +116,7 @@ void AParabolaBase::Tick(float DeltaTime)
 	if(GetWorld()->LineTraceSingleByChannel(result, OldLocation, GetActorLocation(), ECC_WorldStatic, param))
 	{
 		if(IsValid(result.GetActor()))
-			SetActorLocation(result.GetActor()->GetActorLocation());
+			SetActorLocation(result.Location);
 	}
 }
 
