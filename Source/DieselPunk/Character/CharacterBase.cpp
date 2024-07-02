@@ -161,12 +161,12 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 				if(NPC->GetNPCType() == ENPCType::Alliance)
 					NPC->UpdateSplinePathAll();
 			}
-			
+
+			//아래 주석처리한 Destroy와 레벨관리는 UStatControlComponent/SetStatDelegateFunction.163(2024.7.2)로 옮겼습니다.
 			//Destroy();
-			
 			// 레벨관리
-			if(ADPLevelScriptActor* level = Cast<ADPLevelScriptActor>(this->GetLevel()->GetLevelScriptActor()))
-				level->CheckWaveCleared();
+			//if(ADPLevelScriptActor* level = Cast<ADPLevelScriptActor>(this->GetLevel()->GetLevelScriptActor()))
+			//  level->CheckWaveCleared();
 		}
 		ChangeStat(ECharacterStatType::Hp , -damage);
 		return damage;

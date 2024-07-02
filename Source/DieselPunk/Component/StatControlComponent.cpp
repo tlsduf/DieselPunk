@@ -8,11 +8,13 @@
 #include <GameFramework/CharacterMovementComponent.h>
 
 #include "DieselPunk/Character/CharacterTurret.h"
+#include "DieselPunk/Core/DPLevelScriptActor.h"
 #include "DieselPunk/Data/BuffDataTable.h"
 #include "DieselPunk/Data/StatDataTable.h"
 #include "DieselPunk/Manager/DatatableManager.h"
 #include "DieselPunk/Raw/BuffStat.h"
 #include "DieselPunk/Raw/BuffStatusEffect.h"
+#include "Engine/Level.h"
 
 // Sets default values for this component's properties
 UStatControlComponent::UStatControlComponent()
@@ -159,7 +161,13 @@ void UStatControlComponent::SetStatDelegateFunction(TWeakObjectPtr<AActor> InAct
 	else if(InStatType == ECharacterStatType::Hp)
 	{
 		if(InValue <= 0)
+		{
+			ADPLevelScriptActor* level = Cast<ADPLevelScriptActor>(Owner->GetLevel()->GetLevelScriptActor());
 			Owner->Destroy();
+			// 레벨관리
+			if(level)
+				level->CheckWaveCleared();
+		}
 	}
 }
 
