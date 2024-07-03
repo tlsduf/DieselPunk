@@ -117,7 +117,10 @@ int32 UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGo
 	TArray<FVector> goalLocArray = inGoalLocArray;
 	goalLocArray.Find(inGoalLoc, index);
 	for(int i = 0; i < index ; i++)
-		goalLocArray.RemoveAt(0);
+	{
+		if(goalLocArray.IsValidIndex(0))
+			goalLocArray.RemoveAt(0);
+	}
 
 	//=========================================================================
 	// 목적지가 없다면 더 이상 연산하지 않습니다.
@@ -181,13 +184,24 @@ int32 UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGo
 	});
 
 	//=========================================================================
+	// 목적지가 없다면 더 이상 연산하지 않습니다.
+	if(!goalLocArray.IsValidIndex(0))
+		return BlockedTurretID;
+	
+	//=========================================================================
 	// 4 액터와 첫 목적지 까지의 경로를 담습니다.
- 	TArray<FNavPathPoint> pathPoints = SearchPathTo(Owner->GetActorLocation(), goalLocArray[0])->GetPathPoints();
-	for(int i = 0; i < pathPoints.Num(); i++)
-		MyPathPoints.Add(pathPoints[i]);
+	if(goalLocArray.IsValidIndex(0))
+	{
+		TArray<FNavPathPoint> pathPoints = SearchPathTo(Owner->GetActorLocation(), goalLocArray[0])->GetPathPoints();
+		if(pathPoints.IsValidIndex(0))
+		{
+			for(int i = 0; i < pathPoints.Num(); i++)
+				MyPathPoints.Add(pathPoints[i]);
+		}
+	}
 
 	//=========================================================================
-	// 5 목적지 부터 다음 목적지 까지의 경로를 담습니다.
+	// 5 목적지 부터 다음 목적지 까지의 경로를 담습니다.a
 	for(int i = 0; i < goalLocArray.Num() ; i++)
 	{
 		if(!goalLocArray.IsValidIndex(i + 1))

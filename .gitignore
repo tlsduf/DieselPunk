@@ -31,5 +31,4 @@ Binaries/Win64/D3D12/d3d12SDKLayers.dll
 Binaries/Win64/*.patch*
 Binaries/Win64/DieselPunk.exe
 Binaries/Win64/DieselPunk.pdb
-Build/Windows/FileOpenOrder/CookerOpenOrder.log
-Build/Windows/FileOpenOrder/EditorOpenOrder.log
+/Plugins/DragonIK/Intermediate

@@ -169,6 +169,9 @@ public:
 	virtual void Jump() override;
 
 	virtual void Landed(const FHitResult& Hit) override;
+
+	// 컨트롤러의 pitch를 +-50 이상 회전한 후, 공중에서 착지 시, 캐릭터가 착지하지 않아 강제로 SetMovementMode(MOVE_Walking)를 호출합니다.
+	void CheckLanded();
 	
 	// 조건에따라 bool IsJog를 설정합니다. Tick에서 IsJog의 상태에 따라 캐릭터의 이동속도를 설정합니다.
 	void StartJog();
