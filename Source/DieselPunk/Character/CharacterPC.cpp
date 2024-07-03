@@ -227,6 +227,8 @@ void ACharacterPC::Tick(float DeltaTime)
 	}
 
 	CheckViewMiddleForInteractInstallationUI();
+
+	CheckLanded();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -319,6 +321,29 @@ void ACharacterPC::Landed(const FHitResult& Hit)
 		DelegateLandAction.Execute(Hit);
 }
 
+// 컨트롤러의 pitch를 +-50 이상 회전한 후, 공중에서 착지 시, 캐릭터가 착지하지 않아 강제로 SetMovementMode(MOVE_Walking)를 호출합니다.
+void ACharacterPC::CheckLanded()
+{
+	// Get the character's location and trace downward
+	FVector Start = GetActorLocation();
+	FVector End = Start - FVector(0.0f, 0.0f, GetCapsuleComponent()->GetScaledCapsuleHalfHeight()); // Adjust the trace distance as needed
+
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+
+	bool bHit = GetWorld()->LineTraceSingleByChannel(
+		HitResult,
+		Start,
+		End,
+		ECC_Visibility,	//착지 오류 시, 트레이스 채널 확인.
+		CollisionParams
+	);
+	
+	if(bHit)
+		GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+}
+
 //================================================================
 // Jog //W가 눌린 상태일때만 뛸 수 있음 
 //================================================================
@@ -327,7 +352,6 @@ void ACharacterPC::StartJog()
 	InCombat = false;
 	IsJog = true;
 	
-
 	/*
 	//Player의 이동방향
 	FVector playerMovementDirection = GetMovementComponent()->Velocity;

@@ -5,6 +5,7 @@
 #include "../Character/CharacterBase.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/Controller.h"
 #include "Kismet/KismetMathLibrary.h"
 
 UDPAnimInstance::UDPAnimInstance()

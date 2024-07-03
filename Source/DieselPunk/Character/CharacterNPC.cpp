@@ -423,6 +423,11 @@ TArray<FVector> ACharacterNPC::GetGoalLocArrayFromRoutingLines()
 	TArray<FVector> goalLocArray;
 	for(auto& routingLine : RoutingLines)
 		goalLocArray.Add(routingLine.Key);
+	auto nexus = FObjectManager::GetInstance()->GetNexus();
+	if(nexus == nullptr)
+		goalLocArray.Add(GetActorLocation());
+	else
+		goalLocArray.Add(nexus->GetActorLocation());
 	return goalLocArray;
 }
 
