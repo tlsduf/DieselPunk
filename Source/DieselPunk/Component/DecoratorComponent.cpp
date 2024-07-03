@@ -127,11 +127,17 @@ void UDecoratorComponent::StartEffect(EEffectPlayType InEffectPlayType, FName In
 				mesh->GetBoneNames(boneNames);
 				
 				if(boneNames.Find(effect.AttachBoneName) != INDEX_NONE)
+				{
 					transform.Location = mesh->GetBoneLocation(effect.AttachBoneName, EBoneSpaces::WorldSpace);
+					transform.Rotation = mesh->GetBoneQuaternion(effect.AttachBoneName, EBoneSpaces::WorldSpace).Rotator();					
+				}
 				else if(mesh->GetAllSocketNames().Find(effect.AttachBoneName) != INDEX_NONE)
+				{
 					transform.Location = mesh->GetSocketLocation(effect.AttachBoneName);
+					transform.Rotation = mesh->GetSocketRotation(effect.AttachBoneName);
+					
+				}
 				
-				transform.Rotation = Owner->GetActorRotation();
 				transform.Scale = Owner->GetActorScale();
 
 				transform.Location += effect.Offset.GetLocation();
