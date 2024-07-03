@@ -42,18 +42,6 @@
 		{
 			"Name": "Landmass",
 			"Enabled": true
-<<<<<<< HEAD
-		},
-		{
-			"Name": "DragonIKPlugin",
-			"Enabled": true,
-			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/3f3985e9eb40414aaabf645791fa4916"
-		},
-		{
-			"Name": "HoudiniEngine",
-			"Enabled": true
-=======
->>>>>>> 9a3234c6965866a5066553344f6c11c438b6153c
 		}
 	]
 }
