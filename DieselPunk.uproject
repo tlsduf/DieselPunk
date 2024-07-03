@@ -42,6 +42,7 @@
 		{
 			"Name": "Landmass",
 			"Enabled": true
+<<<<<<< HEAD
 		},
 		{
 			"Name": "DragonIKPlugin",
@@ -51,6 +52,8 @@
 		{
 			"Name": "HoudiniEngine",
 			"Enabled": true
+=======
+>>>>>>> 9a3234c6965866a5066553344f6c11c438b6153c
 		}
 	]
 }
