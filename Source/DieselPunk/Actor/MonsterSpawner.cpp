@@ -209,7 +209,7 @@ void AMonsterSpawner::SpawnMonster(float InDeltaTime)
 
 			//몬스터 생성 검증
 			if(!FObjectManager::IsValidId(id))
-				LOG_SCREEN(FColor::Red, TEXT("스포너: %d에서 몬스터를 생성하지 못했습니다."), SpawnerNumber)
+				LOG_SCREEN(FColor::Red, TEXT("스포너: %d에서 몬스터를 생성하지 못했습니다."), SpawnerNumber);
 			else
 			{
 				SpawnedMonsterID.Add(id);
