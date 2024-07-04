@@ -557,27 +557,6 @@ void ACharacterNPC::__UpdateSplinePath()
 	DPNavigationComponent->MakeSplinePath();
 }
 
-// =============================================================
-// Enemy 타입을 가진 모든 NPC들의 경로를 재탐색 합니다.
-// =============================================================
-void ACharacterNPC::UpdateSplinePathAll()
-{
-	TArray<int32> monstersIDs;
-	FObjectManager::GetInstance()->FindActorArrayByPredicate(monstersIDs, [](AActor* InActor)
-	{
-		if(auto npc = Cast<ACharacterNPC>(InActor))
-			if(npc->NPCType == ENPCType::Enemy)
-				return true;
-		return false;
-	});
-	for(const int32& ID : monstersIDs)
-	{
-		Cast<ACharacterNPC>(FObjectManager::GetInstance()->FindActor(ID))->UpdateSplinePath();
-	}
-	LOG_SCREEN(FColor::Red, TEXT("모든 적 경로 재탐색"))
-}
-
-
 //스폰 애니메이션을 실행하고 애니메이션의 길이를 반환합니다. 애니메이션이 없을 경우 0을 반환합니다.
 float ACharacterNPC::PlaySpawnAnim()
 {

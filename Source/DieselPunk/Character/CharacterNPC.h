@@ -164,10 +164,6 @@ public:
 	void UpdateSplinePath();
 	void _UpdateSplinePath();
 	void __UpdateSplinePath();
-
-	// Enemy 타입을 가진 모든 NPC들의 경로를 재탐색 합니다.
-	void UpdateSplinePathAll();
-
 	
 	// Getter, Setter
 	ENPCType GetNPCType() const { return NPCType; }

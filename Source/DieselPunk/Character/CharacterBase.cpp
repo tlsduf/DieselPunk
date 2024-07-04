@@ -157,9 +157,6 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 							DamageCauserPlayer->ChangeStat(ECharacterStatType::MaxHp , UtilLevelCal::MaxHealthCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Level)));
 					}
 				}
-				// 포탑 파괴시 모든 적의 경로를 재탐색합니다.
-				if(NPC->GetNPCType() == ENPCType::Alliance)
-					NPC->UpdateSplinePathAll();
 			}
 
 			//아래 주석처리한 Destroy와 레벨관리는 UStatControlComponent/SetStatDelegateFunction.163(2024.7.2)로 옮겼습니다.

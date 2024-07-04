@@ -18,6 +18,7 @@
 #include <Components/BoxComponent.h>
 #include <Components/WidgetComponent.h>
 
+#include "DieselPunk/Manager/ObjectManager.h"
 #include "Engine/SkeletalMesh.h"
 #include "Engine/SkinnedAssetCommon.h"
 
@@ -184,7 +185,7 @@ bool ACharacterHousing::CompleteHousingTurret()
 		}
 		
 		// 포탑 생성완료시 모든 적의 경로를 재탐색합니다.
-		UpdateSplinePathAll();
+		FObjectManager::GetInstance()->UpdateSplinePathAllEnemy();
 		return true;
 	}
 	return false;

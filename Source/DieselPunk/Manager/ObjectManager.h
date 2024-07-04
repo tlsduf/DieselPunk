@@ -113,6 +113,10 @@ public:
 
 	//월드 전환 시 풀링 오브젝트 재할당
 	void ReAllocatePoolingObject(FString InWorldName);
+
+public:
+	//모든 Enemy타입 경로 재설정 //터렛 설치, 파괴, 판매 시 호출 //#navi #splineUpdate #enemy
+	void UpdateSplinePathAllEnemy();
 };
 
 template <typename T>

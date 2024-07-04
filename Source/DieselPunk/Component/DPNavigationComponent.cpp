@@ -334,8 +334,10 @@ void UDPNavigationComponent::AddForceAlongSplinePath()
 	nearestSplineLocation = SplinePath.GetLocationAtDistanceAlongSpline(distOwnerToSplinePath);
 	nearestSplineRotation = SplinePath.GetRotationAtDistanceAlongSpline(distOwnerToSplinePath);
 
-	toSplineDir = (nearestSplineLocation - feetLocation).GetSafeNormal();
-	addForceDir = nearestSplineRotation.Vector().GetSafeNormal();
+	toSplineDir = (nearestSplineLocation - feetLocation);
+	toSplineDir = FVector(toSplineDir.X, toSplineDir.Y, 0).GetSafeNormal();
+	addForceDir = nearestSplineRotation.Vector();
+	addForceDir = FVector(addForceDir.X, addForceDir.Y, 0).GetSafeNormal();
 	
 	if( 50 < FVector::Dist(nearestSplineLocation, feetLocation) )
 		addForceDir = (addForceDir + toSplineDir).GetSafeNormal();

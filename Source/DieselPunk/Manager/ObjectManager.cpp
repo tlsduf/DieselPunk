@@ -10,6 +10,8 @@
 #include <GameFramework/PlayerController.h>
 #include <Components/CapsuleComponent.h>
 
+#include "DieselPunk/Character/CharacterTurret.h"
+
 
 Singleton_Defintion(FObjectManager)
 
@@ -83,6 +85,9 @@ void FObjectManager::DestroyActor(AActor* InActor)
 	if(removeObjectId == INVALID_OBJECTID)
 		return;
 
+	if(ACharacterTurret* turret = Cast<ACharacterTurret>(InActor))
+		UpdateSplinePathAllEnemy();
+	
 	if(InActor->GetClass()->ImplementsInterface(UObjectPoolingInterface::StaticClass()))
 	{
 		//PoolingObject에 추가합니다.
@@ -109,6 +114,9 @@ void FObjectManager::DestroyActor(int32 InObjectId)
 	if(!actorPtr)
 		return;
 
+	if(ACharacterTurret* turret = Cast<ACharacterTurret>(*actorPtr))
+		UpdateSplinePathAllEnemy();
+	
 	//액터를 Detroy합니다.
 	if((*actorPtr).IsValid())
 	{
@@ -372,5 +380,24 @@ void FObjectManager::ReAllocatePoolingObject(FString InWorldName)
 			}
 		}
 	}
+}
+
+//모든 Enemy타입 경로 재설정 //터렛 설치, 파괴, 판매 시 호출 //#navi #splineUpdate #enemy
+void FObjectManager::UpdateSplinePathAllEnemy()
+{
+	//NPCType == Enemy 인 NPC배열을 반환
+	TArray<int32> monstersIDs;
+	FindActorArrayByPredicate(monstersIDs, [](AActor* InActor)
+	{
+		if(auto npc = Cast<ACharacterNPC>(InActor))
+			if(npc->GetNPCType() == ENPCType::Enemy)
+				return true;
+		return false;
+	});
+	for(const int32& ID : monstersIDs)
+	{
+		Cast<ACharacterNPC>(FindActor(ID))->UpdateSplinePath();
+	}
+	LOG_SCREEN(FColor::Red, TEXT("모든 적 경로 재탐색"))
 }
 
