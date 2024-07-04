@@ -156,7 +156,8 @@ void UStatControlComponent::SetStatDelegateFunction(TWeakObjectPtr<AActor> InAct
 	}
 	else if(InStatType == ECharacterStatType::Level)
 	{
-		ChangeStatForLevelUp(InValue);
+		if(Cast<ACharacterTurret>(InActor))
+			ChangeStatForLevelUp(InValue);
 	}
 	else if(InStatType == ECharacterStatType::Hp)
 	{
@@ -193,6 +194,9 @@ void UStatControlComponent::SetStat(ECharacterStatType InStatType, int32 InValue
 
 void UStatControlComponent::ChangeStatForLevelUp(int32 InLv)
 {
+	if(StatDatas.Find(InLv) == nullptr)
+		return;
+	
 	FStatDataTable* table = StatDatas[InLv];
 
 	if(!table)
