@@ -3349,6 +3349,10 @@
 		{
 			"Path": "$(ProjectDir)/DieselPunk.uproject",
 			"Type": "UFS"
+		},
+		{
+			"Path": "$(ProjectDir)/Plugins/DragonIK/DragonIKPlugin.uplugin",
+			"Type": "UFS"
 		}
 	],
 	"AdditionalProperties": [
