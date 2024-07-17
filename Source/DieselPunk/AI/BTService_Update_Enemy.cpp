@@ -12,6 +12,7 @@
 #include <Navigation/PathFollowingComponent.h>
 
 #include "DieselPunk/Skill/SkillBase.h"
+#include "DieselPunk/Skill/SkillNPC/NPCAttack.h"
 #include "Interfaces/ITargetDevice.h"
 
 
@@ -101,10 +102,10 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
     
     for(const EAbilityType& useableSkill : AICharacter->GetUseableSkills())
     {
-        const USkillBase* skillBase = AICharacter->GetNPCSkill(useableSkill);
-        if(skillBase->GetSkillDistanceType() == ESkillDistanceType::MeleeAttack)
+        const UNPCAttack* attack = AICharacter->GetNPCAttack(useableSkill);
+        if(attack->GetSkillDistanceType() == ESkillDistanceType::MeleeAttack)
             melee.Add(useableSkill);
-        else if(skillBase->GetSkillDistanceType() == ESkillDistanceType::RangedAttack)
+        else if(attack->GetSkillDistanceType() == ESkillDistanceType::RangedAttack)
             ranged.Add(useableSkill);
     }
 
@@ -125,8 +126,6 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
             OwnerComp.GetBlackboardComponent()->SetValueAsString(TEXT("AbilityType"), UtilPath::EnumToString(EAbilityType::None));
         }
     }
-    
-
     
     // 죽음 시 블랙보드 제어
     if (AICharacter->IsDead())

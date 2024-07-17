@@ -15,7 +15,6 @@
 
 UMokoshMeleeAttack::UMokoshMeleeAttack() : Super()
 {
-	SkillRangeType = ESkillDistanceType::MeleeAttack;
 }
 
 void UMokoshMeleeAttack::BeginPlay()

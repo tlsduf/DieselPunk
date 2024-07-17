@@ -21,6 +21,7 @@
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "DieselPunk/Animation/DPAnimInstance.h"
+#include "DieselPunk/Skill/SkillNPC/NPCAttack.h"
 
 
 // =============================================================
@@ -61,16 +62,29 @@ void ACharacterNPC::BeginPlay()
 		NPCSkill->InitSkill();
 	}
 
-	if(!NPCSkillClasses.IsEmpty())
+	//if(!NPCSkillClasses.IsEmpty())
+	//{
+	//	for(const auto& [key, skillClass] : NPCSkillClasses)
+	//	{
+	//		USkillBase* skill = NewObject<USkillBase>(this, skillClass);
+	//		skill->RegisterComponent();
+	//		skill->InitSkill();
+	//		NPCSkills.Add(key, skill);
+	//	}
+	//	UseableSkills.Reserve(NPCSkills.Num());
+	//}
+
+	if(!NPCAttackNames.IsEmpty())
 	{
-		for(const auto& [key, skillClass] : NPCSkillClasses)
+		for(const auto& [key, skillName] : NPCAttackNames)
 		{
-			USkillBase* skill = NewObject<USkillBase>(this, skillClass);
-			skill->RegisterComponent();
-			skill->InitSkill();
-			NPCSkills.Add(key, skill);
+			UNPCAttack* attack = NewObject<UNPCAttack>(this, skillName);
+			attack->RegisterComponent();
+			attack->SetNPCSkillName(skillName);
+			attack->InitSkill();
+			NPCAttacks.Add(key, attack);
 		}
-		UseableSkills.Reserve(NPCSkills.Num());
+		UseableSkills.Reserve(NPCAttacks.Num());
 	}
 }
 
@@ -211,13 +225,16 @@ void ACharacterNPC::HandleStatusUI()
 void ACharacterNPC::FindUseableAbilityType()
 {
 	UseableSkills.Empty();
-
-	if(!Target.IsValid())
-		return;
 	
-	for(const auto& [key, skill] : NPCSkills)
+	//for(const auto& [key, skill] : NPCSkills)
+	//{
+	//	if(skill->IsUseableSkill(Target))
+	//		UseableSkills.Add(key);
+	//}
+
+	for(const auto& [key, attack] : NPCAttacks)
 	{
-		if(skill->IsUseableSkill(Target))
+		if(attack->IsUseableSkill(Target))
 			UseableSkills.Add(key);
 	}
 }
@@ -231,9 +248,16 @@ void ACharacterNPC::InitSkill()
 	if(NPCSkill != nullptr)
 		NPCSkill->InitSkill();
 
-	if(!NPCSkills.IsEmpty())
-		for(const auto& [key, skill] : NPCSkills)
-			skill->InitSkill();
+	//if(NPCAttack != nullptr)
+	//	NPCAttack->InitSkill();
+
+	//if(!NPCSkills.IsEmpty())
+	//	for(const auto& [key, skill] : NPCSkills)
+	//		skill->InitSkill();
+
+	if(!NPCAttacks.IsEmpty())
+		for(const auto& [key, attack] : NPCAttacks)
+			attack->InitSkill();
 }
 
 // =============================================================
@@ -580,10 +604,19 @@ void ACharacterNPC::DoNPCSkill()
 
 void ACharacterNPC::DoNPCSkill(EAbilityType InAbilityType)
 {
-	TObjectPtr<USkillBase>* skill = NPCSkills.Find(InAbilityType);
-	if(skill && *skill && CanAttack)
+	//TObjectPtr<USkillBase>* skill = NPCSkills.Find(InAbilityType);
+	//if(skill && *skill && CanAttack)
+	//{
+	//	(*skill)->AbilityStart(Target.Get());
+	//	CurrentUseAbilityType = InAbilityType;
+	//	if(UDPAnimInstance* animInst = Cast<UDPAnimInstance>(GetMesh()->GetAnimInstance()))	
+	//		animInst->AttackSign(InAbilityType);
+	//}
+
+	TObjectPtr<UNPCAttack>* attack = NPCAttacks.Find(InAbilityType);
+	if(attack && *attack && CanAttack)
 	{
-		(*skill)->AbilityStart(Target.Get());
+		(*attack)->AbilityStart(Target.Get());
 		CurrentUseAbilityType = InAbilityType;
 		if(UDPAnimInstance* animInst = Cast<UDPAnimInstance>(GetMesh()->GetAnimInstance()))	
 			animInst->AttackSign(InAbilityType);
@@ -595,22 +628,34 @@ void ACharacterNPC::AbilityShot(double InDamageCoefficient)
 	Super::AbilityShot(InDamageCoefficient);
 	if(NPCSkill)
 		NPCSkill->AbilityShot(InDamageCoefficient, Target.Get());
+	//if(NPCAttack)
+	//	NPCAttack->AbilityShot(InDamageCoefficient, Target.Get());
+	//if(CurrentUseAbilityType != EAbilityType::None)
+	//{
+	//	TObjectPtr<USkillBase>* skill = NPCSkills.Find(CurrentUseAbilityType);
+	//	if(skill && *skill)
+	//	{
+	//		(*skill)->AbilityShot(InDamageCoefficient, Target.Get());
+	//		CurrentUseAbilityType = EAbilityType::None;
+	//	}
+	//}
+
 	if(CurrentUseAbilityType != EAbilityType::None)
 	{
-		TObjectPtr<USkillBase>* skill = NPCSkills.Find(CurrentUseAbilityType);
-		if(skill && *skill)
+		TObjectPtr<UNPCAttack>* attack = NPCAttacks.Find(CurrentUseAbilityType);
+		if(attack && *attack)
 		{
-			(*skill)->AbilityShot(InDamageCoefficient, Target.Get());
+			(*attack)->AbilityShot(InDamageCoefficient, Target.Get());
 			CurrentUseAbilityType = EAbilityType::None;
 		}
 	}
 }
 
-const USkillBase* ACharacterNPC::GetNPCSkill(EAbilityType InAbilityType)
+const UNPCAttack* ACharacterNPC::GetNPCAttack(EAbilityType InAbilityType)
 {
-	TObjectPtr<USkillBase>* skillPtr = NPCSkills.Find(InAbilityType);
-	if(skillPtr)
-		return *skillPtr;
+	TObjectPtr<UNPCAttack>* attackPtr = NPCAttacks.Find(InAbilityType);
+	if(attackPtr)
+		return *attackPtr;
 
 	return nullptr;
 }

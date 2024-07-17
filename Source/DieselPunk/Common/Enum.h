@@ -53,13 +53,15 @@ enum class ENPCType : uint8
 UENUM( BlueprintType )
 enum class EDataTableType : uint8
 {
-	Stat			UMETA( ToolTip = "스탯 정보" ),
-	Character		UMETA( ToolTip = "캐릭터 정보" ),
-	Card			UMETA( ToolTip = "카드 정보" ),
-	WaveModule		UMETA( ToolTip = "웨이브 모듈 정보" ),
-	StageWave		UMETA( ToolTip = "스테이지 웨이브 정보" ),
-	Buff			UMETA( ToolTip = "버프 정보" ),
-	LevelBgm		UMETA( ToolTip = "레벨 BGM 정보" ),
+	Stat					UMETA( ToolTip = "스탯 정보" ),
+	Character				UMETA( ToolTip = "캐릭터 정보" ),
+	Card					UMETA( ToolTip = "카드 정보" ),
+	WaveModule				UMETA( ToolTip = "웨이브 모듈 정보" ),
+	StageWave				UMETA( ToolTip = "스테이지 웨이브 정보" ),
+	Buff					UMETA( ToolTip = "버프 정보" ),
+	LevelBgm				UMETA( ToolTip = "레벨 BGM 정보" ),
+	ProjectileSkillActor	UMETA( ToolTip = "발사체 스킬 액터 정보" ),
+	NPCSkill				UMETA( ToolTip = "NPC 스킬 정보" ),
 	Count
 };
 ENUM_RANGE_BY_COUNT(EDataTableType, EDataTableType::Count);
@@ -196,7 +198,10 @@ enum class EProjectileType : uint8
 {
 	TargetAttack	UMETA( ToolTip = "발사체 없음, 무조건 타격" ),
 	Straight		UMETA( ToolTip = "직사포" ),
-	Parabola		UMETA( ToolTip = "곡사포" )
+	Parabola		UMETA( ToolTip = "곡사포" ),
+	Throwing		UMETA( ToolTip = "던지기" ),
+	SuicideBomb		UMETA( ToolTip = "자폭" ),
+	Melee			UMETA( ToolTip = "근접 공격" )
 };
 
 // 스킬 거리 타입

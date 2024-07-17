@@ -64,7 +64,7 @@ private:
 public:
 	//액터를 생성합니다.
 	template<typename T>
-	int32	CreateActor(UClass* InClass, const FSpawnParam& InSpawnParam);
+	int32	CreateActor(UClass* InClass, const FSpawnParam& InSpawnParam, AActor* InOwner = nullptr);
 
 	//액터 포인터를 받아 액터를 파괴합니다.
 	void	DestroyActor(AActor* InActor);
@@ -120,7 +120,7 @@ public:
 };
 
 template <typename T>
-int32 FObjectManager::CreateActor(UClass* InClass, const FSpawnParam& InSpawnParam)
+int32 FObjectManager::CreateActor(UClass* InClass, const FSpawnParam& InSpawnParam, AActor* InOwner)
 {
 	if(!InClass)
 		return INVALID_UCLASS;
@@ -158,7 +158,7 @@ int32 FObjectManager::CreateActor(UClass* InClass, const FSpawnParam& InSpawnPar
 	else
 	{
 		//액터 생성
-		actor = World->SpawnActorDeferred<T>(InClass, spawnTransform, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+		actor = World->SpawnActorDeferred<T>(InClass, spawnTransform, InOwner, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 
 		if(!actor)
 			return OBJECT_SPAWN_FAILED;

@@ -11,6 +11,7 @@ class UHousingActorComponent;
 class USkillBase;
 class UDPNavigationComponent;
 class UEnemyStatusUI;
+class UNPCAttack;
 
 // 경유지점 생성을 위한 가로 세로 비율
 struct FProportion
@@ -75,6 +76,12 @@ protected:
 
 	UPROPERTY()
 	TMap<EAbilityType, TObjectPtr<USkillBase>> NPCSkills;
+
+	UPROPERTY(EditAnywhere, Category="MYDP_Skill")
+	TMap<EAbilityType, FName> NPCAttackNames;
+
+	UPROPERTY()
+	TMap<EAbilityType, TObjectPtr<UNPCAttack>> NPCAttacks;
 
 	TArray<EAbilityType> UseableSkills;
 
@@ -192,8 +199,8 @@ public:
 	virtual void AbilityShot(double InDamageCoefficient) override;
 
 	const TArray<EAbilityType>& GetUseableSkills(){return UseableSkills;}
-	const USkillBase* GetNPCSkill(EAbilityType InAbilityType);
 	const USkillBase* GetNPCSkill(){return NPCSkill;}
+	const UNPCAttack* GetNPCAttack(EAbilityType InAbilityType);
 
 	virtual void ThrowReady(TWeakObjectPtr<AActor> InThrowingOwner) override;
 	virtual void ThrowExecute(TWeakObjectPtr<AActor> InThrowingOwner) override;

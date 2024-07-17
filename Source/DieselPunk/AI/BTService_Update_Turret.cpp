@@ -8,6 +8,8 @@
 #include <Kismet/GameplayStatics.h>
 #include <AIController.h>
 
+#include "DieselPunk/Skill/SkillNPC/NPCAttack.h"
+
 
 UBTService_Update_Turret::UBTService_Update_Turret()
 {
@@ -29,6 +31,41 @@ void UBTService_Update_Turret::TickNode(UBehaviorTreeComponent &OwnerComp, uint8
     // 타겟 SET
     OwnerComp.GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), AICharacter->GetAttackTarget().Get());
 
+    // 몬스터와 목표의 거리에 따른 조건 설정
+    if(AICharacter->GetInRange())
+        OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InRange"), true);
+    else
+        OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InRange"), false);
+
+    TArray<EAbilityType> melee;
+    TArray<EAbilityType> ranged;
+    
+    for(const EAbilityType& useableSkill : AICharacter->GetUseableSkills())
+    {
+        const UNPCAttack* attack = AICharacter->GetNPCAttack(useableSkill);
+        if(attack->GetSkillDistanceType() == ESkillDistanceType::MeleeAttack)
+            melee.Add(useableSkill);
+        else if(attack->GetSkillDistanceType() == ESkillDistanceType::RangedAttack)
+            ranged.Add(useableSkill);
+    }
+
+    if(!melee.IsEmpty())
+    {
+        int32 random = FMath::RandRange(0, melee.Num() - 1);
+        OwnerComp.GetBlackboardComponent()->SetValueAsString(TEXT("AbilityType"), UtilPath::EnumToString(melee[random]));
+    }
+    else
+    {
+        if(!ranged.IsEmpty())
+        {
+            int32 random = FMath::RandRange(0, ranged.Num() - 1);
+            OwnerComp.GetBlackboardComponent()->SetValueAsString(TEXT("AbilityType"), UtilPath::EnumToString(ranged[random]));
+        }
+        else
+        {
+            OwnerComp.GetBlackboardComponent()->SetValueAsString(TEXT("AbilityType"), UtilPath::EnumToString(EAbilityType::None));
+        }
+    }
     
     // 죽음 시 블랙보드 제어
     if (AICharacter->IsDead())

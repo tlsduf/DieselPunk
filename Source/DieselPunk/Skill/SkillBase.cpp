@@ -8,6 +8,8 @@
 
 
 #include <Components/SkeletalMeshComponent.h>
+
+#include "SkillNPC/NPCAttack.h"
 #include "Tests/AutomationTestSettings.h"
 
 
@@ -71,6 +73,12 @@ void USkillBase::InitSkill()
 
 bool USkillBase::IsUseableSkill(const TWeakObjectPtr<AActor>& InTarget)
 {
+	if(UNPCAttack* attack = Cast<UNPCAttack>(this))
+	{
+		if(attack->GetProjectileType() == EProjectileType::SuicideBomb)
+			return true;
+	}
+	
 	if(!InTarget.IsValid())
 		return false;
 	

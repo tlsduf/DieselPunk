@@ -29,7 +29,7 @@ void USuicideBomb::AbilityStart(AActor* InTarget)
 	if(UDPAnimInstance* animInst = Cast<UDPAnimInstance>(ownerPawn->GetMesh()->GetAnimInstance()))	
 		animInst->AttackSign(EAbilityType::MouseLM);
 
-	Super::AbilityShot(1.0, InTarget);
+	AbilityShot(1.0, InTarget);
 }
 
 void USuicideBomb::AbilityShot(double InDamageCoefficient, AActor* InTarget)
