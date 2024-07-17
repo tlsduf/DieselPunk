@@ -268,7 +268,10 @@ void FNavigationManager::BuildNavMap(TArray<AActor*> InFloorStaticMeshActors)
 						FOverlapResult* find = hitResult.FindByPredicate([&floor](const FOverlapResult& overlapResult)
 						{
 							if(floor != nullptr)
-								return overlapResult.GetActor() == Cast<AActor>(floor);
+							{
+								return Cast<AFloorStaticMeshActor>(overlapResult.GetActor()) != nullptr;
+								//return overlapResult.GetActor() == Cast<AActor>(floor);
+							}
 							return false;
 						});
 
@@ -589,6 +592,7 @@ void FNavigationManager::DrawDebugNavMap()
 //터렛 설치 가능한지 검색
 bool FNavigationManager::IsPlacementTurret(FVector InLocation, int32 InGridSizeVertical, int32 InGridSizeHorizontal)
 {
+	return true;
 	FVector outLocation = FVector::ZeroVector;
 
 	TArray<int32> xIndex, yIndex;
@@ -677,8 +681,8 @@ bool FNavigationManager::PlacementTurret(FVector& InOutLocation, int32 InGridSiz
 	{
 		for(int32 y : yIndex)
 		{
-			if(NavMap.Find(x) == nullptr || NavMap.Find(x)->Find(y) == nullptr || NavMap.Find(x)->Find(y)->NavNodeState != ENavNodeState::Passable)
-				return false;
+			//if(NavMap.Find(x) == nullptr || NavMap.Find(x)->Find(y) == nullptr || NavMap.Find(x)->Find(y)->NavNodeState != ENavNodeState::Passable)
+			//	return false;
 
 			outLocation += NavMap[x][y].Location;
 		}
