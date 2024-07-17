@@ -136,6 +136,7 @@ struct DIESELPUNK_API FStatDataTable : public FDPTableRowBase
 	UPROPERTY(EditAnywhere)
 	USkeletalMesh* UpgradeMesh = nullptr;
 
+	//업그레이드 스킬 이름입니다. 터렛의 경우에만 적용됩니다.
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<USkillBase> UpgradeSkillClass = nullptr;
+	TMap<EAbilityType, FName> UpgradeSkillNames;
 };

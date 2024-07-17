@@ -27,8 +27,6 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent &OwnerCom
     if (Character == nullptr)
         return EBTNodeResult::Failed;
 
-    Character->DoNPCSkill();
-
     FString abilityTypeStr = OwnerComp.GetBlackboardComponent()->GetValueAsString(TEXT("AbilityType"));
     EAbilityType abilityType = UtilPath::StringToEnum<EAbilityType>(abilityTypeStr);
     if(abilityType != EAbilityType::None)

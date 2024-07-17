@@ -7,6 +7,7 @@
 #include <Animation/AnimMontage.h>
 
 #include "DieselPunk/Character/CharacterTurret.h"
+#include "DieselPunk/Skill/SkillNPC/NPCAttack.h"
 #include "DieselPunk/Skill/SkillNPC/ParabolaAttack.h"
 
 UTurretAnimInstace::UTurretAnimInstace(){}
@@ -23,14 +24,19 @@ void UTurretAnimInstace::NativeUpdateAnimation(float InDeltaSeconds)
 
 		if(ACharacterTurret* turret = Cast<ACharacterTurret>(GetOwningActor()))
 		{
-			if(Cast<UParabolaAttack>(turret->GetNPCSkill()))
+			EAbilityType abilityType = turret->GetTopPriorityUseableSkill();
+			const UNPCAttack* attack = turret->GetNPCAttack(abilityType);
+			
+			if((attack && attack->GetProjectileType() == EProjectileType::Parabola) || turret->IsAllParabolaAttack())
 			{
 				FVector direction = (CurTarget->GetActorLocation() - GetOwningActor()->GetActorLocation()) / 3 + FVector(0.0, 0.0, 10000.0);
 				direction.Normalize();
 				BarrelPitch = direction.Rotation().Pitch;
 			}
 			else
+			{
 				BarrelPitch = OwnerToTargetRot.Pitch;
+			}
 		}
 		
 		OwnerToTargetDist = FVector::Dist(CurTarget->GetActorLocation(), GetOwningActor()->GetActorLocation());

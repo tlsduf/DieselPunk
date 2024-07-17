@@ -62,7 +62,7 @@ public:
 	const FVector& GetInitForwardVector(){return InitForwardVector;}
 	
 	//업그레이드 시 스킬이 변경될 경우 이 함수를 호출합니다.
-	void UpgradeSkill(TSubclassOf<USkillBase> InUpgradeSkillClass);
+	void UpgradeSkill(const TMap<EAbilityType, FName>& InUpgradeSkillNames);
 protected:
 	virtual void BeginPlay() override;
 	

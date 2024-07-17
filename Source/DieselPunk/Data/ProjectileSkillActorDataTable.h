@@ -46,66 +46,66 @@ struct DIESELPUNK_API FProjectileSkillActorDataTable : public FDPTableRowBase
 	GENERATED_BODY()
 
 	//발사체 영어 이름
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="MYDP_Explain")
 	FName NameEN = NAME_None;
 
 	//발사체 한글 이름
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="MYDP_Explain")
 	FName NameKR = NAME_None;
 
 	//발사체 설명
-	UPROPERTY(EditAnywhere, meta=(MultiLine=true))
+	UPROPERTY(EditAnywhere, Category="MYDP_Explain", meta=(MultiLine=true))
 	FText Explain = FText();
 
 	//스태틱 메시
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="MYDP_Data")
 	UStaticMesh* StaticMesh = nullptr;
 
 	//캡슐 절반 높이
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="MYDP_Data")
 	double CapsuleHalfHeight = 100.0;
 
 	//캡슐 반지름
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="MYDP_Data")
 	double CapsuleRadius = 100.0;
 
 	//주인 타입
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="MYDP_Data")
 	ECausorType ProjectileOwnerType = ECausorType::Player;
 
 	//범위공격(사거리, 데미지 배수)
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="MYDP_Data")
 	TMap<float, float> RadialAttackInfos;
 
 	//라이프 타임
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="MYDP_Data")
 	float LifeTime = 5.f;
 
 	//발사체 타입(TargetAttack으로 설정하면 안됩니다.)
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="MYDP_Data")
 	EProjectileType ProjectileType = EProjectileType::TargetAttack;
 	
 	//직사 발사체 정보
-	UPROPERTY(EditAnywhere, meta=(EditCondition="ProjectileType == EProjectileType::Straight"))
+	UPROPERTY(EditAnywhere, Category="MYDP_Data", meta=(EditCondition="ProjectileType == EProjectileType::Straight"))
 	FStarightSkillActorData StraightSkillActorData;
 
 	//곡사 발사체 정보
-	UPROPERTY(EditAnywhere, meta=(EditCondition="ProjectileType == EProjectileType::Parabola"))
+	UPROPERTY(EditAnywhere, Category="MYDP_Data", meta=(EditCondition="ProjectileType == EProjectileType::Parabola"))
 	FParabolaSkillActorData ParabolaSkillActorData;
 
 	//히트 시 재생할 나이아가라 이펙트
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="MYDP_Effect")
 	class UNiagaraSystem *N_HitEffect = nullptr;
 	
 	//히트 시 재생할 캐스케이드 이펙트
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="MYDP_Effect")
 	UParticleSystem *HitEffect = nullptr;
 
 	//히트 오프셋 트랜스폼
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="MYDP_Effect")
 	FEffectTransform HitEffectTransform = FEffectTransform();
 
 	//히트 시 재생할 사운드
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="MYDP_Effect")
 	USoundBase *HitSound = nullptr;
 };

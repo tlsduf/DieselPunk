@@ -64,19 +64,7 @@ protected:
 	// for skill //
 
 	const float SearchPlayerDEGREE = 30;
-
-	UPROPERTY(EditAnywhere, Category="MYDP_Skill")
-	TSubclassOf<USkillBase> NPCSkillClass;
-
-	UPROPERTY(EditAnywhere, Category="MYDP_Skill")
-	TMap<EAbilityType, TSubclassOf<USkillBase>> NPCSkillClasses;
-
-	UPROPERTY()
-	TObjectPtr<USkillBase> NPCSkill;
-
-	UPROPERTY()
-	TMap<EAbilityType, TObjectPtr<USkillBase>> NPCSkills;
-
+	
 	UPROPERTY(EditAnywhere, Category="MYDP_Skill")
 	TMap<EAbilityType, FName> NPCAttackNames;
 
@@ -193,13 +181,13 @@ public:
 	//스폰 애니메이션을 실행하고 애니메이션의 길이를 반환합니다. 애니메이션이 없을 경우 0을 반환합니다.
 	float PlaySpawnAnim();
 public:
-	void DoNPCSkill();
 	void DoNPCSkill(EAbilityType InAbilityType);
 	
 	virtual void AbilityShot(double InDamageCoefficient) override;
 
 	const TArray<EAbilityType>& GetUseableSkills(){return UseableSkills;}
-	const USkillBase* GetNPCSkill(){return NPCSkill;}
+	EAbilityType GetTopPriorityUseableSkill();
+	bool IsAllParabolaAttack();
 	const UNPCAttack* GetNPCAttack(EAbilityType InAbilityType);
 
 	virtual void ThrowReady(TWeakObjectPtr<AActor> InThrowingOwner) override;

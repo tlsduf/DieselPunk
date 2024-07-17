@@ -12,6 +12,7 @@
 
 #include "DieselPunk/Component/StatControlComponent.h"
 #include "DieselPunk/Skill/SkillBase.h"
+#include "DieselPunk/Skill/SkillNPC/NPCAttack.h"
 
 
 // =============================================================
@@ -21,19 +22,25 @@ ACharacterTurret::ACharacterTurret()
 {
 }
 
-void ACharacterTurret::UpgradeSkill(TSubclassOf<USkillBase> InUpgradeSkillClass)
+void ACharacterTurret::UpgradeSkill(const TMap<EAbilityType, FName>& InUpgradeSkillNames)
 {
-	if(InUpgradeSkillClass)
+	if(!InUpgradeSkillNames.IsEmpty())
 	{
-		if(NPCSkill)
+		for(const auto& [key, value] : InUpgradeSkillNames)
 		{
-			NPCSkill->UnregisterComponent();
-			NPCSkill->DestroyComponent();
-			NPCSkill = nullptr;
+			TObjectPtr<UNPCAttack>* attackPtr = NPCAttacks.Find(key);
+			if(attackPtr && *attackPtr)
+			{
+				(*attackPtr)->UnregisterComponent();
+				(*attackPtr)->DestroyComponent();
+				(*attackPtr) = nullptr;
+			}
+
+			TObjectPtr<UNPCAttack>& attack = NPCAttacks.FindOrAdd(key);
+			attack = NewObject<UNPCAttack>(this, UNPCAttack::StaticClass());
+			attack->RegisterComponent();
+			attack->SetNPCSkillName(value);
 		}
-		NPCSkill = NewObject<USkillBase>(this, InUpgradeSkillClass);
-		NPCSkill->RegisterComponent();
-		NPCSkill->InitSkill();
 	}
 }
 

@@ -220,7 +220,7 @@ void UStatControlComponent::ChangeStatForLevelUp(int32 InLv)
 	SetStat(ECharacterStatType::ShellFall,		 		table->ShellFall);
 
 	if(ACharacterTurret* turret = Cast<ACharacterTurret>(Owner))
-		turret->UpgradeSkill(table->UpgradeSkillClass);
+		turret->UpgradeSkill(table->UpgradeSkillNames);
 
 	Stat[ECharacterStatType::Level] = Stat[ECharacterStatType::Level] > TURRET_MAX_LV ? TURRET_MAX_LV : Stat[ECharacterStatType::Level];
 }

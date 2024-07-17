@@ -55,24 +55,6 @@ void ACharacterNPC::BeginPlay()
 	}
 
 	// Skill Instancing , SKill Stat Initialize
-	if(NPCSkillClass != nullptr)
-	{
-		NPCSkill = NewObject<USkillBase>(this, NPCSkillClass);
-		NPCSkill->RegisterComponent();
-		NPCSkill->InitSkill();
-	}
-
-	//if(!NPCSkillClasses.IsEmpty())
-	//{
-	//	for(const auto& [key, skillClass] : NPCSkillClasses)
-	//	{
-	//		USkillBase* skill = NewObject<USkillBase>(this, skillClass);
-	//		skill->RegisterComponent();
-	//		skill->InitSkill();
-	//		NPCSkills.Add(key, skill);
-	//	}
-	//	UseableSkills.Reserve(NPCSkills.Num());
-	//}
 
 	if(!NPCAttackNames.IsEmpty())
 	{
@@ -245,16 +227,6 @@ void ACharacterNPC::FindUseableAbilityType()
 
 void ACharacterNPC::InitSkill()
 {
-	if(NPCSkill != nullptr)
-		NPCSkill->InitSkill();
-
-	//if(NPCAttack != nullptr)
-	//	NPCAttack->InitSkill();
-
-	//if(!NPCSkills.IsEmpty())
-	//	for(const auto& [key, skill] : NPCSkills)
-	//		skill->InitSkill();
-
 	if(!NPCAttacks.IsEmpty())
 		for(const auto& [key, attack] : NPCAttacks)
 			attack->InitSkill();
@@ -596,12 +568,6 @@ float ACharacterNPC::PlaySpawnAnim()
 	return SpawnAnimation->GetPlayLength();
 }
 
-void ACharacterNPC::DoNPCSkill()
-{
-	if(NPCSkill && CanAttack)
-		NPCSkill->AbilityStart(Target.Get());
-}
-
 void ACharacterNPC::DoNPCSkill(EAbilityType InAbilityType)
 {
 	//TObjectPtr<USkillBase>* skill = NPCSkills.Find(InAbilityType);
@@ -626,19 +592,6 @@ void ACharacterNPC::DoNPCSkill(EAbilityType InAbilityType)
 void ACharacterNPC::AbilityShot(double InDamageCoefficient)
 {
 	Super::AbilityShot(InDamageCoefficient);
-	if(NPCSkill)
-		NPCSkill->AbilityShot(InDamageCoefficient, Target.Get());
-	//if(NPCAttack)
-	//	NPCAttack->AbilityShot(InDamageCoefficient, Target.Get());
-	//if(CurrentUseAbilityType != EAbilityType::None)
-	//{
-	//	TObjectPtr<USkillBase>* skill = NPCSkills.Find(CurrentUseAbilityType);
-	//	if(skill && *skill)
-	//	{
-	//		(*skill)->AbilityShot(InDamageCoefficient, Target.Get());
-	//		CurrentUseAbilityType = EAbilityType::None;
-	//	}
-	//}
 
 	if(CurrentUseAbilityType != EAbilityType::None)
 	{
@@ -649,6 +602,50 @@ void ACharacterNPC::AbilityShot(double InDamageCoefficient)
 			CurrentUseAbilityType = EAbilityType::None;
 		}
 	}
+}
+
+EAbilityType ACharacterNPC::GetTopPriorityUseableSkill()
+{
+	TArray<EAbilityType> melee;
+	TArray<EAbilityType> ranged;
+    
+	for(const EAbilityType& useableSkill : GetUseableSkills())
+	{
+		const UNPCAttack* attack = GetNPCAttack(useableSkill);
+		if(attack->GetSkillDistanceType() == ESkillDistanceType::MeleeAttack)
+			melee.Add(useableSkill);
+		else if(attack->GetSkillDistanceType() == ESkillDistanceType::RangedAttack)
+			ranged.Add(useableSkill);
+	}
+
+	if(!melee.IsEmpty())
+	{
+		int32 random = FMath::RandRange(0, melee.Num() - 1);
+		return melee[random];
+	}
+	else
+	{
+		if(!ranged.IsEmpty())
+		{
+			int32 random = FMath::RandRange(0, ranged.Num() - 1);
+			return ranged[random];
+		}
+		else
+		{
+			return EAbilityType::None;
+		}
+	}
+	return EAbilityType::None;
+}
+
+bool ACharacterNPC::IsAllParabolaAttack()
+{
+	for(const auto& [key, value] : NPCAttacks)
+	{
+		if(value->GetProjectileType() != EProjectileType::Parabola)
+			return false;
+	}
+	return true;
 }
 
 const UNPCAttack* ACharacterNPC::GetNPCAttack(EAbilityType InAbilityType)

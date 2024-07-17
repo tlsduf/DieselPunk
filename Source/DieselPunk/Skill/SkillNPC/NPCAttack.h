@@ -107,7 +107,7 @@ public:
 public:
 	void SetNPCSkillName(const FName& InNPCSkillName);
 
-	EProjectileType GetProjectileType(){return ProjectileType;}
+	EProjectileType GetProjectileType() const {return ProjectileType;}
 protected:
 	void PlayEffect(const FName& InAttachSocketName);
 };
