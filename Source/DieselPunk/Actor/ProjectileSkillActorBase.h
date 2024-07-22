@@ -72,10 +72,6 @@ protected:
 	//테이블 이름
 	FName ProjectileSkillActorName = NAME_None;
 
-	double CapsuleHalfHeight = 100.0;
-
-	double CapsuleRadius = 100.0;
-
 	//주인 타입
 	ECausorType ProjectileOwnerType = ECausorType::Player;
 

@@ -16,6 +16,7 @@
 #include "DieselPunk/Actor/ThrowableActor.h"
 #include "DieselPunk/Component/StatControlComponent.h"
 #include "DieselPunk/Data/NPCSkillDataTable.h"
+#include "DieselPunk/Data/ProjectileSkillActorDataTable.h"
 #include "DieselPunk/Manager/DatatableManager.h"
 #include "DieselPunk/Manager/ObjectManager.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -134,7 +135,9 @@ void UNPCAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 				straight->SetProjectileSkillActorName(projectileName);
 			}
 		};
-		FObjectManager::GetInstance()->CreateActor<AProjectileSkillActorBase>(AStraightSkillActorBase::StaticClass(), param, ownerPawn);
+		const FProjectileSkillActorDataTable* table = FDataTableManager::GetInstance()->GetData<FProjectileSkillActorDataTable>(EDataTableType::ProjectileSkillActor, projectileName.ToString());
+		if(table)
+			FObjectManager::GetInstance()->CreateActor<AProjectileSkillActorBase>(table->ProjectileSkillActorClass, param, ownerPawn);
 	}
 	else if(ProjectileType == EProjectileType::Parabola)
 	{
@@ -152,13 +155,13 @@ void UNPCAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 			{
 				AParabolaSkillActorBase* parabola = Cast<AParabolaSkillActorBase>(InActor);
 				parabola->SetDamage(damage);
-				//todo: 아직 필요없음. 추후에 사격 각도 구하는 알고리즘 생기면 추가
-				//parabola->SetDirection();
 				parabola->SetGoalLocation(targetPtr->GetActorLocation());
 				parabola->SetProjectileSkillActorName(projectileName);
 			}
 		};
-		FObjectManager::GetInstance()->CreateActor<AProjectileSkillActorBase>(AParabolaSkillActorBase::StaticClass(), param, ownerPawn);
+		const FProjectileSkillActorDataTable* table = FDataTableManager::GetInstance()->GetData<FProjectileSkillActorDataTable>(EDataTableType::ProjectileSkillActor, projectileName.ToString());
+		if(table)
+			FObjectManager::GetInstance()->CreateActor<AProjectileSkillActorBase>(table->ProjectileSkillActorClass, param, ownerPawn);
 	}
 	else if(ProjectileType == EProjectileType::Throwing)
 	{

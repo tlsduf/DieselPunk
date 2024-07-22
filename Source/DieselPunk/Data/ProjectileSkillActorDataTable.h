@@ -37,6 +37,8 @@ struct FParabolaSkillActorData
 	float ParabolaArrivalTimeCoefficient = 0.05f;
 };
 
+class AProjectileSkillActorBase;
+
 /**
  * 발사체 스킬 액터 데이터 테이블입니다.
  */
@@ -52,22 +54,14 @@ struct DIESELPUNK_API FProjectileSkillActorDataTable : public FDPTableRowBase
 	//발사체 한글 이름
 	UPROPERTY(EditAnywhere, Category="MYDP_Explain")
 	FName NameKR = NAME_None;
-
+	
 	//발사체 설명
 	UPROPERTY(EditAnywhere, Category="MYDP_Explain", meta=(MultiLine=true))
 	FText Explain = FText();
 
-	//스태틱 메시
+	//스폰할 스킬 액터 클래스
 	UPROPERTY(EditAnywhere, Category="MYDP_Data")
-	UStaticMesh* StaticMesh = nullptr;
-
-	//캡슐 절반 높이
-	UPROPERTY(EditAnywhere, Category="MYDP_Data")
-	double CapsuleHalfHeight = 100.0;
-
-	//캡슐 반지름
-	UPROPERTY(EditAnywhere, Category="MYDP_Data")
-	double CapsuleRadius = 100.0;
+	TSubclassOf<AProjectileSkillActorBase> ProjectileSkillActorClass = nullptr;
 
 	//주인 타입
 	UPROPERTY(EditAnywhere, Category="MYDP_Data")

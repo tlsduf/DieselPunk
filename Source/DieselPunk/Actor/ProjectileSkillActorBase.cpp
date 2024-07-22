@@ -50,11 +50,6 @@ void AProjectileSkillActorBase::BeginPlay()
 	if(!data)
 		return;
 
-	ProjectileMesh->SetStaticMesh(data->StaticMesh);
-	CapsuleHalfHeight = data->CapsuleHalfHeight;
-	CapsuleComponent->SetCapsuleHalfHeight(CapsuleHalfHeight);
-	CapsuleRadius = data->CapsuleRadius;
-	CapsuleComponent->SetCapsuleRadius(CapsuleRadius);
 	ProjectileOwnerType = data->ProjectileOwnerType;
 	RadialAttackInfos = data->RadialAttackInfos;
 	LifeTime = data->LifeTime;
