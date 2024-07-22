@@ -180,8 +180,7 @@ bool ACharacterHousing::CompleteHousingTurret()
 		if(auto turret = Cast<ACharacterTurret>(this))
 		{
 			turret->InitializeForwardVector();
-			if(turret->TurretSearchAreaType == ESearchAreaType::Rectangle)
-				turret->MakeSearchArea();
+			turret->MakeSearchArea();
 		}
 		
 		// 포탑 생성완료시 모든 적의 경로를 재탐색합니다.

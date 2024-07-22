@@ -11,6 +11,7 @@
 #include <AIController.h>
 #include <Navigation/PathFollowingComponent.h>
 
+#include "DieselPunk/Character/CharacterMonster.h"
 #include "DieselPunk/Skill/SkillBase.h"
 #include "DieselPunk/Skill/SkillNPC/NPCAttack.h"
 #include "Interfaces/ITargetDevice.h"
@@ -30,7 +31,7 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
 
     // AIController , self
     AAIController *AIController = OwnerComp.GetAIOwner();
-    ACharacterNPC* AICharacter = Cast<ACharacterNPC>(AIController->GetPawn());
+    ACharacterMonster* AICharacter = Cast<ACharacterMonster>(AIController->GetPawn());
     if(AICharacter == nullptr)
         return;
 

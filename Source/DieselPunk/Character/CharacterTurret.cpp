@@ -68,9 +68,6 @@ void ACharacterTurret::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if(NPCType == ENPCType::Alliance)
-		SetTurretTarget();
-
 	// 애니메이션 타겟 SET
 	UTurretAnimInstace* TurretAnimInstace = Cast<UTurretAnimInstace>(GetMesh()->GetAnimInstance());
 	if(TurretAnimInstace != nullptr)
@@ -85,11 +82,9 @@ void ACharacterTurret::RunAi()
 		aiController->RunAi(this, true);
 }
 
-// =============================================================
-// 터렛의 조건에 따라 타겟을 결정합니다.
-// =============================================================
-void ACharacterTurret::SetTurretTarget()
+void ACharacterTurret::SetTarget()
 {
+	Super::SetTarget();
 	// 사정거리 Draw
 	if(DebugOnOff)
 		DrawDebugSearchArea();
@@ -178,66 +173,9 @@ void ACharacterTurret::SetTurretTarget()
 	}
 }
 
-// =============================================================
-// 포탑의 사각형 탐색범위를 생성합니다. 
-// =============================================================
-void ACharacterTurret::MakeSearchArea()
-{
-	float wide = GridSizeHorizontal * FNavigationManager::GridSize;
-	FVector firstPoint = GetActorLocation() + (GetActorRightVector() * wide);
-	FVector secondPoint = GetActorLocation() + (GetActorRightVector() * wide) + GetActorForwardVector() * GetStat(ECharacterStatType::AtkMaxRange);
-	FVector thirdPoint = GetActorLocation() + (-1 * GetActorRightVector() * wide) + GetActorForwardVector() * GetStat(ECharacterStatType::AtkMaxRange);
-	FVector fourthPoint = GetActorLocation() + (-1 * GetActorRightVector() * wide);
-
-	// Set RectanglePoints
-	RectanglePoints.Empty();
-	RectanglePoints.Add(firstPoint);
-	RectanglePoints.Add(secondPoint);
-	RectanglePoints.Add(thirdPoint);
-	RectanglePoints.Add(fourthPoint);
-}
-
 void ACharacterTurret::InitializeForwardVector()
 {
-	InitForwardVector = GetActorForwardVector();
-}
-
-// =============================================================
-// inLocation이 유효 범위 안에 있으면 True 반환
-// =============================================================
-bool ACharacterTurret::InValidSearchArea(FVector InLocation)
-{
-	if(TurretSearchAreaType == ESearchAreaType::Circle)
-	{
-		float distance = FVector::Dist(GetActorLocation(), InLocation);
-		bool inMaxDistance = distance < GetStat(ECharacterStatType::AtkMaxRange);		// 최대거리 안에 위치?
-		bool inMinDistance = distance > GetStat(ECharacterStatType::AtkMinRange);		//최소거리 밖에 위치?
-
-		float forwardDir = GetActorForwardVector().GetSafeNormal().Rotation().Yaw;
-		float toTargetDir = (InLocation - GetActorLocation()).GetSafeNormal().Rotation().Yaw;
-		bool inDegree = true; // ( -30 < (forwardDir - toTargetDir) ) && ( (forwardDir - toTargetDir) < 30 );	// 각도 내에 위치?
-	
-		return inMaxDistance && inMinDistance && inDegree;
-	}
-	else if(TurretSearchAreaType == ESearchAreaType::Rectangle)
-	{
-		return IsInPolygon(InLocation.X, InLocation.Y);
-	}
-	else if(TurretSearchAreaType == ESearchAreaType::Arc)
-	{
-		float distance = FVector::Distance(GetActorLocation(), InLocation);
-
-		InitForwardVector.Normalize();
-		FVector targetDir = InLocation - GetActorLocation();
-		targetDir.Normalize();
-		double dot = FVector::DotProduct(InitForwardVector, targetDir);
-
-		return distance < GetStat(ECharacterStatType::AtkMaxRange)
-			&& distance > GetStat(ECharacterStatType::AtkMinRange)
-			&& dot > FMath::Cos(FMath::DegreesToRadians(Degree * 0.5));
-	}
-	
-	return false;
+	OriginForwardVector = GetActorForwardVector();
 }
 
 // =============================================================
@@ -278,87 +216,4 @@ bool ACharacterTurret::IsOverWall(FVector inLocation)
 		}
 	}
 	return bIsWorldObject;
-}
-
-// =============================================================
-// 다각형 내부에 점이 위치하는지 확인합니다. // Point in polygon algorithm
-// =============================================================
-bool ACharacterTurret::IsInPolygon(double InX, double InY)
-{
-	if(RectanglePoints.IsEmpty())
-		return false;
-	
-	int cn = 0;    // the crossing number counter
-	
-	for (int i = 0; i < RectanglePoints.Num(); i++)
-	{
-		int j = (i + 1) % RectanglePoints.Num();
-		if ((( RectanglePoints[i].Y <= InY ) && ( RectanglePoints[j].Y > InY )) || (( RectanglePoints[i].Y > InY ) && ( RectanglePoints[j].Y <=  InY )))
-		{
-			float vt = (float)(InY  - RectanglePoints[i].Y) / (RectanglePoints[j].Y - RectanglePoints[i].Y);
-			if (InX <  RectanglePoints[i].X + vt * ( RectanglePoints[j].X - RectanglePoints[i].X ))
-				++cn;
-		}
-	}
-	return ( cn & 1 );    // 0 if even (out), and 1 if  odd (in)
-}
-
-// =============================================================
-// 사정거리를 그립니다.
-// =============================================================
-void ACharacterTurret::DrawDebugSearchArea()
-{
-	if(TurretSearchAreaType == ESearchAreaType::Circle)
-	{
-		DrawDebugCircle(GetWorld(), GetActorLocation(), GetStat(ECharacterStatType::AtkMaxRange), 16, FColor::Red, false, -1, 0, 3, FVector(0,1,0), FVector(1,0,0), true);
-		DrawDebugCircle(GetWorld(), GetActorLocation(), GetStat(ECharacterStatType::AtkMinRange), 16, FColor::Green, false, -1, 0, 3, FVector(0,1,0), FVector(1,0,0), true);
-
-		/*float dif = GetStat().GetStat(ECharacterStatType::AttackMaxRange) - GetStat().GetStat(ECharacterStatType::AttackMinRange);
-		float colorDif = 255 / 4;
-		for(int32 i = 1 ; i <= 4 ; i++)
-		{
-			DrawDebugCircle(GetWorld(), GetActorLocation(), GetStat().GetStat(ECharacterStatType::AttackMaxRange) - (dif * i / 4), 16, FColor(255 - (colorDif * i),colorDif * i,0), false, -1, 0, 3, FVector(0,1,0), FVector(1,0,0), false);
-		}*/
-	}
-	else if(TurretSearchAreaType == ESearchAreaType::Rectangle)
-	{
-		if(RectanglePoints.IsEmpty())
-			return;
-		for(int i = 0; i < RectanglePoints.Num(); ++i)
-		{
-			if(i == RectanglePoints.Num() - 1)
-				DrawDebugLine( GetWorld(),RectanglePoints[i],RectanglePoints[0],FColor::Red, false, -1, 0, 3);
-			else
-				DrawDebugLine( GetWorld(),RectanglePoints[i],RectanglePoints[i + 1],FColor::Red, false, -1, 0, 3);
-		}
-	}
-	else if(TurretSearchAreaType == ESearchAreaType::Arc)
-	{
-		FRotator right = InitForwardVector.Rotation() + FRotator(0.0, Degree * 0.5, 0.0);
-		FRotator left = InitForwardVector.Rotation() + FRotator(0.0, Degree * -0.5, 0.0);
-		DrawDebugLine(GetWorld(),
-			GetActorLocation() + left.Vector() * GetStat(ECharacterStatType::AtkMinRange),
-			GetActorLocation() + left.Vector() * GetStat(ECharacterStatType::AtkMaxRange),
-			FColor::Red, false, -1, 0, 3);
-
-		
-		DrawDebugLine(GetWorld(),
-			GetActorLocation() + right.Vector() * GetStat(ECharacterStatType::AtkMinRange),
-			GetActorLocation() + right.Vector() * GetStat(ECharacterStatType::AtkMaxRange),
-			FColor::Red, false, -1, 0, 3);
-
-		DrawDebugCircleArc(GetWorld(),
-			GetActorLocation(),
-			GetStat(ECharacterStatType::AtkMinRange),
-			InitForwardVector,
-			FMath::DegreesToRadians(Degree * 0.5),
-			12, FColor::Red, false, -1, 0, 3);
-		
-		DrawDebugCircleArc(GetWorld(),
-			GetActorLocation(),
-			GetStat(ECharacterStatType::AtkMaxRange),
-			InitForwardVector,
-			FMath::DegreesToRadians(Degree * 0.5),
-			12, FColor::Red, false, -1, 0, 3);
-	}
 }

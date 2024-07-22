@@ -41,7 +41,6 @@ ACharacterNPC::ACharacterNPC()
 void ACharacterNPC::BeginPlay()
 {
 	Super::BeginPlay();
-	CharacterType = ECharacterType::Monster;
 
 	Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 
@@ -85,34 +84,8 @@ void ACharacterNPC::Tick(float DeltaTime)
 	
 	if(IsDead())
 		WidgetComp->bHiddenInGame = 1;
-	
-	// 타겟 업데이트
-	if(NPCType == ENPCType::Enemy)
-	{
-		UpdateEnemyTarget();	// 몬스터 타겟 업데이트
-		SetInRange();	// 타겟 위치에 따른 조건 업데이트
-		if(DebugOnOff)
-			DrawDebugPoint(GetWorld(), NowGoalLoc, 30, FColor::Orange, false);
 
-		// Navigation
-		if(DPNavigationComponent == nullptr)
-			return;
-		// 몬스터 AddMovementInput
-		if(!InRange && !bPlayerTargeting())
-		{
-			DPNavigationComponent->AddForceAlongSplinePath();
-			if(GetCharacterName() == TEXT("E_Mokosh"))
-			{
-				SetActorRotation(DPNavigationComponent->GetForceDirection().Rotation());
-			}
-		}
-		/*if(!InRange && !bPlayerTargeting())
-			if(AIController)
-				AIController->MoveToLocation(DPNavigationComponent->MoveToAlongSplinePath(), 1, false, false);*/
-		// 경로 Draw
-		if(DebugOnOff)
-			DPNavigationComponent->DrawDebugSpline();
-	}
+	SetTarget();
 	
 	FindUseableAbilityType();
 }
@@ -222,6 +195,153 @@ void ACharacterNPC::FindUseableAbilityType()
 }
 
 // =============================================================
+// 포탑의 사각형 탐색범위를 생성합니다. 
+// =============================================================
+void ACharacterNPC::MakeSearchArea()
+{
+	if(SearchAreaType != ESearchAreaType::Rectangle)
+		return;
+	
+	FVector firstPoint = GetActorLocation() + (GetActorRightVector() * RectangleWidth * 0.5f);
+	FVector secondPoint = GetActorLocation() + (GetActorRightVector() * RectangleWidth * 0.5f) + GetActorForwardVector() * GetStat(ECharacterStatType::AtkMaxRange);
+	FVector thirdPoint = GetActorLocation() + (-1 * GetActorRightVector() * RectangleWidth * 0.5f) + GetActorForwardVector() * GetStat(ECharacterStatType::AtkMaxRange);
+	FVector fourthPoint = GetActorLocation() + (-1 * GetActorRightVector() * RectangleWidth * 0.5f);
+
+	// Set RectanglePoints
+	RectanglePoints.Empty();
+	RectanglePoints.Add(firstPoint);
+	RectanglePoints.Add(secondPoint);
+	RectanglePoints.Add(thirdPoint);
+	RectanglePoints.Add(fourthPoint);
+}
+
+
+// =============================================================
+// inLocation이 유효 범위 안에 있으면 True 반환
+// =============================================================
+bool ACharacterNPC::InValidSearchArea(FVector InLocation)
+{
+	if(SearchAreaType == ESearchAreaType::Circle)
+	{
+		FVector ownerLoc = GetActorLocation();
+		ownerLoc.Z = 0.f;
+		FVector inLoc = InLocation;
+		inLoc.Z = 0.f;
+		
+		float distance = FVector::Dist(ownerLoc, inLoc);
+		bool inMaxDistance = distance <= GetStat(ECharacterStatType::AtkMaxRange);		// 최대거리 안에 위치?
+		bool inMinDistance = distance >= GetStat(ECharacterStatType::AtkMinRange);		// 최소거리 밖에 위치?
+		bool inMaxHeight = InLocation.Z <= GetActorLocation().Z + CircleHeight * 0.5f;
+		bool inMinHeight = InLocation.Z >= GetActorLocation().Z - CircleHeight * 0.5f;
+	
+		return inMaxDistance && inMinDistance && inMaxHeight && inMinHeight;
+	}
+	else if(SearchAreaType == ESearchAreaType::Rectangle)
+	{
+		return IsInPolygon(InLocation.X, InLocation.Y);
+	}
+	else if(SearchAreaType == ESearchAreaType::Arc)
+	{
+		float distance = FVector::Distance(GetActorLocation(), InLocation);
+
+		OriginForwardVector.Normalize();
+		FVector targetDir = InLocation - GetActorLocation();
+		targetDir.Normalize();
+		double dot = FVector::DotProduct(OriginForwardVector, targetDir);
+
+		return distance < GetStat(ECharacterStatType::AtkMaxRange)
+			&& distance > GetStat(ECharacterStatType::AtkMinRange)
+			&& dot > FMath::Cos(FMath::DegreesToRadians(ArcAngle * 0.5));
+	}
+	
+	return false;
+}
+
+
+// =============================================================
+// 다각형 내부에 점이 위치하는지 확인합니다. // Point in polygon algorithm
+// =============================================================
+bool ACharacterNPC::IsInPolygon(double InX, double InY)
+{
+	if(RectanglePoints.IsEmpty())
+		return false;
+	
+	int cn = 0;    // the crossing number counter
+	
+	for (int i = 0; i < RectanglePoints.Num(); i++)
+	{
+		int j = (i + 1) % RectanglePoints.Num();
+		if ((( RectanglePoints[i].Y <= InY ) && ( RectanglePoints[j].Y > InY )) || (( RectanglePoints[i].Y > InY ) && ( RectanglePoints[j].Y <=  InY )))
+		{
+			float vt = (float)(InY  - RectanglePoints[i].Y) / (RectanglePoints[j].Y - RectanglePoints[i].Y);
+			if (InX <  RectanglePoints[i].X + vt * ( RectanglePoints[j].X - RectanglePoints[i].X ))
+				++cn;
+		}
+	}
+	return ( cn & 1 );    // 0 if even (out), and 1 if  odd (in)
+}
+
+// =============================================================
+// 사정거리를 그립니다.
+// =============================================================
+void ACharacterNPC::DrawDebugSearchArea()
+{
+	if(SearchAreaType == ESearchAreaType::Circle)
+	{
+		DrawDebugCircle(GetWorld(), GetActorLocation(), GetStat(ECharacterStatType::AtkMaxRange), 16, FColor::Red, false, -1, 0, 3, FVector(0,1,0), FVector(1,0,0), true);
+		DrawDebugCircle(GetWorld(), GetActorLocation(), GetStat(ECharacterStatType::AtkMinRange), 16, FColor::Green, false, -1, 0, 3, FVector(0,1,0), FVector(1,0,0), true);
+
+		/*float dif = GetStat().GetStat(ECharacterStatType::AttackMaxRange) - GetStat().GetStat(ECharacterStatType::AttackMinRange);
+		float colorDif = 255 / 4;
+		for(int32 i = 1 ; i <= 4 ; i++)
+		{
+			DrawDebugCircle(GetWorld(), GetActorLocation(), GetStat().GetStat(ECharacterStatType::AttackMaxRange) - (dif * i / 4), 16, FColor(255 - (colorDif * i),colorDif * i,0), false, -1, 0, 3, FVector(0,1,0), FVector(1,0,0), false);
+		}*/
+	}
+	else if(SearchAreaType == ESearchAreaType::Rectangle)
+	{
+		if(RectanglePoints.IsEmpty())
+			return;
+		for(int i = 0; i < RectanglePoints.Num(); ++i)
+		{
+			if(i == RectanglePoints.Num() - 1)
+				DrawDebugLine( GetWorld(),RectanglePoints[i],RectanglePoints[0],FColor::Red, false, -1, 0, 3);
+			else
+				DrawDebugLine( GetWorld(),RectanglePoints[i],RectanglePoints[i + 1],FColor::Red, false, -1, 0, 3);
+		}
+	}
+	else if(SearchAreaType == ESearchAreaType::Arc)
+	{
+		FRotator right = OriginForwardVector.Rotation() + FRotator(0.0, ArcAngle * 0.5, 0.0);
+		FRotator left = OriginForwardVector.Rotation() + FRotator(0.0, ArcAngle * -0.5, 0.0);
+		DrawDebugLine(GetWorld(),
+			GetActorLocation() + left.Vector() * GetStat(ECharacterStatType::AtkMinRange),
+			GetActorLocation() + left.Vector() * GetStat(ECharacterStatType::AtkMaxRange),
+			FColor::Red, false, -1, 0, 3);
+
+		
+		DrawDebugLine(GetWorld(),
+			GetActorLocation() + right.Vector() * GetStat(ECharacterStatType::AtkMinRange),
+			GetActorLocation() + right.Vector() * GetStat(ECharacterStatType::AtkMaxRange),
+			FColor::Red, false, -1, 0, 3);
+
+		DrawDebugCircleArc(GetWorld(),
+			GetActorLocation(),
+			GetStat(ECharacterStatType::AtkMinRange),
+			OriginForwardVector,
+			FMath::DegreesToRadians(ArcAngle * 0.5),
+			12, FColor::Red, false, -1, 0, 3);
+		
+		DrawDebugCircleArc(GetWorld(),
+			GetActorLocation(),
+			GetStat(ECharacterStatType::AtkMaxRange),
+			OriginForwardVector,
+			FMath::DegreesToRadians(ArcAngle * 0.5),
+			12, FColor::Red, false, -1, 0, 3);
+	}
+}
+
+// =============================================================
 // 몬스터 스킬
 // =============================================================
 
@@ -230,53 +350,6 @@ void ACharacterNPC::InitSkill()
 	if(!NPCAttacks.IsEmpty())
 		for(const auto& [key, attack] : NPCAttacks)
 			attack->InitSkill();
-}
-
-// =============================================================
-// '몬스터'의 Target을 설정합니다.
-// =============================================================
-void ACharacterNPC::UpdateEnemyTarget()
-{
-	//공격 대상이 사라졌다면 nullptr로 초기화
-	if(!Target.IsValid())
-		ChangeTarget(nullptr);
-	
-	// (최우선)플레이어가 조건에 일치하는가? // 일치한다면 타겟을 플레이어로 지정
-	if(bPlayerTargeting())
-	{
-		ChangeTarget(Player);
-		return;
-	}
-
-	// (우선) 터렛에 의해 길이 막혔는가? // 타겟을 터렛으로 설정
-	// TargetedTurretID가 유효한 값일 경우
-	if(TargetedTurretID != FObjectManager::INVALID_OBJECTID)
-	{
-		// TargetedTurretID의 액터가 유효한 경우
-		if(FObjectManager::GetInstance()->FindActor(TargetedTurretID) != nullptr)
-		{
-			// 타겟을 해당 터렛으로 설정
-			ChangeTarget(FObjectManager::GetInstance()->FindActor(TargetedTurretID));
-			return;
-		}
-		// TargetedTurretID가 유효하지 않다면 값 리셋
-		TargetedTurretID = FObjectManager::INVALID_OBJECTID;
-	}
-	
-	// (최하위) 기본 상태는 Nullptr // 넥서스가 공격범위 안이면 Nexus
-	// 넥서스가 조건없이 Target 이면, Target이 Nexus 로 업데이트 되기 전의 데미지 호출에 의해 데미지를 입는 경우가 생김.
-	auto nexus = FObjectManager::GetInstance()->GetNexus();
-	if(nexus == nullptr)
-	{
-		ChangeTarget(nullptr);
-		return;
-	}
-	
-	float distance = FVector::Dist(GetActorLocation(), nexus->GetActorLocation());
-	if(distance > GetStat(ECharacterStatType::AtkMaxRange))
-		ChangeTarget(nullptr);
-	else
-		ChangeTarget(nexus);
 }
 
 // =============================================================
@@ -293,106 +366,6 @@ void ACharacterNPC::ChangeTarget(TWeakObjectPtr<AActor> inTarget)
 			UpdateSplinePath();
 	
 	Target = inTarget;
-}
-
-// =============================================================
-// 조건이 맞다면 '몬스터'의 타겟을 플레이어로 설정합니다.
-// =============================================================
-bool ACharacterNPC::bPlayerTargeting()
-{
-	if(Player == nullptr)
-		return false;
-
-	FVector playerLoc = Player->GetActorLocation();
-	FVector playerLocXY = FVector(playerLoc.X, playerLoc.Y, GetActorLocation().Z);
-
-	const int rangeMax = GetStat(ECharacterStatType::AtkMaxRange);
-	const int rangeMin = GetStat(ECharacterStatType::AtkMinRange);
-	const int rangeDist = rangeMax - rangeMin;
-	// DrawDebug
-	if(DebugOnOff)
-	{
-		DrawDebugCircleArc(GetWorld(), GetActorLocation(), rangeMax, GetActorForwardVector(), 0.523, 8, FColor::Red, false);
-		DrawDebugCircleArc(GetWorld(), GetActorLocation(), rangeMin, GetActorForwardVector(), 0.523, 8, FColor::Red, false);
-		FVector rightVector = (GetActorForwardVector().GetSafeNormal().Rotation() + FRotator(0, 30, 0)).Vector().GetSafeNormal();
-		FVector leftVector = (GetActorForwardVector().GetSafeNormal().Rotation() - FRotator(0, 30, 0)).Vector().GetSafeNormal();
-		DrawDebugLine(GetWorld(), GetActorLocation() + rightVector * rangeMin, GetActorLocation() + rightVector * rangeDist, FColor::Red, false);
-		DrawDebugLine(GetWorld(), GetActorLocation() + rightVector * rangeMin, GetActorLocation() + leftVector * rangeDist, FColor::Red, false);
-	}
-	
-	// 플레이어가 유효 사거리 안에 위치
-	//const int range = 1500;
-	bool inRange = FVector::Dist(GetActorLocation(), playerLoc) <= rangeMax;
-	inRange = inRange && FVector::Dist(GetActorLocation(), playerLoc) >= rangeMin;
-	if(!inRange)
-		return inRange;
-
-	// 유효 수직 거리안에 위치
-	const int zRange = 300;
-	auto zDif = abs(playerLoc.Z - GetActorLocation().Z);
-	bool inZRange = (zDif <= zRange);
-	if(!inZRange)
-		return inZRange;
-	
-	// 플레이어가 유효 각도 안에 위치
-	float forwardDir = GetActorForwardVector().GetSafeNormal().Rotation().Yaw;
-	float toTargetDir = (playerLocXY - GetActorLocation()).GetSafeNormal().Rotation().Yaw;
-	bool inDegree = ( -SearchPlayerDEGREE < (forwardDir - toTargetDir) ) && ( (forwardDir - toTargetDir) < SearchPlayerDEGREE );
-	if(!inDegree)
-		return inDegree;
-	
-	// 플레이어가 유효 공간 안에 위치
-	// TODO
-	
-	// 플레이와 몬스터 사이에 벽이나 포탑 있는지 탐색
-	TArray<FHitResult> hits;
-	// 모든 몬스터들을 IgnoredActor에 등록합니다.
-	FCollisionQueryParams params;
-	TArray<int32> monstersIDs;
-	FObjectManager::GetInstance()->FindActorArrayByPredicate(monstersIDs, [](AActor* InActor)
-	{
-		if(auto npc = Cast<ACharacterNPC>(InActor))
-			if(npc->NPCType == ENPCType::Enemy)
-				return true;
-		return false;
-	});
-	for(const int32& ID : monstersIDs)
-		params.AddIgnoredActor(FObjectManager::GetInstance()->FindActor(ID));
-	
-	bool bIsWall = false;
-	// y길이가 캡슐반지름*2인 박스로 스윕하여 맵 오브젝트가 있는지 확인. 있으면 true
-	FVector boxSize = FVector(1,GetCapsuleComponent()->GetScaledCapsuleRadius(),1);
-	if(GetWorld()->SweepMultiByChannel(hits, GetActorLocation(), playerLocXY, FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeBox(boxSize), params))
-	{
-		if(DebugOnOff)
-			DrawDebugLine(GetWorld(), GetActorLocation(), playerLoc, FColor::Black, false);
-		if(Cast<ACharacterTurret>(hits[hits.Num() - 1].GetActor()))
-			bIsWall = true;
-		for(const auto& hit : hits)
-		{
-			if(hit.GetActor()->GetClass()->ImplementsInterface(UDpManagementTargetInterFace::StaticClass()))
-				continue;
-			bIsWall = true;
-		}
-	}
-	return inRange && inZRange && inDegree && !bIsWall;
-}
-
-// =============================================================
-// 몬스터와 목표의 거리에 따른 조건 설정 // BT 활용
-// =============================================================
-void ACharacterNPC::SetInRange()
-{
-	// 몬스터와 목표의 거리에 따른 조건 설정
-	//float MeleeRange = AICharacter->GetCapsuleComponent()->GetScaledCapsuleRadius() + 200;
-	if(Target.IsValid())
-	{
-		FVector VRange = GetActorLocation() - GetAttackTarget()->GetActorLocation();
-		float FRange = VRange.Size();
-		InRange = (GetStat(ECharacterStatType::AtkMaxRange) < FRange) ? false : true;
-	}
-	else
-		InRange = false;
 }
 
 // =============================================================

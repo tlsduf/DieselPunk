@@ -62,8 +62,6 @@ protected:
 	
 	/////////////////////////////////////////////////////////////////////
 	// for skill //
-
-	const float SearchPlayerDEGREE = 30;
 	
 	UPROPERTY(EditAnywhere, Category="MYDP_Skill")
 	TMap<EAbilityType, FName> NPCAttackNames;
@@ -108,6 +106,31 @@ protected:
 	float CachedMass = 100.f;
 
 	bool IsThrowingActor = false;
+
+	/////////////////////////////////////////////////////////////////////
+	// for Targeting //
+
+	//탐색 범위 타입
+	UPROPERTY(EditAnywhere, Category="MYDP_Targeting")
+	ESearchAreaType SearchAreaType = ESearchAreaType::Rectangle;
+
+	//사각형 너비 그리드 개수
+	UPROPERTY(EditAnywhere, Category="MYDP_Targeting", meta=(EditCondition="SearchAreaType == ESearchAreaType::Rectangle"))
+	float RectangleWidth = 1000.f;
+
+	//원 높이
+	UPROPERTY(EditAnywhere, Category="MYDP_Targeting", meta=(EditCondition="SearchAreaType == ESearchAreaType::Circle"))
+	float CircleHeight = 1000.f;
+
+	//부채꼴 각도
+	UPROPERTY(EditAnywhere, Category="MYDP_Targeting", meta=(EditCondition="SearchAreaType == ESearchAreaType::Arc"))
+	float ArcAngle = 30.f;
+
+	//사각형 포인트
+	TArray<FVector> RectanglePoints;
+
+	//탐색을 위한 전방 벡터
+	FVector OriginForwardVector = FVector::ZeroVector;
 	
 protected:
 	ACharacterNPC();
@@ -130,17 +153,26 @@ protected:
 	void FindUseableAbilityType();
 
 public:
+	// 포탑의 사각형 탐색범위를 생성합니다. 
+	void MakeSearchArea();
+
+	// inLocation이 유효 범위 안에 있으면 True 반환
+	bool InValidSearchArea(FVector InLocation);
+
+	// 다각형 내부에 점이 위치하는지 확인합니다. // Point in polygon algorithm
+	bool IsInPolygon(double InX, double InY);
+	
+	// 사정거리 DrawDebug
+	void DrawDebugSearchArea();
+	
+	const FVector& GetOriginForwardVector(){return OriginForwardVector;}
+
+	virtual void SetTarget(){}
 
 	void InitSkill();
 	
-	// '몬스터'의 Target을 설정합니다. // Tcik , 조건
-	void UpdateEnemyTarget();
 	// 타겟을 업데이트하고, 업데이트 조건에 따라 댈리게이트를 실행합니다.
 	void ChangeTarget(TWeakObjectPtr<AActor> inTarget);
-	// 조건이 맞다면 '몬스터'의 타겟을 플레이어로 설정합니다.
-	bool bPlayerTargeting();
-	// 몬스터와 목표의 거리에 따른 조건 설정 // BT 활용
-	void SetInRange();
 	
 	// 몬스터의 RoutingLines TMap에 값을 추가합니다.
 	void AddEnemyRoutingLines(FVector inGoalLoc, FVector inStart, FVector inEnd);
@@ -176,6 +208,8 @@ public:
 	int32 GetGridSizeHorizontal() const { return GridSizeHorizontal; }
 	
 	FVector GetBlockedAttackTargetLoc() const { return BlockedTargetLoc; }
+
+	ENPCType GetNPCType(){return NPCType;}
 
 	
 	//스폰 애니메이션을 실행하고 애니메이션의 길이를 반환합니다. 애니메이션이 없을 경우 0을 반환합니다.

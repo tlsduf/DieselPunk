@@ -2,6 +2,12 @@
 
 #include "CharacterMonster.h"
 
+#include "CharacterTurret.h"
+#include "DrawDebugHelpers.h"
+#include "Components/CapsuleComponent.h"
+#include "DieselPunk/Component/DPNavigationComponent.h"
+#include "DieselPunk/Manager/ObjectManager.h"
+
 
 // =============================================================
 // 생성자
@@ -17,7 +23,7 @@ void ACharacterMonster::BeginPlay()
 {
 	Super::BeginPlay();
 	CharacterType = ECharacterType::Monster;
-	
+	NPCType = ENPCType::Enemy;
 }
 
 // =============================================================
@@ -26,6 +32,8 @@ void ACharacterMonster::BeginPlay()
 void ACharacterMonster::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	OriginForwardVector = GetActorForwardVector();
 }
 
 // =============================================================
@@ -35,4 +43,187 @@ void ACharacterMonster::SetupPlayerInputComponent(class UInputComponent *PlayerI
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	check(PlayerInputComponent);
+}
+
+void ACharacterMonster::SetTarget()
+{
+	Super::SetTarget();
+	// 타겟 업데이트
+	UpdateEnemyTarget();	// 몬스터 타겟 업데이트
+	SetInRange();	// 타겟 위치에 따른 조건 업데이트
+	MakeSearchArea();
+	if(DebugOnOff)
+		DrawDebugPoint(GetWorld(), NowGoalLoc, 30, FColor::Orange, false);
+
+	// Navigation
+	if(DPNavigationComponent == nullptr)
+		return;
+	// 몬스터 AddMovementInput
+	if(!InRange && !bPlayerTargeting())
+	{
+		DPNavigationComponent->AddForceAlongSplinePath();
+		if(GetCharacterName() == TEXT("E_Mokosh"))
+		{
+			SetActorRotation(DPNavigationComponent->GetForceDirection().Rotation());
+		}
+	}
+	/*if(!InRange && !bPlayerTargeting())
+		if(AIController)
+			AIController->MoveToLocation(DPNavigationComponent->MoveToAlongSplinePath(), 1, false, false);*/
+	// 경로 Draw
+	if(DebugOnOff)
+		DPNavigationComponent->DrawDebugSpline();
+}
+
+// =============================================================
+// '몬스터'의 Target을 설정합니다.
+// =============================================================
+void ACharacterMonster::UpdateEnemyTarget()
+{
+	//공격 대상이 사라졌다면 nullptr로 초기화
+	if(!Target.IsValid())
+		ChangeTarget(nullptr);
+	
+	// (최우선)플레이어가 조건에 일치하는가? // 일치한다면 타겟을 플레이어로 지정
+	if(bPlayerTargeting())
+	{
+		LOG_SCREEN(FColor::White, TEXT("PlayerSetting!"))
+		ChangeTarget(Player);
+		return;
+	}
+
+	// (우선) 터렛에 의해 길이 막혔는가? // 타겟을 터렛으로 설정
+	// TargetedTurretID가 유효한 값일 경우
+	if(TargetedTurretID != FObjectManager::INVALID_OBJECTID)
+	{
+		// TargetedTurretID의 액터가 유효한 경우
+		if(FObjectManager::GetInstance()->FindActor(TargetedTurretID) != nullptr)
+		{
+			// 타겟을 해당 터렛으로 설정
+			ChangeTarget(FObjectManager::GetInstance()->FindActor(TargetedTurretID));
+			return;
+		}
+		// TargetedTurretID가 유효하지 않다면 값 리셋
+		TargetedTurretID = FObjectManager::INVALID_OBJECTID;
+	}
+	
+	// (최하위) 기본 상태는 Nullptr // 넥서스가 공격범위 안이면 Nexus
+	// 넥서스가 조건없이 Target 이면, Target이 Nexus 로 업데이트 되기 전의 데미지 호출에 의해 데미지를 입는 경우가 생김.
+	auto nexus = FObjectManager::GetInstance()->GetNexus();
+	if(nexus == nullptr)
+	{
+		ChangeTarget(nullptr);
+		return;
+	}
+	
+	float distance = FVector::Dist(GetActorLocation(), nexus->GetActorLocation());
+	if(distance > GetStat(ECharacterStatType::AtkMaxRange))
+		ChangeTarget(nullptr);
+	else
+		ChangeTarget(nexus);
+}
+
+// =============================================================
+// 조건이 맞다면 '몬스터'의 타겟을 플레이어로 설정합니다.
+// =============================================================
+bool ACharacterMonster::bPlayerTargeting()
+{
+	if(Player == nullptr)
+		return false;
+
+	FVector playerLoc = Player->GetActorLocation();
+	FVector playerLocXY = FVector(playerLoc.X, playerLoc.Y, GetActorLocation().Z);
+
+	const int rangeMax = GetStat(ECharacterStatType::AtkMaxRange);
+	const int rangeMin = GetStat(ECharacterStatType::AtkMinRange);
+	const int rangeDist = rangeMax - rangeMin;
+	// DrawDebug
+	if(DebugOnOff)
+	{
+		DrawDebugCircleArc(GetWorld(), GetActorLocation(), rangeMax, GetActorForwardVector(), 0.523, 8, FColor::Red, false);
+		DrawDebugCircleArc(GetWorld(), GetActorLocation(), rangeMin, GetActorForwardVector(), 0.523, 8, FColor::Red, false);
+		FVector rightVector = (GetActorForwardVector().GetSafeNormal().Rotation() + FRotator(0, 30, 0)).Vector().GetSafeNormal();
+		FVector leftVector = (GetActorForwardVector().GetSafeNormal().Rotation() - FRotator(0, 30, 0)).Vector().GetSafeNormal();
+		DrawDebugLine(GetWorld(), GetActorLocation() + rightVector * rangeMin, GetActorLocation() + rightVector * rangeDist, FColor::Red, false);
+		DrawDebugLine(GetWorld(), GetActorLocation() + rightVector * rangeMin, GetActorLocation() + leftVector * rangeDist, FColor::Red, false);
+	}
+
+	bool inRange = InValidSearchArea(playerLoc);
+	if(!inRange)
+		return inRange;
+
+	
+	//// 플레이어가 유효 사거리 안에 위치
+	////const int range = 1500;
+	//bool inRange = FVector::Dist(GetActorLocation(), playerLoc) <= rangeMax;
+	//inRange = inRange && FVector::Dist(GetActorLocation(), playerLoc) >= rangeMin;
+	//if(!inRange)
+	//	return inRange;
+//
+	//// 유효 수직 거리안에 위치
+	//const int zRange = 300;
+	//auto zDif = abs(playerLoc.Z - GetActorLocation().Z);
+	//bool inZRange = (zDif <= zRange);
+	//if(!inZRange)
+	//	return inZRange;
+	//
+	//// 플레이어가 유효 각도 안에 위치
+	//float forwardDir = GetActorForwardVector().GetSafeNormal().Rotation().Yaw;
+	//float toTargetDir = (playerLocXY - GetActorLocation()).GetSafeNormal().Rotation().Yaw;
+	//bool inDegree = ( -SearchPlayerDEGREE < (forwardDir - toTargetDir) ) && ( (forwardDir - toTargetDir) < SearchPlayerDEGREE );
+	//if(!inDegree)
+	//	return inDegree;
+	//
+	//// 플레이어가 유효 공간 안에 위치
+	//// TODO
+	
+	// 플레이와 몬스터 사이에 벽이나 포탑 있는지 탐색
+	TArray<FHitResult> hits;
+	// 모든 몬스터들을 IgnoredActor에 등록합니다.
+	FCollisionQueryParams params;
+	TArray<int32> monstersIDs;
+	FObjectManager::GetInstance()->FindActorArrayByPredicate(monstersIDs, [](AActor* InActor)
+	{
+		if(auto npc = Cast<ACharacterNPC>(InActor))
+			if(npc->GetNPCType() == ENPCType::Enemy)
+				return true;
+		return false;
+	});
+	for(const int32& ID : monstersIDs)
+		params.AddIgnoredActor(FObjectManager::GetInstance()->FindActor(ID));
+	
+	bool bIsWall = false;
+	// y길이가 캡슐반지름*2인 박스로 스윕하여 맵 오브젝트가 있는지 확인. 있으면 true
+	FVector boxSize = FVector(1,GetCapsuleComponent()->GetScaledCapsuleRadius(),1);
+	if(GetWorld()->SweepMultiByChannel(hits, GetActorLocation(), playerLocXY, FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeBox(boxSize), params))
+	{
+		if(DebugOnOff)
+			DrawDebugLine(GetWorld(), GetActorLocation(), playerLoc, FColor::Black, false);
+		if(Cast<ACharacterTurret>(hits[hits.Num() - 1].GetActor()))
+			bIsWall = true;
+		for(const auto& hit : hits)
+		{
+			if(hit.GetActor()->GetClass()->ImplementsInterface(UDpManagementTargetInterFace::StaticClass()))
+				continue;
+			bIsWall = true;
+		}
+	}
+	return inRange && !bIsWall;
+}
+
+// =============================================================
+// 몬스터와 목표의 거리에 따른 조건 설정 // BT 활용
+// =============================================================
+void ACharacterMonster::SetInRange()
+{
+	// 몬스터와 목표의 거리에 따른 조건 설정
+	//float MeleeRange = AICharacter->GetCapsuleComponent()->GetScaledCapsuleRadius() + 200;
+	if(Target.IsValid())
+	{
+		FVector VRange = GetActorLocation() - GetAttackTarget()->GetActorLocation();
+		float FRange = VRange.Size();
+		InRange = (GetStat(ECharacterStatType::AtkMaxRange) < FRange) ? false : true;
+	}
+	else
+		InRange = false;
 }

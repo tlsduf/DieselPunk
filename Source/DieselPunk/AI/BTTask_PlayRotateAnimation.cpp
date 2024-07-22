@@ -61,7 +61,7 @@ EBTNodeResult::Type UBTTask_PlayRotateAnimation::ExecuteTask(UBehaviorTreeCompon
 				}
 			}
 			FVector curDir = OwnerCharacter->GetActorForwardVector();
-			FVector initDir = OwnerCharacter->GetInitForwardVector();
+			FVector initDir = OwnerCharacter->GetOriginForwardVector();
 			FVector initRightDir = FVector(initDir.Y, initDir.X, initDir.Z);
 			
 			double angleRadian = FMath::Acos(FMath::Clamp(FVector::DotProduct(curDir, initDir), -1.0, 1.0));
