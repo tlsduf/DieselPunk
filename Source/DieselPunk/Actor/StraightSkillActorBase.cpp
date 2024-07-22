@@ -40,6 +40,7 @@ void AStraightSkillActorBase::BeginPlay()
 	ProjectileMovementComponent->InitialSpeed = Speed;
 	ProjectileMovementComponent->MaxSpeed = Speed;
 	ProjectileMovementComponent->ProjectileGravityScale = 0.0;
+	ProjectileMovementComponent->Velocity = GetActorForwardVector() * Speed;
 }
 
 // =============================================================
