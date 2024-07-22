@@ -676,6 +676,8 @@ bool FNavigationManager::PlacementTurret(FVector& InOutLocation, int32 InGridSiz
 			yIndex.Add(startY + i);
 	}
 
+
+	int32 count = 0;
 	//설치가 가능한지 검사
 	for(int32 x : xIndex)
 	{
@@ -684,18 +686,24 @@ bool FNavigationManager::PlacementTurret(FVector& InOutLocation, int32 InGridSiz
 			//if(NavMap.Find(x) == nullptr || NavMap.Find(x)->Find(y) == nullptr || NavMap.Find(x)->Find(y)->NavNodeState != ENavNodeState::Passable)
 			//	return false;
 
+			if(NavMap.Find(x) == nullptr || NavMap.Find(x)->Find(y) == nullptr)
+				continue;
 			outLocation += NavMap[x][y].Location;
+			++count;
 		}
 	}
 
 	//최종 위치계산
-	outLocation /= xIndex.Num() * yIndex.Num();
+	//outLocation /= xIndex.Num() * yIndex.Num();
+	outLocation /= count;
 	InOutLocation = outLocation;
 	
 	//설치한 곳에 ENavNodeState를 BlockedByBreakable로 변경
 	for(int32 x : xIndex)
 		for(int32 y : yIndex)
 		{
+			if(NavMap.Find(x) == nullptr || NavMap.Find(x)->Find(y) == nullptr)
+				continue;
 			NavMap[x][y].NavNodeState = ENavNodeState::BlockedByBreakable;
 			NavMap[x][y].BuildActor = InTurret;
 			OutIndex.Add({x, y});
