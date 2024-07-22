@@ -65,6 +65,9 @@ protected:
 	//오너 캐릭터 타입
 	ECharacterType OwnerTypes = ECharacterType::None;
 
+	//최대 사거리
+	float MaxRange = 1000.f;
+
 	// =================================================================================================
 	// 데이터 테이블에게 받아오는 변수
 	// =================================================================================================
@@ -99,6 +102,13 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "MYDP_Effect")
 	USoundBase *HitSound;
+
+	// =================================================================================================
+	// 내부 사용 변수
+	// =================================================================================================
+
+	//출발 위치
+	FVector StartLocation = FVector::ZeroVector;
 	
 public:
 	// Sets default values for this actor's properties
@@ -116,7 +126,7 @@ protected:
 	// 폭발 데미지 적용
 	virtual void ApplyRadialDamage();
 
-	// 생성 후 n초 뒤 파괴 바인드
+	// 생성 후 n초 뒤 파괴 바인드, 0초 이하로 설정 시 파괴하지 않고, Tick에 의해 최대 사거리에서 파괴합니다.
 	void BindDestroyOnTime();
 	
 	// 히트시 호출해서 데미지 적용, 투사체 파괴 등을 수행
@@ -141,4 +151,5 @@ private:
 public:
 	FORCEINLINE void SetProjectileSkillActorName(const FName& InProjectileSkillActorName){ProjectileSkillActorName = InProjectileSkillActorName;}
 	FORCEINLINE void SetDamage(float InDamage){Damage = InDamage;}
+	FORCEINLINE void SetMaxRange(float InMaxRange){MaxRange = InMaxRange;}
 };

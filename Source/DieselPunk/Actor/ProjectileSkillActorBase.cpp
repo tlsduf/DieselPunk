@@ -10,6 +10,7 @@
 
 #include "DieselPunk/Data/ProjectileSkillActorDataTable.h"
 #include "DieselPunk/Manager/DatatableManager.h"
+#include "DieselPunk/Manager/ObjectManager.h"
 
 
 // =============================================================
@@ -58,6 +59,8 @@ void AProjectileSkillActorBase::BeginPlay()
 	HitEffectTransform = data->HitEffectTransform;
 	HitSound = data->HitSound;
 	
+	StartLocation = GetActorLocation();
+	
 	// 콜리전 반응 설정
 	SetCapsuleCollisionResponses();
 	
@@ -71,6 +74,7 @@ void AProjectileSkillActorBase::BeginPlay()
 	
 	// 투사체 TimeToDestroy 뒤 자동 파괴
 	BindDestroyOnTime();
+
 }
 
 // =============================================================
@@ -79,6 +83,15 @@ void AProjectileSkillActorBase::BeginPlay()
 void AProjectileSkillActorBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if(LifeTime <= 0.f)
+	{
+		if(FVector::Distance(StartLocation, GetActorLocation()) >= MaxRange)
+		{
+			ApplyRadialDamage();
+			FObjectManager::GetInstance()->DestroyActor(this);
+		}
+	}
 }
 
 // =============================================================
@@ -119,16 +132,19 @@ void AProjectileSkillActorBase::ApplyRadialDamage()
 }
 
 // =============================================================
-// 생성 후 n초 뒤 파괴 바인드
+// 생성 후 n초 뒤 파괴 바인드, 0초 이하로 설정 시 파괴하지 않고, Tick에 의해 최대 사거리에서 파괴합니다.
 // =============================================================
 void AProjectileSkillActorBase::BindDestroyOnTime()
 {
+	if(LifeTime <= 0.f)
+		return;
+	
 	TWeakObjectPtr<AProjectileSkillActorBase> thisPtr = this;
 	GetWorld()->GetTimerManager().SetTimer(DestroyTimeHandler,[thisPtr](){
 			if(thisPtr.IsValid())
 			{
 				thisPtr->ApplyRadialDamage();
-				thisPtr->Destroy();
+				FObjectManager::GetInstance()->DestroyActor(thisPtr.Get());
 			}
 		}, LifeTime, false);
 }

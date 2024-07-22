@@ -125,13 +125,15 @@ void UNPCAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 
 		TWeakObjectPtr<UNPCAttack> thisPtr = this;
 		float damage = Damage;
+		float maxRange = MaxRange;
 		FName projectileName = ProjectileName;
-		param.CallBackSpawn = [thisPtr, damage, projectileName](AActor* InActor)
+		param.CallBackSpawn = [thisPtr, damage, maxRange, projectileName](AActor* InActor)
 		{
 			if(thisPtr.IsValid())
 			{
 				AStraightSkillActorBase* straight = Cast<AStraightSkillActorBase>(InActor);
 				straight->SetDamage(damage);
+				straight->SetMaxRange(maxRange);
 				straight->SetProjectileSkillActorName(projectileName);
 			}
 		};
@@ -149,12 +151,14 @@ void UNPCAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 		TWeakObjectPtr<AActor> targetPtr = InTarget;
 		FName projectileName = ProjectileName;
 		float damage = Damage;
-		param.CallBackSpawn = [thisPtr, damage, targetPtr, projectileName](AActor* InActor)
+		float maxRange = MaxRange;
+		param.CallBackSpawn = [thisPtr, damage, maxRange, targetPtr, projectileName](AActor* InActor)
 		{
 			if(thisPtr.IsValid() && targetPtr.IsValid())
 			{
 				AParabolaSkillActorBase* parabola = Cast<AParabolaSkillActorBase>(InActor);
 				parabola->SetDamage(damage);
+				parabola->SetMaxRange(maxRange);
 				parabola->SetGoalLocation(targetPtr->GetActorLocation());
 				parabola->SetProjectileSkillActorName(projectileName);
 			}

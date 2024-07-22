@@ -11,6 +11,7 @@
 #include "Weapon.h"
 #include "DieselPunk/Data/ProjectileSkillActorDataTable.h"
 #include "DieselPunk/Manager/DatatableManager.h"
+#include "DieselPunk/Manager/ObjectManager.h"
 
 
 // =============================================================
@@ -80,7 +81,7 @@ void AStraightSkillActorBase::_OnHit(UPrimitiveComponent* InHitComp, AActor* InO
 				ApplyRadialDamage();
 
 			if(--Piercing < 0)
-				Destroy();
+				FObjectManager::GetInstance()->DestroyActor(this);
 		}
 	}
 }
@@ -115,7 +116,7 @@ void AStraightSkillActorBase::_BeginOverlapEvent(UPrimitiveComponent* InOverlapp
 				ApplyRadialDamage();
 
 			if(--Piercing < 0)
-				Destroy();
+				FObjectManager::GetInstance()->DestroyActor(this);
 		}
 	}
 }

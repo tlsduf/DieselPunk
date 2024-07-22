@@ -63,9 +63,6 @@ protected:
 	//상승 속도
 	float AscentSpeed = 0.f;
 
-	//시작 위치
-	FVector StartLocation = FVector::ZeroVector;
-
 	//총 체공 시간
 	float FlightTime = 3.f;
 

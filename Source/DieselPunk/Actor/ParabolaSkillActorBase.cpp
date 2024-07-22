@@ -11,6 +11,7 @@
 #include "Weapon.h"
 #include "DieselPunk/Data/ProjectileSkillActorDataTable.h"
 #include "DieselPunk/Manager/DatatableManager.h"
+#include "DieselPunk/Manager/ObjectManager.h"
 
 
 // =============================================================
@@ -38,8 +39,6 @@ void AParabolaSkillActorBase::BeginPlay()
 	Speed = data->ParabolaSkillActorData.Speed;
 	MinFlightTime = data->ParabolaSkillActorData.MinFlightTime;
 	ParabolaArrivalTimeCoefficient = data->ParabolaSkillActorData.ParabolaArrivalTimeCoefficient;
-
-	StartLocation = GetActorLocation();
 
 	DistanceAtGoal = FVector::Distance(GoalLocation, StartLocation);
 
@@ -125,7 +124,7 @@ void AParabolaSkillActorBase::_OnHit(UPrimitiveComponent* InHitComp, AActor* InO
 			else
 				ApplyRadialDamage();
 
-			Destroy();
+			FObjectManager::GetInstance()->DestroyActor(this);
 		}
 	}
 }
@@ -159,7 +158,7 @@ void AParabolaSkillActorBase::_BeginOverlapEvent(UPrimitiveComponent* InOverlapp
 			else
 				ApplyRadialDamage();
 
-			Destroy();
+			FObjectManager::GetInstance()->DestroyActor(this);
 		}
 	}
 }
