@@ -50,6 +50,12 @@ ACharacterHousing::ACharacterHousing()
 	Box->bHiddenInGame = false;
 }
 
+void ACharacterHousing::UpdateBoxComponent()
+{
+	Box->SetBoxExtent(FVector(GetGridSizeVertical() * FNavigationManager::GridSize / 2, GetGridSizeHorizontal() * FNavigationManager::GridSize / 2,
+				GetCapsuleComponent()->GetScaledCapsuleHalfHeight()));
+}
+
 // =============================================================
 // BeginPlay
 // =============================================================

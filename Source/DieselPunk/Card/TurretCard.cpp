@@ -118,4 +118,7 @@ void FTurretCard::_RotateInstallation(double InRotateAngle)
 	FRotator rotator = controlTurret->GetActorRotation();
 	rotator.Yaw += InRotateAngle;
 	controlTurret->SetActorRotation(rotator);
+
+	controlTurret->ChangeGridSizeVerticalHorizontal();
+	//controlTurret->UpdateBoxComponent();
 }

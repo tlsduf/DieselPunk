@@ -67,6 +67,8 @@ public:
 	void OnHousingUpgraded(ACharacterNPC* InCharacter, int32 InIndex);
 
 	virtual void UpgradeSkill(const TMap<EAbilityType, FName>& InUpgradeSkillNames) {}
+
+	void UpdateBoxComponent();
 	
 protected:
 	virtual void BeginPlay() override;

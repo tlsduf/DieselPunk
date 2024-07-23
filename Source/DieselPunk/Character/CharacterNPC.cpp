@@ -545,6 +545,13 @@ void ACharacterNPC::__UpdateSplinePath()
 	DPNavigationComponent->MakeSplinePath();
 }
 
+void ACharacterNPC::ChangeGridSizeVerticalHorizontal()
+{
+	int32 temp = GridSizeHorizontal;
+	GridSizeHorizontal = GridSizeVertical;
+	GridSizeVertical = temp;
+}
+
 //스폰 애니메이션을 실행하고 애니메이션의 길이를 반환합니다. 애니메이션이 없을 경우 0을 반환합니다.
 float ACharacterNPC::PlaySpawnAnim()
 {

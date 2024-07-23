@@ -222,6 +222,8 @@ public:
 	int32 GetGridSizeVertical() const { return GridSizeVertical; }
 	
 	int32 GetGridSizeHorizontal() const { return GridSizeHorizontal; }
+
+	void ChangeGridSizeVerticalHorizontal();
 	
 	FVector GetBlockedAttackTargetLoc() const { return BlockedTargetLoc; }
 
