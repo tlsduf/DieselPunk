@@ -11,6 +11,15 @@ class UMeshComponent;
 class UMaterialInterface;
 class UBoxComponent;
 
+struct FUpgradeData
+{
+	//업그레이드할 메시입니다.
+	USkeletalMesh* UpgradeMesh = nullptr;
+
+	//업그레이드 스킬 이름입니다.
+	TMap<EAbilityType, FName> UpgradeSkillNames;
+};
+
 UCLASS()
 class DIESELPUNK_API ACharacterHousing : public ACharacterNPC
 {
@@ -31,6 +40,12 @@ class DIESELPUNK_API ACharacterHousing : public ACharacterNPC
 	UPROPERTY(EditAnywhere)
 	UBoxComponent* Box;
 	
+	/////////////////////////////////////////////////////////////////////
+	// for Upgrade //
+	TArray<FSearchAreaData> SearchAreaDatasForUpgrade;
+
+	TArray<FUpgradeData> UpgradeDatas;
+	
 public:
 	ACharacterHousing();
 
@@ -48,6 +63,10 @@ public:
 
 	// 업그레이드시 처리
 	virtual bool UpgradeInstallation();
+
+	void OnHousingUpgraded(ACharacterNPC* InCharacter, int32 InIndex);
+
+	virtual void UpgradeSkill(const TMap<EAbilityType, FName>& InUpgradeSkillNames) {}
 	
 protected:
 	virtual void BeginPlay() override;

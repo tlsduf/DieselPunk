@@ -37,7 +37,7 @@ public:
 	bool IsOverWall(FVector inLocation);
 	
 	//업그레이드 시 스킬이 변경될 경우 이 함수를 호출합니다.
-	void UpgradeSkill(const TMap<EAbilityType, FName>& InUpgradeSkillNames);
+	virtual void UpgradeSkill(const TMap<EAbilityType, FName>& InUpgradeSkillNames) override;
 protected:
 	virtual void BeginPlay() override;
 	

@@ -30,6 +30,9 @@ public:
 	const T* GetData(const EDataTableType& InDataTableType, const FString& InRowName);
 
 	template<typename T>
+	const T* GetData(const EDataTableType& InDataTableType, const FName& InRowName);
+
+	template<typename T>
 	const T* GetData(int32 InDataId);
 };
 
@@ -40,6 +43,15 @@ const T* FDataTableManager::GetData(const EDataTableType& InDataTableType, const
 	if(dataTablePtr == nullptr)
 		return nullptr;
 	return (*dataTablePtr)->FindRow<T>(FName(InRowName), TEXT("FDataTableManager::GetData()"));
+}
+
+template <typename T>
+const T* FDataTableManager::GetData(const EDataTableType& InDataTableType, const FName& InRowName)
+{
+	UDataTable** dataTablePtr = Datas.Find(InDataTableType);
+	if(dataTablePtr == nullptr)
+		return nullptr;
+	return (*dataTablePtr)->FindRow<T>(InRowName, TEXT("FDataTableManager::GetData()"));
 }
 
 template <typename T>

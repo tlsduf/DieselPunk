@@ -9,6 +9,8 @@
 struct FStatDataTable;
 class FBuff;
 
+typedef TMap<ECharacterStatType, int32> FStatInfo;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DIESELPUNK_API UStatControlComponent : public UActorComponent
 {
@@ -17,15 +19,15 @@ class DIESELPUNK_API UStatControlComponent : public UActorComponent
 	//스탯 변경 시 호출될 이벤트
 	DECLARE_MULTICAST_DELEGATE_ThreeParams(FSetStatDelegate, TWeakObjectPtr<AActor>, ECharacterStatType, int32)
 protected:
-	// 액터의 이름을 지정합니다. 이 이름을 기반으로 데이터 테이블을 검색하므로 꼭 데이터를 채워야합니다.
+	// 액터의 테이블 이름들을 지정합니다. 순서대로 레벨을 의미합니다. 인덱스0이 1레벨 정보 아이디입니다.
 	UPROPERTY(EditDefaultsOnly, Category="MYDP_EssentialSetting")
-	FString ActorName = TEXT("");
+	TArray<FName> ActorNames;
 	
 	//오너 클래스
 	TWeakObjectPtr<AActor> Owner;
 
 	//스탯 정보
-	TMap<ECharacterStatType, int32> Stat;
+	FStatInfo Stat;
 
 	//스탯 변경 시 호출될 델리게이트
 	FSetStatDelegate DelegateChangeStat;
@@ -37,7 +39,7 @@ protected:
 	
 	uint8 Trait = 0;
 
-	TMap<int32, FStatDataTable*> StatDatas;
+	TArray<FStatInfo> StatInfos;
 public:
 	constexpr static int32 INVALID_STAT = -9999;
 public:	
@@ -75,5 +77,9 @@ public:
 
 	FSetStatDelegate& GetSetStatDelegate(){return DelegateChangeStat;}
 
-	const TMap<int32, FStatDataTable*>& GetStatData(){return StatDatas;}
+	const TArray<FName>& GetActorNames(){return ActorNames;}
+
+	void SetStatForStatInfos(int32 InIndex);
+
+	const TArray<FStatInfo>& GetStatInfos(){return StatInfos;}
 };

@@ -21,6 +21,9 @@
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "DieselPunk/Animation/DPAnimInstance.h"
+#include "DieselPunk/Component/StatControlComponent.h"
+#include "DieselPunk/Data/SearchAreaDataTable.h"
+#include "DieselPunk/Manager/DatatableManager.h"
 #include "DieselPunk/Skill/SkillNPC/NPCAttack.h"
 
 
@@ -66,6 +69,22 @@ void ACharacterNPC::BeginPlay()
 			NPCAttacks.Add(key, attack);
 		}
 		UseableSkills.Reserve(NPCAttacks.Num());
+	}
+	
+	if(StatControlComponent->GetActorNames().IsEmpty())
+		return;
+
+	FName name = StatControlComponent->GetActorNames()[0];
+	const FSearchAreaDataTable* table = FDataTableManager::GetInstance()->GetData<FSearchAreaDataTable>(EDataTableType::SearchArea, name);
+	if(table)
+	{
+		SearchAreaData.SearchAreaType = table->SearchAreaType;
+		SearchAreaData.RectangleWidth = table->RectangleWidth;
+		SearchAreaData.ArcAngle = table->ArcAngle;
+		SearchAreaData.CircleHeight = table->CircleHeight;
+		SearchAreaData.AtkMaxRange = table->AtkMaxRange;
+		SearchAreaData.AtkMaxRangeForFly = table->AtkMaxRangeForFly;
+		SearchAreaData.AtkMinRange = table->AtkMinRange;
 	}
 }
 
@@ -199,13 +218,13 @@ void ACharacterNPC::FindUseableAbilityType()
 // =============================================================
 void ACharacterNPC::MakeSearchArea()
 {
-	if(SearchAreaType != ESearchAreaType::Rectangle)
+	if(SearchAreaData.SearchAreaType != ESearchAreaType::Rectangle)
 		return;
 	
-	FVector firstPoint = GetActorLocation() + (GetActorRightVector() * RectangleWidth * 0.5f);
-	FVector secondPoint = GetActorLocation() + (GetActorRightVector() * RectangleWidth * 0.5f) + GetActorForwardVector() * GetStat(ECharacterStatType::AtkMaxRange);
-	FVector thirdPoint = GetActorLocation() + (-1 * GetActorRightVector() * RectangleWidth * 0.5f) + GetActorForwardVector() * GetStat(ECharacterStatType::AtkMaxRange);
-	FVector fourthPoint = GetActorLocation() + (-1 * GetActorRightVector() * RectangleWidth * 0.5f);
+	FVector firstPoint = GetActorLocation() + (GetActorRightVector() * SearchAreaData.RectangleWidth * 0.5f);
+	FVector secondPoint = GetActorLocation() + (GetActorRightVector() * SearchAreaData.RectangleWidth * 0.5f) + GetActorForwardVector() * GetStat(ECharacterStatType::AtkMaxRange);
+	FVector thirdPoint = GetActorLocation() + (-1 * GetActorRightVector() * SearchAreaData.RectangleWidth * 0.5f) + GetActorForwardVector() * GetStat(ECharacterStatType::AtkMaxRange);
+	FVector fourthPoint = GetActorLocation() + (-1 * GetActorRightVector() * SearchAreaData.RectangleWidth * 0.5f);
 
 	// Set RectanglePoints
 	RectanglePoints.Empty();
@@ -221,7 +240,7 @@ void ACharacterNPC::MakeSearchArea()
 // =============================================================
 bool ACharacterNPC::InValidSearchArea(FVector InLocation)
 {
-	if(SearchAreaType == ESearchAreaType::Circle)
+	if(SearchAreaData.SearchAreaType == ESearchAreaType::Circle)
 	{
 		FVector ownerLoc = GetActorLocation();
 		ownerLoc.Z = 0.f;
@@ -231,16 +250,16 @@ bool ACharacterNPC::InValidSearchArea(FVector InLocation)
 		float distance = FVector::Dist(ownerLoc, inLoc);
 		bool inMaxDistance = distance <= GetStat(ECharacterStatType::AtkMaxRange);		// 최대거리 안에 위치?
 		bool inMinDistance = distance >= GetStat(ECharacterStatType::AtkMinRange);		// 최소거리 밖에 위치?
-		bool inMaxHeight = InLocation.Z <= GetActorLocation().Z + CircleHeight * 0.5f;
-		bool inMinHeight = InLocation.Z >= GetActorLocation().Z - CircleHeight * 0.5f;
+		bool inMaxHeight = InLocation.Z <= GetActorLocation().Z + SearchAreaData.CircleHeight * 0.5f;
+		bool inMinHeight = InLocation.Z >= GetActorLocation().Z - SearchAreaData.CircleHeight * 0.5f;
 	
 		return inMaxDistance && inMinDistance && inMaxHeight && inMinHeight;
 	}
-	else if(SearchAreaType == ESearchAreaType::Rectangle)
+	else if(SearchAreaData.SearchAreaType == ESearchAreaType::Rectangle)
 	{
 		return IsInPolygon(InLocation.X, InLocation.Y);
 	}
-	else if(SearchAreaType == ESearchAreaType::Arc)
+	else if(SearchAreaData.SearchAreaType == ESearchAreaType::Arc)
 	{
 		float distance = FVector::Distance(GetActorLocation(), InLocation);
 
@@ -251,7 +270,7 @@ bool ACharacterNPC::InValidSearchArea(FVector InLocation)
 
 		return distance < GetStat(ECharacterStatType::AtkMaxRange)
 			&& distance > GetStat(ECharacterStatType::AtkMinRange)
-			&& dot > FMath::Cos(FMath::DegreesToRadians(ArcAngle * 0.5));
+			&& dot > FMath::Cos(FMath::DegreesToRadians(SearchAreaData.ArcAngle * 0.5));
 	}
 	
 	return false;
@@ -286,7 +305,7 @@ bool ACharacterNPC::IsInPolygon(double InX, double InY)
 // =============================================================
 void ACharacterNPC::DrawDebugSearchArea()
 {
-	if(SearchAreaType == ESearchAreaType::Circle)
+	if(SearchAreaData.SearchAreaType == ESearchAreaType::Circle)
 	{
 		DrawDebugCircle(GetWorld(), GetActorLocation(), GetStat(ECharacterStatType::AtkMaxRange), 16, FColor::Red, false, -1, 0, 3, FVector(0,1,0), FVector(1,0,0), true);
 		DrawDebugCircle(GetWorld(), GetActorLocation(), GetStat(ECharacterStatType::AtkMinRange), 16, FColor::Green, false, -1, 0, 3, FVector(0,1,0), FVector(1,0,0), true);
@@ -298,7 +317,7 @@ void ACharacterNPC::DrawDebugSearchArea()
 			DrawDebugCircle(GetWorld(), GetActorLocation(), GetStat().GetStat(ECharacterStatType::AttackMaxRange) - (dif * i / 4), 16, FColor(255 - (colorDif * i),colorDif * i,0), false, -1, 0, 3, FVector(0,1,0), FVector(1,0,0), false);
 		}*/
 	}
-	else if(SearchAreaType == ESearchAreaType::Rectangle)
+	else if(SearchAreaData.SearchAreaType == ESearchAreaType::Rectangle)
 	{
 		if(RectanglePoints.IsEmpty())
 			return;
@@ -310,10 +329,10 @@ void ACharacterNPC::DrawDebugSearchArea()
 				DrawDebugLine( GetWorld(),RectanglePoints[i],RectanglePoints[i + 1],FColor::Red, false, -1, 0, 3);
 		}
 	}
-	else if(SearchAreaType == ESearchAreaType::Arc)
+	else if(SearchAreaData.SearchAreaType == ESearchAreaType::Arc)
 	{
-		FRotator right = OriginForwardVector.Rotation() + FRotator(0.0, ArcAngle * 0.5, 0.0);
-		FRotator left = OriginForwardVector.Rotation() + FRotator(0.0, ArcAngle * -0.5, 0.0);
+		FRotator right = OriginForwardVector.Rotation() + FRotator(0.0, SearchAreaData.ArcAngle * 0.5, 0.0);
+		FRotator left = OriginForwardVector.Rotation() + FRotator(0.0, SearchAreaData.ArcAngle * -0.5, 0.0);
 		DrawDebugLine(GetWorld(),
 			GetActorLocation() + left.Vector() * GetStat(ECharacterStatType::AtkMinRange),
 			GetActorLocation() + left.Vector() * GetStat(ECharacterStatType::AtkMaxRange),
@@ -329,14 +348,14 @@ void ACharacterNPC::DrawDebugSearchArea()
 			GetActorLocation(),
 			GetStat(ECharacterStatType::AtkMinRange),
 			OriginForwardVector,
-			FMath::DegreesToRadians(ArcAngle * 0.5),
+			FMath::DegreesToRadians(SearchAreaData.ArcAngle * 0.5),
 			12, FColor::Red, false, -1, 0, 3);
 		
 		DrawDebugCircleArc(GetWorld(),
 			GetActorLocation(),
 			GetStat(ECharacterStatType::AtkMaxRange),
 			OriginForwardVector,
-			FMath::DegreesToRadians(ArcAngle * 0.5),
+			FMath::DegreesToRadians(SearchAreaData.ArcAngle * 0.5),
 			12, FColor::Red, false, -1, 0, 3);
 	}
 }

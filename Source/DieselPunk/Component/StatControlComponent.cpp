@@ -24,11 +24,6 @@ UStatControlComponent::UStatControlComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// ...
-	ACharacterBase* owner = Cast<ACharacterBase>(Owner);
-	if(owner)
-	{
-		ActorName = owner->GetCharacterName();
-	}
 }
 
 
@@ -58,84 +53,39 @@ void UStatControlComponent::BeginPlay()
 	
 	DelegateChangeStat.AddUObject(this, &UStatControlComponent::SetStatDelegateFunction);
 
-	if(ActorName == TEXT(""))
+	for(const FName& name : ActorNames)
 	{
-		LOG_SCREEN(FColor::Red, TEXT("%s의 ActorName이 등록되지 않았습니다. 데이터 테이블에서 스탯을 불러올 수 없습니다."), *Owner->GetName())
-		return;
-	}
-
-	UDataTable* table = FDataTableManager::GetInstance()->GetDataRow(EDataTableType::Stat);
-	if(!table)
-	{
-		LOG_SCREEN(FColor::Red, TEXT("스탯 데이터 테이블을 찾을 수 없습니다. %s."), *Owner->GetName())
-		return;
-	}
-
-	FString actorName = ActorName;
-	TArray<FName> names = table->GetRowNames().FilterByPredicate([actorName](const FName& name)
-	{
-		FString str = name.ToString();
-		return INDEX_NONE != str.Find(actorName);
-	});
-	if(Cast<ACharacterTurret>(Owner))
-	{
-		for(const FName& name : names)
+		const FStatDataTable* table = FDataTableManager::GetInstance()->GetData<FStatDataTable>(EDataTableType::Stat, name);
+		if(!table)
 		{
-			FString str = name.ToString();
-			TArray<FString> split;
-			str.ParseIntoArray(split, TEXT("_"));
+			LOG_SCREEN(FColor::Red, TEXT("ActorNames의 이름: %s에 해당하는 데이터 테이블을 찾을 수 없습니다."), *name.ToString())
+			continue;
+		}
 		
-			if(FStatDataTable* statTable = table->FindRow<FStatDataTable>(name, *name.ToString()))
-			{
-				FString numbering = split[split.Num() - 1];
-				int32 strLv = -1;
-				if(INDEX_NONE != numbering.Find(TEXT("Ace")))
-				{
-					FString lastLv = numbering.Mid(numbering.Len() - 1, 1);
-					strLv = FCString::Atoi(*lastLv) + TURRET_MAX_LV - 1;
-				}
-				else
-					strLv = FCString::Atoi(*numbering);
-				StatDatas.Add(strLv, statTable);
-			
-			}
-		}
-	}
-	else
-	{
-		for(int i = 0; i < names.Num(); ++i)
-		{
-			if(FStatDataTable* statTable = table->FindRow<FStatDataTable>(names[i], *names[i].ToString()))
-			{
-				StatDatas.Add(i + 1, statTable);
-			}
-		}
-	}
+		FStatInfo statInfo;
+		statInfo.FindOrAdd(ECharacterStatType::MaxHp) = table->Hp;		
+		statInfo.FindOrAdd(ECharacterStatType::Hp) = table->Hp;
+		statInfo.FindOrAdd(ECharacterStatType::Atk) = table->Atk;	
+		statInfo.FindOrAdd(ECharacterStatType::AtkForFly) = table->AtkForFly;
+		statInfo.FindOrAdd(ECharacterStatType::AtkSpeed) = table->AtkSpeed;
+		statInfo.FindOrAdd(ECharacterStatType::Def) = table->Def;
+		statInfo.FindOrAdd(ECharacterStatType::ArmorPen) = table->ArmorPen;
+		statInfo.FindOrAdd(ECharacterStatType::CriticalPer) = table->CriticalPer;
+		statInfo.FindOrAdd(ECharacterStatType::CriticalAtk) = table->CriticalAtk;
+		statInfo.FindOrAdd(ECharacterStatType::MoveSpeed) = table->MoveSpeed;
+		statInfo.FindOrAdd(ECharacterStatType::AtkMaxRange) = table->AtkMaxRange;
+		statInfo.FindOrAdd(ECharacterStatType::AtkMaxRangeForFly) = table->AtkMaxRangeForFly;
+		statInfo.FindOrAdd(ECharacterStatType::AtkMinRange) = table->AtkMinRange;
+		statInfo.FindOrAdd(ECharacterStatType::Cost) = table->Cost;
+		statInfo.FindOrAdd(ECharacterStatType::ShellFall) = table->ShellFall;
 
-	if(StatDatas.IsEmpty())
-	{
-		LOG_SCREEN(FColor::Red, TEXT("ActorName: %s에 해당하는 데이터 열이 없습니다. 데이터 테이블에서 스탯을 불러올 수 없습니다."), *Owner->GetName())
-		return;
+		StatInfos.Add(statInfo);
 	}
 
 	SetStat(ECharacterStatType::Level, 1);
 	SetStat(ECharacterStatType::Exp, 0);
-
-	SetStat(ECharacterStatType::MaxHp,			 		StatDatas[1]->Hp);
-	SetStat(ECharacterStatType::Hp,				 		StatDatas[1]->Hp);
-	SetStat(ECharacterStatType::Atk,			 		StatDatas[1]->Atk);
-	SetStat(ECharacterStatType::AtkForFly,		 		StatDatas[1]->AtkForFly);
-	SetStat(ECharacterStatType::AtkSpeed,		 		StatDatas[1]->AtkSpeed);
-	SetStat(ECharacterStatType::Def,			 		StatDatas[1]->Def);
-	SetStat(ECharacterStatType::ArmorPen,		 		StatDatas[1]->ArmorPen);
-	SetStat(ECharacterStatType::CriticalPer,	 		StatDatas[1]->CriticalPer);
-	SetStat(ECharacterStatType::CriticalAtk,	 		StatDatas[1]->CriticalAtk);
-	SetStat(ECharacterStatType::MoveSpeed,		 		StatDatas[1]->MoveSpeed);
-	SetStat(ECharacterStatType::AtkMaxRange,	 		StatDatas[1]->AtkMaxRange);
-	SetStat(ECharacterStatType::AtkMaxRangeForFly,		StatDatas[1]->AtkMaxRangeForFly);
-	SetStat(ECharacterStatType::AtkMinRange,	 		StatDatas[1]->AtkMinRange);
-	SetStat(ECharacterStatType::Cost,			 		StatDatas[1]->Cost);
-	SetStat(ECharacterStatType::ShellFall,		 		StatDatas[1]->ShellFall);
+	SetStatForStatInfos(1);
+	
 }
 
 void UStatControlComponent::SetStatDelegateFunction(TWeakObjectPtr<AActor> InActor, ECharacterStatType InStatType, int32 InValue)
@@ -194,35 +144,17 @@ void UStatControlComponent::SetStat(ECharacterStatType InStatType, int32 InValue
 
 void UStatControlComponent::ChangeStatForLevelUp(int32 InLv)
 {
-	if(StatDatas.Find(InLv) == nullptr)
+	if(!StatInfos.IsValidIndex(InLv - 1))
 		return;
-	
-	FStatDataTable* table = StatDatas[InLv];
 
-	if(!table)
-		return;
-	
 	SetStat(ECharacterStatType::Exp, 0);
-	SetStat(ECharacterStatType::MaxHp,			 		table->Hp);
-	SetStat(ECharacterStatType::Hp,				 		table->Hp);
-	SetStat(ECharacterStatType::Atk,			 		table->Atk);
-	SetStat(ECharacterStatType::AtkForFly,		 		table->AtkForFly);
-	SetStat(ECharacterStatType::AtkSpeed,		 		table->AtkSpeed);
-	SetStat(ECharacterStatType::Def,			 		table->Def);
-	SetStat(ECharacterStatType::ArmorPen,		 		table->ArmorPen);
-	SetStat(ECharacterStatType::CriticalPer,	 		table->CriticalPer);
-	SetStat(ECharacterStatType::CriticalAtk,	 		table->CriticalAtk);
-	SetStat(ECharacterStatType::MoveSpeed,		 		table->MoveSpeed);
-	SetStat(ECharacterStatType::AtkMaxRange,	 		table->AtkMaxRange);
-	SetStat(ECharacterStatType::AtkMaxRangeForFly,		table->AtkMaxRangeForFly);
-	SetStat(ECharacterStatType::AtkMinRange,	 		table->AtkMinRange);
-	SetStat(ECharacterStatType::Cost,			 		table->Cost);
-	SetStat(ECharacterStatType::ShellFall,		 		table->ShellFall);
+	SetStatForStatInfos(InLv);
 
-	if(ACharacterTurret* turret = Cast<ACharacterTurret>(Owner))
-		turret->UpgradeSkill(table->UpgradeSkillNames);
-
-	Stat[ECharacterStatType::Level] = Stat[ECharacterStatType::Level] > TURRET_MAX_LV ? TURRET_MAX_LV : Stat[ECharacterStatType::Level];
+	Stat[ECharacterStatType::Level] = Stat[ECharacterStatType::Level] > TURRET_MAX_LV ?
+		TURRET_MAX_LV : Stat[ECharacterStatType::Level];
+	
+	//if(ACharacterTurret* turret = Cast<ACharacterTurret>(Owner))
+	//	turret->UpgradeSkill(table->UpgradeSkillNames);
 }
 
 
@@ -306,4 +238,15 @@ void UStatControlComponent::RemoveTrait(ENPCTraitType InTraitType)
 bool UStatControlComponent::IsTrait(ENPCTraitType InTraitType)
 {
 	return Trait & static_cast<uint8>(InTraitType);
+}
+
+void UStatControlComponent::SetStatForStatInfos(int32 InIndex)
+{
+	if(StatInfos.IsValidIndex(InIndex - 1))
+	{
+		for(const auto& [key, value] : StatInfos[InIndex - 1])
+		{
+			SetStat(key, value);
+		}
+	}
 }

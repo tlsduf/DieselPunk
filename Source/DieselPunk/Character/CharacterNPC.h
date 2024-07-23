@@ -28,10 +28,36 @@ struct FRoutingLine
 	FRoutingLine(FVector inStart, FVector inEnd) : Start(inStart), End(inEnd) {}
 };
 
+struct FSearchAreaData
+{
+	//탐색 범위 타입
+	ESearchAreaType SearchAreaType = ESearchAreaType::Rectangle;
+
+	//사각형 너비 그리드 개수
+	float RectangleWidth = 1000.f;
+	
+	//부채꼴 각도
+	float ArcAngle = 30.f;
+
+	//높이
+	float CircleHeight = 1000.f;
+	
+	// 최대 사거리
+	int AtkMaxRange = 0;
+
+	// 대공 최대 사거리
+	int AtkMaxRangeForFly = 0;
+
+	// 최소 사거리
+	int AtkMinRange = 0;
+};
+
 UCLASS()
 class DIESELPUNK_API ACharacterNPC : public ACharacterBase, public IThrowableInterface
 {
 	GENERATED_BODY()
+
+	DECLARE_MULTICAST_DELEGATE_TwoParams(FDelegateUpgrade, ACharacterNPC*, int32)
 
 	// TimerHandle
 	FTimerHandle PathTHandle1;
@@ -110,27 +136,17 @@ protected:
 	/////////////////////////////////////////////////////////////////////
 	// for Targeting //
 
-	//탐색 범위 타입
-	UPROPERTY(EditAnywhere, Category="MYDP_Targeting")
-	ESearchAreaType SearchAreaType = ESearchAreaType::Rectangle;
-
-	//사각형 너비 그리드 개수
-	UPROPERTY(EditAnywhere, Category="MYDP_Targeting", meta=(EditCondition="SearchAreaType == ESearchAreaType::Rectangle"))
-	float RectangleWidth = 1000.f;
-
-	//원 높이
-	UPROPERTY(EditAnywhere, Category="MYDP_Targeting", meta=(EditCondition="SearchAreaType == ESearchAreaType::Circle"))
-	float CircleHeight = 1000.f;
-
-	//부채꼴 각도
-	UPROPERTY(EditAnywhere, Category="MYDP_Targeting", meta=(EditCondition="SearchAreaType == ESearchAreaType::Arc"))
-	float ArcAngle = 30.f;
+	FSearchAreaData SearchAreaData;
 
 	//사각형 포인트
 	TArray<FVector> RectanglePoints;
 
 	//탐색을 위한 전방 벡터
 	FVector OriginForwardVector = FVector::ZeroVector;
+
+	/////////////////////////////////////////////////////////////////////
+	// for Upgrade //
+	FDelegateUpgrade DelegateUpgrade;
 	
 protected:
 	ACharacterNPC();
@@ -211,6 +227,7 @@ public:
 
 	ENPCType GetNPCType(){return NPCType;}
 
+	FDelegateUpgrade& GetDelegateUpgrade(){return DelegateUpgrade;}
 	
 	//스폰 애니메이션을 실행하고 애니메이션의 길이를 반환합니다. 애니메이션이 없을 경우 0을 반환합니다.
 	float PlaySpawnAnim();

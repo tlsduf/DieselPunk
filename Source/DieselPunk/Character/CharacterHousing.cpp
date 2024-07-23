@@ -9,6 +9,7 @@
 #include "../UI/HUD/InteractInstallation.h"
 #include "../Component/StatControlComponent.h"
 #include "../Data/StatDataTable.h"
+#include "../Data/SearchAreaDataTable.h"
 #include "../Manager/DatatableManager.h"
 
 #include <Components/SkeletalMeshComponent.h>
@@ -18,11 +19,13 @@
 #include <Components/BoxComponent.h>
 #include <Components/WidgetComponent.h>
 
+#include "DieselPunk/Data/UpgradeDataTable.h"
 #include "DieselPunk/Manager/ObjectManager.h"
 #include "Engine/SkeletalMesh.h"
 #include "Engine/SkinnedAssetCommon.h"
 
 
+struct FSearchAreaDataTable;
 struct FStatDataTable;
 // =============================================================
 // 생성자
@@ -53,7 +56,6 @@ ACharacterHousing::ACharacterHousing()
 void ACharacterHousing::BeginPlay()
 {
 	Super::BeginPlay();
-
 	
 	//Material Instance Dynamic 생성
 	HousingDynamicMaterial = UMaterialInstanceDynamic::Create(HousingMaterial.Get(), this);
@@ -107,6 +109,40 @@ void ACharacterHousing::BeginPlay()
 				GetCapsuleComponent()->GetScaledCapsuleHalfHeight()));
 		}
 	}
+
+	for(const FName& name : StatControlComponent->GetActorNames())
+	{
+		const FSearchAreaDataTable* searchAreaTable = FDataTableManager::GetInstance()->GetData<FSearchAreaDataTable>(EDataTableType::SearchArea, name);
+		if(!searchAreaTable)
+		{
+			LOG_SCREEN(FColor::Red, TEXT("ActorNames의 이름: %s에 해당하는 데이터 테이블을 찾을 수 없습니다."), *name.ToString())
+			continue;
+		}
+		FSearchAreaData searchAreaData;
+		searchAreaData.SearchAreaType = searchAreaTable->SearchAreaType;
+		searchAreaData.RectangleWidth = searchAreaTable->RectangleWidth;
+		searchAreaData.ArcAngle = searchAreaTable->ArcAngle;
+		searchAreaData.CircleHeight = searchAreaTable->CircleHeight;
+		searchAreaData.AtkMaxRange = searchAreaTable->AtkMaxRange;
+		searchAreaData.AtkMaxRangeForFly = searchAreaTable->AtkMaxRangeForFly;
+		searchAreaData.AtkMinRange = searchAreaTable->AtkMinRange;
+
+		SearchAreaDatasForUpgrade.Add(searchAreaData);
+
+		const FUpgradeDataTable* upgradeTable = FDataTableManager::GetInstance()->GetData<FUpgradeDataTable>(EDataTableType::Upgrade, name);
+		if(!upgradeTable)
+		{
+			LOG_SCREEN(FColor::Red, TEXT("ActorNames의 이름: %s에 해당하는 데이터 테이블을 찾을 수 없습니다."), *name.ToString())
+			continue;
+		}
+		FUpgradeData upgradeData;
+		upgradeData.UpgradeMesh = upgradeTable->UpgradeMesh;
+		upgradeData.UpgradeSkillNames = upgradeTable->UpgradeSkillNames;
+
+		UpgradeDatas.Add(upgradeData);
+	}
+
+	DelegateUpgrade.AddUObject(this, &ACharacterHousing::OnHousingUpgraded);
 }
 
 // =============================================================
@@ -245,36 +281,50 @@ bool ACharacterHousing::UpgradeInstallation()
 	int32 upgradeIdx = lv;
 	if(lv == TURRET_MAX_LV)
 	{
-		int32 randAce = FMath::RandRange(0,StatControlComponent->GetStatData().Num() - TURRET_MAX_LV);
+		int32 randAce = FMath::RandRange(0,StatControlComponent->GetStatInfos().Num() - TURRET_MAX_LV);
 		upgradeIdx += randAce;
 	}
-	
-	FStatDataTable* statDataTable = StatControlComponent->GetStatData()[upgradeIdx];
-	if(!statDataTable)
-	{
-		LOG_SCREEN(FColor::Red, TEXT("Upgrade Failed! UpgradeInfo Not Setting"));
-		return false;
-	}
 
-	//메시 변경
-	if(statDataTable->UpgradeMesh != nullptr)
-	{
-		GetMesh()->SetSkeletalMeshAsset(statDataTable->UpgradeMesh);
-		TArray<FSkeletalMaterial> materials = statDataTable->UpgradeMesh->GetMaterials();
-		for(int i = 0; i < GetMesh()->GetMaterials().Num(); ++i)
-		{
-			if(i < materials.Num())
-				GetMesh()->SetMaterial(i, materials[i].MaterialInterface);
-			else
-				GetMesh()->SetMaterial(i, nullptr);
-		}
-	}
-
-	//스탯 변경
 	StatControlComponent->SetStat(ECharacterStatType::Level, upgradeIdx);
-
-	InitSkill();
+	
+	if(DelegateUpgrade.IsBound())
+		DelegateUpgrade.Broadcast(this, upgradeIdx);
 	
 	LOG_SCREEN(FColor::Yellow, TEXT("Upgrade Complete!"))
 	return true;
+}
+
+void ACharacterHousing::OnHousingUpgraded(ACharacterNPC* InCharacter, int32 InIndex)
+{
+	if(SearchAreaDatasForUpgrade.IsValidIndex(InIndex - 1))
+	{
+		//탐색 범위 적용
+		SearchAreaData.SearchAreaType = SearchAreaDatasForUpgrade[InIndex - 1].SearchAreaType;
+		SearchAreaData.RectangleWidth = SearchAreaDatasForUpgrade[InIndex - 1].RectangleWidth;
+		SearchAreaData.ArcAngle = SearchAreaDatasForUpgrade[InIndex - 1].ArcAngle;
+		SearchAreaData.CircleHeight = SearchAreaDatasForUpgrade[InIndex - 1].CircleHeight;
+		SearchAreaData.AtkMaxRange = SearchAreaDatasForUpgrade[InIndex - 1].AtkMaxRange;
+		SearchAreaData.AtkMaxRangeForFly = SearchAreaDatasForUpgrade[InIndex - 1].AtkMaxRangeForFly;
+		SearchAreaData.AtkMinRange = SearchAreaDatasForUpgrade[InIndex - 1].AtkMinRange;
+	}
+
+	if(UpgradeDatas.IsValidIndex(InIndex - 1))
+	{
+		//메시 적용
+		if(UpgradeDatas[InIndex - 1].UpgradeMesh != nullptr)
+		{
+			GetMesh()->SetSkeletalMeshAsset(UpgradeDatas[InIndex - 1].UpgradeMesh);
+			TArray<FSkeletalMaterial> materials = UpgradeDatas[InIndex - 1].UpgradeMesh->GetMaterials();
+			for(int i = 0; i < GetMesh()->GetMaterials().Num(); ++i)
+			{
+				if(i < materials.Num())
+					GetMesh()->SetMaterial(i, materials[i].MaterialInterface);
+				else
+					GetMesh()->SetMaterial(i, nullptr);
+			}
+		}
+
+		//스킬 적용
+		UpgradeSkill(UpgradeDatas[InIndex - 1].UpgradeSkillNames);
+	}
 }

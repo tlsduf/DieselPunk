@@ -62,6 +62,8 @@ enum class EDataTableType : uint8
 	LevelBgm				UMETA( ToolTip = "레벨 BGM 정보" ),
 	ProjectileSkillActor	UMETA( ToolTip = "발사체 스킬 액터 정보" ),
 	NPCSkill				UMETA( ToolTip = "NPC 스킬 정보" ),
+	SearchArea				UMETA( ToolTip = "탐색 범위 정보" ),
+	Upgrade					UMETA( ToolTip = "업그레이드 정보" ),
 	Count
 };
 ENUM_RANGE_BY_COUNT(EDataTableType, EDataTableType::Count);

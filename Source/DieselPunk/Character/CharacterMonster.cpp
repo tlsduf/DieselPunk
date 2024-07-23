@@ -87,7 +87,6 @@ void ACharacterMonster::UpdateEnemyTarget()
 	// (최우선)플레이어가 조건에 일치하는가? // 일치한다면 타겟을 플레이어로 지정
 	if(bPlayerTargeting())
 	{
-		LOG_SCREEN(FColor::White, TEXT("PlayerSetting!"))
 		ChangeTarget(Player);
 		return;
 	}
