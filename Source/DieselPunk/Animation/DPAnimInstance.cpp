@@ -3,6 +3,8 @@
 
 #include "../Animation/DPAnimInstance.h"
 #include "../Character/CharacterBase.h"
+#include "Animation/AnimSequence.h"
+#include "DieselPunk/Character/CharacterNPC.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
@@ -49,6 +51,26 @@ void UDPAnimInstance::NativeUpdateAnimation(float InDeltaSeconds)
 	InCombat = Character->GetInCombat();
 	
 	IsDead = Character->IsDead();
+
+	if(ACharacterNPC* npc = Cast<ACharacterNPC>(Character))
+	{
+		int32 shotPerMin = Character->GetStat(ECharacterStatType::AtkSpeed);
+		float shorPerSec = shotPerMin / 60.f;
+		float waitTime = 1.f / shorPerSec;
+
+		EAbilityType type = npc->GetTopPriorityUseableSkill();
+		if(type != EAbilityType::Max && type != EAbilityType::None)
+		{
+			const UAnimSequence* anim = npc->GetNPCAttackAnimation(type);
+			if(anim)
+			{
+				float len = anim->GetPlayLength();
+				AnimSpeed = waitTime <= 0.f ? 1.f : len / waitTime;
+				AnimSpeed = AnimSpeed < 1.f ? 1.f : AnimSpeed;
+			}
+		}
+	}
+
 }
 
 // 캐릭터 회전에 따른 기울기를 계산합니다.

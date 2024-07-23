@@ -62,8 +62,11 @@ protected:
 	bool OnRail = false;
 	
 	// 터렛 공격 애니메이션 노드 조건
-	UPROPERTY(BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(BlueprintReadOnly, Category = "MYDP", Meta = (AllowPrivateAccess = true))
 	EAbilityType UseSkillType = EAbilityType::None;
+
+	UPROPERTY(BlueprintReadOnly, Category = "MYDP", Meta = (AllowPrivateAccess = true))
+	float AnimSpeed = 1.f;
 
 	FTimerHandle AttackTHandle;
 	

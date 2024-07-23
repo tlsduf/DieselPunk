@@ -92,6 +92,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category="MYDP_Skill")
 	TMap<EAbilityType, FName> NPCAttackNames;
 
+	UPROPERTY(EditAnywhere, Category="MYDP_Skill")
+	TMap<EAbilityType, UAnimSequence*> NPCAttackAnimations;
+
 	UPROPERTY()
 	TMap<EAbilityType, TObjectPtr<UNPCAttack>> NPCAttacks;
 
@@ -147,6 +150,8 @@ protected:
 	/////////////////////////////////////////////////////////////////////
 	// for Upgrade //
 	FDelegateUpgrade DelegateUpgrade;
+
+	
 	
 protected:
 	ACharacterNPC();
@@ -230,6 +235,8 @@ public:
 	ENPCType GetNPCType(){return NPCType;}
 
 	FDelegateUpgrade& GetDelegateUpgrade(){return DelegateUpgrade;}
+
+	const UAnimSequence* GetNPCAttackAnimation(EAbilityType InAbilityType);
 	
 	//스폰 애니메이션을 실행하고 애니메이션의 길이를 반환합니다. 애니메이션이 없을 경우 0을 반환합니다.
 	float PlaySpawnAnim();
