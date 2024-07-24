@@ -16,6 +16,11 @@ class DIESELPUNK_API UDPNavigationComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
+protected:
+	// 커스텀 몬스터 크기 테스트
+	UPROPERTY(EditDefaultsOnly, Category="MYDP_Navi")
+	float testCapsuleRadius = 150;
+
 private:
 	TWeakObjectPtr<ACharacterBase> Owner = nullptr;
 	

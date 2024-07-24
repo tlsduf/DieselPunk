@@ -10,6 +10,7 @@
 #include <GameFramework/PlayerController.h>
 #include <Components/CapsuleComponent.h>
 
+#include "DieselPunk/Character/CharacterMonster.h"
 #include "DieselPunk/Character/CharacterTurret.h"
 
 
@@ -389,14 +390,14 @@ void FObjectManager::UpdateSplinePathAllEnemy()
 	TArray<int32> monstersIDs;
 	FindActorArrayByPredicate(monstersIDs, [](AActor* InActor)
 	{
-		if(auto npc = Cast<ACharacterNPC>(InActor))
+		if(auto npc = Cast<ACharacterMonster>(InActor))
 			if(npc->GetNPCType() == ENPCType::Enemy)
 				return true;
 		return false;
 	});
 	for(const int32& ID : monstersIDs)
 	{
-		Cast<ACharacterNPC>(FindActor(ID))->UpdateSplinePath();
+		Cast<ACharacterMonster>(FindActor(ID))->UpdateSplinePath();
 	}
 	LOG_SCREEN(FColor::Red, TEXT("모든 적 경로 재탐색"))
 }

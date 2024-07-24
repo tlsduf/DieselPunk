@@ -46,7 +46,7 @@ FNavPathSharedPtr UDPNavigationComponent::SearchPathTo(const FVector& inStartLoc
 
 	// 커스텀 에이전트 설정을 위한 NavAgentPropertiesRef 변수를 추가합니다. // 에이전트 반경을 설정합니다.
 	FNavAgentProperties CustomNavAgentProperties = Owner->GetNavAgentPropertiesRef();
-	//CustomNavAgentProperties.AgentRadius = Owner->GetCharacterRadius();
+	CustomNavAgentProperties.AgentRadius = testCapsuleRadius;
 
 	// ANavigationData를 커스텀 에이전트 속성으로 가져옵니다.
 	ANavigationData* NavData = Cast<ANavigationData>(NavSys->GetNavDataForProps(CustomNavAgentProperties, Owner->GetActorLocation()));
@@ -100,6 +100,7 @@ int32 UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGo
 	 * 4 액터와 첫 목적지 까지의 경로를 담습니다.
 	 * 5 목적지 부터 다음 목적지 까지의 경로를 담습니다.
 	 * 6 경로를 탐색하여 경로위에 포탑이 있다면(길이막혔다고 판단), 해당 포탑의 ID를 반환하고 뒤의 경로를 제거하고 포탑의 위치를 경로에 추가합니다.
+	 *   즉, 해당 포탑은 최종 목적지가 되며, 로직이 종료됩니다.
 	 */
 
 	int32 BlockedTurretID = FObjectManager::INVALID_OBJECTID;
@@ -129,8 +130,8 @@ int32 UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGo
 
 	//=========================================================================
 	// 포탑만을 감지하기 위한 FCollisionQueryParams
-	// 모든 몬스터들을 IgnoredActor에 등록합니다. // 플레이어와 Nexus를 IgnoredActor에 등록합니다.
 	FCollisionQueryParams params;
+	// 모든 몬스터들을 IgnoredActor에 등록합니다.
 	TArray<int32> monstersIDs;
 	FObjectManager::GetInstance()->FindActorArrayByPredicate(monstersIDs, [](AActor* InActor)
 	{
@@ -141,6 +142,18 @@ int32 UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGo
 	});
 	for(const int32& ID : monstersIDs)
 		params.AddIgnoredActor(FObjectManager::GetInstance()->FindActor(ID));
+	// hp=0인 포탑을 IgnoredActor에 등록합니다.
+	TArray<int32> DestroyedTurretIDs;
+	FObjectManager::GetInstance()->FindActorArrayByPredicate(DestroyedTurretIDs, [](AActor* InActor)
+	{
+		if(auto turret = Cast<ACharacterTurret>(InActor))
+			if((turret->GetNPCType() == ENPCType::Alliance) && (turret->GetStat(ECharacterStatType::Hp) <= 0))
+				return true;
+		return false;
+	});
+	for(const int32& ID : DestroyedTurretIDs)
+		params.AddIgnoredActor(FObjectManager::GetInstance()->FindActor(ID));
+	// 플레이어와 Nexus를 IgnoredActor에 등록합니다.
 	params.AddIgnoredActor(FObjectManager::GetInstance()->GetPlayer());
 	params.AddIgnoredActor(FObjectManager::GetInstance()->GetNexus());
 	
@@ -151,14 +164,14 @@ int32 UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGo
 	// owner의 현재위치와 첫 목적지 까지 트레이스 // 포탑이 있다면 목적지를 removeVector에 Add
 	hits.Empty();
 	if(	GetWorld()->SweepMultiByChannel(hits, Owner->GetActorLocation(), goalLocArray[0] + FVector(0, 0, 50),
-		FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeSphere(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius()), params))
+		FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeSphere(testCapsuleRadius), params))
 		removeVector.AddUnique(goalLocArray[0]);
 	// 목적지 to 다음목적지 트레이스 // 포탑이 있다면 목적지를 removeVector에 Add
 	hits.Empty();
 	for(int32 i = 0 ; i < goalLocArray.Num() - 2 ; i++)
 	{
 		if(!GetWorld()->SweepMultiByChannel(hits, goalLocArray[i] + FVector(0, 0, 50), goalLocArray[i + 1] + FVector(0, 0, 50),
-			FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeSphere(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius()), params))
+			FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeSphere(testCapsuleRadius), params))
 			continue;
 		removeVector.AddUnique(goalLocArray[i]);
 		removeVector.AddUnique(goalLocArray[i + 1]);
@@ -178,7 +191,7 @@ int32 UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGo
 		
 		TArray<FHitResult> hits;
 		if(thisPtr->GetWorld()->SweepMultiByChannel(hits, goalLoc, goalLoc + FVector(0,0,300),
-			FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeSphere(thisPtr->Owner->GetCapsuleComponent()->GetScaledCapsuleRadius()), params))
+			FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeSphere(thisPtr->testCapsuleRadius), params))
 			return true;
 		return false;
 	});
@@ -218,7 +231,7 @@ int32 UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGo
 }
 
 
-// 경로위에 포탑이 있다면 해당 포탑의 ID를 반환합니다.
+// 경로위에 포탑이 있다면 해당 포탑의 ID를 반환합니다. 그리고 포탑 뒤의 목적지를 제거합니다.
 int32 UDPNavigationComponent::GetTurretIdOnPath()
 {
 	// 0 MyPathPoints 의 index 0부터 순차적으로 탐색하고, 첫 포탑 감지 시 탐색을 종료합니다.
@@ -233,8 +246,8 @@ int32 UDPNavigationComponent::GetTurretIdOnPath()
 	
 	TArray<FHitResult> hits;
 	// 포탑만을 감지하기 위한 FCollisionQueryParams
-	// 모든 몬스터들을 IgnoredActor에 등록합니다. // 플레이어와 Nexus를 IgnoredActor에 등록합니다.
 	FCollisionQueryParams params;
+	// 모든 몬스터들을 IgnoredActor에 등록합니다.
 	TArray<int32> monstersIDs;
 	FObjectManager::GetInstance()->FindActorArrayByPredicate(monstersIDs, [](AActor* InActor)
 	{
@@ -245,16 +258,29 @@ int32 UDPNavigationComponent::GetTurretIdOnPath()
 	});
 	for(const int32& ID : monstersIDs)
 		params.AddIgnoredActor(FObjectManager::GetInstance()->FindActor(ID));
+	// hp=0인 포탑을 IgnoredActor에 등록합니다.
+	TArray<int32> DestroyedTurretIDs;
+	FObjectManager::GetInstance()->FindActorArrayByPredicate(DestroyedTurretIDs, [](AActor* InActor)
+	{
+		if(auto turret = Cast<ACharacterTurret>(InActor))
+			if((turret->GetNPCType() == ENPCType::Alliance) && (turret->GetStat(ECharacterStatType::Hp) <= 0))
+				return true;
+		return false;
+	});
+	for(const int32& ID : DestroyedTurretIDs)
+		params.AddIgnoredActor(FObjectManager::GetInstance()->FindActor(ID));
+	// 플레이어와 Nexus를 IgnoredActor에 등록합니다.
 	params.AddIgnoredActor(FObjectManager::GetInstance()->GetPlayer());
 	params.AddIgnoredActor(FObjectManager::GetInstance()->GetNexus());
 	
-	// 순차적으로 점과 점 사이를 검사합니다.
+	// 순차적으로 점과 점 사이에 터렛이 있는지 검사합니다.
+	// 터렛(CharacterHousing)의 Box로 탐색합니다.
 	for(int32 i = 0 ; i < (MyPathPoints.Num() - 1) ; i++)
 	{
 		// Warning 터렛이 탐색이 안 될 경우 트레이스채널 확인
 		// Warning 부하가 될 수 있음
 		bool hasHit = GetWorld()->SweepMultiByChannel(hits, MyPathPoints[i] + FVector(0,0,100), MyPathPoints[i+1] + FVector(0,0,100),
-			FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeSphere(Owner->GetCapsuleComponent()->GetScaledCapsuleRadius()), params);
+			FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeSphere(testCapsuleRadius), params);
 		if(!hasHit)
 			continue;
 

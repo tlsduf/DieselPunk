@@ -66,11 +66,38 @@ public:
 	bool IsZoomed = false;					// 현재 줌인 상태인지
 	bool CanZoom = true;					// 현재 줌을 할 수 있는 상태인지 (전투상태면 줌 못함)
 	float ZoomInterpTime = 6;				// InterpTime
+
+private:
+	float MyTargetArmLength = 500.0f;
+	FVector MyTargetArmLocation = FVector(0, 0, 30);
+	FVector MyCameraLocation = FVector(0, 50, 55);
+
+	// 기획 노출 view setting
+	UPROPERTY(EditAnywhere, Category = "MYDP_Viewport")
+	float DefaultTargetArmLength = 500.0f;
 	
-	float MyTargetArmLength = 400.0f;								// Default 카메라 뷰 Set / Zoomed : 250	   / Run : 600
-	FVector MyTargetArmLocation = FVector(0, 0, 55);		// Default 카메라 뷰 Set / Zoomed : (0,0,0) / Run : (0,0,55)
-	FVector MyCameraLocation = FVector(0, 0, 55);			// Default 카메라 뷰 Set / Zoomed : (0,0,0) / Run : (0,0,55)
+	UPROPERTY(EditAnywhere, Category = "MYDP_Viewport")
+	FVector DefaultTargetArmLocation = FVector(0, 0, 30);
 	
+	UPROPERTY(EditAnywhere, Category = "MYDP_Viewport")
+	FVector DefaultCameraLocation = FVector(0, 50, 55);
+
+	UPROPERTY(EditAnywhere, Category = "MYDP_Viewport", meta = (UIMin = "5.0", UIMax = "170", ClampMin = "0.001", ClampMax = "360.0", Units = deg))
+	float DefaultFieldOfView = 70.0f;
+
+	UPROPERTY(EditAnywhere, Category = "MYDP_Viewport")
+	float WideViewTargetArmLength = 700.0f;
+	
+	UPROPERTY(EditAnywhere, Category = "MYDP_Viewport")
+	FVector WideViewTargetArmLocation = FVector(0, 0, 30);
+	
+	UPROPERTY(EditAnywhere, Category = "MYDP_Viewport")
+	FVector WideViewCameraLocation = FVector(0, 50, 55);
+
+	UPROPERTY(EditAnywhere, Category = "MYDP_Viewport", meta = (UIMin = "5.0", UIMax = "170", ClampMin = "0.001", ClampMax = "360.0", Units = deg))
+	float WideViewFieldOfView = 70.0f;
+	
+public:
 	bool CanCameraControl = true;			// 카메라 조종 가능여부
 	
 	/////////////////////////////////////////////////////////////////////

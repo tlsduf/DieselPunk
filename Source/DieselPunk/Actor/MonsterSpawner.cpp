@@ -13,6 +13,7 @@
 #include <Components/StaticMeshComponent.h>
 #include <DrawDebugHelpers.h>
 
+#include "DieselPunk/Character/CharacterMonster.h"
 
 
 // =============================================================
@@ -196,7 +197,7 @@ void AMonsterSpawner::SpawnMonster(float InDeltaTime)
 		if(iterSpawnInfo->StartDelay <= SpawnerDeltaTime)
 		{
 			//UClass 생성
-			UClass* classInfo = LoadClass<ACharacterNPC>(NULL, *iterSpawnInfo->BpPath);
+			UClass* classInfo = LoadClass<ACharacterMonster>(NULL, *iterSpawnInfo->BpPath);
 			
 			//스폰 파라미터 설정
 			FSpawnParam spawnParam;
@@ -205,7 +206,7 @@ void AMonsterSpawner::SpawnMonster(float InDeltaTime)
 			spawnParam.CallBackSpawn = nullptr;
 
 			//몬스터 생성
-			const int32 id = FObjectManager::GetInstance()->CreateActor<ACharacterNPC>(classInfo, spawnParam);
+			const int32 id = FObjectManager::GetInstance()->CreateActor<ACharacterMonster>(classInfo, spawnParam);
 
 			//몬스터 생성 검증
 			if(!FObjectManager::IsValidId(id))
@@ -216,7 +217,7 @@ void AMonsterSpawner::SpawnMonster(float InDeltaTime)
 			{
 				SpawnedMonsterID.Add(id);
 				// 몬스터 투영값 계산 // 몬스터 목표배열 설정
-				if(ACharacterNPC* npc = Cast<ACharacterNPC>(FObjectManager::GetInstance()->FindActor(id)))
+				if(ACharacterMonster* npc = Cast<ACharacterMonster>(FObjectManager::GetInstance()->FindActor(id)))
 				{
 					if(!PathRouterNodes.IsEmpty())
 					{

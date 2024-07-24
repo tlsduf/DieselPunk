@@ -1,12 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "CharacterNPC.h"
-#include "../Manager/ObjectManager.h"
 #include "../Skill/SkillBase.h"
 #include "../UI/HUD/EnemyStatusUI.h"
-#include "../Manager/NavigationManager.h"
-#include "..\Component\DPNavigationComponent.h"
-#include "../Character/CharacterTurret.h"
 
 #include <Components/WidgetComponent.h>
 #include <AIController.h>
@@ -14,8 +10,8 @@
 #include <NavigationSystem.h>
 #include <DrawDebugHelpers.h>
 #include <Kismet/GameplayStatics.h>
-#include <Components/CapsuleComponent.h>
 
+#include "CharacterMonster.h"
 #include "Animation/AnimSequence.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
@@ -34,8 +30,6 @@ ACharacterNPC::ACharacterNPC()
 {
 	// AI possess
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
-
-	DPNavigationComponent = CreateDefaultSubobject<UDPNavigationComponent>(TEXT("PathFindingComponent"));
 }
 
 // =============================================================
@@ -44,17 +38,8 @@ ACharacterNPC::ACharacterNPC()
 void ACharacterNPC::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-
-	if(NPCType == ENPCType::Enemy)
-	{
-		TWeakObjectPtr<ACharacterNPC> thisPtr = this;
-		GetWorld()->GetTimerManager().SetTimer(PathTHandle1, [thisPtr](){
-				if(thisPtr.IsValid())
-					thisPtr->_UpdateSplinePath();
-			},0.5f, false);
-	}
 
 	// Skill Instancing , SKill Stat Initialize
 
@@ -382,167 +367,10 @@ void ACharacterNPC::ChangeTarget(TWeakObjectPtr<AActor> inTarget)
 	// 타겟이 플레이어에서 다른 타겟으로 업데이트 되면 경로재설정
 	if(Target == Player)
 		if(inTarget != Player)
-			UpdateSplinePath();
+			if(Cast<ACharacterMonster>(this))
+				Cast<ACharacterMonster>(this)->UpdateSplinePath();
 	
 	Target = inTarget;
-}
-
-// =============================================================
-// 몬스터의 RoutingLines배열에 값을 추가합니다.
-// =============================================================
-void ACharacterNPC::AddEnemyRoutingLines(FVector inGoalLoc, FVector inStart, FVector inEnd)
-{
-	FRoutingLine routingLine(inStart, inEnd);
-	RoutingLines.Add(inGoalLoc, routingLine);
-
-	if(DebugOnOff)
-	{
-		FVector dir = inEnd - inStart;
-		dir.Normalize();
-		DrawDebugLine(GetWorld(), inStart + FVector(0,0,50), inEnd - (dir * 600) + FVector(0,0,50), FColor::Cyan, true, -1, 0, 5);
-	}
-}
-
-// =============================================================
-// 스폰시 '몬스터'의 GoalArray를 설정합니다.
-// =============================================================
-TArray<FVector> ACharacterNPC::GetGoalLocArrayFromRoutingLines()
-{
-	TArray<FVector> goalLocArray;
-	for(auto& routingLine : RoutingLines)
-		goalLocArray.Add(routingLine.Key);
-	auto nexus = FObjectManager::GetInstance()->GetNexus();
-	if(nexus == nullptr)
-		goalLocArray.Add(GetActorLocation());
-	else
-		goalLocArray.Add(nexus->GetActorLocation());
-	return goalLocArray;
-}
-
-// =============================================================
-// self와 선분사이의 거리를 반환합니다. (z축 무시) 
-// =============================================================
-float ACharacterNPC::DistanceSegmentToSelf(FVector inStart, FVector inEnd)
-{
-	// 해당 선분은 아래 DrawDebug 라인과 같습니다.
-	// DrawDebugLine(GetWorld(), inStart + FVector(0,0,50), inEnd - (dir * 600) + FVector(0,0,50), FColor::Cyan, true, -1, 0, 5);
-
-	FVector2D A = FVector2D(inStart.X, inStart.Y);
-	FVector2D B = FVector2D(inEnd.X, inEnd.Y);
-	FVector2D P = FVector2D(GetActorLocation().X, GetActorLocation().Y);
-
-	FVector2D dir = B - A;
-	dir.Normalize();
-	FVector2D B2 = B - (dir * 600);
-	
-	FVector2D AB2 = B2 - A;
-	FVector2D AP = P - A;
-	float lengthSqrAB = AB2.X * AB2.X + AB2.Y * AB2.Y;
-	float t = (AP.X * AB2.X + AP.Y * AB2.Y) / lengthSqrAB;
-
-	if(t < 0)
-		t = 0;
-	if(t > 1)
-		t = 1;
-
-	FVector2D closestPointOnLine = A + (t * AB2);
-
-	return FVector2D::Distance(P, closestPointOnLine);
-}
-
-// =============================================================
-// '몬스터'의 GoalLoc를 갱신합니다. // GoalLoc는 도달할 수 있는 가장 가까운(경로상) 경유지점입니다.
-// =============================================================
-void ACharacterNPC::UpdateEnemyGoalLoc()
-{
-	if(RoutingLines.IsEmpty())
-	{
-		NowGoalLoc = GetActorLocation();
-		return;
-	}
-
-	double dist = MAX_dbl;
-	FVector goalLoc;
-	for(auto& routingLine : RoutingLines)
-	{
-		double curDist = DistanceSegmentToSelf(routingLine.Value.Start, routingLine.Value.End);
-		if(curDist < dist)
-		{
-			dist = curDist;
-			goalLoc = routingLine.Key;
-		}
-	}
-	NowGoalLoc = goalLoc;
-}
-
-// =============================================================
-// 길이 막혔을 때, '몬스터'의 타겟을 지정합니다.
-// =============================================================
-bool ACharacterNPC::SetBlockedAttackTarget(TWeakObjectPtr<AActor> InTarget, const TArray<FVector>& InPath, int InIndex)
-{
-	if(InTarget.IsValid() && InTarget != nullptr)
-	{
-		Target = InTarget;
-
-		//Path중에 네비메쉬 안에 포함되는 지점 등록
-		UNavigationSystemV1* navSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
-		const FNavAgentProperties& agentProps = GetNavAgentPropertiesRef();
-		FNavLocation projectedLocation;
-		
-		for(int i = 0; i < InIndex; ++i)
-		{
-			if(navSys && !navSys->ProjectPointToNavigation(InPath[InIndex - i], projectedLocation, INVALID_NAVEXTENT, &agentProps))
-				continue;
-
-			BlockedTargetLoc = InPath[InIndex - i];
-			break;
-		}
-		
-		return true;
-	}
-	return false;
-}
-
-// =============================================================
-// Curved Spline으로 된 경로를 생성합니다. // 몬스터 스폰완료시, 포탑 설치/파괴시, Target이 Nexus로 업데이트될 때 호출합니다.
-// =============================================================
-void ACharacterNPC::UpdateSplinePath()
-{
-	LOG_SCREEN(FColor::Red, TEXT("경로 재탐색"))
-	if(NPCType != ENPCType::Enemy)
-		return;
-	if(DPNavigationComponent == nullptr)
-		return;
-
-	// 내비메쉬 업데이트가 FindPathSync호출 보다 느려서 간격을 두고 호출합니다.
-	TWeakObjectPtr<ACharacterNPC> thisPtr = this;
-	GetWorld()->GetTimerManager().SetTimer(PathTHandle2, [thisPtr](){
-			if(thisPtr.IsValid())
-				thisPtr->_UpdateSplinePath();
-		},0.2f, false);
-}
-
-// 내비메쉬 업데이트가 FindPathSync호출 보다 느려서 간격을 두고 호출합니다.
-void ACharacterNPC::_UpdateSplinePath()
-{
-	__UpdateSplinePath();
-	// 길이 막힌 결과가 나오면, 한 번 더 경로를 확인합니다.
-	// 내비메쉬 업데이트와 FindPathSync호출이 오차가 있어, 의도하지 않은 결과가 나옴.
-	if(TargetedTurretID != FObjectManager::INVALID_OBJECTID)
-	{
-		TWeakObjectPtr<ACharacterNPC> thisPtr = this;
-		GetWorld()->GetTimerManager().SetTimer(PathTHandle3, [thisPtr](){
-				if(thisPtr.IsValid())
-					thisPtr->__UpdateSplinePath();
-			},0.2f, false);
-	}
-}
-
-void ACharacterNPC::__UpdateSplinePath()
-{
-	UpdateEnemyGoalLoc();
-	TargetedTurretID = DPNavigationComponent->UpdatePath(NowGoalLoc, GetGoalLocArrayFromRoutingLines());
-	DPNavigationComponent->MakeSplinePath();
 }
 
 void ACharacterNPC::ChangeGridSizeVerticalHorizontal()

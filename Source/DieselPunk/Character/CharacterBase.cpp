@@ -59,7 +59,6 @@ void ACharacterBase::BeginPlay()
 		FObjectManager::GetInstance()->AddActor(this);
 
 	CreateStatusUI();
-
 	// 트레이스 반응 설정 // ECC_GameTraceChannel6는 플레이어, 아군, 적군 이 서로를 탐지할 때 사용합니다.
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel6, ECollisionResponse::ECR_Block);
 }
@@ -90,6 +89,11 @@ void ACharacterBase::Tick(float InDeltaTime)
 void ACharacterBase::SetupPlayerInputComponent(UInputComponent* InPlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(InPlayerInputComponent);
+}
+
+void ACharacterBase::InitCollisionResponseToChannel()
+{
+	
 }
 
 // [Stat] 스탯을 변화합니다. 인게임에서 진행도중 스탯을 변경하려면 이 함수를 사용하세요. Stat[InStatType] = Stat[InStatType] + InValue; 로 적용됩니다.
@@ -158,7 +162,10 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 					}
 				}
 			}
-
+			if(auto turret = Cast<ACharacterTurret>(this))
+			{
+				//포탑 파괴 이벤트
+			}
 			//아래 주석처리한 Destroy와 레벨관리는 UStatControlComponent/SetStatDelegateFunction.163(2024.7.2)로 옮겼습니다.
 			//Destroy();
 			// 레벨관리

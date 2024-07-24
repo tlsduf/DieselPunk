@@ -45,11 +45,7 @@ void USkillSoldierR::SkillTriggered()
 		int32 screenHeight;
 		Cast<APlayerController>(OwnerController)->GetViewportSize(screenWidth, screenHeight);
 		Cast<APlayerController>(OwnerController)->SetMouseLocation(screenWidth * 0.5f, screenHeight * 0.5f);
-
-		// 화면와이드아웃
-		OwnerCharacterPC->MyTargetArmLength = 600;
-		OwnerCharacterPC->MyTargetArmLocation = FVector(0, 0, 100);
-		OwnerCharacterPC->MyCameraLocation = FVector(0, 0, 100);
+		
 
 		// 컨트롤러 rotation 조정
 		// FRotator ThisRotation = PlayerController->GetControlRotation();
@@ -92,11 +88,7 @@ void USkillSoldierR::AfterLogic()
 			Projectile->FinishSpawning(spawnTransform);
 		}
 	}
-
-	// 화면와이드인
-	OwnerCharacterPC->MyTargetArmLength = 400.0f;
-	OwnerCharacterPC->MyTargetArmLocation = FVector(0, 0, 55);
-	OwnerCharacterPC->MyCameraLocation = FVector(0, 0, 55);
+	
 
 	//*후행 조건 설정부
 	OwnerCharacterPC->CanZoom = true;

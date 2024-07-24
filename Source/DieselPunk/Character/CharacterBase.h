@@ -100,6 +100,12 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* InPlayerInputComponent) override;
 
+	/////////////////////////////////////////////////////////////////////
+	// Basic Setting //
+protected:
+	virtual void InitCollisionResponseToChannel();
+public:
+	//virtual void ChangeCollisionResponseToChannel();
 	
 	/////////////////////////////////////////////////////////////////////
 	// for Character info Management //

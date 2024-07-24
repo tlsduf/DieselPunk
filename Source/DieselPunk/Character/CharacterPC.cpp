@@ -85,12 +85,15 @@ ACharacterPC::ACharacterPC()
 
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	SpringArm->TargetArmLength = DefaultTargetArmLength;
+	SpringArm->SetRelativeLocation(DefaultTargetArmLocation);
 	SpringArm->SetupAttachment(RootComponent);
-	SpringArm->TargetArmLength = 400.0f;		// The camera follows at this distance behind the character
 	SpringArm->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+	FollowCamera->SetRelativeLocation(DefaultCameraLocation);
+	FollowCamera->SetFieldOfView(DefaultFieldOfView);
 	FollowCamera->SetupAttachment(SpringArm, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false;								// Camera does not rotate relative to arm
 
@@ -403,7 +406,7 @@ void ACharacterPC::SetZoomInProp()
 {
 	if (!IsZoomed && !InCombat)
 	{
-		MyTargetArmLength = 250.0f;
+		MyTargetArmLength = 400.0f;
 		MyTargetArmLocation = FVector(0, 0, 0);
 		MyCameraLocation = FVector(0, 0, 0);
 
@@ -416,10 +419,10 @@ void ACharacterPC::SetZoomOutProp()
 {
 	if (IsZoomed)
 	{
-		MyTargetArmLength = 400.0f;
-		MyTargetArmLocation = FVector(0, 0, 30);
-		MyCameraLocation = FVector(0, 50, 55);
-
+		MyTargetArmLength = DefaultTargetArmLength;
+		MyTargetArmLocation = DefaultTargetArmLocation;
+		MyCameraLocation = DefaultCameraLocation;
+		
 		IsZoomed = false;
 		ZoomInterpTime = 6;
 		CanZoom = true;
@@ -430,9 +433,9 @@ void ACharacterPC::SetZoomOutProp()
 //================================================================
 void ACharacterPC::SetRunZoomOutProp()
 {
-	MyTargetArmLength = 600.0f;
-	MyTargetArmLocation = FVector(0, 0, 30);
-	MyCameraLocation = FVector(0, 50, 55);
+	MyTargetArmLength = WideViewTargetArmLength;
+	MyTargetArmLocation = WideViewTargetArmLocation;
+	MyCameraLocation = WideViewCameraLocation;
 
 	IsZoomed = true;
 	ZoomInterpTime = 6;
