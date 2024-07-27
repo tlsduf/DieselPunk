@@ -123,10 +123,9 @@ void AParabolaSkillActorBase::_OnHit(UPrimitiveComponent* InHitComp, AActor* InO
 				UGameplayStatics::ApplyDamage(InOtherActor, Damage, OwnerController.Get(), OwnerCharacter.Get(), nullptr);
 			else
 				ApplyRadialDamage();
-
-			FObjectManager::GetInstance()->DestroyActor(this);
 		}
 	}
+	FObjectManager::GetInstance()->DestroyActor(this);
 }
 
 void AParabolaSkillActorBase::_BeginOverlapEvent(UPrimitiveComponent* InOverlappedComponent, AActor* InOtherActor,
@@ -157,8 +156,7 @@ void AParabolaSkillActorBase::_BeginOverlapEvent(UPrimitiveComponent* InOverlapp
 				UGameplayStatics::ApplyDamage(InOtherActor, Damage, OwnerController.Get(), OwnerCharacter.Get(), nullptr);
 			else
 				ApplyRadialDamage();
-
-			FObjectManager::GetInstance()->DestroyActor(this);
 		}
 	}
+	FObjectManager::GetInstance()->DestroyActor(this);
 }
