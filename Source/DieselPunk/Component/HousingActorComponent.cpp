@@ -12,6 +12,8 @@
 #include <GameFramework/PlayerController.h>
 #include <Components/CapsuleComponent.h>
 
+#include "Components/SkeletalMeshComponent.h"
+#include "DieselPunk/Animation/TurretAnimInstace.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values for this component's properties
@@ -211,6 +213,9 @@ bool UHousingActorComponent::CompleteHousingTurret()
 
 		//포탑 생성완료 시 이동 변경에 의해 노드를 다시 찾습니다.
 		Cast<ACharacterHousing>(GetOwner())->MovementModeChangedDelegate.AddDynamic(this, &UHousingActorComponent::EventMovementChanged);
+
+		if(UTurretAnimInstace* animInst = Cast<UTurretAnimInstace>(owner->GetMesh()->GetAnimInstance()))
+			animInst->CompleteHousing();
 		
 		return true;
 	}

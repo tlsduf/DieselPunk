@@ -42,6 +42,10 @@ private:
 	UPROPERTY(BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
 	int32 TurretLevel = 0;
 
+	// 설치 완료
+	UPROPERTY(BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
+	bool EndHousing = false;
+
 	UPROPERTY()
 	TWeakObjectPtr<ACharacterNPC> CurTarget = nullptr;
 
@@ -65,6 +69,9 @@ public:
 
 	// 현재 타겟을 설정합니다.
 	void SetCurTarget(TWeakObjectPtr<ACharacterNPC> InCharacter);
+
+	// 설치 완료
+	void CompleteHousing(){EndHousing = true;}
 };
 
 UENUM()
