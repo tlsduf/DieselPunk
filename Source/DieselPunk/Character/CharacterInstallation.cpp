@@ -75,10 +75,10 @@ void ACharacterInstallation::RunAi()
 	Super::RunAi();
 	
 	Sphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	Sphere->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Overlap);
-	Sphere->SetCollisionResponseToChannel(ECC_GameTraceChannel3, ECR_Overlap);
-	Sphere->SetCollisionResponseToChannel(ECC_GameTraceChannel4, ECR_Overlap);
-	Sphere->SetCollisionResponseToChannel(ECC_GameTraceChannel6, ECR_Block);
+	Sphere->SetCollisionResponseToChannel(ECC_DP_Player, ECR_Overlap);
+	Sphere->SetCollisionResponseToChannel(ECC_DP_Enemy, ECR_Overlap);
+	Sphere->SetCollisionResponseToChannel(ECC_DP_ProjectileEnemy, ECR_Overlap);
+	Sphere->SetCollisionResponseToChannel(ECC_DP_CharacterMultiTrace, ECR_Block);
 	
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &ACharacterInstallation::BeginOverlapEvent);
 	Sphere->OnComponentEndOverlap.AddDynamic(this, &ACharacterInstallation::EndOverlapEvent);

@@ -54,7 +54,7 @@ void USkillSoldierLM::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 	
 	FVector endLocation = lineTraceLocation + lineTraceRotation.Vector() * 10000;
 	FHitResult hit;
-	bool Hit = GetWorld()->LineTraceSingleByChannel(hit, lineTraceLocation, endLocation, ECollisionChannel::ECC_GameTraceChannel1);	//라인 트레이스 
+	bool Hit = GetWorld()->LineTraceSingleByChannel(hit, lineTraceLocation, endLocation, ECC_DP_Player);	//라인 트레이스 
 
 	// Muzzle Location by BoneName
 	FVector shotLocation =OwnerCharacterPC->GetMesh()->GetSocketLocation("Muzzle_01");

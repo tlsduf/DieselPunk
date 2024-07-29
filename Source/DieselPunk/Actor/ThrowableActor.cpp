@@ -57,11 +57,11 @@ void AThrowableActor::ThrowReady(TWeakObjectPtr<AActor> InThrowingOwner)
 	ACharacterBase* charThrowOwner = Cast<ACharacterBase>(ThrowingOwner);
 	if(charThrowOwner->GetCharacterType() == ECharacterType::Monster)
 	{
-		CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel3, ECR_Ignore);
+		CapsuleComponent->SetCollisionResponseToChannel(ECC_DP_Enemy, ECR_Ignore);
 	}
 	else if(charThrowOwner->GetCharacterType() == ECharacterType::Player || charThrowOwner->GetCharacterType() == ECharacterType::Turret)
 	{
-		CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECR_Ignore);
+		CapsuleComponent->SetCollisionResponseToChannel(ECC_DP_Player, ECR_Ignore);
 	}
 }
 

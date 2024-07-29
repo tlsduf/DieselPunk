@@ -376,7 +376,7 @@ void FNavigationManager::BuildNavMapLocation()
 			start.Z = 99999.0;
 			end.Z = -99999.0;
 			
-			if(world->LineTraceSingleByChannel(hit,	start, end, ECollisionChannel::ECC_GameTraceChannel9))
+			if(world->LineTraceSingleByChannel(hit,	start, end, ECC_DP_Floor))
 				node.Value.Location = hit.Location;
 		}
 	}

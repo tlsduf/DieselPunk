@@ -205,14 +205,14 @@ bool ACharacterHousing::CompleteHousingTurret()
 		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_PhysicsBody, ECollisionResponse::ECR_Block);
 		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Vehicle, ECollisionResponse::ECR_Block);
 		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Destructible, ECollisionResponse::ECR_Block);
-		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Block);
-		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel3, ECollisionResponse::ECR_Block);
-		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Block);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_DP_Player, ECollisionResponse::ECR_Block);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_DP_Enemy, ECollisionResponse::ECR_Block);
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_DP_ProjectileEnemy, ECollisionResponse::ECR_Block);
 
 		if(Box != nullptr)
 		{
 			Box->SetGenerateOverlapEvents(true);
-			Box->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel6, ECollisionResponse::ECR_Block);
+			Box->SetCollisionResponseToChannel(ECC_DP_CharacterMultiTrace, ECollisionResponse::ECR_Block);
 			Box->SetCanEverAffectNavigation(true);
 			Box->SetBoxExtent(FVector(GetGridSizeVertical() * FNavigationManager::GridSize / 2, GetGridSizeHorizontal() * FNavigationManager::GridSize / 2,
 				GetCapsuleComponent()->GetScaledCapsuleHalfHeight()));

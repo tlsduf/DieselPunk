@@ -62,12 +62,12 @@ void UTargetAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 	if(ownerPawn->GetCharacterType() == ECharacterType::Player || ownerPawn->GetCharacterType() == ECharacterType::Turret)
 	{
 		GetWorld()->LineTraceMultiByChannel(results, ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket"), InTarget->GetActorLocation()
-		, ECC_GameTraceChannel7);
+		, ECC_DP_PlayerChannel);
 	}
 	else if(ownerPawn->GetCharacterType() == ECharacterType::Monster)
 	{
 		GetWorld()->LineTraceMultiByChannel(results, ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket"), InTarget->GetActorLocation()
-		, ECC_GameTraceChannel8);
+		, ECC_DP_EnemyChannel);
 	}
 
 	if(!results.IsEmpty())

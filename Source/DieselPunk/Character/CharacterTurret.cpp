@@ -206,7 +206,7 @@ bool ACharacterTurret::IsOverWall(FVector inLocation)
 	
 	bool bIsWorldObject = false;
 	//라인트레이스하여 맵 오브젝트가 있는지 확인. 있으면 true
-	if(GetWorld()->LineTraceMultiByChannel(hits, start, end, ECollisionChannel::ECC_GameTraceChannel6, params))
+	if(GetWorld()->LineTraceMultiByChannel(hits, start, end, ECC_DP_CharacterMultiTrace, params))
 	{
 		for(const auto& hit : hits)
 		{

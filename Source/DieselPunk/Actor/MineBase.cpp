@@ -156,7 +156,7 @@ void AMineBase::SetCapsuleCollisionResponses()
 
 	if(ProjectileOwnerType == ECausorType::Player)
 	{
-		BoxComponent->SetCollisionObjectType(ECC_GameTraceChannel2);
+		BoxComponent->SetCollisionObjectType(ECC_DP_ProjectilePlayer);
 		
 		BoxComponent->SetGenerateOverlapEvents(true);
 
@@ -167,12 +167,12 @@ void AMineBase::SetCapsuleCollisionResponses()
 		BoxComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Vehicle, ECollisionResponse::ECR_Overlap);
 		BoxComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Destructible, ECollisionResponse::ECR_Overlap);
 		// ECC_GameTraceChannel3 == Enemy
-		BoxComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel3, ECollisionResponse::ECR_Overlap);
+		BoxComponent->SetCollisionResponseToChannel(ECC_DP_Enemy, ECollisionResponse::ECR_Overlap);
 		
 	}
 	else if(ProjectileOwnerType == ECausorType::Enemy)
 	{
-		BoxComponent->SetCollisionObjectType(ECC_GameTraceChannel4);
+		BoxComponent->SetCollisionObjectType(ECC_DP_ProjectileEnemy);
 		
 		BoxComponent->SetGenerateOverlapEvents(true);
 
@@ -183,6 +183,6 @@ void AMineBase::SetCapsuleCollisionResponses()
 		BoxComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Vehicle, ECollisionResponse::ECR_Overlap);
 		BoxComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Destructible, ECollisionResponse::ECR_Overlap);
 		// ECC_GameTraceChannel1 == Player
-		BoxComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Overlap);
+		BoxComponent->SetCollisionResponseToChannel(ECC_DP_Player, ECollisionResponse::ECR_Overlap);
 	}
 }

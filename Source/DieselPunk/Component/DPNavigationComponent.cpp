@@ -164,14 +164,14 @@ int32 UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGo
 	// owner의 현재위치와 첫 목적지 까지 트레이스 // 포탑이 있다면 목적지를 removeVector에 Add
 	hits.Empty();
 	if(	GetWorld()->SweepMultiByChannel(hits, Owner->GetActorLocation(), goalLocArray[0] + FVector(0, 0, 50),
-		FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeSphere(testCapsuleRadius), params))
+		FQuat::Identity, ECC_DP_CharacterMultiTrace, FCollisionShape::MakeSphere(testCapsuleRadius), params))
 		removeVector.AddUnique(goalLocArray[0]);
 	// 목적지 to 다음목적지 트레이스 // 포탑이 있다면 목적지를 removeVector에 Add
 	hits.Empty();
 	for(int32 i = 0 ; i < goalLocArray.Num() - 2 ; i++)
 	{
 		if(!GetWorld()->SweepMultiByChannel(hits, goalLocArray[i] + FVector(0, 0, 50), goalLocArray[i + 1] + FVector(0, 0, 50),
-			FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeSphere(testCapsuleRadius), params))
+			FQuat::Identity, ECC_DP_CharacterMultiTrace, FCollisionShape::MakeSphere(testCapsuleRadius), params))
 			continue;
 		removeVector.AddUnique(goalLocArray[i]);
 		removeVector.AddUnique(goalLocArray[i + 1]);
@@ -191,7 +191,7 @@ int32 UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGo
 		
 		TArray<FHitResult> hits;
 		if(thisPtr->GetWorld()->SweepMultiByChannel(hits, goalLoc, goalLoc + FVector(0,0,300),
-			FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeSphere(thisPtr->testCapsuleRadius), params))
+			FQuat::Identity, ECC_DP_CharacterMultiTrace, FCollisionShape::MakeSphere(thisPtr->testCapsuleRadius), params))
 			return true;
 		return false;
 	});
@@ -280,7 +280,7 @@ int32 UDPNavigationComponent::GetTurretIdOnPath()
 		// Warning 터렛이 탐색이 안 될 경우 트레이스채널 확인
 		// Warning 부하가 될 수 있음
 		bool hasHit = GetWorld()->SweepMultiByChannel(hits, MyPathPoints[i] + FVector(0,0,100), MyPathPoints[i+1] + FVector(0,0,100),
-			FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeSphere(testCapsuleRadius), params);
+			FQuat::Identity, ECC_DP_CharacterMultiTrace, FCollisionShape::MakeSphere(testCapsuleRadius), params);
 		if(!hasHit)
 			continue;
 

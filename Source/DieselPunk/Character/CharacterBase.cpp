@@ -60,7 +60,7 @@ void ACharacterBase::BeginPlay()
 
 	CreateStatusUI();
 	// 트레이스 반응 설정 // ECC_GameTraceChannel6는 플레이어, 아군, 적군 이 서로를 탐지할 때 사용합니다.
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel6, ECollisionResponse::ECR_Block);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_DP_CharacterMultiTrace, ECollisionResponse::ECR_Block);
 }
 
 // =============================================================

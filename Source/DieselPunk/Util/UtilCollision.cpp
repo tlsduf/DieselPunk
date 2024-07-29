@@ -28,7 +28,7 @@ void UtilCollision::CapsuleSweepMulti(UWorld* inWorld, TArray<FHitResult>& OutHi
 		inStartLocation,
 		inEndLocation,
 		FQuat::Identity,
-		(inCausorType == ECausorType::Player) ? ECollisionChannel::ECC_GameTraceChannel7 : ECollisionChannel::ECC_GameTraceChannel8,
+		(inCausorType == ECausorType::Player) ? ECC_DP_PlayerChannel : ECC_DP_EnemyChannel,
 		FCollisionShape::MakeSphere(inCapsuleRadius),
 		params);
 	
@@ -81,7 +81,7 @@ FHitResult UtilCollision::LineTraceForward(UWorld* inWorld, AActor *inOwner, flo
 		hit,
 		startLocation,
 		endLocation,
-		ECollisionChannel::ECC_GameTraceChannel1,
+		ECC_DP_Player,
 		params);
 
 	AActor *hitActor = hit.GetActor();

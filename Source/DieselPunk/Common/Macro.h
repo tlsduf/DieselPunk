@@ -4,6 +4,19 @@
 
 #define TURRET_MAX_LV 3
 
+//ObjectChannels
+#define ECC_DP_Player				ECollisionChannel::ECC_GameTraceChannel1
+#define ECC_DP_ProjectilePlayer		ECollisionChannel::ECC_GameTraceChannel2
+#define ECC_DP_Enemy				ECollisionChannel::ECC_GameTraceChannel3
+#define ECC_DP_ProjectileEnemy		ECollisionChannel::ECC_GameTraceChannel4
+#define ECC_DP_TraceChannel5		ECollisionChannel::ECC_GameTraceChannel5
+
+//TraceChannel
+#define ECC_DP_CharacterMultiTrace	ECollisionChannel::ECC_GameTraceChannel6
+#define ECC_DP_PlayerChannel		ECollisionChannel::ECC_GameTraceChannel7
+#define ECC_DP_EnemyChannel			ECollisionChannel::ECC_GameTraceChannel8
+#define ECC_DP_Floor				ECollisionChannel::ECC_GameTraceChannel9
+
 //언리얼 에디터에 로그를 띄웁니다.
 #define LOG_SCREEN(Color, Text, ...)			\
 	GEngine->AddOnScreenDebugMessage(-1, 3.f, Color, FString::Printf(Text, __VA_ARGS__));

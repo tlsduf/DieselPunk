@@ -202,7 +202,7 @@ bool ACharacterMonster::bPlayerTargeting()
 	bool bIsWall = false;
 	// y길이가 캡슐반지름*2인 박스로 스윕하여 맵 오브젝트가 있는지 확인. 있으면 true
 	FVector boxSize = FVector(1,GetCapsuleComponent()->GetScaledCapsuleRadius(),1);
-	if(GetWorld()->SweepMultiByChannel(hits, GetActorLocation(), playerLocXY, FQuat::Identity, ECollisionChannel::ECC_GameTraceChannel6, FCollisionShape::MakeBox(boxSize), params))
+	if(GetWorld()->SweepMultiByChannel(hits, GetActorLocation(), playerLocXY, FQuat::Identity, ECC_DP_CharacterMultiTrace, FCollisionShape::MakeBox(boxSize), params))
 	{
 		if(DebugOnOff)
 			DrawDebugLine(GetWorld(), GetActorLocation(), playerLoc, FColor::Black, false);
