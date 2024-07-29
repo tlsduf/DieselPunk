@@ -332,6 +332,7 @@ void ACharacterHousing::OnHousingUpgraded(ACharacterNPC* InCharacter, int32 InIn
 
 		//스킬 적용
 		UpgradeSkill(UpgradeDatas[InIndex - 1].UpgradeSkillNames);
+		InitSkill();
 	}
 }
 
