@@ -13,8 +13,6 @@
 
 #include "CharacterMonster.h"
 #include "Animation/AnimSequence.h"
-#include "BehaviorTree/BehaviorTree.h"
-#include "BehaviorTree/BehaviorTreeComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "DieselPunk/Animation/DPAnimInstance.h"
 #include "DieselPunk/Component/StatControlComponent.h"
@@ -373,13 +371,6 @@ void ACharacterNPC::ChangeTarget(TWeakObjectPtr<AActor> inTarget)
 	Target = inTarget;
 }
 
-void ACharacterNPC::ChangeGridSizeVerticalHorizontal()
-{
-	int32 temp = GridSizeHorizontal;
-	GridSizeHorizontal = GridSizeVertical;
-	GridSizeVertical = temp;
-}
-
 const UAnimSequence* ACharacterNPC::GetNPCAttackAnimation(EAbilityType InAbilityType)
 {
 	UAnimSequence** animSequencePtr = NPCAttackAnimations.Find(InAbilityType);
@@ -492,48 +483,3 @@ const UNPCAttack* ACharacterNPC::GetNPCAttack(EAbilityType InAbilityType)
 
 	return nullptr;
 }
-
-void ACharacterNPC::ThrowReady(TWeakObjectPtr<AActor> InThrowingOwner)
-{
-	IThrowableInterface::ThrowReady(InThrowingOwner);
-	if(AAIController* aiController = Cast<AAIController>(GetController()))
-	{
-		UBehaviorTreeComponent* btTree = Cast<UBehaviorTreeComponent>(aiController->GetBrainComponent());
-		if(btTree)
-		{
-			CachedBehaviorTree = btTree->GetCurrentTree();
-			btTree->StopTree(EBTStopMode::Type::Safe);
-		}
-	}
-	if(UCharacterMovementComponent* charMovementComp = Cast<UCharacterMovementComponent>(GetMovementComponent()))
-	{
-		charMovementComp->Deactivate();
-	}
-}
-
-void ACharacterNPC::ThrowExecute(TWeakObjectPtr<AActor> InThrowingOwner)
-{
-	IThrowableInterface::ThrowExecute(InThrowingOwner);
-	if(UCharacterMovementComponent* charMovementComp = Cast<UCharacterMovementComponent>(GetMovementComponent()))
-	{
-		charMovementComp->Activate();
-		CachedMass = charMovementComp->Mass;
-		charMovementComp->Mass = 1.f;
-	}
-}
-
-void ACharacterNPC::ThrowComplete()
-{
-	IThrowableInterface::ThrowComplete();
-	if(AAIController* aiController = Cast<AAIController>(GetController()))
-	{
-		UBehaviorTreeComponent* btTree = Cast<UBehaviorTreeComponent>(aiController->GetBrainComponent());
-		if(btTree && CachedBehaviorTree.IsValid())
-			btTree->StartTree(*CachedBehaviorTree, EBTExecutionMode::Looped);
-	}
-	if(UCharacterMovementComponent* charMovementComp = Cast<UCharacterMovementComponent>(GetMovementComponent()))
-	{
-		charMovementComp->Mass = CachedMass;
-	}
-}
-

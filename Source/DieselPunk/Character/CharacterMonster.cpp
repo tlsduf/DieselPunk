@@ -8,7 +8,10 @@
 #include "DieselPunk/Component/DPNavigationComponent.h"
 #include "DieselPunk/Manager/ObjectManager.h"
 #include "..\Component\DPNavigationComponent.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BehaviorTreeComponent.h"
 #include "DieselPunk/Component/StatControlComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 
 // =============================================================
@@ -361,3 +364,49 @@ void ACharacterMonster::__UpdateSplinePath()
 	TargetedTurretID = DPNavigationComponent->UpdatePath(NowGoalLoc, GetGoalLocArrayFromRoutingLines());
 	DPNavigationComponent->MakeSplinePath();
 }
+
+
+void ACharacterMonster::ThrowReady(TWeakObjectPtr<AActor> InThrowingOwner)
+{
+	IThrowableInterface::ThrowReady(InThrowingOwner);
+	if(AAIController* aiController = Cast<AAIController>(GetController()))
+	{
+		UBehaviorTreeComponent* btTree = Cast<UBehaviorTreeComponent>(aiController->GetBrainComponent());
+		if(btTree)
+		{
+			CachedBehaviorTree = btTree->GetCurrentTree();
+			btTree->StopTree(EBTStopMode::Type::Safe);
+		}
+	}
+	if(UCharacterMovementComponent* charMovementComp = Cast<UCharacterMovementComponent>(GetMovementComponent()))
+	{
+		charMovementComp->Deactivate();
+	}
+}
+
+void ACharacterMonster::ThrowExecute(TWeakObjectPtr<AActor> InThrowingOwner)
+{
+	IThrowableInterface::ThrowExecute(InThrowingOwner);
+	if(UCharacterMovementComponent* charMovementComp = Cast<UCharacterMovementComponent>(GetMovementComponent()))
+	{
+		charMovementComp->Activate();
+		CachedMass = charMovementComp->Mass;
+		charMovementComp->Mass = 1.f;
+	}
+}
+
+void ACharacterMonster::ThrowComplete()
+{
+	IThrowableInterface::ThrowComplete();
+	if(AAIController* aiController = Cast<AAIController>(GetController()))
+	{
+		UBehaviorTreeComponent* btTree = Cast<UBehaviorTreeComponent>(aiController->GetBrainComponent());
+		if(btTree && CachedBehaviorTree.IsValid())
+			btTree->StartTree(*CachedBehaviorTree, EBTExecutionMode::Looped);
+	}
+	if(UCharacterMovementComponent* charMovementComp = Cast<UCharacterMovementComponent>(GetMovementComponent()))
+	{
+		charMovementComp->Mass = CachedMass;
+	}
+}
+

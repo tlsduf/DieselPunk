@@ -334,3 +334,10 @@ void ACharacterHousing::OnHousingUpgraded(ACharacterNPC* InCharacter, int32 InIn
 		UpgradeSkill(UpgradeDatas[InIndex - 1].UpgradeSkillNames);
 	}
 }
+
+void ACharacterHousing::ChangeGridSizeVerticalHorizontal()
+{
+	int32 temp = GridSizeHorizontal;
+	GridSizeHorizontal = GridSizeVertical;
+	GridSizeVertical = temp;
+}

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CharacterNPC.h"
+#include "DieselPunk/Interface/ThrowableInterface.h"
 #include "CharacterMonster.generated.h"
 
 class UDPNavigationComponent;
@@ -23,7 +24,7 @@ struct FRoutingLine
 };
 
 UCLASS()
-class DIESELPUNK_API ACharacterMonster : public ACharacterNPC
+class DIESELPUNK_API ACharacterMonster : public ACharacterNPC, public IThrowableInterface
 {
 	GENERATED_BODY()
 	
@@ -40,6 +41,15 @@ protected:
 	TMap<FVector, FRoutingLine> RoutingLines;	// GoalLoc를 업데이트 해주기 위한 선분과 경유지점 TMap입니다.
 
 	int32 TargetedTurretID = -9997;				// 공격할 터렛 ID
+
+	/////////////////////////////////////////////////////////////////////
+	// for ThrowableInterface //
+	UPROPERTY()
+	TWeakObjectPtr<UBehaviorTree> CachedBehaviorTree = nullptr;
+
+	float CachedMass = 100.f;
+
+	bool IsThrowingActor = false;
 protected:
 	ACharacterMonster();
 	
@@ -77,4 +87,9 @@ public:
 	void UpdateSplinePath();
 	void _UpdateSplinePath();
 	void __UpdateSplinePath();
+
+	//Throwable Interface
+	virtual void ThrowReady(TWeakObjectPtr<AActor> InThrowingOwner) override;
+	virtual void ThrowExecute(TWeakObjectPtr<AActor> InThrowingOwner) override;
+	virtual void ThrowComplete() override;
 };

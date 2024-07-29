@@ -4,7 +4,6 @@
 
 #include "AIController.h"
 #include "CharacterPC.h"
-#include "DieselPunk/Interface/ThrowableInterface.h"
 #include "CharacterNPC.generated.h"
 
 class UHousingActorComponent;
@@ -37,11 +36,9 @@ struct FSearchAreaData
 };
 
 UCLASS()
-class DIESELPUNK_API ACharacterNPC : public ACharacterBase, public IThrowableInterface
+class DIESELPUNK_API ACharacterNPC : public ACharacterBase
 {
 	GENERATED_BODY()
-
-	DECLARE_MULTICAST_DELEGATE_TwoParams(FDelegateUpgrade, ACharacterNPC*, int32)
 
 protected:
 	/////////////////////////////////////////////////////////////////////
@@ -81,27 +78,12 @@ protected:
 
 	EAbilityType CurrentUseAbilityType = EAbilityType::None;	
 	
-	//포탑의 세로 사이즈입니다. 1그리드 = 100입니다.
-	UPROPERTY(EditDefaultsOnly, Category="MYDP_Setting", meta=(AllowPrivateAccess="true"))
-	int32 GridSizeVertical = 1;
-
-	//포탑의 가로 사이즈입니다. 1그리드 = 100입니다.
-	UPROPERTY(EditDefaultsOnly, Category="MYDP_Setting", meta=(AllowPrivateAccess="true"))
-	int32 GridSizeHorizontal = 1;
-	
 	TWeakObjectPtr<AActor> Target = nullptr;	// 공격할 타겟
 	
 	bool InRange = false;		// 타겟이 범위 안에 있으면 true
 
 	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
 	UAnimSequence* SpawnAnimation = nullptr;
-
-	UPROPERTY()
-	TWeakObjectPtr<UBehaviorTree> CachedBehaviorTree = nullptr;
-
-	float CachedMass = 100.f;
-
-	bool IsThrowingActor = false;
 
 	/////////////////////////////////////////////////////////////////////
 	// for Targeting //
@@ -114,12 +96,6 @@ protected:
 	//탐색을 위한 전방 벡터
 	FVector OriginForwardVector = FVector::ZeroVector;
 
-	/////////////////////////////////////////////////////////////////////
-	// for Upgrade //
-	FDelegateUpgrade DelegateUpgrade;
-
-	
-	
 protected:
 	ACharacterNPC();
 	
@@ -170,16 +146,8 @@ public:
 	bool GetInRange() const { return InRange; }
 	
 	TWeakObjectPtr<AActor> GetAttackTarget() const { return Target; }
-	
-	int32 GetGridSizeVertical() const { return GridSizeVertical; }
-	
-	int32 GetGridSizeHorizontal() const { return GridSizeHorizontal; }
-
-	void ChangeGridSizeVerticalHorizontal();
 
 	ENPCType GetNPCType(){return NPCType;}
-
-	FDelegateUpgrade& GetDelegateUpgrade(){return DelegateUpgrade;}
 
 	const UAnimSequence* GetNPCAttackAnimation(EAbilityType InAbilityType);
 	
@@ -194,8 +162,4 @@ public:
 	EAbilityType GetTopPriorityUseableSkill();
 	bool IsAllParabolaAttack();
 	const UNPCAttack* GetNPCAttack(EAbilityType InAbilityType);
-
-	virtual void ThrowReady(TWeakObjectPtr<AActor> InThrowingOwner) override;
-	virtual void ThrowExecute(TWeakObjectPtr<AActor> InThrowingOwner) override;
-	virtual void ThrowComplete() override;
 };
