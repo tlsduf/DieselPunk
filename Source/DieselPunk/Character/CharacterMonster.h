@@ -60,7 +60,6 @@ public:
 	// 몬스터와 목표의 거리에 따른 조건 설정 // BT 활용
 	void SetInRange();
 
-
 public:
 	// Navigation
 	// 몬스터의 RoutingLines TMap에 값을 추가합니다.

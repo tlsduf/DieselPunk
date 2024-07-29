@@ -8,6 +8,7 @@
 #include "DieselPunk/Component/DPNavigationComponent.h"
 #include "DieselPunk/Manager/ObjectManager.h"
 #include "..\Component\DPNavigationComponent.h"
+#include "DieselPunk/Component/StatControlComponent.h"
 
 
 // =============================================================
@@ -26,6 +27,8 @@ void ACharacterMonster::BeginPlay()
 	Super::BeginPlay();
 	CharacterType = ECharacterType::Monster;
 	NPCType = ENPCType::Enemy;
+
+	//StatControlComponent->GetSetStatDelegate().AddUObject(this, &ACharacterMonster)
 }
 
 // =============================================================

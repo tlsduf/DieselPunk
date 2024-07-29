@@ -69,6 +69,8 @@ public:
 	virtual void UpgradeSkill(const TMap<EAbilityType, FName>& InUpgradeSkillNames) {}
 
 	void UpdateBoxComponent();
+
+	
 	
 protected:
 	virtual void BeginPlay() override;
