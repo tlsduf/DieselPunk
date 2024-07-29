@@ -19,6 +19,7 @@
 #include <Components/BoxComponent.h>
 #include <Components/WidgetComponent.h>
 
+#include "Animation/AnimInstance.h"
 #include "DieselPunk/Data/UpgradeDataTable.h"
 #include "DieselPunk/Manager/ObjectManager.h"
 #include "Engine/SkeletalMesh.h"
@@ -143,6 +144,7 @@ void ACharacterHousing::BeginPlay()
 		}
 		FUpgradeData upgradeData;
 		upgradeData.UpgradeMesh = upgradeTable->UpgradeMesh;
+		upgradeData.UpgradeAnimInstance = upgradeTable->UpgradeAnimInstance;
 		upgradeData.UpgradeSkillNames = upgradeTable->UpgradeSkillNames;
 
 		UpgradeDatas.Add(upgradeData);
@@ -329,6 +331,9 @@ void ACharacterHousing::OnHousingUpgraded(ACharacterNPC* InCharacter, int32 InIn
 					GetMesh()->SetMaterial(i, nullptr);
 			}
 		}
+
+		if(UpgradeDatas[InIndex - 1].UpgradeAnimInstance != nullptr)
+			GetMesh()->SetAnimInstanceClass(UpgradeDatas[InIndex - 1].UpgradeAnimInstance);
 
 		//스킬 적용
 		UpgradeSkill(UpgradeDatas[InIndex - 1].UpgradeSkillNames);

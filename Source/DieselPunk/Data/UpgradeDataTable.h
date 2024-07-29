@@ -17,6 +17,10 @@ struct DIESELPUNK_API FUpgradeDataTable : public FDPTableRowBase
 	UPROPERTY(EditAnywhere)
 	USkeletalMesh* UpgradeMesh = nullptr;
 
+	//업그레이드할 애님 인스턴스 입니다.
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UAnimInstance> UpgradeAnimInstance = nullptr;
+
 	//업그레이드 스킬 이름입니다.
 	UPROPERTY(EditAnywhere)
 	TMap<EAbilityType, FName> UpgradeSkillNames;

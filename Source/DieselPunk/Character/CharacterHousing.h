@@ -10,12 +10,16 @@ class UHousingActorComponent;
 class UMeshComponent;
 class UMaterialInterface;
 class UBoxComponent;
+class UAnimInstance;
 
 struct FUpgradeData
 {
 	//업그레이드할 메시입니다.
 	USkeletalMesh* UpgradeMesh = nullptr;
 
+	//업그레이드할 애님 인스턴스 입니다.
+	TSubclassOf<UAnimInstance> UpgradeAnimInstance = nullptr;
+	
 	//업그레이드 스킬 이름입니다.
 	TMap<EAbilityType, FName> UpgradeSkillNames;
 };
@@ -88,7 +92,6 @@ public:
 	void UpdateBoxComponent();
 	
 	FDelegateUpgrade& GetDelegateUpgrade(){return DelegateUpgrade;}
-
 	
 	int32 GetGridSizeVertical() const { return GridSizeVertical; }
 	
