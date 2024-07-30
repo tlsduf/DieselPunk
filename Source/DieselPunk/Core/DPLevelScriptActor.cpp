@@ -10,7 +10,9 @@
 
 #include <Kismet/GameplayStatics.h>
 
-
+#include "Components/SkeletalMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "DieselPunk/Actor/FloorStaticMeshActor.h"
 
 
 //생성자
@@ -23,6 +25,7 @@ void ADPLevelScriptActor::BeginPlay()
 {
 	Super::BeginPlay();
 
+	ChangeReciveDecal();
 	InitLevel();
 }
 
@@ -197,6 +200,33 @@ void ADPLevelScriptActor::WaveClearEvent()
 	if (playerPawn == nullptr)
 		return;
 	playerPawn->ChangeStat(ECharacterStatType::Cost, StageInfo[WaveIndex].CostReward);
+}
+
+void ADPLevelScriptActor::ChangeReciveDecal()
+{
+	UWorld* world = GetWorld();
+	if(world)
+	{
+		TArray<AActor*> actors;
+		UGameplayStatics::GetAllActorsOfClass(world, AActor::StaticClass(), actors);
+		for(AActor* actor : actors)
+		{
+			if(Cast<AFloorStaticMeshActor>(actor))
+				continue;
+			if(actor)
+			{
+				TArray<UActorComponent*> components;
+				actor->GetComponents(components);
+				for(UActorComponent* comp : components)
+				{
+					if(UPrimitiveComponent* primitiveComp = Cast<UPrimitiveComponent>(comp))
+					{
+						primitiveComp->SetReceivesDecals(false);
+					}
+				}
+			}
+		}
+	}
 }
 
 // =============================================================

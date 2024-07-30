@@ -10,6 +10,7 @@
 #include <GameFramework/PlayerController.h>
 #include <Components/CapsuleComponent.h>
 
+#include "DieselPunk/Actor/FloorStaticMeshActor.h"
 #include "DieselPunk/Character/CharacterMonster.h"
 #include "DieselPunk/Character/CharacterTurret.h"
 
@@ -194,6 +195,12 @@ int32 FObjectManager::AddActor(AActor* InActor)
 	Objects.Add(objId, InActor);
 	
 	return objId;
+}
+
+void FObjectManager::AddFloor(AFloorStaticMeshActor* InFloor)
+{
+	if(InFloor)
+		Floors.Add(InFloor);
 }
 
 //캐릭터 베이스의 오브젝트 ID를 설정합니다.
@@ -400,5 +407,13 @@ void FObjectManager::UpdateSplinePathAllEnemy()
 		Cast<ACharacterMonster>(FindActor(ID))->UpdateSplinePath();
 	}
 	LOG_SCREEN(FColor::Red, TEXT("모든 적 경로 재탐색"))
+}
+
+void FObjectManager::OnOffFloorHousingMode(bool InHousingMode, const TArray<EFloorType>& InInstallableFloorType)
+{
+	for(TWeakObjectPtr<AFloorStaticMeshActor> floor : Floors)
+	{
+		floor->OnOffDecalMaterial(InHousingMode, InInstallableFloorType);
+	}
 }
 

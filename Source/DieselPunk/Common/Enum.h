@@ -239,3 +239,13 @@ enum class EBuffStatusEffectRoleType : uint8
 	Skill		UMETA(ToolTip = "스킬 사용 불가"),
 	Max
 };
+
+// 바닥 타입
+UENUM(BlueprintType)
+enum class EFloorType : uint8
+{
+	Plane = 0	UMETA(ToolTip = "평면"),
+	Runway		UMETA(ToolTip = "경사로"),
+	Stair		UMETA(ToolTip = "계단"),
+	Prop		UMETA(ToolTip = "건물, 설치물 등")
+};

@@ -83,4 +83,7 @@ public:
 	
 	const TArray<int32>& GetMonsterSpawnerIDs() { return MonsterSpawnerIDs; }
 	const TArray<int32>& GetPathRouterIDs() { return PathRouterIDs; }
+
+public:
+	void ChangeReciveDecal();
 };

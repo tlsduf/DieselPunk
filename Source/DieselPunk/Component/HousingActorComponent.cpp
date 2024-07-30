@@ -13,6 +13,7 @@
 #include <Components/CapsuleComponent.h>
 
 #include "Components/SkeletalMeshComponent.h"
+#include "DieselPunk/Actor/FloorStaticMeshActor.h"
 #include "DieselPunk/Animation/TurretAnimInstace.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -129,9 +130,11 @@ void UHousingActorComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		//boxLocation.Z += boxExtend.Z;
 		DrawDebugBox(world->World(), boxLocation, boxExtend, FColor::Red, false, -1 , 0, 2);
 
+		IsHouseable = CheckHouseable();
+		
 		//설치가 가능하면 시안 색으로 머터리얼 변경
 		ACharacterHousing* owner = Cast<ACharacterHousing>(GetOwner());
-		owner->ChangeHousingMaterialParameterChange(IsArrangeTurret());
+		owner->ChangeHousingMaterialParameterChange(IsHouseable);
 	}
 }
 
@@ -181,6 +184,23 @@ bool UHousingActorComponent::IsArrangeTurret()
 
 bool UHousingActorComponent::CompleteHousingTurret()
 {
+	if(!IsHouseable)
+		return false;
+
+	ACharacterHousing* owner = Cast<ACharacterHousing>(GetOwner());
+	if(owner == nullptr)
+		return false;
+
+	SetComponentTickEnabled(false);
+	Cast<ACharacterHousing>(GetOwner())->MovementModeChangedDelegate.AddDynamic(this, &UHousingActorComponent::EventMovementChanged);
+
+	if(UTurretAnimInstace* animInst = Cast<UTurretAnimInstace>(owner->GetMesh()->GetAnimInstance()))
+		animInst->CompleteHousing();
+	return true;
+}
+
+bool UHousingActorComponent::CheckHouseable()
+{
 	ACharacterPC* charPc = FObjectManager::GetInstance()->GetPlayer(); 
 	if(charPc == nullptr)
 		return false;
@@ -188,37 +208,93 @@ bool UHousingActorComponent::CompleteHousingTurret()
 	if(owner == nullptr)
 		return false;
 
-	TArray<FOverlapResult> hitResult;
+	TArray<FOverlapResult> hitResults;
 	FVector location = owner->GetActorLocation();
 	double gridSizeVertical = owner->GetGridSizeVertical();
 	double gridSizeHorizontal = owner->GetGridSizeHorizontal();
-	FVector grid = {gridSizeVertical, gridSizeHorizontal, gridSizeVertical};
-	FVector boxHalfExtend = (grid * FNavigationManager::GridSize / 2) - 0.25;
-	location.Z += boxHalfExtend.Z;
+	double boxHeight = owner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+	
+	FVector grid = {gridSizeVertical, gridSizeHorizontal, 0.0};
+	FVector boxHalfExtend = (grid * FNavigationManager::GridSize / 2);
+	boxHalfExtend.Z += boxHeight;
+	boxHalfExtend = boxHalfExtend - 0.25;
 
 	//플레이어 충돌범위 제외
 	FCollisionQueryParams params;
 	params.AddIgnoredActor(charPc);
 	params.AddIgnoredActor(owner);
-
-	if(GetOwner()->GetWorld()->OverlapMultiByChannel(hitResult, location, FQuat::Identity, ECC_WorldStatic,FCollisionShape::MakeBox(boxHalfExtend), params))
-		return false;
-	
-	location = owner->GetActorLocation();
-	if(FNavigationManager::GetInstance()->PlacementTurret(location, owner->GetGridSizeVertical(), owner->GetGridSizeHorizontal(), NavIndex, GetOwner()))
+	if(GetOwner()->GetWorld()->OverlapMultiByChannel(hitResults,
+													 location,
+													 FQuat::Identity,
+													 ECC_WorldStatic,
+													 FCollisionShape::MakeBox(boxHalfExtend),
+													 params))
 	{
-		location.Z += owner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
-		GetOwner()->SetActorLocation(location);
-		SetComponentTickEnabled(false);
-
-		//포탑 생성완료 시 이동 변경에 의해 노드를 다시 찾습니다.
-		Cast<ACharacterHousing>(GetOwner())->MovementModeChangedDelegate.AddDynamic(this, &UHousingActorComponent::EventMovementChanged);
-
-		if(UTurretAnimInstace* animInst = Cast<UTurretAnimInstace>(owner->GetMesh()->GetAnimInstance()))
-			animInst->CompleteHousing();
-		
-		return true;
+		for(const FOverlapResult& result : hitResults)
+		{
+			if(!Cast<AFloorStaticMeshActor>(result.GetActor()))
+				return false;
+		}
 	}
-	return false;
+
+	//다리 본 아래로 레이를 쏨
+	TArray<FVector> hitLocations;
+	for(const FName& name : BoneNamesForLineTracing)
+	{
+		FVector loc = owner->GetMesh()->GetBoneLocation(name);
+		FVector startLoc, endLoc;
+
+		float height = owner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+
+		startLoc = loc;
+		startLoc.Z += height;
+
+		endLoc = loc;
+		endLoc.Z -= height * 2;
+
+		FHitResult hitResult;
+		if(GetWorld()->LineTraceSingleByChannel(hitResult, startLoc, endLoc, ECC_DP_Floor))
+		{
+			hitLocations.Add(hitResult.Location);
+			AFloorStaticMeshActor* floor = Cast<AFloorStaticMeshActor>(hitResult.GetActor());
+			if(!floor)
+				return false;
+
+			if(UHousingActorComponent* housingComp = Cast<UHousingActorComponent>(owner->GetComponentByClass(UHousingActorComponent::StaticClass())))
+				if(!housingComp->GetInstallableTypes().Contains(floor->GetFloorType()))
+					return false;
+		}
+	}
+
+	//레이의 결과 값 갯수와 본 이름의 갯수가 같지 않을 경우 다리의 hit이 실패한 경우이기 때문에 false 반환
+	if(hitLocations.Num() != BoneNamesForLineTracing.Num())
+		return false;
+
+	//각 다리 별 히트 위치끼리 비교해, 최대 설치 각도를 넘어갈 경우 false 반환
+	for(int i = 0; i < hitLocations.Num(); ++i)
+	{
+		for(int j = i + 1; j < hitLocations.Num(); ++j)
+		{
+			//빗변의 길이 구하기
+			float c = FVector::Distance(hitLocations[i], hitLocations[j]);
+			if(c == 0.f)
+				return false;
+			
+			//가로 길이 구하기
+			FVector startLoc = hitLocations[i];
+			startLoc.Z = 0.0;
+			FVector endLoc = hitLocations[j];
+			endLoc.Z = 0.0;
+			float a = FVector::Distance(startLoc, endLoc);
+
+			float cosineValue = a / c;
+			float thetaRadian = FMath::Acos(cosineValue);
+			float thetaDegree = FMath::RadiansToDegrees(thetaRadian);
+			if(thetaDegree > MaxInstallableSlope)
+				return false;
+		}
+	}
+
+	return true;
 }
 

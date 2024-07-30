@@ -2,7 +2,10 @@
 #pragma once
 
 #include "../Interface/ObjectPoolingInterface.h"
+#include "Components/PrimitiveComponent.h"
 
+
+class AFloorStaticMeshActor;
 
 struct FSpawnParam
 {
@@ -44,11 +47,12 @@ class DIESELPUNK_API FObjectManager
 {
 	Singleton_Declare(FObjectManager)
 private:
-	TMap<int32, TWeakObjectPtr<AActor>> Objects;
-	TWeakObjectPtr<UWorld>				World;
-	TWeakObjectPtr<APlayerController>	Controller;
-	TWeakObjectPtr<ACharacterPC>		Player;
-	TWeakObjectPtr<ACharacterNPC>		Nexus;
+	TMap<int32, TWeakObjectPtr<AActor>> 			Objects;
+	TWeakObjectPtr<UWorld>							World;
+	TWeakObjectPtr<APlayerController>				Controller;
+	TWeakObjectPtr<ACharacterPC>					Player;
+	TWeakObjectPtr<ACharacterNPC>					Nexus;
+	TArray<TWeakObjectPtr<AFloorStaticMeshActor>>	Floors;
 	
 	TMap<UClass*, TArray<TWeakObjectPtr<AActor>>>	PoolingObject;
 	TMap<FString, TMap<UClass*, FPoolingInfo>>		PoolingObjectInfo;
@@ -80,6 +84,8 @@ public:
 
 	//ObjectManager를 통해 생성하지 않은(미리 월드에 배치해놓은) 액터를 추가합니다.
 	int32	AddActor(AActor* InActor);
+
+	void	AddFloor(AFloorStaticMeshActor* InFloor);
 	
 private:
 	//오브젝트 ID를 설정합니다.
@@ -117,6 +123,9 @@ public:
 public:
 	//모든 Enemy타입 경로 재설정 //터렛 설치, 파괴, 판매 시 호출 //#navi #splineUpdate #enemy
 	void UpdateSplinePathAllEnemy();
+
+	//플로어의 설치모드를 켜고 끕니다.
+	void OnOffFloorHousingMode(bool InHousingMode, const TArray<EFloorType>& InInstallableFloorTypes =  TArray<EFloorType>());
 };
 
 template <typename T>
@@ -177,6 +186,16 @@ int32 FObjectManager::CreateActor(UClass* InClass, const FSpawnParam& InSpawnPar
 		//스폰 마무리
 		actor->FinishSpawning(spawnTransform);
 		
+	}
+
+	TArray<UActorComponent*> components;
+	actor->GetComponents(components);
+	for(UActorComponent* comp : components)
+	{
+		if(UPrimitiveComponent* primitiveComp = Cast<UPrimitiveComponent>(comp))
+		{
+			primitiveComp->SetReceivesDecals(false);
+		}
 	}
 	
 	Objects.Add(objId, actor);

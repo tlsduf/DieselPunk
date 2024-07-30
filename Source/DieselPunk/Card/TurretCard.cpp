@@ -9,6 +9,7 @@
 #include "../Manager/ObjectManager.h"
 #include "../Character/CharacterTurret.h"
 #include "../Character/CharacterInstallation.h"
+#include "DieselPunk/Component/HousingActorComponent.h"
 
 FTurretCard::FTurretCard(int32 InKey, const FString& InCardName, TWeakObjectPtr<ACharacterPC> InOwner)
 	: FCard(InKey, InCardName, InOwner)
@@ -63,12 +64,19 @@ void FTurretCard::_Activate(bool& OutSuccess, int32 InCost)
 		
 		OutSuccess = true;
 	}
+	AActor* actor = FObjectManager::GetInstance()->FindActor(ControlTurretId);
+	if(!actor)
+		return;
+
+	UHousingActorComponent* housingComp = Cast<UHousingActorComponent>(actor->GetComponentByClass(UHousingActorComponent::StaticClass()));
+	if(housingComp)
+		FObjectManager::GetInstance()->OnOffFloorHousingMode(true, housingComp->GetInstallableTypes());
 }
 
 void FTurretCard::_Cancel()
 {
 	FObjectManager::GetInstance()->DestroyActor(ControlTurretId);
-	
+	FObjectManager::GetInstance()->OnOffFloorHousingMode(false);
 	ControlTurretId = -1;
 }
 
@@ -98,6 +106,7 @@ void FTurretCard::_Complete(bool& OutSuccess, int32 InCost)
 		return;
 	}
 	OutSuccess = true;
+	FObjectManager::GetInstance()->OnOffFloorHousingMode(false);
 }
 
 void FTurretCard::_RotateInstallation(double InRotateAngle)
