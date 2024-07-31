@@ -135,7 +135,7 @@ void ACharacterTurret::SetTarget()
 		});
 		//타겟을 공격할 수 있는 조건(벽에 막히거나)
 		//TODO
-		if(!bPierceWall)
+		if(!bPierceWallOfTurret)
 		{
 			outActors.RemoveAll([thisPtr](int32 ID)
 			{
@@ -167,7 +167,7 @@ void ACharacterTurret::SetTarget()
 			return;
 		}
 		// 타겟과 포탑 사이에 벽이 있는지 탐색 // 벽이 있으면 타겟 초기화
-		if(!bPierceWall)
+		if(!bPierceWallOfTurret)
 			if(IsOverWall(Target->GetActorLocation()))
 				ChangeTarget(nullptr);
 	}

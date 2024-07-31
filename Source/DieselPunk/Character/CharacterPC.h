@@ -65,14 +65,20 @@ public:
 	
 	bool IsZoomed = false;					// 현재 줌인 상태인지
 	bool CanZoom = true;					// 현재 줌을 할 수 있는 상태인지 (전투상태면 줌 못함)
-	float ZoomInterpTime = 6;				// InterpTime
+	
 
 private:
 	float MyTargetArmLength = 500.0f;
 	FVector MyTargetArmLocation = FVector(0, 0, 30);
 	FVector MyCameraLocation = FVector(0, 50, 55);
+	float MyFieldOfView = 70.f;
 
 	// 기획 노출 view setting
+
+	// 줌인아웃 시간
+	UPROPERTY(EditAnywhere, Category = "MYDP_Viewport")
+	float ZoomInterpTime = 6;				// InterpTime
+	
 	UPROPERTY(EditAnywhere, Category = "MYDP_Viewport")
 	float DefaultTargetArmLength = 500.0f;
 	
@@ -213,13 +219,16 @@ public:
 	
 	// Zoom 줌 관련 함수입니다.
 	void SetZoomInProp();
-	void SetZoomOutProp();
+	void SetDefaultZoomProp();
+private:
 	// 달릴 때의 카메라 프롭을 설정합니다.
-	void SetRunZoomOutProp();
+	void SetZoomOutProp();
+	// BeginPlay 시, 카메라 세팅을 초기화 합니다.
+	void InitCameraSetting();
 	// Tick에서 작동합니다. 애니메이션 담당
 	void ZoomInOut(float inDeltaTime);
 
-	
+public:
 	/////////////////////////////////////////////////////////////////////
 	// for Skill //
 	

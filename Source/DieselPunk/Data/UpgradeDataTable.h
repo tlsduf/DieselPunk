@@ -5,6 +5,9 @@
 #include "DPTableRowBase.h"
 #include "UpgradeDataTable.generated.h"
 
+class USkeletalMesh;
+class UAnimInstance;
+
 /**
  * 업그레이드에 필요한 데이터 테이블입니다.
  */

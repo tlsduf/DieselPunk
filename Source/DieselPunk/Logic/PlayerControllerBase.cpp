@@ -495,7 +495,7 @@ void APlayerControllerBase::SetZoomInProp()
 void APlayerControllerBase::SetZoomOutProp()
 {
 	if (PC.IsValid())
-		PC->SetZoomOutProp();
+		PC->SetDefaultZoomProp();
 }
 
 void APlayerControllerBase::WheelUpCardSelect()

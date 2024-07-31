@@ -19,7 +19,7 @@ public:
 
 	// bPiercing 가 ture면 지형을 무시하고 공격합니다.
 	UPROPERTY(EditAnywhere, Category = "MYDP_Combat")
-	bool bPierceWall = true;
+	bool bPierceWallOfTurret = true;
 	
 public:
 	ACharacterTurret();

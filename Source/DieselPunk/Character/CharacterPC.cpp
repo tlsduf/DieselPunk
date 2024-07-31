@@ -112,6 +112,8 @@ ACharacterPC::ACharacterPC()
 
 void ACharacterPC::BeginPlay()
 {
+	InitCameraSetting();
+	
 	//스탯이 초기화 되기 전 델리게이트를 위한 함수호출입니다. Super::BeginPlay를 호출하기 전에 실행합니다.
 	//핸드UI를 초기화합니다
 	TWeakObjectPtr<UUserWidgetBase> hud = FindWidgetBase(Cast<APlayerControllerBase>(Controller)->GetHUDId());
@@ -180,14 +182,14 @@ void ACharacterPC::Tick(float DeltaTime)
 	if (IsJog)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = GetStat(ECharacterStatType::MoveSpeed) * 2;
-		SetRunZoomOutProp();
+		SetZoomOutProp();
 		bUseControllerRotationYaw = false;	// 컨트롤러에 의한 캐릭터 yaw 회전
 		GetCharacterMovement()->bOrientRotationToMovement = true;			 // Character moves in the direction of input...
 	}
 	else
 	{
 		GetCharacterMovement()->MaxWalkSpeed = GetStat(ECharacterStatType::MoveSpeed);
-		SetZoomOutProp();
+		SetDefaultZoomProp();
 		bUseControllerRotationYaw = true;	// 컨트롤러에 의한 캐릭터 yaw 회전
 		GetCharacterMovement()->bOrientRotationToMovement = false;			 // Character moves in the direction of input...
 		//StopJog();
@@ -205,7 +207,7 @@ void ACharacterPC::Tick(float DeltaTime)
 
 		//줌아웃
 		if (IsZoomed)
-			SetZoomOutProp();
+			SetDefaultZoomProp();
 	}
 
 
@@ -415,31 +417,46 @@ void ACharacterPC::SetZoomInProp()
 		CanZoom = true;
 	}
 }
-void ACharacterPC::SetZoomOutProp()
+void ACharacterPC::SetDefaultZoomProp()
 {
 	if (IsZoomed)
 	{
 		MyTargetArmLength = DefaultTargetArmLength;
 		MyTargetArmLocation = DefaultTargetArmLocation;
 		MyCameraLocation = DefaultCameraLocation;
+		MyFieldOfView = DefaultFieldOfView;
 		
 		IsZoomed = false;
 		ZoomInterpTime = 6;
 		CanZoom = true;
 	}
 }
+
 //================================================================
 // 달릴 때의 카메라 프롭을 설정합니다.
 //================================================================
-void ACharacterPC::SetRunZoomOutProp()
+void ACharacterPC::SetZoomOutProp()
 {
 	MyTargetArmLength = WideViewTargetArmLength;
 	MyTargetArmLocation = WideViewTargetArmLocation;
 	MyCameraLocation = WideViewCameraLocation;
+	MyFieldOfView = WideViewFieldOfView;
 
 	IsZoomed = true;
 	ZoomInterpTime = 6;
 	CanZoom = true;
+}
+// 카메라 세팅을 Default값으로 초기화 합니다.
+void ACharacterPC::InitCameraSetting()
+{
+	SpringArm->TargetArmLength = DefaultTargetArmLength;
+	SpringArm->SetRelativeLocation(DefaultTargetArmLocation);
+	FollowCamera->SetRelativeLocation(DefaultCameraLocation);
+	FollowCamera->SetFieldOfView(DefaultFieldOfView);
+	MyTargetArmLength = DefaultTargetArmLength;
+	MyTargetArmLocation = DefaultTargetArmLocation;
+	MyCameraLocation = DefaultCameraLocation;
+	MyFieldOfView = DefaultFieldOfView;
 }
 
 //================================================================
@@ -462,9 +479,13 @@ void ACharacterPC::ZoomInOut(float InDeltaTime)
 		MyCameraLocation,
 		InDeltaTime,
 		ZoomInterpTime));
+	FollowCamera->SetFieldOfView(FMath::FInterpTo(
+		FollowCamera->FieldOfView,
+		MyFieldOfView,
+		InDeltaTime,
+		ZoomInterpTime));
 	if (SpringArm->TargetArmLength == MyTargetArmLength)
 		CanZoom = false; // 줌인아웃이 완료되면 함수실행중지
-	
 }
 
 // =============================================================
