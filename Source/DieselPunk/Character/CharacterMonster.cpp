@@ -10,6 +10,7 @@
 #include "..\Component\DPNavigationComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "DieselPunk/Component/StatControlComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -408,5 +409,21 @@ void ACharacterMonster::ThrowComplete()
 	{
 		charMovementComp->Mass = CachedMass;
 	}
+}
+
+// Ragdoll Test
+void ACharacterMonster::StartRagdollAndDestroy()
+{
+	GetMesh()->SetSimulatePhysics(true);
+	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Destructible, ECollisionResponse::ECR_Block);
+	
+	TWeakObjectPtr<ACharacterMonster> thisPtr = this;
+	GetWorld()->GetTimerManager().SetTimer(DestroyTHandle, [thisPtr](){
+	if(thisPtr.IsValid())
+		thisPtr->Destroy();
+	},5.f, false);
 }
 

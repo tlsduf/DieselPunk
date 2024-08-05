@@ -117,73 +117,74 @@ int32 ACharacterBase::GetStat(ECharacterStatType InStatType)
 float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent, class AController *EventInstigator, AActor *DamageCauser)
 {
 	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	
-	// DamageImmunity가 false 일 때 데미지계산 // EventInstigator 가 본인이 아닐 때 데미지 계산
-	if (!DamageImmunity && EventInstigator != Controller)
-	{
-		HandleCombatState();
 
-		//================================================================
-		// 1.데미지 계산(공식적용|올림내림)
-		damage = (int)(damage + 0.2); // 데미지 소수점 처리 *소수점첫째자리가 0.8 이상이면 올림, 미만시 내림
-		damage = FMath::Min(GetStat(ECharacterStatType::Hp), (int)damage);
-		
-		_UpdateHp(GetStat(ECharacterStatType::Hp) - damage, GetStat(ECharacterStatType::MaxHp));
-		
-		CreateDamageActor(damage);
-		
-		//================================================================
-		// 2.애니메이션 플레이 //bool 변수로 0.3초마다 애니메이션 실행
-		PlayDamagedAnim();
-
-		//================================================================
-		// 3.죽음구현
-		if (GetStat(ECharacterStatType::Hp) - damage <= 0)
-		{
-			if(auto NPC = Cast<ACharacterNPC>(this))
-			{
-				// 몬스터 처치 시 여러 기능을 실행
-				if(NPC->GetNPCType() == ENPCType::Enemy)
-				{
-					// 플레이어에게 코스트를 지급합니다.
-					ACharacterPC* playerPawn = Cast<ACharacterPC>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
-					if (playerPawn != nullptr)
-						playerPawn->ChangeStat(ECharacterStatType::Cost, GetStat(ECharacterStatType::Cost));
-					
-					auto DamageCauserPlayer = Cast<ACharacterBase>(DamageCauser);
-					// 플레이어의 경험치를 1 올림
-					if(Cast<ACharacterPC>(DamageCauser))
-					{
-						DamageCauserPlayer->ChangeStat(ECharacterStatType::Exp, 1);
-						if(DamageCauserPlayer->GetStat(ECharacterStatType::Level) != UtilLevelCal::LevelCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Exp)))
-							DamageCauserPlayer->ChangeStat(ECharacterStatType::Level, UtilLevelCal::LevelCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Exp)));
-						if(DamageCauserPlayer->GetStat(ECharacterStatType::MaxHp) != UtilLevelCal::MaxHealthCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Level)))
-							DamageCauserPlayer->ChangeStat(ECharacterStatType::MaxHp , UtilLevelCal::MaxHealthCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Level)));
-					}
-				}
-			}
-			if(auto turret = Cast<ACharacterTurret>(this))
-			{
-				//포탑 파괴 이벤트
-			}
-			//아래 주석처리한 Destroy와 레벨관리는 UStatControlComponent/SetStatDelegateFunction.163(2024.7.2)로 옮겼습니다.
-			//Destroy();
-			// 레벨관리
-			//if(ADPLevelScriptActor* level = Cast<ADPLevelScriptActor>(this->GetLevel()->GetLevelScriptActor()))
-			//  level->CheckWaveCleared();
-		}
-		ChangeStat(ECharacterStatType::Hp , -damage);
-		return damage;
-	}
-	else // DamageImmunity가 true 일 때 Damage = 0
+	//데미지 면역
+	if(DamageImmunity)
 	{
 		HandleCombatState();
 		damage = 0.f;
 		CreateDamageActor(damage);
-		PlayDamagedAnim();
-		
 		return damage;
 	}
+	//EventInstigator 가 본인일 때
+	if(EventInstigator == Controller)
+	{
+		damage = 0.f;
+		return damage;
+	}
+	
+	HandleCombatState();	// 전투상태 돌입
+	//================================================================
+	// 1.데미지 계산(공식적용|올림내림)
+	damage = (int)(damage + 0.2); // 데미지 소수점 처리 *소수점첫째자리가 0.8 이상이면 올림, 미만시 내림
+	damage = FMath::Min(GetStat(ECharacterStatType::Hp), (int)damage);
+		
+	_UpdateHp(GetStat(ECharacterStatType::Hp) - damage, GetStat(ECharacterStatType::MaxHp));
+		
+	CreateDamageActor(damage);
+		
+	//================================================================
+	// 2.애니메이션 플레이 //bool 변수로 0.3초마다 애니메이션 실행
+	PlayDamagedAnim();
+
+	//================================================================
+	// 3.죽음구현
+	if (GetStat(ECharacterStatType::Hp) - damage <= 0)
+	{
+		if(auto NPC = Cast<ACharacterNPC>(this))
+		{
+			// 몬스터 처치 시 여러 기능을 실행
+			if(NPC->GetNPCType() == ENPCType::Enemy)
+			{
+				// 플레이어에게 코스트를 지급합니다.
+				ACharacterPC* playerPawn = Cast<ACharacterPC>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+				if (playerPawn != nullptr)
+					playerPawn->ChangeStat(ECharacterStatType::Cost, GetStat(ECharacterStatType::Cost));
+					
+				auto DamageCauserPlayer = Cast<ACharacterBase>(DamageCauser);
+				// 플레이어의 경험치를 1 올림
+				if(Cast<ACharacterPC>(DamageCauser))
+				{
+					DamageCauserPlayer->ChangeStat(ECharacterStatType::Exp, 1);
+					if(DamageCauserPlayer->GetStat(ECharacterStatType::Level) != UtilLevelCal::LevelCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Exp)))
+						DamageCauserPlayer->ChangeStat(ECharacterStatType::Level, UtilLevelCal::LevelCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Exp)));
+					if(DamageCauserPlayer->GetStat(ECharacterStatType::MaxHp) != UtilLevelCal::MaxHealthCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Level)))
+						DamageCauserPlayer->ChangeStat(ECharacterStatType::MaxHp , UtilLevelCal::MaxHealthCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Level)));
+				}
+			}
+		}
+		if(auto turret = Cast<ACharacterTurret>(this))
+		{
+			//포탑 파괴 이벤트
+		}
+		//아래 주석처리한 Destroy와 레벨관리는 UStatControlComponent/SetStatDelegateFunction.163(2024.7.2)로 옮겼습니다.
+		//Destroy();
+		// 레벨관리
+		//if(ADPLevelScriptActor* level = Cast<ADPLevelScriptActor>(this->GetLevel()->GetLevelScriptActor()))
+		//  level->CheckWaveCleared();
+	}
+	ChangeStat(ECharacterStatType::Hp , -damage);
+	return damage;
 }
 
 // =============================================================

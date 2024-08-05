@@ -353,20 +353,22 @@ void UDPNavigationComponent::AddForceAlongSplinePath()
 	FVector nearestSplineLocation;	// 가장 가까운 스플라인 점의 위치
 	FRotator nearestSplineRotation;	// 가장 가까운 스플라인 점의 방향
 	FVector toSplineDir;			// 가장 가까운 스플라인 점을 향한 벡터
+	FVector nearestSplineDir;		// 가장 가까운 스플라인 점의 접선벡터
 	FVector addForceDir;			// 스플라인 위에 있을 때는 nearestSplineRotation를, 스플라인과 멀어졌을 때는 toSplineDir과 합성한 벡터를 반환
-
+	
 	FVector feetLocation = FVector(Owner->GetActorLocation().X, Owner->GetActorLocation().Y, Owner->GetActorLocation().Z - Owner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
 	float distOwnerToSplinePath = SplinePath.GetDistanceClosestToWorldLocation(feetLocation);
 	nearestSplineLocation = SplinePath.GetLocationAtDistanceAlongSpline(distOwnerToSplinePath);
 	nearestSplineRotation = SplinePath.GetRotationAtDistanceAlongSpline(distOwnerToSplinePath);
-
+	
 	toSplineDir = (nearestSplineLocation - feetLocation);
 	toSplineDir = FVector(toSplineDir.X, toSplineDir.Y, 0).GetSafeNormal();
-	addForceDir = nearestSplineRotation.Vector();
-	addForceDir = FVector(addForceDir.X, addForceDir.Y, 0).GetSafeNormal();
-	
+	nearestSplineDir = nearestSplineRotation.Vector();
+	nearestSplineDir = FVector(nearestSplineDir.X, nearestSplineDir.Y, 0).GetSafeNormal();
+
+	addForceDir = nearestSplineDir;
 	if( 50 < FVector::Dist(nearestSplineLocation, feetLocation) )
-		addForceDir = (addForceDir + toSplineDir).GetSafeNormal();
+		addForceDir = (nearestSplineDir*2 + toSplineDir).GetSafeNormal();
 
 	ForceDirection = addForceDir;
 

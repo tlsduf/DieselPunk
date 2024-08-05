@@ -90,13 +90,18 @@ public:
 	virtual void UpgradeSkill(const TMap<EAbilityType, FName>& InUpgradeSkillNames) {}
 
 	void UpdateBoxComponent();
+
+	// hp=0 일 때 내비게이션 설정 // AreaClassOverride Default
+	void BoxAreaClassOverrideChangeToDefault();
+	
+	// 포탑재건 시 내비게이션 설정 // AreaClassOverride High
+	void BoxAreaClassOverrideChangeToHigh();
 	
 	FDelegateUpgrade& GetDelegateUpgrade(){return DelegateUpgrade;}
 	
 	int32 GetGridSizeVertical() const { return GridSizeVertical; }
 	
 	int32 GetGridSizeHorizontal() const { return GridSizeHorizontal; }
-	
 	
 protected:
 	virtual void BeginPlay() override;

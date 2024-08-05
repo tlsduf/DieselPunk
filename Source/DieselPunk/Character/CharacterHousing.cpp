@@ -347,3 +347,31 @@ void ACharacterHousing::ChangeGridSizeVerticalHorizontal()
 	GridSizeHorizontal = GridSizeVertical;
 	GridSizeVertical = temp;
 }
+
+// hp=0 일 때 내비게이션 설정 // AreaClassOverride Default
+void ACharacterHousing::BoxAreaClassOverrideChangeToDefault()
+{
+	FString path = FString::Printf(TEXT("/Script/Engine.Blueprint'/Game/DieselPunk/Blueprints/AI/BP_NavArea_Default.BP_NavArea_Default_C'"));
+	UClass* navArea = LoadClass<UNavAreaBase>(nullptr, *path);
+	if(navArea == nullptr)
+	{
+		LOG_SCREEN(FColor::Red, TEXT("에셋참조 경로가 틀립니다. 함수명 : %hs"), "BoxAreaClassOverrideChangeToDefault");
+		LOG_SCREEN(FColor::Red, TEXT("에셋참조 경로가 틀립니다. 현재경로 : %s"), *path);
+		return;
+	}
+	Box->SetAreaClassOverride(navArea);
+}
+
+// 포탑재건 시 내비게이션 설정 // AreaClassOverride High
+void ACharacterHousing::BoxAreaClassOverrideChangeToHigh()
+{
+	FString path = FString::Printf(TEXT("/Script/Engine.Blueprint'/Game/DieselPunk/Blueprints/AI/BP_NavArea_High.BP_NavArea_High_C'"));
+	UClass* navArea = LoadClass<UNavAreaBase>(nullptr, *path);
+	if(navArea == nullptr)
+	{
+		LOG_SCREEN(FColor::Red, TEXT("에셋참조 경로가 틀립니다. 함수명 : %hs"), "BoxAreaClassOverrideChangeToHigh");
+		LOG_SCREEN(FColor::Red, TEXT("에셋참조 경로가 틀립니다. 현재경로 : %s"), *path);
+		return;
+	}
+	Box->SetAreaClassOverride(navArea);
+}

@@ -181,7 +181,7 @@ void ACharacterPC::Tick(float DeltaTime)
 	// 뛰는 상태인지 판별하여 MaxWalkSpeed 초기화.
 	if (IsJog)
 	{
-		GetCharacterMovement()->MaxWalkSpeed = GetStat(ECharacterStatType::MoveSpeed) * 2;
+		GetCharacterMovement()->MaxWalkSpeed = GetStat(ECharacterStatType::MoveSpeed) * JogRate;
 		SetZoomOutProp();
 		bUseControllerRotationYaw = false;	// 컨트롤러에 의한 캐릭터 yaw 회전
 		GetCharacterMovement()->bOrientRotationToMovement = true;			 // Character moves in the direction of input...

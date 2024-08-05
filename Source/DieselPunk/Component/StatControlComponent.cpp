@@ -7,6 +7,9 @@
 
 #include <GameFramework/CharacterMovementComponent.h>
 
+#include "Components/CapsuleComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "DieselPunk/Character/CharacterMonster.h"
 #include "DieselPunk/Character/CharacterTurret.h"
 #include "DieselPunk/Core/DPLevelScriptActor.h"
 #include "DieselPunk/Data/BuffDataTable.h"
@@ -114,7 +117,13 @@ void UStatControlComponent::SetStatDelegateFunction(TWeakObjectPtr<AActor> InAct
 		if(InValue <= 0)
 		{
 			ADPLevelScriptActor* level = Cast<ADPLevelScriptActor>(Owner->GetLevel()->GetLevelScriptActor());
-			Owner->Destroy();
+
+			// monster 면 랙돌 아니면 Destroy
+			if(ACharacterMonster* monster = Cast<ACharacterMonster>(Owner))
+				monster->StartRagdollAndDestroy();
+			else
+				Owner->Destroy();
+			
 			// 레벨관리
 			if(level)
 				level->CheckWaveCleared();

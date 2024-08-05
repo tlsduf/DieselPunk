@@ -50,6 +50,8 @@ protected:
 	float CachedMass = 100.f;
 
 	bool IsThrowingActor = false;
+
+	FTimerHandle DestroyTHandle;
 protected:
 	ACharacterMonster();
 	
@@ -92,4 +94,7 @@ public:
 	virtual void ThrowReady(TWeakObjectPtr<AActor> InThrowingOwner) override;
 	virtual void ThrowExecute(TWeakObjectPtr<AActor> InThrowingOwner) override;
 	virtual void ThrowComplete() override;
+
+	// Ragdoll Test
+	void StartRagdollAndDestroy();
 };

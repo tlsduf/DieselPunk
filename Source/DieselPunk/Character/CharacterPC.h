@@ -49,11 +49,13 @@ class ACharacterPC : public ACharacterBase
 
 	TWeakObjectPtr<UDecalComponent> IndicatorBase;
 	TWeakObjectPtr<UDecalComponent> Indicator;
-
-public:
+	
 	/////////////////////////////////////////////////////////////////////
 	// for movement //
-	
+private:
+	UPROPERTY(EditAnywhere, Category = "MYDP_Movement")
+	float JogRate = 2;
+public:
 	bool IsJog = false;				// w눌린상태>달리기가능   달리는상태>w때기>달리기종료
 
 	bool CanJog = true;				// Jog 가능여부
@@ -65,7 +67,6 @@ public:
 	
 	bool IsZoomed = false;					// 현재 줌인 상태인지
 	bool CanZoom = true;					// 현재 줌을 할 수 있는 상태인지 (전투상태면 줌 못함)
-	
 
 private:
 	float MyTargetArmLength = 500.0f;
