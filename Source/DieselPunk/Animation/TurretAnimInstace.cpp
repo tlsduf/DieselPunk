@@ -8,7 +8,6 @@
 
 #include "DieselPunk/Character/CharacterTurret.h"
 #include "DieselPunk/Skill/SkillNPC/NPCAttack.h"
-#include "DieselPunk/Skill/SkillNPC/ParabolaAttack.h"
 
 UTurretAnimInstace::UTurretAnimInstace(){}
 
