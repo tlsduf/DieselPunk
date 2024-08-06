@@ -51,7 +51,8 @@ void FTurretCard::_Activate(bool& OutSuccess, int32 InCost)
 	{
 		FVector traceStartLocation = Owner->GetActorLocation() + (Owner->GetActorForwardVector() * 500) + FVector(0,0,300);
 		FVector spawnLocation = UtilCollision::GetZTrace(TurretClass->GetWorld(), traceStartLocation , -1).Location;
-			
+
+		
 		FSpawnParam spawnParam;
 		spawnParam.Rotation = FRotator::ZeroRotator;
 		spawnParam.Location = spawnLocation;
@@ -71,6 +72,12 @@ void FTurretCard::_Activate(bool& OutSuccess, int32 InCost)
 	UHousingActorComponent* housingComp = Cast<UHousingActorComponent>(actor->GetComponentByClass(UHousingActorComponent::StaticClass()));
 	if(housingComp)
 		FObjectManager::GetInstance()->OnOffFloorHousingMode(true, housingComp->GetInstallableTypes());
+
+	if(-45.0 < Owner->GetActorRotation().Yaw && Owner->GetActorRotation().Yaw <= 45.0) {}
+	else if(45.0 < Owner->GetActorRotation().Yaw && Owner->GetActorRotation().Yaw <= 135.0) RotateInstallation(90.0);
+	else if(-135.0 < Owner->GetActorRotation().Yaw && Owner->GetActorRotation().Yaw <= -45.0) RotateInstallation(-90.0);
+	else RotateInstallation(180.0);
+	
 }
 
 void FTurretCard::_Cancel()
