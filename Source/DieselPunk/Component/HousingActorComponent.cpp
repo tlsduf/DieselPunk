@@ -128,7 +128,7 @@ void UHousingActorComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		FVector boxExtend = (boxGridSize * FNavigationManager::GridSize / 2);
 		boxExtend.Z = Cast<ACharacter>(GetOwner())->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 		//boxLocation.Z += boxExtend.Z;
-		DrawDebugBox(world->World(), boxLocation, boxExtend, FColor::Red, false, -1 , 0, 2);
+		//DrawDebugBox(world->World(), boxLocation, boxExtend, FColor::Red, false, -1 , 0, 2);
 
 		IsHouseable = CheckHouseable();
 		
@@ -217,7 +217,7 @@ bool UHousingActorComponent::CheckHouseable()
 	FVector grid = {gridSizeVertical, gridSizeHorizontal, 0.0};
 	FVector boxHalfExtend = (grid * FNavigationManager::GridSize / 2);
 	boxHalfExtend.Z += boxHeight;
-	boxHalfExtend = boxHalfExtend - 0.25;
+	boxHalfExtend = boxHalfExtend - 10.0;
 
 	//플레이어 충돌범위 제외
 	FCollisionQueryParams params;
@@ -227,6 +227,19 @@ bool UHousingActorComponent::CheckHouseable()
 													 location,
 													 FQuat::Identity,
 													 ECC_WorldStatic,
+													 FCollisionShape::MakeBox(boxHalfExtend),
+													 params))
+	{
+		for(const FOverlapResult& result : hitResults)
+		{
+			if(!Cast<AFloorStaticMeshActor>(result.GetActor()))
+				return false;
+		}
+	}
+	if(GetOwner()->GetWorld()->OverlapMultiByChannel(hitResults,
+													 location,
+													 FQuat::Identity,
+													 ECC_DP_CharacterMultiTrace,
 													 FCollisionShape::MakeBox(boxHalfExtend),
 													 params))
 	{

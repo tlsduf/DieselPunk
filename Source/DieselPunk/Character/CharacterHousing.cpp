@@ -151,6 +151,7 @@ void ACharacterHousing::BeginPlay()
 	}
 
 	DelegateUpgrade.AddUObject(this, &ACharacterHousing::OnHousingUpgraded);
+	UpdateBoxComponent();
 }
 
 // =============================================================
@@ -216,8 +217,6 @@ bool ACharacterHousing::CompleteHousingTurret()
 			Box->SetGenerateOverlapEvents(true);
 			Box->SetCollisionResponseToChannel(ECC_DP_CharacterMultiTrace, ECollisionResponse::ECR_Block);
 			Box->SetCanEverAffectNavigation(true);
-			Box->SetBoxExtent(FVector(GetGridSizeVertical() * FNavigationManager::GridSize / 2, GetGridSizeHorizontal() * FNavigationManager::GridSize / 2,
-				GetCapsuleComponent()->GetScaledCapsuleHalfHeight()));
 		}
 
 		// 포탑 생성완료시 사거리를 생성합니다.
