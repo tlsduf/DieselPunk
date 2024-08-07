@@ -61,3 +61,10 @@ float UPlayerSkill::GetCoolTimePercent()
 {
 	return CoolTimeHandler->GetCoolTime() / CoolTime;
 }
+
+void UPlayerSkill::SetOwnerCharacter(ACharacterBase* InCharacter)
+{
+	OwnerCharacter = InCharacter;
+	OwnerCharacterPC = Cast<ACharacterPC>(InCharacter);
+	OwnerController = OwnerCharacter->GetController();
+}

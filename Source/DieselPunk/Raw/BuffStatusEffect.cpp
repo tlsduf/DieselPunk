@@ -42,6 +42,10 @@ void FBuffStatusEffect::_ReleaseBuff()
 	{
 		character->SetBuffStatusEffectRoleType(EBuffStatusEffectRoleType::Skill, true);
 	}
+	if(ReleaseCallFunc)
+	{
+		ReleaseCallFunc(character);
+	}
 }
 
 void FBuffStatusEffect::_ApplyBuff()

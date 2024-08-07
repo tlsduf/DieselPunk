@@ -17,6 +17,7 @@ protected:
 	bool IsMove = false;
 	bool IsAttack = false;
 	bool IsSkill = false;
+	TFunction<void(AActor*)> ReleaseCallFunc = nullptr;
 	
 public:
 	FBuffStatusEffect(TWeakObjectPtr<UStatControlComponent> InOwnerComp, const FBuffDataTable* InBuffTable);
@@ -24,4 +25,6 @@ public:
 	virtual void _ReleaseBuff() override;
 protected:
 	virtual void _ApplyBuff() override;
+public:
+	FORCEINLINE void SetReleaseCallFunction(TFunction<void(AActor*)> InReleaseCallFunc){ReleaseCallFunc = InReleaseCallFunc;}
 };

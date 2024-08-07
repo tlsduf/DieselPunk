@@ -28,7 +28,7 @@ UCLASS(Blueprintable)
 class DIESELPUNK_API USkillBase : public UActorComponent
 {
 	GENERATED_BODY()
-
+	DECLARE_MULTICAST_DELEGATE(FDelegateAbilityShot)
 protected:
 	UPROPERTY()
 	ACharacterBase* OwnerCharacter = nullptr;	// 소유자
@@ -54,7 +54,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category="MYDP_Setting")
 	float MaxRange = 1000.f;
 	
-	
+	FDelegateAbilityShot DelegateAbilityShot;
 protected:
 	// Sets default values for this component's properties
 	USkillBase();
@@ -85,4 +85,5 @@ public:
 	virtual bool IsUseableSkill(const TWeakObjectPtr<AActor>& InTarget);
 
 	const ESkillDistanceType& GetSkillDistanceType() const {return SkillRangeType;}
+	FDelegateAbilityShot& GetDelegateAbilityShot(){return DelegateAbilityShot;}
 };

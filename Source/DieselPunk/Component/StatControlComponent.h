@@ -66,6 +66,8 @@ public:
 
 	void AddBuff(const FName& InBuffName);
 
+	FBuff* GetBuff(const FName& InBuffName);
+
 	//특성을 추가합니다.
 	void AddTrait(ENPCTraitType InTraitType);
 

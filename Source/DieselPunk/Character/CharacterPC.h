@@ -158,9 +158,6 @@ public:
 	//인디케이터 베이스 데칼 머터리얼
 	TWeakObjectPtr<UMaterialInterface> IndicatorBaseMaterial;
 
-	UPROPERTY(EditDefaultsOnly, Category="MYDP_Weapon")
-	TSubclassOf<AWeapon> DefaultWeapon;
-
 	TObjectPtr<AWeapon> Weapon;
 
 	TWeakObjectPtr<UPlayerSkill> CurrentCachedSkill = nullptr;
@@ -308,6 +305,7 @@ public:
 	void OnPossessWeapon(AWeapon* InWeapon);
 
 	TWeakObjectPtr<UPlayerSkill> GetCurrentCachedSkill() {return CurrentCachedSkill;}
+	void EndCurrentCachedSkill(){CurrentCachedSkill = nullptr;}
 
 public:
 	virtual void AbilityShot(double InDamageCoefficient) override;

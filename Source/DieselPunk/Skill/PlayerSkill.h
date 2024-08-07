@@ -63,6 +63,8 @@ public:
 	virtual float GetCoolTime();
 
 	virtual float GetCoolTimePercent();
+
+	void SetOwnerCharacter(ACharacterBase* InCharacter);
 };
 
 

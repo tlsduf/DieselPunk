@@ -61,6 +61,8 @@ void USkillBase::AbilityStart(AActor* InTarget)
 void USkillBase::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 {
 	CoolDownDelta = CoolDown;
+	if(DelegateAbilityShot.IsBound())
+		DelegateAbilityShot.Broadcast();
 }
 
 // CharacterBase의 Stat.Initialize 후 호출

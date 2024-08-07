@@ -148,27 +148,16 @@ void ACharacterPC::BeginPlay()
 		It.Value->InitSkill();
 	}
 
-	if(DefaultWeapon)
+	TArray<AActor*> childActors;
+	GetAllChildActors(childActors);
+	for(AActor* actor : childActors)
 	{
-		FSpawnParam spawnParam;
-		spawnParam.Location = FVector::ZeroVector;
-		spawnParam.Rotation = FRotator::ZeroRotator;
-		TWeakObjectPtr<ACharacterBase> thisPtr = this;
-		spawnParam.CallBackSpawn = [thisPtr](AActor* InActor)
+		if(AWeapon* weapon = Cast<AWeapon>(actor))
 		{
-			if(InActor != nullptr)
-			{
-				AWeapon* weapon = Cast<AWeapon>(InActor);
-				if(weapon == nullptr)
-					return;
-				weapon->SetOwnerPlayer(thisPtr.Get());
-			}
-		};
-		int32 weaponId = FObjectManager::GetInstance()->CreateActor<AWeapon>(DefaultWeapon, spawnParam);
-		AActor* actor = FObjectManager::GetInstance()->FindActor(weaponId);
-		if(actor == nullptr)
-			return;
-		Weapon = Cast<AWeapon>(actor);
+			Weapon = weapon;
+			Weapon->SetOwnerPlayer(this);
+			break;
+		}
 	}
 }
 
@@ -539,16 +528,27 @@ void ACharacterPC::SkillStarted(const EAbilityType inAbilityType)
 
 	if(inAbilityType != EAbilityType::MouseLM && !CanSkill)
 		return;
-	
-	if(Skills.Find(inAbilityType) != nullptr)
-		if (Skills[inAbilityType]->CanActivateAbility() && !GetOtherSkillActivating(inAbilityType))
+	if(inAbilityType == EAbilityType::MouseLM || inAbilityType == EAbilityType::MouseRM)
+	{
+		if(Weapon->CanActivateAbility(inAbilityType) && !GetOtherSkillActivating(inAbilityType))
 		{
-			if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
-			{
-				ability->SkillStarted();
-				CurrentCachedSkill = Skills[inAbilityType];
-			}
+			if(inAbilityType != EAbilityType::Shift)
+				HandleCombatState();
+			Weapon->SkillStarted(inAbilityType, CurrentCachedSkill);
 		}
+	}
+	else
+	{
+		if(Skills.Find(inAbilityType) != nullptr)
+			if (Skills[inAbilityType]->CanActivateAbility() && !GetOtherSkillActivating(inAbilityType))
+			{
+				if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
+				{
+					ability->SkillStarted();
+					CurrentCachedSkill = Skills[inAbilityType];
+				}
+			}
+	}
 }
 void ACharacterPC::SkillOngoing(const EAbilityType inAbilityType)
 {
@@ -572,18 +572,30 @@ void ACharacterPC::SkillTriggered(const EAbilityType inAbilityType)
 
 	if(inAbilityType != EAbilityType::MouseLM && !CanSkill)
 		return;
-	
-	if(Skills.Find(inAbilityType) != nullptr)
-		if (Skills[inAbilityType]->CanActivateAbility() && !GetOtherSkillActivating(inAbilityType))
+
+	if(inAbilityType == EAbilityType::MouseLM || inAbilityType == EAbilityType::MouseRM)
+	{
+		if(Weapon->CanActivateAbility(inAbilityType) && !GetOtherSkillActivating(inAbilityType))
 		{
 			if(inAbilityType != EAbilityType::Shift)
 				HandleCombatState();
-			if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
-			{
-				ability->SkillTriggered();
-				CurrentCachedSkill = Skills[inAbilityType];
-			}
+			Weapon->SkillTriggered(inAbilityType, CurrentCachedSkill);
 		}
+	}
+	else
+	{
+		if(Skills.Find(inAbilityType) != nullptr)
+			if (Skills[inAbilityType]->CanActivateAbility() && !GetOtherSkillActivating(inAbilityType))
+			{
+				if(inAbilityType != EAbilityType::Shift)
+					HandleCombatState();
+				if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
+				{
+					ability->SkillTriggered();
+					CurrentCachedSkill = Skills[inAbilityType];
+				}
+			}
+	}
 }
 void ACharacterPC::SkillCompleted(const EAbilityType inAbilityType)
 {

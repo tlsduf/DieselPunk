@@ -228,6 +228,14 @@ void UStatControlComponent::AddBuff(const FName& InBuffName)
 	}
 }
 
+FBuff* UStatControlComponent::GetBuff(const FName& InBuffName)
+{
+	FBuff** buffPtr = Buffs.Find(InBuffName);
+	if(buffPtr && *buffPtr)
+		return *buffPtr;
+	return nullptr;
+}
+
 void UStatControlComponent::AddTrait(ENPCTraitType InTraitType)
 {
 	if(InTraitType == ENPCTraitType::None)
