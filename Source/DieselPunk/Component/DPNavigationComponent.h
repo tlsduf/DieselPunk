@@ -10,6 +10,9 @@
 
 class ACharacterBase;
 
+constexpr int AddForce_ScaleValue = 100;	//Character 에게 AddForce를 해줄 노말벡터에 곱해지는 스케일값
+constexpr int JOIN_DIST = 50;	// 경로에 합류하는 거리
+constexpr int RESearch_DIST = 500;	// 경로를 재탐색하는 거리
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DIESELPUNK_API UDPNavigationComponent : public UActorComponent
@@ -53,12 +56,15 @@ public:
 	// 스플라인 경로를 따라가게 AddForce 해줍니다.
 	void AddForceAlongSplinePath();
 	
-	// 스플라인 경로를 따라가게 MoveTo 해줍니다.
+	// 스플라인 경로를 따라가게 MoveTo 해줍니다.(Unreal AI-MoveTo사용)
 	FVector MoveToAlongSplinePath();
 
 	// 경로 DrawDebug
 	void DrawDebugSpline();
 
+	//액터와 가장 가까운 스플라인의 점 사이의 거리를 반환합니다.
+	bool bFarAwayActorToSpline();
+	
 	FVector GetForceDirection(){return ForceDirection;}
 
 public:	

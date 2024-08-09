@@ -124,7 +124,7 @@ void AProjectileSkillActorBase::ApplyRadialDamage()
 			{
 				for (auto it = sweepResults.CreateIterator(); it; it++)
 				{
-					UGameplayStatics::ApplyDamage(it->GetActor(), Damage * info.Value, OwnerController.Get(), OwnerCharacter.Get(), nullptr);
+					UGameplayStatics::ApplyDamage(it->GetActor(), Damage * info.Value, OwnerController.Get(), this, nullptr);
 				}
 			}
 		}

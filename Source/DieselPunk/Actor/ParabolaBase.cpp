@@ -141,7 +141,7 @@ void AParabolaBase::DestroyEvent()
 	{
 		for (auto it = sweepResults.CreateIterator(); it; it++)
 		{
-			UGameplayStatics::ApplyDamage(it->GetActor(), Damage, OwnerController.Get(), OwnerCharacter.Get(), nullptr);
+			UGameplayStatics::ApplyDamage(it->GetActor(), Damage, OwnerController.Get(), this, nullptr);
 		}
 	}
 	TArray<FHitResult> sweepSecondResults;
@@ -157,7 +157,7 @@ void AParabolaBase::DestroyEvent()
 			}) != nullptr)
 				continue;
 			
-			UGameplayStatics::ApplyDamage(it->GetActor(), Damage * 0.5f, OwnerController.Get(), OwnerCharacter.Get(), nullptr);
+			UGameplayStatics::ApplyDamage(it->GetActor(), Damage * 0.5f, OwnerController.Get(), this, nullptr);
 		}
 	}
 }

@@ -115,7 +115,7 @@ void UNPCAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 				}
 			}
 		}
-		UGameplayStatics::ApplyDamage(InTarget, Damage * InDamageCoefficient, OwnerController, ownerPawn, nullptr);
+		UGameplayStatics::ApplyDamage(InTarget, Damage * InDamageCoefficient, OwnerController, nullptr, nullptr);
 	}
 	else if(ProjectileType == EProjectileType::Straight)
 	{
@@ -240,14 +240,14 @@ void UNPCAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 				if(ownerPawn->GetCharacterType() == ECharacterType::Player || ownerPawn->GetCharacterType() == ECharacterType::Turret)
 				{
 					if(charBase->GetCharacterType() == ECharacterType::Monster)
-						UGameplayStatics::ApplyDamage(charBase, Damage * InDamageCoefficient, OwnerController, ownerPawn, nullptr);
+						UGameplayStatics::ApplyDamage(charBase, Damage * InDamageCoefficient, OwnerController, nullptr, nullptr);
 				}
 				else if(ownerPawn->GetCharacterType() == ECharacterType::Monster)
 				{
 					if(charBase->GetCharacterType() == ECharacterType::Player
 					|| charBase->GetCharacterType() == ECharacterType::Turret
 					|| charBase->GetCharacterType() == ECharacterType::Installation)
-						UGameplayStatics::ApplyDamage(charBase, Damage * InDamageCoefficient, OwnerController, ownerPawn, nullptr);
+						UGameplayStatics::ApplyDamage(charBase, Damage * InDamageCoefficient, OwnerController, nullptr, nullptr);
 				}
 			}
 		}
@@ -286,7 +286,7 @@ void UNPCAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 	
 				for(const FOverlapResult& result : filterResults)
 				{
-					UGameplayStatics::ApplyDamage(result.GetActor(), Damage * InDamageCoefficient, OwnerController, ownerPawn, nullptr);
+					UGameplayStatics::ApplyDamage(result.GetActor(), Damage * InDamageCoefficient, OwnerController, nullptr, nullptr);
 					// Hit Effect
 					FEffectTransform hitET;
 					hitET.Location = HitEffectTransform.Location + result.GetActor()->GetActorLocation();
@@ -331,7 +331,7 @@ void UNPCAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 	
 				for(const FOverlapResult& result : filterResults)
 				{
-					UGameplayStatics::ApplyDamage(result.GetActor(), Damage * InDamageCoefficient, OwnerController, ownerPawn, nullptr);
+					UGameplayStatics::ApplyDamage(result.GetActor(), Damage * InDamageCoefficient, OwnerController, nullptr, nullptr);
 					// Hit Effect
 					FEffectTransform hitET;
 					hitET.Location = HitEffectTransform.Location + result.GetActor()->GetActorLocation();
@@ -386,7 +386,7 @@ void UNPCAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 	
 				for(const FOverlapResult& result : filterResults)
 				{
-					UGameplayStatics::ApplyDamage(result.GetActor(), Damage * InDamageCoefficient, OwnerController, ownerPawn, nullptr);
+					UGameplayStatics::ApplyDamage(result.GetActor(), Damage * InDamageCoefficient, OwnerController, nullptr, nullptr);
 					// Hit Effect
 					FEffectTransform hitET;
 					hitET.Location = HitEffectTransform.Location + result.GetActor()->GetActorLocation();
@@ -425,7 +425,7 @@ void UNPCAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 		}
 	
 		
-		UGameplayStatics::ApplyDamage(InTarget, Damage, OwnerController, ownerPawn, nullptr);
+		UGameplayStatics::ApplyDamage(InTarget, Damage, OwnerController, nullptr, nullptr);
 	}
 }
 

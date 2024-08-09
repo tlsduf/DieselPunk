@@ -115,7 +115,6 @@ protected:
 	void HandleStatusUI();
 
 	void FindUseableAbilityType();
-
 public:
 	// 포탑의 사각형 탐색범위를 생성합니다. 
 	void MakeSearchArea();

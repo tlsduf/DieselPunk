@@ -357,7 +357,7 @@ void UDPNavigationComponent::AddForceAlongSplinePath()
 	FVector addForceDir;			// 스플라인 위에 있을 때는 nearestSplineRotation를, 스플라인과 멀어졌을 때는 toSplineDir과 합성한 벡터를 반환
 	
 	FVector feetLocation = FVector(Owner->GetActorLocation().X, Owner->GetActorLocation().Y, Owner->GetActorLocation().Z - Owner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
-	float distOwnerToSplinePath = SplinePath.GetDistanceClosestToWorldLocation(feetLocation);
+	float distOwnerToSplinePath = SplinePath.GetDistanceClosestPointToWorldLocation(feetLocation);
 	nearestSplineLocation = SplinePath.GetLocationAtDistanceAlongSpline(distOwnerToSplinePath);
 	nearestSplineRotation = SplinePath.GetRotationAtDistanceAlongSpline(distOwnerToSplinePath);
 	
@@ -367,13 +367,12 @@ void UDPNavigationComponent::AddForceAlongSplinePath()
 	nearestSplineDir = FVector(nearestSplineDir.X, nearestSplineDir.Y, 0).GetSafeNormal();
 
 	addForceDir = nearestSplineDir;
-	if( 50 < FVector::Dist(nearestSplineLocation, feetLocation) )
+	if( JOIN_DIST < FVector::Dist(nearestSplineLocation, feetLocation) )
 		addForceDir = (nearestSplineDir*2 + toSplineDir).GetSafeNormal();
 
 	ForceDirection = addForceDir;
-
-	constexpr int scaleValue = 100;
-	Owner->AddMovementInput(addForceDir, scaleValue);
+	
+	Owner->AddMovementInput(addForceDir, AddForce_ScaleValue);
 
 	if(Owner->GetDebugOnOff())
 		DrawDebugDirectionalArrow(GetWorld(), Owner->GetActorLocation(), Owner->GetActorLocation() + addForceDir * 200, 5, FColor::Red, false);
@@ -392,7 +391,7 @@ FVector UDPNavigationComponent::MoveToAlongSplinePath()
 	FVector dest;					// 캐릭터의 Move 목표위치
 	FVector feetLocation = FVector(Owner->GetActorLocation().X, Owner->GetActorLocation().Y, Owner->GetActorLocation().Z - Owner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
 	
-	float distOwnerToSplinePath = SplinePath.GetDistanceClosestToWorldLocation(Owner->GetActorLocation());
+	float distOwnerToSplinePath = SplinePath.GetDistanceClosestPointToWorldLocation(Owner->GetActorLocation());
 	nearestSplineLocation = SplinePath.GetLocationAtDistanceAlongSpline(distOwnerToSplinePath);
 	nearestSplineRotation = SplinePath.GetRotationAtDistanceAlongSpline(distOwnerToSplinePath);
 	dest = nearestSplineLocation + nearestSplineRotation.Vector().GetSafeNormal() * 500;
@@ -441,4 +440,21 @@ void UDPNavigationComponent::DrawDebugSpline()
 
 	// dest 위치
 	//DrawDebugPoint(GetWorld(), AddForceAlongSplinePath(), 25, FColor::Black, false, -1);
+}
+
+//액터와 가장 가까운 스플라인의 점 사이의 거리를 반환합니다.
+bool UDPNavigationComponent::bFarAwayActorToSpline()
+{
+	if(!Owner.IsValid())
+		return false;
+	
+	if(!SplinePath.IsValid())
+		return false;
+	
+	FVector feetLocation = FVector(Owner->GetActorLocation().X, Owner->GetActorLocation().Y, Owner->GetActorLocation().Z - Owner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+	float distOwnerToSplinePath = SplinePath.GetDistanceClosestPointToWorldLocation(feetLocation);
+	FVector nearestSplineLocation = SplinePath.GetLocationAtDistanceAlongSpline(distOwnerToSplinePath);
+	if(FVector::Dist(nearestSplineLocation, feetLocation) >= RESearch_DIST)
+		return true;
+	return false;
 }

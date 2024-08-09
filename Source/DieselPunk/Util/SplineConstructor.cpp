@@ -89,7 +89,7 @@ FRotator FSplinePath::GetRotationAtDistanceAlongSpline(float Distance)
 }
 
 // 주어진 월드 위치(InWorldLocation)로부터 가장 가까운 Spline Distance 리턴
-float FSplinePath::GetDistanceClosestToWorldLocation(const FVector& InWorldLocation) const
+float FSplinePath::GetDistanceClosestPointToWorldLocation(const FVector& InWorldLocation) const
 {
 	const FVector LocalLocation = Transform.InverseTransformPosition(InWorldLocation);
 	float Dummy;

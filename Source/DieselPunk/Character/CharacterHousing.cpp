@@ -223,6 +223,7 @@ bool ACharacterHousing::CompleteHousingTurret()
 		if(auto turret = Cast<ACharacterTurret>(this))
 		{
 			turret->InitializeForwardVector();
+			// 탐색범위타입이 Rectangle일 경우, 사각형 탐색범위를 생성합니다.
 			turret->MakeSearchArea();
 		}
 		

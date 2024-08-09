@@ -33,6 +33,6 @@ public:
 	FVector GetLocationAtDistanceAlongSpline(float Distance);
 	FRotator GetRotationAtDistanceAlongSpline(float Distance);
 
-	// 주어진 월드 위치(InWorldLocation)로부터 가장 가까운 Spline Distance 리턴
-	float GetDistanceClosestToWorldLocation(const FVector& InWorldLocation) const;
+	// 주어진 월드 위치(InWorldLocation)로부터 가장 가까운 점의 Spline Distance 리턴
+	float GetDistanceClosestPointToWorldLocation(const FVector& InWorldLocation) const;
 };

@@ -4,6 +4,7 @@
 
 #include "Weapon.h"
 #include "../Character/CharacterBase.h"
+#include "GameFramework/Controller.h"
 
 
 // =============================================================

@@ -102,7 +102,7 @@ void AThrowableActor::ThrowComplete()
 					if(hitCharacter->GetCharacterType() == ECharacterType::Monster)
 					{
 						//데미지 처리, CC기 처리
-						UGameplayStatics::ApplyDamage(hitCharacter, Damage, charThrowing->GetController(), charThrowing, nullptr);
+						UGameplayStatics::ApplyDamage(hitCharacter, Damage, charThrowing->GetController(), this, nullptr);
 						for(const FName& name : BuffNames)
 							hitCharacter->GetStatControlComponent()->AddBuff(name);
 					}
@@ -114,7 +114,7 @@ void AThrowableActor::ThrowComplete()
 						|| charThrowing->GetCharacterType() == ECharacterType::Installation)
 					{
 						//데미지 처리, CC기 처리
-						UGameplayStatics::ApplyDamage(hitCharacter, Damage, charThrowing->GetController(), charThrowing, nullptr);
+						UGameplayStatics::ApplyDamage(hitCharacter, Damage, charThrowing->GetController(), this, nullptr);
 						for(const FName& name : BuffNames)
 							hitCharacter->GetStatControlComponent()->AddBuff(name);
 					}

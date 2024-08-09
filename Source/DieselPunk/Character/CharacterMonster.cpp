@@ -43,6 +43,7 @@ void ACharacterMonster::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	OriginForwardVector = GetActorForwardVector();
+	UpdateSplineWhenFarAwayFromSpline(DeltaTime);
 }
 
 // =============================================================
@@ -60,7 +61,7 @@ void ACharacterMonster::SetTarget()
 	// 타겟 업데이트
 	UpdateEnemyTarget();	// 몬스터 타겟 업데이트
 	SetInRange();	// 타겟 위치에 따른 조건 업데이트
-	MakeSearchArea();
+	MakeSearchArea();	// 탐색범위타입이 Rectangle일 경우, 사각형 탐색범위를 생성합니다.
 	if(DebugOnOff)
 		DrawDebugPoint(GetWorld(), NowGoalLoc, 30, FColor::Orange, false);
 
@@ -139,51 +140,16 @@ bool ACharacterMonster::bPlayerTargeting()
 	if(Player == nullptr)
 		return false;
 
-	FVector playerLoc = Player->GetActorLocation();
-	FVector playerLocXY = FVector(playerLoc.X, playerLoc.Y, GetActorLocation().Z);
-
-	const int rangeMax = GetStat(ECharacterStatType::AtkMaxRange);
-	const int rangeMin = GetStat(ECharacterStatType::AtkMinRange);
-	const int rangeDist = rangeMax - rangeMin;
 	// DrawDebug
 	if(DebugOnOff)
-	{
-		DrawDebugCircleArc(GetWorld(), GetActorLocation(), rangeMax, GetActorForwardVector(), 0.523, 8, FColor::Red, false);
-		DrawDebugCircleArc(GetWorld(), GetActorLocation(), rangeMin, GetActorForwardVector(), 0.523, 8, FColor::Red, false);
-		FVector rightVector = (GetActorForwardVector().GetSafeNormal().Rotation() + FRotator(0, 30, 0)).Vector().GetSafeNormal();
-		FVector leftVector = (GetActorForwardVector().GetSafeNormal().Rotation() - FRotator(0, 30, 0)).Vector().GetSafeNormal();
-		DrawDebugLine(GetWorld(), GetActorLocation() + rightVector * rangeMin, GetActorLocation() + rightVector * rangeDist, FColor::Red, false);
-		DrawDebugLine(GetWorld(), GetActorLocation() + rightVector * rangeMin, GetActorLocation() + leftVector * rangeDist, FColor::Red, false);
-	}
-
+		DrawDebugSearchArea();
+	
+	FVector playerLoc = Player->GetActorLocation();
+	FVector playerLocXY = FVector(playerLoc.X, playerLoc.Y, GetActorLocation().Z);
+	
 	bool inRange = InValidSearchArea(playerLoc);
 	if(!inRange)
 		return inRange;
-
-	
-	//// 플레이어가 유효 사거리 안에 위치
-	////const int range = 1500;
-	//bool inRange = FVector::Dist(GetActorLocation(), playerLoc) <= rangeMax;
-	//inRange = inRange && FVector::Dist(GetActorLocation(), playerLoc) >= rangeMin;
-	//if(!inRange)
-	//	return inRange;
-//
-	//// 유효 수직 거리안에 위치
-	//const int zRange = 300;
-	//auto zDif = abs(playerLoc.Z - GetActorLocation().Z);
-	//bool inZRange = (zDif <= zRange);
-	//if(!inZRange)
-	//	return inZRange;
-	//
-	//// 플레이어가 유효 각도 안에 위치
-	//float forwardDir = GetActorForwardVector().GetSafeNormal().Rotation().Yaw;
-	//float toTargetDir = (playerLocXY - GetActorLocation()).GetSafeNormal().Rotation().Yaw;
-	//bool inDegree = ( -SearchPlayerDEGREE < (forwardDir - toTargetDir) ) && ( (forwardDir - toTargetDir) < SearchPlayerDEGREE );
-	//if(!inDegree)
-	//	return inDegree;
-	//
-	//// 플레이어가 유효 공간 안에 위치
-	//// TODO
 	
 	// 플레이와 몬스터 사이에 벽이나 포탑 있는지 탐색
 	TArray<FHitResult> hits;
@@ -366,6 +332,19 @@ void ACharacterMonster::__UpdateSplinePath()
 	DPNavigationComponent->MakeSplinePath();
 }
 
+// 경로에서 멀리 벗어났을 때 1마다 경로를 갱신합니다.(Tick함수)
+void ACharacterMonster::UpdateSplineWhenFarAwayFromSpline(float DeltaTime)
+{
+	if(!DPNavigationComponent->bFarAwayActorToSpline())
+		return;
+	
+	elapsedTime += DeltaTime;
+	if(elapsedTime >= 1.f)
+	{
+		elapsedTime = 0.f;
+		UpdateSplinePath();
+	}
+}
 
 void ACharacterMonster::ThrowReady(TWeakObjectPtr<AActor> InThrowingOwner)
 {

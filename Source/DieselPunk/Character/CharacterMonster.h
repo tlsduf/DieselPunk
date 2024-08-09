@@ -32,6 +32,7 @@ class DIESELPUNK_API ACharacterMonster : public ACharacterNPC, public IThrowable
 	FTimerHandle PathTHandle1;
 	FTimerHandle PathTHandle2;
 	FTimerHandle PathTHandle3;
+	FTimerHandle DestroyTHandle;
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "MYDP_Navi", meta = (AllowPrivateAccess = "true"))
@@ -51,7 +52,9 @@ protected:
 
 	bool IsThrowingActor = false;
 
-	FTimerHandle DestroyTHandle;
+	//[임시] 1초마다 UpdateSplinePath()발동용
+	float elapsedTime = 0.f;
+	
 protected:
 	ACharacterMonster();
 	
@@ -89,7 +92,9 @@ public:
 	void UpdateSplinePath();
 	void _UpdateSplinePath();
 	void __UpdateSplinePath();
-
+	// 경로에서 멀리 벗어났을 때 경로를 갱신합니다.
+	void UpdateSplineWhenFarAwayFromSpline(float DeltaTime);
+	
 	//Throwable Interface
 	virtual void ThrowReady(TWeakObjectPtr<AActor> InThrowingOwner) override;
 	virtual void ThrowExecute(TWeakObjectPtr<AActor> InThrowingOwner) override;

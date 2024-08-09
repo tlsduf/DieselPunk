@@ -19,6 +19,7 @@
 #include "Animation/AnimMontage.h"
 #include "ColorManagement/Public/ColorManagementDefines.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(CharacterBase)
@@ -184,6 +185,11 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 		//  level->CheckWaveCleared();
 	}
 	ChangeStat(ECharacterStatType::Hp , -damage);
+	
+	//랙돌 Impulse
+	if(GetStat(ECharacterStatType::Hp) <= 0)
+		RagdollImpulse(DamageAmount, EventInstigator, DamageCauser);
+	
 	return damage;
 }
 
@@ -354,4 +360,26 @@ void ACharacterBase::SetBuffStatusEffectRoleType(EBuffStatusEffectRoleType InBuf
 		CanAttack = InCan;
 	else if(InBuffStatusEffectRolType == EBuffStatusEffectRoleType::Skill)
 		CanSkill = InCan;
+}
+
+void ACharacterBase::RagdollImpulse(float DamageAmount, AController *EventInstigator, AActor *DamageCauser)
+{
+	//플레이어와 몬스터일 경우에만 Impulse
+	if(CharacterType == ECharacterType::None || CharacterType == ECharacterType::Turret || CharacterType == ECharacterType::Installation)
+		return;
+	
+	if(DamageCauser == nullptr)
+	{
+		//DamageCauser == nullptr << 액터를 이용한 공격이 아니다
+		FVector impulse = FVector( GetActorLocation() - EventInstigator->GetCharacter()->GetActorLocation() ).GetSafeNormal();
+		impulse = impulse * 5000;
+		GetMesh()->AddImpulse(impulse, NAME_None ,true);
+	}
+	else
+	{
+		//DamageCause /= nullptr << 투사체나 액터를 이용한 공격
+		FVector impulse = FVector( GetActorLocation() - DamageCauser->GetActorLocation() ).GetSafeNormal();
+		impulse = impulse * 5000;
+		GetMesh()->AddImpulse(impulse, NAME_None ,true);
+	}
 }

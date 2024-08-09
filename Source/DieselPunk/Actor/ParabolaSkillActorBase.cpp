@@ -120,7 +120,7 @@ void AParabolaSkillActorBase::_OnHit(UPrimitiveComponent* InHitComp, AActor* InO
 		if(Cast<AWeapon>(GetOwner()) == nullptr || InOtherActor != Cast<AWeapon>(GetOwner())->GetOwnerPlayer())
 		{
 			if(RadialAttackInfos.IsEmpty())
-				UGameplayStatics::ApplyDamage(InOtherActor, Damage, OwnerController.Get(), OwnerCharacter.Get(), nullptr);
+				UGameplayStatics::ApplyDamage(InOtherActor, Damage, OwnerController.Get(), this, nullptr);
 			else
 				ApplyRadialDamage();
 		}
@@ -153,7 +153,7 @@ void AParabolaSkillActorBase::_BeginOverlapEvent(UPrimitiveComponent* InOverlapp
 		if(Cast<AWeapon>(GetOwner()) == nullptr || InOtherActor != Cast<AWeapon>(GetOwner())->GetOwnerPlayer())
 		{
 			if(RadialAttackInfos.IsEmpty())
-				UGameplayStatics::ApplyDamage(InOtherActor, Damage, OwnerController.Get(), OwnerCharacter.Get(), nullptr);
+				UGameplayStatics::ApplyDamage(InOtherActor, Damage, OwnerController.Get(), this, nullptr);
 			else
 				ApplyRadialDamage();
 		}

@@ -47,51 +47,6 @@ void UBTService_Update_Enemy::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 
     else
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("IsTargetPlayer"), false);
     
-
-    /*
-    UWorld* world = GetWorld();
-    if(world == nullptr)
-        return;
-	
-    //사거리 내에 있는가?
-    TWeakObjectPtr<AActor> target = AICharacter->GetAttackTarget();
-    FVector dist = FVector::ZeroVector;
-    if(target.IsValid())
-        dist = target->GetActorLocation() - AICharacter->GetActorLocation();
-    else
-    {
-        target = FObjectManager::GetInstance()->GetNexus();
-        if(target == nullptr)
-            return;
-		
-        dist = target->GetActorLocation() - AICharacter->GetActorLocation();
-    }
-    if(dist.Length() <= AICharacter->GetStat().GetStat(ECharacterStatType::AttackRange))
-    {
-        //라인트레이싱에 성공했는가
-        TArray<FHitResult> hit;
-        FVector start = AICharacter->GetActorLocation();
-        FVector end = target->GetActorLocation();
-
-        FCollisionQueryParams params;
-        params.AddIgnoredActor(AICharacter);
-    
-        //가장 가까운 라인트레이싱의 액터가 공격 대상인지 확인
-        if(world->LineTraceMultiByChannel(hit, start, end, ECollisionChannel::ECC_WorldStatic, params))
-        {
-            hit.Sort([](const FHitResult& lhs, const FHitResult& rhs)
-            {
-                return lhs.Distance < rhs.Distance;
-            });
-    
-            OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("IsAbleAttack"), (hit[0].GetActor() == target));
-        }
-        else
-            OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("IsAbleAttack"), false);
-    }
-    else
-        OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("IsAbleAttack"), false);*/
-    
     // 몬스터와 목표의 거리에 따른 조건 설정
     if(AICharacter->GetInRange())
         OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("InRange"), true);

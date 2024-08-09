@@ -127,6 +127,9 @@ public:
 	/////////////////////////////////////////////////////////////////////
 	// for UI // Animation //
 
+	// 랙돌 Impulse
+	void RagdollImpulse(float DamageAmount, AController *EventInstigator, AActor *DamageCauser);
+	
 	// Damaged 애니메이션 플레이 //bool 변수로 0.3초마다 애니메이션 실행
 	void PlayDamagedAnim();
 	
