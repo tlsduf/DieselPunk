@@ -6,6 +6,7 @@
 #include "../UserWidgetBase.h"
 #include "DPHud.generated.h"
 
+class UHudFadeCanvas;
 class UInteractInstallation;
 /**
  * HUD UI 클래스입니다.
@@ -17,6 +18,9 @@ class DIESELPUNK_API UDPHud : public UUserWidgetBase
 protected:
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
 	UInteractInstallation* InteractionUI = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+	UHudFadeCanvas* HudFadeCanvas = nullptr;
 
 public:
 	virtual void OnCreated() override;

@@ -3,12 +3,14 @@
 
 #include "DPHud.h"
 
+#include "HudFadeCanvas.h"
 #include "InteractInstallation.h"
 
 void UDPHud::OnCreated()
 {
 	Super::OnCreated();
 	InteractionUI->SetVisibility(ESlateVisibility::Hidden);
+	HudFadeCanvas->InitUIVisibility(0);
 }
 
 void UDPHud::SetViewInteractionUI(bool InView)
