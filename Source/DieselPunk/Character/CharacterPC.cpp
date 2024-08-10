@@ -528,7 +528,7 @@ void ACharacterPC::SkillStarted(const EAbilityType inAbilityType)
 
 	if(inAbilityType != EAbilityType::MouseLM && !CanSkill)
 		return;
-	if(inAbilityType == EAbilityType::MouseLM || inAbilityType == EAbilityType::MouseRM)
+	if((inAbilityType == EAbilityType::MouseLM || inAbilityType == EAbilityType::MouseRM) && !UseCard)
 	{
 		if(Weapon->CanActivateAbility(inAbilityType) && !GetOtherSkillActivating(inAbilityType))
 		{
@@ -573,7 +573,7 @@ void ACharacterPC::SkillTriggered(const EAbilityType inAbilityType)
 	if(inAbilityType != EAbilityType::MouseLM && !CanSkill)
 		return;
 
-	if(inAbilityType == EAbilityType::MouseLM || inAbilityType == EAbilityType::MouseRM)
+	if((inAbilityType == EAbilityType::MouseLM || inAbilityType == EAbilityType::MouseRM) && !UseCard)
 	{
 		if(Weapon->CanActivateAbility(inAbilityType) && !GetOtherSkillActivating(inAbilityType))
 		{
@@ -609,7 +609,7 @@ void ACharacterPC::SkillCompleted(const EAbilityType inAbilityType)
 		if(USoldierAnimInstance* soldierAnimInst = Cast<USoldierAnimInstance>(GetMesh()->GetAnimInstance()))
 			soldierAnimInst->AttackEndSign();
 	
-	if(Skills.Find(inAbilityType) != nullptr)
+	if(Skills.Find(inAbilityType) != nullptr && !UseCard)
 		if (Skills[inAbilityType]->CanActivateAbility() && !GetOtherSkillActivating(inAbilityType))
 		{
 			if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
@@ -777,6 +777,7 @@ void ACharacterPC::BindSkillUseCard()
 	if(Skills.Find(EAbilityType::MouseLM) != nullptr)
 		Skills[EAbilityType::MouseLM] = CardSkill;
 	CardSkill->SkillStarted();
+	UseCard = true;
 }
 
 void ACharacterPC::UnBindSkillUseCard()
@@ -794,6 +795,8 @@ void ACharacterPC::UnBindSkillUseCard()
 		DelegateCardComplete.Unbind();
 	if(DelegateRotateInstallation.IsBound())
 		DelegateRotateInstallation.Unbind();
+
+	UseCard = false;
 }
 
 bool ACharacterPC::CardSkillIsExpectedUnBind()
