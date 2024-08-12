@@ -54,7 +54,7 @@ protected:
 
 	// OwnerType : Player or Enemy // 주인 타입
 	UPROPERTY(EditAnywhere, Category = "MYDP_CollisionType")
-	ECausorType ProjectileOwnerType = ECausorType::Player;
+	ECharacterType ProjectileOwnerType = ECharacterType::Player;
 	
 	// =================================================================================================
 	// 데미지 및 범위 공격관련
@@ -171,4 +171,5 @@ public:
 	// Getter, Setter //
 	void SetDamage(const float& inDamage) { Damage = inDamage; }
 	void SetSplinePath(const FSplinePath& inSplinePath ) { SplinePath = inSplinePath; }
+	const ECharacterType& GetProjectileOwnerType() const {return ProjectileOwnerType;}
 };

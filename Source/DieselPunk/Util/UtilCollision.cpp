@@ -20,7 +20,7 @@
 	 * @param inDebugOnOff : 디버그캡슐의 Draw를 결정하는 bool변수입니다.
 	 */
 // =============================================================
-void UtilCollision::CapsuleSweepMulti(UWorld* inWorld, TArray<FHitResult>& OutHitResults, const FVector& inStartLocation, const FVector& inEndLocation, const float& inCapsuleRadius, ECausorType inCausorType, bool inDebugOnOff)
+void UtilCollision::CapsuleSweepMulti(UWorld* inWorld, TArray<FHitResult>& OutHitResults, const FVector& inStartLocation, const FVector& inEndLocation, const float& inCapsuleRadius, ECharacterType inCausorType, bool inDebugOnOff)
 {
 	FCollisionQueryParams params;
 	inWorld->SweepMultiByChannel(
@@ -28,7 +28,7 @@ void UtilCollision::CapsuleSweepMulti(UWorld* inWorld, TArray<FHitResult>& OutHi
 		inStartLocation,
 		inEndLocation,
 		FQuat::Identity,
-		(inCausorType == ECausorType::Player) ? ECC_DP_PlayerChannel : ECC_DP_EnemyChannel,
+		(inCausorType == ECharacterType::Player) ? ECC_DP_PlayerChannel : ECC_DP_EnemyChannel,
 		FCollisionShape::MakeSphere(inCapsuleRadius),
 		params);
 	

@@ -85,7 +85,10 @@ void FObjectManager::DestroyActor(AActor* InActor)
 	}
 
 	if(removeObjectId == INVALID_OBJECTID)
+	{
+		InActor->Destroy();
 		return;
+	}
 
 	if(ACharacterTurret* turret = Cast<ACharacterTurret>(InActor))
 		UpdateSplinePathAllEnemy();
@@ -398,7 +401,7 @@ void FObjectManager::UpdateSplinePathAllEnemy()
 	FindActorArrayByPredicate(monstersIDs, [](AActor* InActor)
 	{
 		if(auto npc = Cast<ACharacterMonster>(InActor))
-			if(npc->GetNPCType() == ENPCType::Enemy)
+			if(npc->GetCharacterType() == ECharacterType::Monster)
 				return true;
 		return false;
 	});

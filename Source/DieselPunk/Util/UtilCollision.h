@@ -34,7 +34,7 @@ class UWorld;
 namespace UtilCollision
 {
 	// 전방으로 캡슐스윕을 해 히트정보를 받아온다
-	void CapsuleSweepMulti(UWorld* inWorld, TArray<FHitResult>& OutHitResults, const FVector& inStartLocation, const FVector& inEndLocation, const float& inCapsuleRadius, ECausorType inCausorType, bool inDebugOnOff);
+	void CapsuleSweepMulti(UWorld* inWorld, TArray<FHitResult>& OutHitResults, const FVector& inStartLocation, const FVector& inEndLocation, const float& inCapsuleRadius, ECharacterType inCausorType, bool inDebugOnOff);
 
 	// 전방으로 라인트레이스를 해 히트정보를 받아온다
 	FHitResult LineTraceForward(UWorld* inWorld, AActor *inOwner, float inAttackRange, bool inDebugOnOff);

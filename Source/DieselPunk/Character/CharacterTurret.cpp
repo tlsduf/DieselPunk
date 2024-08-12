@@ -105,7 +105,7 @@ void ACharacterTurret::SetTarget()
 			FObjectManager::GetInstance()->FindActorArrayByPredicate(outActors, [](AActor* InActor)
 			{
 				if(ACharacterNPC* thisNPC = Cast<ACharacterNPC>(InActor))
-					if(thisNPC->GetNPCType() == ENPCType::Enemy)
+					if(thisNPC->GetCharacterType() == ECharacterType::Monster)
 						return true;
 				return false;
 			});
@@ -117,7 +117,7 @@ void ACharacterTurret::SetTarget()
 				if(ACharacterNPC* thisNPC = Cast<ACharacterNPC>(InActor))
 				{
 					//공중 유닛은 제외하고 대상 찾기
-					if(thisNPC->GetNPCType() == ENPCType::Enemy && !thisNPC->GetStatControlComponent()->IsTrait(ENPCTraitType::Fly))
+					if(thisNPC->GetCharacterType() == ECharacterType::Monster && !thisNPC->GetStatControlComponent()->IsTrait(ENPCTraitType::Fly))
 						return true;
 				}
 				return false;
@@ -194,7 +194,7 @@ bool ACharacterTurret::IsOverWall(FVector inLocation)
 	FObjectManager::GetInstance()->FindActorArrayByPredicate(turretsIDs, [](AActor* InActor)
 	{
 		if(auto turret = Cast<ACharacterTurret>(InActor))
-			if(turret->NPCType == ENPCType::Alliance)
+			if(turret->GetCharacterType() != ECharacterType::Monster)
 				return true;
 		return false;
 	});

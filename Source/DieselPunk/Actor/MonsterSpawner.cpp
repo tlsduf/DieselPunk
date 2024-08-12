@@ -111,12 +111,13 @@ void AMonsterSpawner::StartSpawn(const FString& InWaveModuleName)
 // =============================================================
 // 생성한 몬스터 중 Destroy된 액터 삭제
 // =============================================================
-void AMonsterSpawner::RemoveDeadNPCFromArray()
+void AMonsterSpawner::RemoveDeadNPCFromSpawnedMonsterID()
 {
 	for(TArray<int32>::TIterator iterId{SpawnedMonsterID.CreateIterator()}; iterId; ++iterId)
 	{
-		if(FObjectManager::GetInstance()->FindActor(*iterId) == nullptr)
-			iterId.RemoveCurrent();
+		if(FObjectManager::GetInstance()->FindActor(*iterId))
+			if(Cast<ACharacterBase>(FObjectManager::GetInstance()->FindActor(*iterId))->GetStat(ECharacterStatType::Hp) <= 0)
+				iterId.RemoveCurrent();
 	}
 }
 

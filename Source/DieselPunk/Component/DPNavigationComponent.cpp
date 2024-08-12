@@ -136,7 +136,7 @@ int32 UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGo
 	FObjectManager::GetInstance()->FindActorArrayByPredicate(monstersIDs, [](AActor* InActor)
 	{
 		if(auto npc = Cast<ACharacterNPC>(InActor))
-			if(npc->GetNPCType() == ENPCType::Enemy)
+			if(npc->GetCharacterType() == ECharacterType::Monster)
 				return true;
 		return false;
 	});
@@ -147,7 +147,7 @@ int32 UDPNavigationComponent::UpdatePath(FVector inGoalLoc, TArray<FVector> inGo
 	FObjectManager::GetInstance()->FindActorArrayByPredicate(DestroyedTurretIDs, [](AActor* InActor)
 	{
 		if(auto turret = Cast<ACharacterTurret>(InActor))
-			if((turret->GetNPCType() == ENPCType::Alliance) && (turret->GetStat(ECharacterStatType::Hp) <= 0))
+			if((turret->GetCharacterType() != ECharacterType::Monster) && (turret->GetStat(ECharacterStatType::Hp) <= 0))
 				return true;
 		return false;
 	});
@@ -252,7 +252,7 @@ int32 UDPNavigationComponent::GetTurretIdOnPath()
 	FObjectManager::GetInstance()->FindActorArrayByPredicate(monstersIDs, [](AActor* InActor)
 	{
 		if(auto npc = Cast<ACharacterNPC>(InActor))
-			if(npc->GetNPCType() == ENPCType::Enemy)
+			if(npc->GetCharacterType() == ECharacterType::Monster)
 				return true;
 		return false;
 	});
@@ -263,7 +263,7 @@ int32 UDPNavigationComponent::GetTurretIdOnPath()
 	FObjectManager::GetInstance()->FindActorArrayByPredicate(DestroyedTurretIDs, [](AActor* InActor)
 	{
 		if(auto turret = Cast<ACharacterTurret>(InActor))
-			if((turret->GetNPCType() == ENPCType::Alliance) && (turret->GetStat(ECharacterStatType::Hp) <= 0))
+			if((turret->GetCharacterType() != ECharacterType::Monster) && (turret->GetStat(ECharacterStatType::Hp) <= 0))
 				return true;
 		return false;
 	});

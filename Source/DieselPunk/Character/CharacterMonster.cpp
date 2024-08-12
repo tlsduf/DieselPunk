@@ -159,7 +159,7 @@ bool ACharacterMonster::bPlayerTargeting()
 	FObjectManager::GetInstance()->FindActorArrayByPredicate(monstersIDs, [](AActor* InActor)
 	{
 		if(auto npc = Cast<ACharacterNPC>(InActor))
-			if(npc->GetNPCType() == ENPCType::Enemy)
+			if(npc->GetCharacterType() == ECharacterType::Monster)
 				return true;
 		return false;
 	});
@@ -296,7 +296,7 @@ void ACharacterMonster::UpdateEnemyGoalLoc()
 void ACharacterMonster::UpdateSplinePath()
 {
 	LOG_SCREEN(FColor::Red, TEXT("경로 재탐색"))
-	if(NPCType != ENPCType::Enemy)
+	if(GetCharacterType() != ECharacterType::Monster)
 		return;
 	if(DPNavigationComponent == nullptr)
 		return;

@@ -65,7 +65,7 @@ struct DIESELPUNK_API FProjectileSkillActorDataTable : public FDPTableRowBase
 
 	//주인 타입
 	UPROPERTY(EditAnywhere, Category="MYDP_Data")
-	ECausorType ProjectileOwnerType = ECausorType::Player;
+	ECharacterType ProjectileOwnerType = ECharacterType::Player;
 
 	//범위공격(사거리, 데미지 배수)
 	UPROPERTY(EditAnywhere, Category="MYDP_Data")

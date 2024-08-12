@@ -119,7 +119,7 @@ void AProjectileSkillActorBase::ApplyRadialDamage()
 			FVector endLocation = startLocation;
 			if(OwnerCharacter->GetDebugOnOff())
 				DrawDebugSphere(GetWorld(), startLocation, info.Key, 16, FColor::Red, false, 3, 0, 1);
-			UtilCollision::CapsuleSweepMulti(GetWorld(), sweepResults, startLocation, endLocation, info.Key, ProjectileOwnerType, DebugOnOff);
+			UtilCollision::CapsuleSweepMulti(GetWorld(), sweepResults, startLocation, endLocation, info.Key, GetProjectileOwnerType(), DebugOnOff);
 			if(!sweepResults.IsEmpty())
 			{
 				for (auto it = sweepResults.CreateIterator(); it; it++)
@@ -175,7 +175,7 @@ void AProjectileSkillActorBase::SetCapsuleCollisionResponses()
 	// 모든 반응 Ignore로 초기화하고 시작
 	CapsuleComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 
-	if(ProjectileOwnerType == ECausorType::Player)
+	if(GetProjectileOwnerType() == ECharacterType::Player)
 	{
 		CapsuleComponent->SetCollisionObjectType(ECC_DP_ProjectilePlayer);
 		if(CollisionResponses == ECollisionResponsesType::OnHit)
@@ -205,7 +205,7 @@ void AProjectileSkillActorBase::SetCapsuleCollisionResponses()
 			CapsuleComponent->SetCollisionResponseToChannel(ECC_DP_Enemy, ECollisionResponse::ECR_Overlap);
 		}
 	}
-	else if(ProjectileOwnerType == ECausorType::Enemy)
+	else if(GetProjectileOwnerType() == ECharacterType::Monster)
 	{
 		CapsuleComponent->SetCollisionObjectType(ECC_DP_ProjectileEnemy);
 		if(CollisionResponses == ECollisionResponsesType::OnHit)

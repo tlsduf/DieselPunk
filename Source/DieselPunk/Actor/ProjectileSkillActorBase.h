@@ -76,7 +76,7 @@ protected:
 	FName ProjectileSkillActorName = NAME_None;
 
 	//주인 타입
-	ECausorType ProjectileOwnerType = ECausorType::Player;
+	ECharacterType ProjectileOwnerType = ECharacterType::Player;
 
 	//범위공격(사거리, 데미지 배수)
 	TMap<float, float> RadialAttackInfos;
@@ -152,4 +152,5 @@ public:
 	FORCEINLINE void SetProjectileSkillActorName(const FName& InProjectileSkillActorName){ProjectileSkillActorName = InProjectileSkillActorName;}
 	FORCEINLINE void SetDamage(float InDamage){Damage = InDamage;}
 	FORCEINLINE void SetMaxRange(float InMaxRange){MaxRange = InMaxRange;}
+	const ECharacterType& GetProjectileOwnerType() const {return ProjectileOwnerType;}
 };

@@ -96,12 +96,12 @@ void AMineBase::_BeginOverlapEvent(UPrimitiveComponent* InOverlappedComponent, A
 	bool InbFromSweep, const FHitResult & InSweepResult)
 {
 	//움직이지 않는 물체이면 주인에 따라 오버랩 시킬 지 확인
-	if(ProjectileOwnerType == ECausorType::Player)
+	if(GetProjectileOwnerType() == ECharacterType::Player)
 	{
 		if(Cast<ACharacterNPC>(InOtherActor) == nullptr && Cast<ACharacterTurret>(InOtherActor) == nullptr)
 			return;
 	}
-	else if (ProjectileOwnerType == ECausorType::Enemy)
+	else if (GetProjectileOwnerType() == ECharacterType::Monster)
 	{
 		if(Cast<ACharacterPC>(InOtherActor) == nullptr && Cast<ACharacterTurret>(InOtherActor) == nullptr)
 			return;
@@ -126,7 +126,7 @@ void AMineBase::_BeginOverlapEvent(UPrimitiveComponent* InOverlappedComponent, A
 			TArray<FHitResult> sweepResults;
 			FVector startLocation = GetActorLocation() + GetActorForwardVector() * AttackStartPoint;
 			FVector endLocation = startLocation + GetActorForwardVector() * AttackRange;
-			UtilCollision::CapsuleSweepMulti(GetWorld(), sweepResults, startLocation, endLocation, AttackRadius, ProjectileOwnerType, DebugOnOff);
+			UtilCollision::CapsuleSweepMulti(GetWorld(), sweepResults, startLocation, endLocation, AttackRadius, GetProjectileOwnerType(), DebugOnOff);
 			if(!sweepResults.IsEmpty())
 			{
 				for (auto It = sweepResults.CreateIterator(); It; It++)
@@ -154,7 +154,7 @@ void AMineBase::SetCapsuleCollisionResponses()
 	// 모든 반응 Ignore로 초기화하고 시작
 	BoxComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 
-	if(ProjectileOwnerType == ECausorType::Player)
+	if(GetProjectileOwnerType() == ECharacterType::Player)
 	{
 		BoxComponent->SetCollisionObjectType(ECC_DP_ProjectilePlayer);
 		
@@ -170,7 +170,7 @@ void AMineBase::SetCapsuleCollisionResponses()
 		BoxComponent->SetCollisionResponseToChannel(ECC_DP_Enemy, ECollisionResponse::ECR_Overlap);
 		
 	}
-	else if(ProjectileOwnerType == ECausorType::Enemy)
+	else if(GetProjectileOwnerType() == ECharacterType::Monster)
 	{
 		BoxComponent->SetCollisionObjectType(ECC_DP_ProjectileEnemy);
 		

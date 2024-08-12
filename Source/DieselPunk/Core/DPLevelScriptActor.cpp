@@ -123,10 +123,9 @@ void ADPLevelScriptActor::CheckWaveCleared()
 	bool isWaveCleared = true;
 	for(auto ID : MonsterSpawnerIDs)
 	{
-		AMonsterSpawner* monsterSpawner = Cast<AMonsterSpawner>(FObjectManager::GetInstance()->FindActor(ID));
-		if(monsterSpawner)
+		if(AMonsterSpawner* monsterSpawner = Cast<AMonsterSpawner>(FObjectManager::GetInstance()->FindActor(ID)))
 		{
-			monsterSpawner->RemoveDeadNPCFromArray();
+			monsterSpawner->RemoveDeadNPCFromSpawnedMonsterID();
 			isWaveCleared = (isWaveCleared && monsterSpawner->IsWaveCleared());
 		}
 	}
@@ -159,13 +158,13 @@ void ADPLevelScriptActor::BindStartWave()
 		if(GetWorld()->GetTimerManager().IsTimerActive(WaveTHandle))
 		{
 			GetWorld()->GetTimerManager().ClearTimer(WaveTHandle);
-			StartWave();
+			_StartWave();
 			return;
 		}
 		TWeakObjectPtr<ADPLevelScriptActor> thisPtr = this;
 		GetWorld()->GetTimerManager().SetTimer(WaveTHandle, [thisPtr](){
 				if(thisPtr.IsValid())
-					thisPtr->StartWave();
+					thisPtr->_StartWave();
 			},StageInfo[WaveIndex].DefconTime, false);
 	}
 }
@@ -183,7 +182,7 @@ void ADPLevelScriptActor::CallStartWave()
 		return;
 	
 	if( !StageInfo[WaveIndex].bDefconUse)
-		StartWave();
+		_StartWave();
 }
 
 // =============================================================
@@ -232,7 +231,7 @@ void ADPLevelScriptActor::ChangeReciveDecal()
 // =============================================================
 // 각 스포너들의 웨이브를 실행합니다. [TODO] 스포너 이름
 // =============================================================
-void ADPLevelScriptActor::StartWave()
+void ADPLevelScriptActor::_StartWave()
 {
 	if(StageInfo.Num() <= WaveIndex)
 		return;

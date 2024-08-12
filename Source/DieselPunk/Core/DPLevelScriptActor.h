@@ -62,7 +62,7 @@ private:
 	void SetStageWaveInfo();
 
 	// 각 스포너들의 웨이브를 실행합니다.
-	void StartWave();
+	void _StartWave();
 	
 public:
 	// 웨이브가 클리어됐는지 확인하고, 클리어되면 특정 함수들을 실행합니다.

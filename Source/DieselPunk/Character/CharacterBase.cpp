@@ -152,29 +152,25 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 	// 3.죽음구현
 	if (GetStat(ECharacterStatType::Hp) - damage <= 0)
 	{
-		if(auto NPC = Cast<ACharacterNPC>(this))
+		if(GetCharacterType() == ECharacterType::Monster)
 		{
-			// 몬스터 처치 시 여러 기능을 실행
-			if(NPC->GetNPCType() == ENPCType::Enemy)
-			{
-				// 플레이어에게 코스트를 지급합니다.
-				ACharacterPC* playerPawn = Cast<ACharacterPC>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
-				if (playerPawn != nullptr)
-					playerPawn->ChangeStat(ECharacterStatType::Cost, GetStat(ECharacterStatType::Cost));
+			// 플레이어에게 코스트를 지급합니다.
+			ACharacterPC* playerPawn = Cast<ACharacterPC>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+			if (playerPawn != nullptr)
+				playerPawn->ChangeStat(ECharacterStatType::Cost, GetStat(ECharacterStatType::Cost));
 					
-				auto DamageCauserPlayer = Cast<ACharacterBase>(DamageCauser);
-				// 플레이어의 경험치를 1 올림
-				if(Cast<ACharacterPC>(DamageCauser))
-				{
-					DamageCauserPlayer->ChangeStat(ECharacterStatType::Exp, 1);
-					if(DamageCauserPlayer->GetStat(ECharacterStatType::Level) != UtilLevelCal::LevelCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Exp)))
-						DamageCauserPlayer->ChangeStat(ECharacterStatType::Level, UtilLevelCal::LevelCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Exp)));
-					if(DamageCauserPlayer->GetStat(ECharacterStatType::MaxHp) != UtilLevelCal::MaxHealthCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Level)))
-						DamageCauserPlayer->ChangeStat(ECharacterStatType::MaxHp , UtilLevelCal::MaxHealthCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Level)));
-				}
+			auto DamageCauserPlayer = Cast<ACharacterBase>(DamageCauser);
+			// 플레이어의 경험치를 1 올림
+			if(Cast<ACharacterPC>(DamageCauser))
+			{
+				DamageCauserPlayer->ChangeStat(ECharacterStatType::Exp, 1);
+				if(DamageCauserPlayer->GetStat(ECharacterStatType::Level) != UtilLevelCal::LevelCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Exp)))
+					DamageCauserPlayer->ChangeStat(ECharacterStatType::Level, UtilLevelCal::LevelCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Exp)));
+				if(DamageCauserPlayer->GetStat(ECharacterStatType::MaxHp) != UtilLevelCal::MaxHealthCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Level)))
+					DamageCauserPlayer->ChangeStat(ECharacterStatType::MaxHp , UtilLevelCal::MaxHealthCalc(DamageCauserPlayer->GetStat(ECharacterStatType::Level)));
 			}
 		}
-		if(auto turret = Cast<ACharacterTurret>(this))
+		if(GetCharacterType() == ECharacterType::Turret)
 		{
 			//포탑 파괴 이벤트
 		}
@@ -365,7 +361,7 @@ void ACharacterBase::SetBuffStatusEffectRoleType(EBuffStatusEffectRoleType InBuf
 void ACharacterBase::RagdollImpulse(float DamageAmount, AController *EventInstigator, AActor *DamageCauser)
 {
 	//플레이어와 몬스터일 경우에만 Impulse
-	if(CharacterType == ECharacterType::None || CharacterType == ECharacterType::Turret || CharacterType == ECharacterType::Installation)
+	if(GetCharacterType() == ECharacterType::None || GetCharacterType() == ECharacterType::Turret || GetCharacterType() == ECharacterType::Installation)
 		return;
 	
 	if(DamageCauser == nullptr)

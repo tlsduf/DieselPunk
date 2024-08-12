@@ -136,7 +136,7 @@ void AParabolaBase::DestroyEvent()
 		DrawDebugSphere(GetWorld(), startLocation, SecondRadialDamageRange, 16, FColor::Yellow, false, 3, 0, 1);
 	}
 	
-	UtilCollision::CapsuleSweepMulti(GetWorld(), sweepResults, startLocation, endLocation, FirstRadialDamageRange, ProjectileOwnerType, DebugOnOff);
+	UtilCollision::CapsuleSweepMulti(GetWorld(), sweepResults, startLocation, endLocation, FirstRadialDamageRange, GetProjectileOwnerType(), DebugOnOff);
 	if(!sweepResults.IsEmpty())
 	{
 		for (auto it = sweepResults.CreateIterator(); it; it++)
@@ -145,7 +145,7 @@ void AParabolaBase::DestroyEvent()
 		}
 	}
 	TArray<FHitResult> sweepSecondResults;
-	UtilCollision::CapsuleSweepMulti(GetWorld(), sweepSecondResults, startLocation, endLocation, SecondRadialDamageRange, ProjectileOwnerType, DebugOnOff);
+	UtilCollision::CapsuleSweepMulti(GetWorld(), sweepSecondResults, startLocation, endLocation, SecondRadialDamageRange, GetProjectileOwnerType(), DebugOnOff);
 	if(!sweepSecondResults.IsEmpty())
 	{
 		for (auto it = sweepSecondResults.CreateIterator(); it; it++)
@@ -251,7 +251,7 @@ void AParabolaBase::SetCapsuleCollisionResponses()
 	// 모든 반응 Ignore로 초기화하고 시작
 	CapsuleComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 
-	if(ProjectileOwnerType == ECausorType::Player)
+	if(GetProjectileOwnerType() == ECharacterType::Player)
 	{
 		CapsuleComponent->SetCollisionObjectType(ECC_DP_ProjectilePlayer);
 		if(CollisionResponses == ECollisionResponsesType::OnHit)
@@ -281,7 +281,7 @@ void AParabolaBase::SetCapsuleCollisionResponses()
 			CapsuleComponent->SetCollisionResponseToChannel(ECC_DP_Enemy, ECollisionResponse::ECR_Overlap);
 		}
 	}
-	else if(ProjectileOwnerType == ECausorType::Enemy)
+	else if(GetProjectileOwnerType() == ECharacterType::Monster)
 	{
 		CapsuleComponent->SetCollisionObjectType(ECC_DP_ProjectileEnemy);
 		if(CollisionResponses == ECollisionResponsesType::OnHit)

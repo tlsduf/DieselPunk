@@ -101,7 +101,7 @@ public:
 	void StartSpawn(const FString& InWaveModuleName);
 
 	//생성한 몬스터 중 Destroy된 액터 삭제
-	void RemoveDeadNPCFromArray();
+	void RemoveDeadNPCFromSpawnedMonsterID();
 	
 	// 스포너가 소환한 몬스터가 다 파괴되었는지를 반환합니다.
 	bool IsWaveCleared() const { return SpawnInfo.IsEmpty() && SpawnedMonsterID.IsEmpty(); }

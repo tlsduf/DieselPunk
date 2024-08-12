@@ -32,22 +32,7 @@ enum class ECollisionResponsesType : uint8
 	None        UMETA( ToolTip = "n초 뒤 파괴" )
 };
 
-// 투사체 종류 Player or Enemy
-UENUM( BlueprintType )
-enum class ECausorType : uint8
-{
-	Player		UMETA( ToolTip = "플레이어" ),
-	Enemy		UMETA( ToolTip = "적" )
-};
 
-// 아군NPC 적군NPC
-UENUM( BlueprintType )
-enum class ENPCType : uint8
-{
-	Enemy		UMETA( ToolTip = "적" ),
-	Alliance	UMETA( ToolTip = "동맹" ),
-	Nexus		UMETA( ToolTip = "넥서스" )
-};
 
 // 데이터 테이블 종류
 UENUM( BlueprintType )
@@ -155,6 +140,15 @@ enum class EEffectPlayType : uint8
 	Walk	UMETA( ToolTip = "걸을 때 마다"),
 	Shot	UMETA( ToolTip = "발사체를 쏠 때 마다"),
 	None,
+};
+
+// 아군NPC 적군NPC
+UENUM( BlueprintType )
+enum class ENPCType : uint8
+{
+	Enemy		UMETA( ToolTip = "적" ),
+	Alliance	UMETA( ToolTip = "동맹" ),
+	Nexus		UMETA( ToolTip = "넥서스" )
 };
 
 // 스탯 버프 대상 타입
