@@ -12,6 +12,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "DieselPunk/Component/StatControlComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "CharacterNexus.h"
 
 
 // =============================================================

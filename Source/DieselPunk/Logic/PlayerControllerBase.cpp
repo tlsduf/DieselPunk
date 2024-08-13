@@ -56,7 +56,7 @@ void APlayerControllerBase::BeginPlay()
 	// 시작 메뉴 생성
 	if(StartMenuClass)
 	{
-		StartMenuId = FUIManager::GetInstance()->CreateWidgetBase(StartMenuClass, TEXT("StartMenu"));
+		StartMenuId = FUIManager::GetInstance()->CreateWidgetBase(StartMenuClass, TEXT("StartMenu"), GetCharacter());
 		StartMenu = Cast<UDpStartMenu>(FindWidgetBase(StartMenuId).Get());
 	}
 	if(StartMenu)
@@ -68,7 +68,7 @@ void APlayerControllerBase::BeginPlay()
 	// HUD 생성
 	if(HUDClass)
 	{
-		HUDId = FUIManager::GetInstance()->CreateWidgetBase(HUDClass, TEXT("HUD"));
+		HUDId = FUIManager::GetInstance()->CreateWidgetBase(HUDClass, TEXT("HUD"), GetCharacter());
 		HUD = Cast<UDPHud>(FindWidgetBase(HUDId).Get());
 	}
 	if (HUD)
@@ -303,7 +303,7 @@ void APlayerControllerBase::OpenCloseDeckInterface()
 		if(!DeckInterfaceClass)
 			return;
 		
-		DeckInterface = Cast<UDeck>(FindWidgetBase(FUIManager::GetInstance()->CreateWidgetBase(DeckInterfaceClass, TEXT("DeckInterface"))));
+		DeckInterface = Cast<UDeck>(FindWidgetBase(FUIManager::GetInstance()->CreateWidgetBase(DeckInterfaceClass, TEXT("DeckInterface"), GetCharacter())));
 		if(!DeckInterface)
 			return;
 		

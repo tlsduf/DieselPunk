@@ -40,12 +40,12 @@ TWeakObjectPtr<UUserWidgetBase> FUIManager::GetWidgetBase(int32 InKey)
 	return nullptr;
 }
 
-int32 FUIManager::CreateWidgetBase(FString InAdditionalFilePath, FString InFileName, FString InWidgetName, UUserWidgetBase* InOwningObject)
+int32 FUIManager::CreateWidgetBase(FString InAdditionalFilePath, FString InFileName, FString InWidgetName, AActor* InOwner, UUserWidgetBase* InOwningObject)
 {
-	return CreateWidgetBase(LoadClass<UUserWidgetBase>(nullptr, *UtilPath::GetUIDetailPath(*InAdditionalFilePath, *InFileName)), InWidgetName, InOwningObject);
+	return CreateWidgetBase(LoadClass<UUserWidgetBase>(nullptr, *UtilPath::GetUIDetailPath(*InAdditionalFilePath, *InFileName)), InWidgetName, InOwner, InOwningObject);
 }
 
-int32 FUIManager::CreateWidgetBase(UClass* InClass, FString InWidgetName, UUserWidgetBase* InOwningObject)
+int32 FUIManager::CreateWidgetBase(UClass* InClass, FString InWidgetName, AActor* InOwner, UUserWidgetBase* InOwningObject)
 {
 	UUserWidgetBase* widget = nullptr;
 	
@@ -56,7 +56,8 @@ int32 FUIManager::CreateWidgetBase(UClass* InClass, FString InWidgetName, UUserW
 
 	if(widget == nullptr)
 		return WIDGET_CREATE_FAILED;
-
+	
+	widget->SetOwner(InOwner);
 	widget->OnCreated();
 
 	int32 key = Key++;

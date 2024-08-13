@@ -160,6 +160,7 @@ enum class ECharacterType : uint8
 	Monster = 2			UMETA( ToolTip = "몬스터" ),
 	Turret = 4			UMETA( ToolTip = "터렛" ),
 	Installation = 8	UMETA( ToolTip = "설치물" ),
+	Nexus = 16			UMETA( ToolTip = "넥서스" )
 };
 
 // 총괄 범위타입 원 파생, 사각형 파생

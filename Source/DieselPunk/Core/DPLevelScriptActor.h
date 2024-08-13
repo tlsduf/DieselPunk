@@ -26,6 +26,9 @@ class DIESELPUNK_API ADPLevelScriptActor : public ALevelScriptActor
 {
 	GENERATED_BODY()
 
+	//웨이브가 시작했을 때 브로드캐스트하는 델리게이트 입니다. 순서대로 현재 웨이브 단계, 총 웨이브 단계, 이번 웨이브에 스폰될 몬스터 갯수입니다.
+	DECLARE_MULTICAST_DELEGATE_ThreeParams(FDelegateStartWave, int32, int32, int32)
+
 	UPROPERTY(EditAnywhere, Category = "MYDP_Setting")
 	FString StageName = TEXT("DefaultStageName");			// 스테이지 이름 (임시)
 
@@ -39,7 +42,9 @@ class DIESELPUNK_API ADPLevelScriptActor : public ALevelScriptActor
 
 	bool bPlayingWave = false;			// 웨이브가 진행 중인지
 	
-	int32 WaveIndex = 0;				// 0부터 StageInfo.Num() 까지 
+	int32 WaveIndex = 0;				// 0부터 StageInfo.Num() 까지
+
+	FDelegateStartWave DelegateStartWave;
 	
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -83,6 +88,10 @@ public:
 	
 	const TArray<int32>& GetMonsterSpawnerIDs() { return MonsterSpawnerIDs; }
 	const TArray<int32>& GetPathRouterIDs() { return PathRouterIDs; }
+
+	FDelegateStartWave& GetDelegateStartWave(){return DelegateStartWave;}
+
+	const TArray<int32>& GetMonsterSpawnerIds(){return MonsterSpawnerIDs;}
 
 public:
 	void ChangeReciveDecal();

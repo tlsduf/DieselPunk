@@ -14,6 +14,8 @@ UCLASS()
 class DIESELPUNK_API UUserWidgetBase : public UUserWidget
 {
 	GENERATED_BODY()
+protected:
+	TWeakObjectPtr<AActor> Owner = nullptr;
 public:
 	UWidget* operator[](const TCHAR* InWidgetName);
 
@@ -23,4 +25,6 @@ public:
 
 	// 생성시 호출해줘야되는 함수
 	virtual void OnCreated();
+
+	FORCEINLINE void SetOwner(AActor* InOwner){Owner = InOwner;}
 };

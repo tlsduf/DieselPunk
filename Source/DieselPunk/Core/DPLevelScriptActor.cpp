@@ -13,6 +13,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "DieselPunk/Actor/FloorStaticMeshActor.h"
+#include "DieselPunk/Data/WaveModuleDataTable.h"
 
 
 //생성자
@@ -244,5 +245,18 @@ void ADPLevelScriptActor::_StartWave()
 		if(monsterSpawner && monsterSpawner->IsSpawnComplete() && monsterSpawner->IsWaveCleared())
 			monsterSpawner->StartSpawn(StageInfo[WaveIndex].WaveModuleInfoID[i]);
 	}
+
+	int32 count = 0;
+	for(const FString& waveName : StageInfo[WaveIndex].WaveModuleInfoID)
+	{
+		const FWaveModuleDataTable* moduleInfo = FDataTableManager::GetInstance()->GetData<FWaveModuleDataTable>(EDataTableType::WaveModule, waveName);
+		if(!moduleInfo)
+			continue;
+
+		for(const FWaveModuleInfo& waveInfo : moduleInfo->WaveModuleInfo)
+			count += waveInfo.bDoRep ? waveInfo.SpawnCount * waveInfo.Reps : waveInfo.SpawnCount;
+	}
+
+	DelegateStartWave.Broadcast(WaveIndex, StageInfo.Num(), count);
 }
 

@@ -19,8 +19,8 @@ private:
 public:
 	void SetController(APlayerController* InController){Controller = InController;}
 	TWeakObjectPtr<UUserWidgetBase> GetWidgetBase(int32 InKey);
-	int32 CreateWidgetBase(FString InAdditionalFilePath, FString InFileName, FString InWidgetName, UUserWidgetBase* InOwningObject = nullptr);
-	int32 CreateWidgetBase(UClass* InClass, FString InWidgetName, UUserWidgetBase* InOwningObject = nullptr);
+	int32 CreateWidgetBase(FString InAdditionalFilePath, FString InFileName, FString InWidgetName, AActor* InOwner, UUserWidgetBase* InOwningObject = nullptr);
+	int32 CreateWidgetBase(UClass* InClass, FString InWidgetName, AActor* InOwner, UUserWidgetBase* InOwningObject = nullptr);
 };
 
 #define FindWidgetBase(InKey) FUIManager::GetInstance()->GetWidgetBase(InKey)

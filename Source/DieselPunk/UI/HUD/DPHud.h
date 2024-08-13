@@ -8,6 +8,8 @@
 
 class UHudFadeCanvas;
 class UInteractInstallation;
+class UProgressBar;
+class UTextBlock;
 /**
  * HUD UI 클래스입니다.
  */
@@ -21,11 +23,36 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
 	UHudFadeCanvas* HudFadeCanvas = nullptr;
+	
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+	UProgressBar* DieselCoreHpBar = nullptr;
 
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+	UTextBlock* CurrentWaveText = nullptr;
+	
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+	UTextBlock* MaxWaveText = nullptr;
+	
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+	UTextBlock* CurrentMonsterText = nullptr;
+	
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+	UTextBlock* MaxMonsterText = nullptr;
+
+	int32 DieselCoreHp = 0;
+	int32 DieselCoreMaxHp = 0;
 public:
 	virtual void OnCreated() override;
 	
 	void SetViewInteractionUI(bool InView);
 
 	void SelectedInteractionUI(bool InSelected);
+
+	void OnWaveStarted(int32 InCurrentWaveIndex, int32 InMaxWaveCount, int32 InMaxMonster);
+
+	void OnMonsterInSpawnerDead();
+
+	void InitDieselCoreHpBar(int32 InHp, int32 InMaxHp);
+
+	void OnStatChanged(TWeakObjectPtr<AActor> InActor, ECharacterStatType InCharacterType, int32 InValue);
 };

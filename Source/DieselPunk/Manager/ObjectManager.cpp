@@ -12,6 +12,7 @@
 
 #include "DieselPunk/Actor/FloorStaticMeshActor.h"
 #include "DieselPunk/Character/CharacterMonster.h"
+#include "DieselPunk/Character/CharacterNexus.h"
 #include "DieselPunk/Character/CharacterTurret.h"
 
 
@@ -255,7 +256,7 @@ ACharacterPC* FObjectManager::GetPlayer()
 	return Player.Get();
 }
 
-ACharacterNPC* FObjectManager::GetNexus()
+ACharacterNexus* FObjectManager::GetNexus()
 {
 	if(Nexus.IsValid())
 		return Nexus.Get();
@@ -264,8 +265,8 @@ ACharacterNPC* FObjectManager::GetNexus()
 	{
 		if(object.Value.IsValid())
 		{
-			ACharacterNPC* nexus = Cast<ACharacterNPC>(object.Value);
-			if(nexus != nullptr && nexus->GetNPCType() == ENPCType::Nexus)
+			ACharacterNexus* nexus = Cast<ACharacterNexus>(object.Value);
+			if(nexus)
 			{
 				Nexus = nexus;
 				return Nexus.Get();

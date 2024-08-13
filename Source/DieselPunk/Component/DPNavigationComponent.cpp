@@ -5,6 +5,7 @@
 #include "../Character/CharacterBase.h"
 #include "../Character/CharacterNPC.h"
 #include "../Character/CharacterTurret.h"
+#include "../Character/CharacterNexus.h"
 #include "../Manager/ObjectManager.h"
 #include "../Util/SplineConstructor.h"
 

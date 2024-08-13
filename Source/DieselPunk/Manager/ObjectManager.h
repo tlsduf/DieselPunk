@@ -5,6 +5,7 @@
 #include "Components/PrimitiveComponent.h"
 
 
+class ACharacterNexus;
 class AFloorStaticMeshActor;
 
 struct FSpawnParam
@@ -51,7 +52,7 @@ private:
 	TWeakObjectPtr<UWorld>							World;
 	TWeakObjectPtr<APlayerController>				Controller;
 	TWeakObjectPtr<ACharacterPC>					Player;
-	TWeakObjectPtr<ACharacterNPC>					Nexus;
+	TWeakObjectPtr<ACharacterNexus>					Nexus;
 	TArray<TWeakObjectPtr<AFloorStaticMeshActor>>	Floors;
 	
 	TMap<UClass*, TArray<TWeakObjectPtr<AActor>>>	PoolingObject;
@@ -98,7 +99,7 @@ public:
 	//컨트롤 중인 플레이어를 가져옵니다.
 	ACharacterPC* GetPlayer();
 
-	ACharacterNPC* GetNexus();
+	ACharacterNexus* GetNexus();
 
 	UWorld* GetWorld();
 	

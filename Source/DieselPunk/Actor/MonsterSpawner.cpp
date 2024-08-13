@@ -6,6 +6,7 @@
 #include "../Data/WaveModuleDataTable.h"
 #include "../Data/CharacterDataTable.h"
 #include "../Character/CharacterNPC.h"
+#include "../Character/CharacterNexus.h"
 #include "../Manager/ObjectManager.h"
 #include "../Actor/PathRouter.h"
 
@@ -117,7 +118,10 @@ void AMonsterSpawner::RemoveDeadNPCFromSpawnedMonsterID()
 	{
 		if(FObjectManager::GetInstance()->FindActor(*iterId))
 			if(Cast<ACharacterBase>(FObjectManager::GetInstance()->FindActor(*iterId))->GetStat(ECharacterStatType::Hp) <= 0)
+			{
+				DelegateDeadMonsterInSpawner.Broadcast();
 				iterId.RemoveCurrent();
+			}
 	}
 }
 

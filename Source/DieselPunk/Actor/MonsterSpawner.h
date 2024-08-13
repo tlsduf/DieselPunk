@@ -29,6 +29,7 @@ UCLASS()
 class DIESELPUNK_API AMonsterSpawner : public AActor, public IDpManagementTargetInterFace
 {
 	GENERATED_BODY()
+	DECLARE_MULTICAST_DELEGATE(FDelegateDeadMonsterInSpawner)
 
 	UPROPERTY()
 	USceneComponent* SceneRoot = nullptr;
@@ -54,6 +55,8 @@ class DIESELPUNK_API AMonsterSpawner : public AActor, public IDpManagementTarget
 
 	int32 PathRouterNodeNum = 0;							// 연결된 라우터의 순서입니다. 이것을 Key로 하여 PathRouterNodes에 등록합니다.
 	TMap<int32, TObjectPtr<APathRouter>> PathRouterNodes;	// 연결된 라우터를 모두 등록합니다.
+	
+	FDelegateDeadMonsterInSpawner DelegateDeadMonsterInSpawner;
 	
 protected:
 	
@@ -145,4 +148,6 @@ public:
 	/////////////////////////////////////////////////////////////////////
 	// Getter, Setter //
 	int32 GetSpawnerNumber() const { return SpawnerNumber; };
+
+	FDelegateDeadMonsterInSpawner& GetDelegateDeadMonsterInSpawner(){return DelegateDeadMonsterInSpawner;}
 };

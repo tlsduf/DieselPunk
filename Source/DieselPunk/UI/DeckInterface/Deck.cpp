@@ -61,7 +61,7 @@ void UDeck::RegisterCards(TArray<const FCard*> InCards)
 		if(i >= CardRows.Num())
 		{
 			FString widgetName = FString::Printf(TEXT("CardRow_%d"), i);
-			int32 key = FUIManager::GetInstance()->CreateWidgetBase(TEXT("DeckInterface/Blueprint/"), TEXT("WBP_DeckCardRow"), widgetName, this);
+			int32 key = FUIManager::GetInstance()->CreateWidgetBase(TEXT("DeckInterface/Blueprint/"), TEXT("WBP_DeckCardRow"), widgetName, Owner.Get(), this);
 			UDeckCardRow* row = Cast<UDeckCardRow>(FindWidgetBase(key)); 
 			row->SetDeck(this);
 			SBox->AddChild(row);
