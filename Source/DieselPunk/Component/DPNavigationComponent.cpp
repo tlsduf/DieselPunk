@@ -16,14 +16,15 @@
 UDPNavigationComponent::UDPNavigationComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-
-	if(Cast<ACharacterBase>(GetOwner()))
-		Owner = Cast<ACharacterBase>(GetOwner());
 }
 
 void UDPNavigationComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	auto ownerPointer = Cast<ACharacterBase>(GetOwner());
+	if(ownerPointer)
+		Owner = ownerPointer;
 }
 
 void UDPNavigationComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

@@ -7,7 +7,6 @@
 #include "Components/CapsuleComponent.h"
 #include "DieselPunk/Component/DPNavigationComponent.h"
 #include "DieselPunk/Manager/ObjectManager.h"
-#include "..\Component\DPNavigationComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -44,6 +43,23 @@ void ACharacterMonster::Tick(float DeltaTime)
 
 	OriginForwardVector = GetActorForwardVector();
 	UpdateSplineWhenFarAwayFromSpline(DeltaTime);
+
+	// Navigation
+	if(DPNavigationComponent == nullptr)
+		return;
+	// 몬스터 AddMovementInput
+	if(!InRange && !bPlayerTargeting())
+	{
+		DPNavigationComponent->AddForceAlongSplinePath();
+		if(GetCharacterName() == TEXT("E_Mokosh"))
+			SetActorRotation(DPNavigationComponent->GetForceDirection().Rotation());
+	}
+	/*if(!InRange && !bPlayerTargeting())
+		if(AIController)
+			AIController->MoveToLocation(DPNavigationComponent->MoveToAlongSplinePath(), 1, false, false);*/
+	// 경로 DebugDraw
+	if(DebugOnOff)
+		DPNavigationComponent->DrawDebugSpline();
 }
 
 // =============================================================
@@ -64,25 +80,6 @@ void ACharacterMonster::SetTarget()
 	MakeSearchArea();	// 탐색범위타입이 Rectangle일 경우, 사각형 탐색범위를 생성합니다.
 	if(DebugOnOff)
 		DrawDebugPoint(GetWorld(), NowGoalLoc, 30, FColor::Orange, false);
-
-	// Navigation
-	if(DPNavigationComponent == nullptr)
-		return;
-	// 몬스터 AddMovementInput
-	if(!InRange && !bPlayerTargeting())
-	{
-		DPNavigationComponent->AddForceAlongSplinePath();
-		if(GetCharacterName() == TEXT("E_Mokosh"))
-		{
-			SetActorRotation(DPNavigationComponent->GetForceDirection().Rotation());
-		}
-	}
-	/*if(!InRange && !bPlayerTargeting())
-		if(AIController)
-			AIController->MoveToLocation(DPNavigationComponent->MoveToAlongSplinePath(), 1, false, false);*/
-	// 경로 Draw
-	if(DebugOnOff)
-		DPNavigationComponent->DrawDebugSpline();
 }
 
 // =============================================================
@@ -335,8 +332,14 @@ void ACharacterMonster::__UpdateSplinePath()
 // 경로에서 멀리 벗어났을 때 1마다 경로를 갱신합니다.(Tick함수)
 void ACharacterMonster::UpdateSplineWhenFarAwayFromSpline(float DeltaTime)
 {
-	if(!DPNavigationComponent->bFarAwayActorToSpline())
+	if(DPNavigationComponent == nullptr)
 		return;
+	
+	if(!DPNavigationComponent->bFarAwayActorToSpline())
+	{
+		elapsedTime = 0.f;
+		return;
+	}
 	
 	elapsedTime += DeltaTime;
 	if(elapsedTime >= 1.f)
