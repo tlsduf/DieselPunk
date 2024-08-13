@@ -30,7 +30,7 @@ void AWeapon::BeginPlay()
 	if(SkillInfo_LM != nullptr)
 	{
 		Skill_LM = NewObject<UPlayerSkill>(this, SkillInfo_LM);
-		Skill_LM->GetDelegateAbilityShot().AddUObject(this, &AWeapon::OnAbilityBeShot);
+		//Skill_LM->GetDelegateAbilityShot().AddUObject(this, &AWeapon::OnAbilityBeShot);
 		Skill_LM->RegisterComponent();
 		Skill_LM->InitSkill();
 	}
@@ -59,6 +59,9 @@ void AWeapon::SetOwnerPlayer(ACharacterBase* InOwner)
 		Skill_LM->SetOwnerCharacter(InOwner);
 	if(Skill_RM)
 		Skill_RM->SetOwnerCharacter(InOwner);
+
+	if(ACharacterPC* pc = Cast<ACharacterPC>(OwnerCharacter))
+		pc->OnPossessWeapon(this);
 }
 
 void AWeapon::SkillStarted(const EAbilityType& InAbilityType, TWeakObjectPtr<UPlayerSkill>& OutCachedSkill)

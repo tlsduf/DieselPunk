@@ -162,7 +162,7 @@ public:
 
 	TWeakObjectPtr<UPlayerSkill> CurrentCachedSkill = nullptr;
 
-	bool UseCard = false;
+	//bool UseCard = false;
 
 protected:
 	void CheckViewMiddleForInteractInstallationUI();

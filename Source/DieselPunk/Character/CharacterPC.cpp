@@ -528,17 +528,17 @@ void ACharacterPC::SkillStarted(const EAbilityType inAbilityType)
 
 	if(inAbilityType != EAbilityType::MouseLM && !CanSkill)
 		return;
-	if((inAbilityType == EAbilityType::MouseLM || inAbilityType == EAbilityType::MouseRM) && !UseCard)
-	{
-		if(Weapon->CanActivateAbility(inAbilityType) && !GetOtherSkillActivating(inAbilityType))
-		{
-			if(inAbilityType != EAbilityType::Shift)
-				HandleCombatState();
-			Weapon->SkillStarted(inAbilityType, CurrentCachedSkill);
-		}
-	}
-	else
-	{
+	//if((inAbilityType == EAbilityType::MouseLM || inAbilityType == EAbilityType::MouseRM) && !UseCard)
+	//{
+	//	if(Weapon->CanActivateAbility(inAbilityType) && !GetOtherSkillActivating(inAbilityType))
+	//	{
+	//		if(inAbilityType != EAbilityType::Shift)
+	//			HandleCombatState();
+	//		Weapon->SkillStarted(inAbilityType, CurrentCachedSkill);
+	//	}
+	//}
+	//else
+	//{
 		if(Skills.Find(inAbilityType) != nullptr)
 			if (Skills[inAbilityType]->CanActivateAbility() && !GetOtherSkillActivating(inAbilityType))
 			{
@@ -548,7 +548,7 @@ void ACharacterPC::SkillStarted(const EAbilityType inAbilityType)
 					CurrentCachedSkill = Skills[inAbilityType];
 				}
 			}
-	}
+	//}
 }
 void ACharacterPC::SkillOngoing(const EAbilityType inAbilityType)
 {
@@ -573,17 +573,17 @@ void ACharacterPC::SkillTriggered(const EAbilityType inAbilityType)
 	if(inAbilityType != EAbilityType::MouseLM && !CanSkill)
 		return;
 
-	if((inAbilityType == EAbilityType::MouseLM || inAbilityType == EAbilityType::MouseRM) && !UseCard)
-	{
-		if(Weapon->CanActivateAbility(inAbilityType) && !GetOtherSkillActivating(inAbilityType))
-		{
-			if(inAbilityType != EAbilityType::Shift)
-				HandleCombatState();
-			Weapon->SkillTriggered(inAbilityType, CurrentCachedSkill);
-		}
-	}
-	else
-	{
+	//if((inAbilityType == EAbilityType::MouseLM || inAbilityType == EAbilityType::MouseRM) && !UseCard)
+	//{
+	//	if(Weapon->CanActivateAbility(inAbilityType) && !GetOtherSkillActivating(inAbilityType))
+	//	{
+	//		if(inAbilityType != EAbilityType::Shift)
+	//			HandleCombatState();
+	//		Weapon->SkillTriggered(inAbilityType, CurrentCachedSkill);
+	//	}
+	//}
+	//else
+	//{
 		if(Skills.Find(inAbilityType) != nullptr)
 			if (Skills[inAbilityType]->CanActivateAbility() && !GetOtherSkillActivating(inAbilityType))
 			{
@@ -595,7 +595,7 @@ void ACharacterPC::SkillTriggered(const EAbilityType inAbilityType)
 					CurrentCachedSkill = Skills[inAbilityType];
 				}
 			}
-	}
+	//}
 }
 void ACharacterPC::SkillCompleted(const EAbilityType inAbilityType)
 {
@@ -609,7 +609,7 @@ void ACharacterPC::SkillCompleted(const EAbilityType inAbilityType)
 		if(USoldierAnimInstance* soldierAnimInst = Cast<USoldierAnimInstance>(GetMesh()->GetAnimInstance()))
 			soldierAnimInst->AttackEndSign();
 	
-	if(Skills.Find(inAbilityType) != nullptr && !UseCard)
+	if(Skills.Find(inAbilityType) != nullptr)// && !UseCard)
 		if (Skills[inAbilityType]->CanActivateAbility() && !GetOtherSkillActivating(inAbilityType))
 		{
 			if(IPlayerInputInterface* ability = Cast<IPlayerInputInterface>(Skills[inAbilityType]))
@@ -777,7 +777,7 @@ void ACharacterPC::BindSkillUseCard()
 	if(Skills.Find(EAbilityType::MouseLM) != nullptr)
 		Skills[EAbilityType::MouseLM] = CardSkill;
 	CardSkill->SkillStarted();
-	UseCard = true;
+	//UseCard = true;
 }
 
 void ACharacterPC::UnBindSkillUseCard()
@@ -796,7 +796,7 @@ void ACharacterPC::UnBindSkillUseCard()
 	if(DelegateRotateInstallation.IsBound())
 		DelegateRotateInstallation.Unbind();
 
-	UseCard = false;
+	//UseCard = false;
 }
 
 bool ACharacterPC::CardSkillIsExpectedUnBind()
