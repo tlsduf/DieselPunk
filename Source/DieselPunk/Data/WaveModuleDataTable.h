@@ -16,8 +16,8 @@ struct FWaveModuleInfo
 	FString MonsterID;
 
 	// 몬스터를 n 만큼 스폰합니다
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int SpawnCount = 0.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0", ClampMax = "99999"))
+	int32 SpawnCount = 0.f;
 	
 	// 스폰을 시작하기 까지 시간입니다.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -32,7 +32,7 @@ struct FWaveModuleInfo
 	float Delay = 0.f;
 	
 	// 반복 횟수입니다.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite ,meta = (ClampMin = "1", ClampMax = "99999"))
 	int32 Reps = 0;
 };
 
