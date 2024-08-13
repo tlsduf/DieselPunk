@@ -6,10 +6,12 @@
 #include "../UserWidgetBase.h"
 #include "DPHud.generated.h"
 
+class UHand;
 class UHudFadeCanvas;
 class UInteractInstallation;
 class UProgressBar;
 class UTextBlock;
+struct CardInfo;
 /**
  * HUD UI 클래스입니다.
  */
@@ -20,6 +22,9 @@ class DIESELPUNK_API UDPHud : public UUserWidgetBase
 protected:
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
 	UInteractInstallation* InteractionUI = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+	UHand* Hand = nullptr;
 
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
 	UHudFadeCanvas* HudFadeCanvas = nullptr;
@@ -41,6 +46,8 @@ protected:
 
 	int32 DieselCoreHp = 0;
 	int32 DieselCoreMaxHp = 0;
+
+	bool OnViewCard = true;
 public:
 	virtual void OnCreated() override;
 	
@@ -55,4 +62,8 @@ public:
 	void InitDieselCoreHpBar(int32 InHp, int32 InMaxHp);
 
 	void OnStatChanged(TWeakObjectPtr<AActor> InActor, ECharacterStatType InCharacterType, int32 InValue);
+
+	void OnOffViewCard();
+
+	void SetViewCard(const CardInfo* InCardInfo);
 };

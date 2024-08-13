@@ -79,6 +79,9 @@ class DIESELPUNK_API APlayerControllerBase : public APlayerController
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP_Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction *InputUnUseCard;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP_Input", meta = (AllowPrivateAccess = "true"))
+	UInputAction *InputLAlt;
 	
 	// 6개의 스킬 InputAction // LM, RM, LShift, Q, E, R
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP_Input", meta = (AllowPrivateAccess = "true"))
@@ -175,6 +178,9 @@ private:
 
 	//덱 인터페이스 켜기/끄기
 	void OpenCloseDeckInterface();
+
+	//핸드에서 카드 보기
+	void OnOffViewCard();
 	
 	//카드 사용 준비
 	void UseCard(int32 InCardIndex);

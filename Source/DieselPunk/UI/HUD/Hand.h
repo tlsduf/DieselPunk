@@ -4,8 +4,10 @@
 #pragma once
 
 #include "../UserWidgetBase.h"
+#include "DieselPunk/Card/Card.h"
 #include "Hand.generated.h"
 
+class USizeBox;
 class UTextBlock;
 class ACharacterBase;
 class UHorizontalBox;
@@ -52,6 +54,15 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
 	UTextBlock* TextDeckCount;
 
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+	UUserWidgetBase* ViewCard;
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+	UTextBlock* DescriptionText;
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+	USizeBox* ViewCardSizeBox;
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+	UHorizontalBox* ViewCardHorizontalBox;
+
 	int32 PlayingAnimationCount = 0;
 	
 	int32 Cost;
@@ -94,5 +105,8 @@ public:
 
 	UFUNCTION()
 	void FinishAnimation();
+
+	void OnOffViewCard(bool InOn);
+	void SetViewCard(const CardInfo* InCardInfo);
 };
 

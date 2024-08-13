@@ -3,6 +3,7 @@
 
 #include "DPHud.h"
 
+#include "Hand.h"
 #include "HudFadeCanvas.h"
 #include "InteractInstallation.h"
 #include "Components/ProgressBar.h"
@@ -41,6 +42,7 @@ void UDPHud::OnCreated()
 		nexus->GetStatControlComponent()->GetSetStatDelegate().AddUObject(this, &UDPHud::OnStatChanged);
 		InitDieselCoreHpBar(nexus->GetStat(ECharacterStatType::Hp), nexus->GetStat(ECharacterStatType::MaxHp));
 	}
+	OnOffViewCard();
 }
 
 void UDPHud::SetViewInteractionUI(bool InView)
@@ -109,4 +111,15 @@ void UDPHud::OnStatChanged(TWeakObjectPtr<AActor> InActor, ECharacterStatType In
 	double value = (double)DieselCoreHp / (double)DieselCoreMaxHp;
 
 	DieselCoreHpBar->SetPercent(value);
+}
+
+void UDPHud::OnOffViewCard()
+{
+	OnViewCard = !OnViewCard;
+	Hand->OnOffViewCard(OnViewCard);
+}
+
+void UDPHud::SetViewCard(const CardInfo* InCardInfo)
+{
+	Hand->SetViewCard(InCardInfo);
 }

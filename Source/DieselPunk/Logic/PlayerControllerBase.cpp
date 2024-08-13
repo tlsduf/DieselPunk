@@ -74,10 +74,10 @@ void APlayerControllerBase::BeginPlay()
 	if (HUD)
 	{
 		HUD->AddToViewport();
-		Hand = Cast<UHand>((*HUD)[TEXT("WBP_Hand")]);
+		Hand = Cast<UHand>((*HUD)[TEXT("Hand")]);
 		if(Hand == nullptr)
 		{
-			LOG_SCREEN(FColor::Red, TEXT("APlayerControllerBase::BeginPlay(): WBP_Hand에 해당하는 위젯을 찾지 못했습니다."))
+			LOG_SCREEN(FColor::Red, TEXT("APlayerControllerBase::BeginPlay(): Hand에 해당하는 위젯을 찾지 못했습니다."))
 			return;
 		}
 		Hand->OnCreated();
@@ -116,6 +116,8 @@ void APlayerControllerBase::SetupInputComponent()
     	//EnhancedInputComponent->BindAction(InputF, ETriggerEvent::Started, this, &APlayerControllerBase::Interaction);
     	EnhancedInputComponent->BindAction(InputM, ETriggerEvent::Started, this, &APlayerControllerBase::Pause);
     	EnhancedInputComponent->BindAction(InputB, ETriggerEvent::Started, this, &APlayerControllerBase::WaveStart);
+
+    	EnhancedInputComponent->BindAction(InputLAlt, ETriggerEvent::Started, this, &APlayerControllerBase::OnOffViewCard);
 
     	EnhancedInputComponent->BindAction(InputDeckInterface, ETriggerEvent::Started, this, &APlayerControllerBase::OpenCloseDeckInterface);
 
@@ -333,6 +335,11 @@ void APlayerControllerBase::OpenCloseDeckInterface()
 	}
 }
 
+void APlayerControllerBase::OnOffViewCard()
+{
+	HUD->OnOffViewCard();
+}
+
 void APlayerControllerBase::UseCard(int32 InCardIndex)
 {
 	if(!PC.IsValid() || !PC->GetCanSkill())
@@ -377,6 +384,7 @@ void APlayerControllerBase::UseCard(int32 InCardIndex)
 	handler->GetHands()[InCardIndex]->BindCardComplete();
 	handler->GetHands()[InCardIndex]->BindRotateInstallation();
 
+	HUD->SetViewCard(&handler->GetHands()[InCardIndex]->GetCardInfo());
 	
 	PC->BindSkillUseCard();
 	if (UEnhancedInputComponent *EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent))
@@ -418,6 +426,8 @@ void APlayerControllerBase::UnUseCard()
 
 	for(int i = 0; i < FDeckHandler::MaxHand; ++i)
 		Hand->ResizeHandCard(i, FVector2d(1.0, 1.0));
+
+	HUD->SetViewCard(nullptr);
 	
 	UseCardNum = -1;
 	PC->UnBindSkillUseCard();
@@ -643,6 +653,8 @@ int32 APlayerControllerBase::PostCancelCard()
 
 	UseCardNum = -1;
 	
+	HUD->SetViewCard(nullptr);
+	
 	return returnUseCardNum;
 }
 
@@ -657,6 +669,8 @@ int32 APlayerControllerBase::PostCompleteCard()
 	int returnUseCardNum = UseCardNum;
 
 	UseCardNum = -1;
+	
+	HUD->SetViewCard(nullptr);
 	
 	return returnUseCardNum;
 }

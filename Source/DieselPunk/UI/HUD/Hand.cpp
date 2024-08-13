@@ -15,6 +15,9 @@
 #include <Blueprint/WidgetTree.h>
 #include <Animation/WidgetAnimation.h>
 
+#include "Components/Border.h"
+#include "Components/HorizontalBox.h"
+
 #include UE_INLINE_GENERATED_CPP_BY_NAME(Hand)
 
 
@@ -254,4 +257,77 @@ void UHand::ChangeDeckCount(int32 InValue)
 void UHand::FinishAnimation()
 {
 	--PlayingAnimationCount;
+}
+
+void UHand::OnOffViewCard(bool InOn)
+{
+	if(InOn)
+	{
+		ViewCard->SetVisibility(ESlateVisibility::Visible);
+		ViewCardSizeBox->ClearWidthOverride();
+		FString str = TEXT("카드 넣기");
+		
+		DescriptionText->SetText(FText::FromString(str));
+	}
+	else
+	{
+		ViewCard->SetVisibility(ESlateVisibility::Collapsed);
+		ViewCardSizeBox->SetWidthOverride(0);
+		FString str = TEXT("카드 보기");
+		
+		DescriptionText->SetText(FText::FromString(str));
+	}
+	
+}
+
+void UHand::SetViewCard(const CardInfo* InCardInfo)
+{
+	if(!InCardInfo)
+	{
+		ViewCardHorizontalBox->SetVisibility(ESlateVisibility::Hidden);
+	}
+	else
+	{
+		ViewCardHorizontalBox->SetVisibility(ESlateVisibility::Visible);
+		UImage* image = Cast<UImage>((*ViewCard)[TEXT("CardImage")]);
+		if(image == nullptr)
+			return;
+
+		FSlateBrush brush = image->GetBrush();
+		brush.SetResourceObject(LoadObject<UTexture>(nullptr, *(InCardInfo->TexturePath[0])));
+		image->SetBrush(brush);
+
+		//카드 이름 설정
+		UTextBlock* text = Cast<UTextBlock>((*ViewCard)[TEXT("CardName")]);
+		if(text == nullptr)
+			return;
+	
+		text->SetText(FText::FromString(InCardInfo->CardUIName));
+
+		//카드 설명 설정
+		UTextBlock* desc = Cast<UTextBlock>((*ViewCard)[TEXT("CardDescription")]);
+		if(desc == nullptr)
+			return;
+	
+		desc->SetText(InCardInfo->CardUIDescription);
+	
+		//카드 단축키 설정
+		UTextBlock* shortcut = Cast<UTextBlock>((*ViewCard)[TEXT("ShortcutKey")]);
+		if(shortcut == nullptr)
+			return;
+	
+		shortcut->SetVisibility(ESlateVisibility::Hidden);
+
+		UBorder* border = Cast<UBorder>((*ViewCard)[TEXT("ShortcutBackground")]);
+		if(border == nullptr)
+			return;
+	
+		border->SetVisibility(ESlateVisibility::Hidden);
+		
+		UTextBlock* cost = Cast<UTextBlock>((*ViewCard)[TEXT("Cost")]);
+		if(cost)
+			cost->SetText(FText::FromString(FString::FromInt(InCardInfo->Cost)));
+	}
+	
+	
 }

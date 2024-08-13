@@ -119,7 +119,7 @@ void ACharacterPC::BeginPlay()
 	TWeakObjectPtr<UUserWidgetBase> hud = FindWidgetBase(Cast<APlayerControllerBase>(Controller)->GetHUDId());
 	if(hud.IsValid())
 	{
-		UHand* handUi = Cast<UHand>((*hud)[TEXT("WBP_Hand")]);
+		UHand* handUi = Cast<UHand>((*hud)[TEXT("Hand")]);
 		handUi->Initailize(this);
 	}
 	
