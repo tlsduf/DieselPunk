@@ -78,10 +78,6 @@ void ACharacterBase::BeginDestroy()
 void ACharacterBase::Tick(float InDeltaTime)
 {
 	Super::Tick(InDeltaTime);
-
-	// 체력바 애니메이션 업데이트
-	HpBarAnimator.Update(InDeltaTime);
-	HpBarAfterImageAnimator.Update(InDeltaTime);
 }
 
 // =============================================================
@@ -125,13 +121,11 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 		HandleCombatState();
 		damage = 0.f;
 		CreateDamageActor(damage);
-		return damage;
 	}
 	//EventInstigator 가 본인일 때
 	if(EventInstigator == Controller)
 	{
 		damage = 0.f;
-		return damage;
 	}
 	
 	HandleCombatState();	// 전투상태 돌입
@@ -155,9 +149,9 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 		if(GetCharacterType() == ECharacterType::Monster)
 		{
 			// 플레이어에게 코스트를 지급합니다.
-			ACharacterPC* playerPawn = Cast<ACharacterPC>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
-			if (playerPawn != nullptr)
-				playerPawn->ChangeStat(ECharacterStatType::Cost, GetStat(ECharacterStatType::Cost));
+			ACharacterPC* player = FObjectManager::GetInstance()->GetPlayer();
+			if (player != nullptr)
+				player->ChangeStat(ECharacterStatType::Cost, GetStat(ECharacterStatType::Cost));
 					
 			auto DamageCauserPlayer = Cast<ACharacterBase>(DamageCauser);
 			// 플레이어의 경험치를 1 올림
@@ -187,6 +181,11 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 		RagdollImpulse(DamageAmount, EventInstigator, DamageCauser);
 	
 	return damage;
+}
+
+void ACharacterBase::DestroyByObjectManager()
+{
+	FObjectManager::GetInstance()->DestroyActor(this);
 }
 
 // =============================================================
@@ -232,6 +231,7 @@ void ACharacterBase::CreateDamageActor(float InDamage)
 //================================================================
 void ACharacterBase::_UpdateHp(int InCurHp, int InMaxHp)
 {
+	
 	// 현재 체력 퍼센트
 	float curPercent = ( float )GetStat(ECharacterStatType::Hp) / ( float )GetStat(ECharacterStatType::MaxHp);
 	curPercent = FMath::Clamp( curPercent, 0.f, 1.f );
@@ -239,50 +239,10 @@ void ACharacterBase::_UpdateHp(int InCurHp, int InMaxHp)
 	// 목표 체력 퍼센트
 	float destPercent = ( float )InCurHp / ( float )InMaxHp;
 	destPercent = FMath::Clamp( destPercent, 0.f, 1.f );
-
-	// 퍼센트차이
-	float percentAmount = curPercent - destPercent;
-
-	TWeakObjectPtr<ACharacterBase> thisPtr = this;
-
-	// HPbar 애니메이션
-	AnimatorParam HpBarparam;
-	HpBarparam.StartValue = curPercent;
-	HpBarparam.EndValue = destPercent;
-	HpBarparam.DurationTime = 0.6f;
-	HpBarparam.AnimType = EAnimType::CubicOut;
-	HpBarparam.DurationFunc = [thisPtr](float InCurValue)
-	{
-		if(thisPtr.IsValid())
-			thisPtr->HpPercent = InCurValue;
-	};
-	HpBarAnimator.SetParam(HpBarparam);
-	HpBarAnimator.Start();
-
-	// HPbar 잔상 애니메이션
-	AnimatorParam HpBarAfterparam;
-	HpBarAfterparam.StartValue = curPercent;
-	HpBarAfterparam.EndValue = destPercent;
-	HpBarAfterparam.DurationTime = (0.f <= percentAmount && percentAmount < 0.2f) ? 0.6f
-								: (0.2f <= percentAmount && percentAmount < 0.4f) ? 0.85f
-								:													1.1f;
-	HpBarAfterparam.AnimType = EAnimType::CubicIn;
-	HpBarAfterparam.DurationFunc = [thisPtr](float InCurValue)
-	{
-		if(thisPtr.IsValid())
-			thisPtr->HpPercentAfterImage = InCurValue;
-	};
-	HpBarAfterImageAnimator.SetParam(HpBarAfterparam);
-	HpBarAfterImageAnimator.Start();
+	HpPercent = destPercent;
+	HpPercentAfterImage = destPercent;
 }
 
-//================================================================
-// 체력이 0이하일 때, 1 반환
-//================================================================
-bool ACharacterBase::IsDead()
-{
-	return GetStat(ECharacterStatType::Hp) <= 0;
-}
 
 float ACharacterBase::PlayCharacterStatusEffectAnimMontage(float InPlayRate, const FName& InSectionName)
 {
@@ -374,8 +334,10 @@ void ACharacterBase::RagdollImpulse(float DamageAmount, AController *EventInstig
 	else
 	{
 		//DamageCause /= nullptr << 투사체나 액터를 이용한 공격
-		FVector impulse = FVector( GetActorLocation() - DamageCauser->GetActorLocation() ).GetSafeNormal();
-		impulse = impulse * 5000;
-		GetMesh()->AddImpulse(impulse, NAME_None ,true);
+		FVector impulse = FVector(GetActorLocation() - DamageCauser->GetActorLocation()).GetSafeNormal();
+		float radius = FVector::Dist(GetActorLocation(), DamageCauser->GetActorLocation());
+		impulse = impulse * 500;
+		GetMesh()->AddImpulse(impulse * DamageAmount, NAME_None ,true);
+		//GetMesh()->AddRadialImpulse(DamageCauser->GetActorLocation(), radius*1.1, DamageAmount, RIF_Constant, true);
 	}
 }

@@ -587,10 +587,7 @@ void APlayerControllerBase::WaveStart()
 {
 	if (PC.IsValid())
 		if(auto level = Cast<ADPLevelScriptActor>(PC->GetLevel()->GetLevelScriptActor()))
-		{
-			level->BindStartWave();
-			level->CallStartWave();
-		}
+			level->StartWaveSequence();
 }
 
 
@@ -627,6 +624,32 @@ void APlayerControllerBase::SetUIControlOff()
 	
 	// 시간 재게
 	GetWorldSettings()->SetTimeDilation(1.f);
+
+	// 마우스 커서 off //키보드 입력 on
+	bShowMouseCursor = false;
+	//PC->CanCameraControl = true;
+}
+
+void APlayerControllerBase::SetUIControlForPlayerDie()
+{
+	if (PC.IsValid())
+		if (PC == nullptr)
+			return;
+ 	
+	// 마우스 위치 세팅 // 마우스 커서 on //키보드 입력 off
+	int32 ScreenWidth;
+	int32 ScreenHeight;
+	GetViewportSize(ScreenWidth, ScreenHeight);
+	//SetMouseLocation(ScreenWidth * 0.5f, ScreenHeight * 0.5f);
+	bShowMouseCursor = true;
+	//PC->CanCameraControl = false;	// << 이거 오류남;;
+}
+
+void APlayerControllerBase::SetUIControlForPlayerRespawn()
+{
+	if (PC.IsValid())
+		if (PC == nullptr)
+			return;
 
 	// 마우스 커서 off //키보드 입력 on
 	bShowMouseCursor = false;

@@ -18,8 +18,7 @@ class DIESELPUNK_API UDamageUI : public UUserWidgetBase
 protected:
 	UTextBlock* DamageText;		// 데미지 텍스트
 
-	float Alpha;				// UI Alpha
-	Animator AlphaAnimator;		// UI Alpha를 애니메이팅 합니다.
+	float alpha = 1.f;			// 텍스트 Opacity alpha // 1 to 0
 	
 	int Damage = 0;				// 받은 데미지 값
 public:

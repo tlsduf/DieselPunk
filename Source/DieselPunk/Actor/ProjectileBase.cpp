@@ -9,6 +9,7 @@
 #include <Kismet/GameplayStatics.h>
 
 #include "Weapon.h"
+#include "DieselPunk/Manager/ObjectManager.h"
 
 
 // =============================================================
@@ -93,7 +94,8 @@ void AProjectileBase::Tick(float DeltaTime)
 	if(SplineLength > 0)
 	{
 		// 투사체의 위치와 방향을 궤도를 따라 움직이도록 합니다.
-		AlphaAnimator.Update(DeltaTime);
+		if( Alpha >= 0)
+			Alpha += (1 / Duration) * DeltaTime;
 		SetActorLocation(SplinePath.GetLocationAtDistanceAlongSpline(Alpha * SplineLength));
 		SetActorRotation(SplinePath.GetRotationAtDistanceAlongSpline(Alpha * SplineLength));
 	}
@@ -132,7 +134,7 @@ void AProjectileBase::DestroyEvent()
 		}
 	}
 
-	Destroy();
+	FObjectManager::GetInstance()->DestroyActor(this);
 }
 
 // =============================================================
@@ -154,20 +156,7 @@ void AProjectileBase::StartAnimator()
 {
 	TWeakObjectPtr<AProjectileBase> thisPtr = this;
 
-	float durationTime = SplinePath.Path.Position.Points[1].IsCurveKey() ? SplineLength / ProjectileMovementComponent->GetMaxSpeed() / 1.5 : 0.1f;
-	
-	AnimatorParam param;
-	param.StartValue = 0.f;
-	param.EndValue = 1.f;
-	param.DurationTime = durationTime;
-	param.AnimType = EAnimType::Linear;	
-	param.DurationFunc = [thisPtr](float InCurValue)
-	{
-		if(thisPtr.IsValid())
-			thisPtr->Alpha = InCurValue;
-	};
-	AlphaAnimator.SetParam(param);
-	AlphaAnimator.Start();
+	Duration = SplinePath.Path.Position.Points[1].IsCurveKey() ? SplineLength / ProjectileMovementComponent->GetMaxSpeed() / 1.5 : 0.1f;
 }
 
 // =============================================================
@@ -224,7 +213,7 @@ void AProjectileBase::_OnHit(UPrimitiveComponent* InHitComp, AActor* InOtherActo
 	}
 
 	// Projectile 파괴
-	Destroy();
+	FObjectManager::GetInstance()->DestroyActor(this);
 }
 
 // =============================================================
@@ -282,11 +271,11 @@ void AProjectileBase::_BeginOverlapEvent(UPrimitiveComponent* InOverlappedCompon
 
 	// Projectile 파괴
 	if(bPiercing <= 0)
-		Destroy();
+		FObjectManager::GetInstance()->DestroyActor(this);
 
 	PiercedCount++;
 	if(bPiercing <= PiercedCount)
-		Destroy();
+		FObjectManager::GetInstance()->DestroyActor(this);
 }
 
 void AProjectileBase::SetCapsuleCollisionResponses()

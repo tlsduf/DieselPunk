@@ -142,15 +142,6 @@ enum class EEffectPlayType : uint8
 	None,
 };
 
-// 아군NPC 적군NPC
-UENUM( BlueprintType )
-enum class ENPCType : uint8
-{
-	Enemy		UMETA( ToolTip = "적" ),
-	Alliance	UMETA( ToolTip = "동맹" ),
-	Nexus		UMETA( ToolTip = "넥서스" )
-};
-
 // 스탯 버프 대상 타입
 UENUM( BlueprintType )
 enum class ECharacterType : uint8

@@ -2,7 +2,6 @@
 
 #include "ObjectManager.h"
 #include "../Character/CharacterPc.h"
-#include "../Character/CharacterNPC.h"
 #include "../Actor/MonsterSpawner.h"
 #include "FstreamManager.h"
 #include "../Interface/ObjectPoolingInterface.h"
@@ -13,7 +12,6 @@
 #include "DieselPunk/Actor/FloorStaticMeshActor.h"
 #include "DieselPunk/Character/CharacterMonster.h"
 #include "DieselPunk/Character/CharacterNexus.h"
-#include "DieselPunk/Character/CharacterTurret.h"
 
 
 Singleton_Defintion(FObjectManager)
@@ -90,9 +88,6 @@ void FObjectManager::DestroyActor(AActor* InActor)
 		InActor->Destroy();
 		return;
 	}
-
-	if(ACharacterTurret* turret = Cast<ACharacterTurret>(InActor))
-		UpdateSplinePathAllEnemy();
 	
 	if(InActor->GetClass()->ImplementsInterface(UObjectPoolingInterface::StaticClass()))
 	{
@@ -119,9 +114,6 @@ void FObjectManager::DestroyActor(int32 InObjectId)
 	TWeakObjectPtr<AActor>* actorPtr = Objects.Find(InObjectId);
 	if(!actorPtr)
 		return;
-
-	if(ACharacterTurret* turret = Cast<ACharacterTurret>(*actorPtr))
-		UpdateSplinePathAllEnemy();
 	
 	//액터를 Detroy합니다.
 	if((*actorPtr).IsValid())

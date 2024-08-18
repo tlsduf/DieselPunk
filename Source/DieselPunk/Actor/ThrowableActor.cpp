@@ -4,11 +4,10 @@
 #include <Components/StaticMeshComponent.h>
 
 #include "../Character/CharacterPC.h"
-#include "../Skill/PlayerSkill.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/SkeletalMeshComponent.h"
 #include "Components/SphereComponent.h"
 #include "DieselPunk/Component/StatControlComponent.h"
+#include "DieselPunk/Manager/ObjectManager.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -123,5 +122,5 @@ void AThrowableActor::ThrowComplete()
 		}
 
 	}
-	Destroy();
+	FObjectManager::GetInstance()->DestroyActor(this);
 }

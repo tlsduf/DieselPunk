@@ -10,7 +10,6 @@
 #include <Kismet/GameplayStatics.h>
 
 
-
 // =============================================================
 // 생성자
 // =============================================================
@@ -67,7 +66,7 @@ void AMineBase::BeginPlay()
 	TWeakObjectPtr<AMineBase> thisPtr = this;
 	GetWorld()->GetTimerManager().SetTimer(DestroyTimeHandler,[thisPtr](){
 			if(thisPtr.IsValid())
-				thisPtr->Destroy();
+				thisPtr->DestroyByObjectManager();
 		}, 60, false);
 }
 
@@ -143,7 +142,7 @@ void AMineBase::_BeginOverlapEvent(UPrimitiveComponent* InOverlappedComponent, A
 	}
 
 	// Projectile 파괴
-	Destroy();
+	DestroyByObjectManager();
 }
 
 void AMineBase::SetCapsuleCollisionResponses()

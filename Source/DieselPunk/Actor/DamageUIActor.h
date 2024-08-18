@@ -26,11 +26,7 @@ protected:
 	float YVelocity = 100;				// y 계수
 	float ZVelocity = 200;				// z 계수
 
-	float XYAccel;						// DamageUIActor XY 가속도 변수
-	Animator XYAccelAnimator;			// DamageUIActor XY 가속도 변수를 애니메이팅 합니다.
-	
-	float ZAccel;						// DamageUIActor Z 가속도 변수
-	Animator ZAccelAnimator;			// DamageUIActor Z 가속도 변수를 애니메이팅 합니다.
+	float Alpha = 1.f;					//위치 알파 1 to 0
 	
 	float LifeTime = 1.5f;				// 액터 생명주기
 	FTimerHandle DestroyTHandle;		// Destroy 함수 타이머핸들

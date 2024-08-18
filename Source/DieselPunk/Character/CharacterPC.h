@@ -63,7 +63,7 @@ public:
 	/////////////////////////////////////////////////////////////////////
 	// for viewport //
 	
-	int32 TempLevel;						// 레벨정보 담아두고 Level이 변화될 때 활용.
+	int32 TempLevel = 1;						// 레벨정보 담아두고 Level이 변화될 때 활용.
 	
 	bool IsZoomed = false;					// 현재 줌인 상태인지
 	bool CanZoom = true;					// 현재 줌을 할 수 있는 상태인지 (전투상태면 줌 못함)
@@ -166,7 +166,7 @@ public:
 
 protected:
 	void CheckViewMiddleForInteractInstallationUI();
-	
+	void InitHud();
 public:
 	ACharacterPC();
 
@@ -313,5 +313,10 @@ public:
 	virtual void AbilityShot(double InDamageCoefficient) override;
 
 	virtual void SetBuffStatusEffectRoleType(EBuffStatusEffectRoleType InBuffStatusEffectRolType, bool InCan) override;
+
+	// 플레이어가 사망했을 때의 상태를 세팅합니다.
+	void SetDeadStatePC();
+	// 플레이어를 리스폰하며, 리스폰할 때의 상태를 세팅합니다.
+	void ReSpawnPC();
 };
 

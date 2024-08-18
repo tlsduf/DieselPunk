@@ -72,8 +72,8 @@ protected:
 	
 	FSplinePath SplinePath;					// 곡사궤도
 	float SplineLength = 0;					// 스플라인의 길이
-	float Alpha;							// 투사체 스플라인 위치 알파
-	Animator AlphaAnimator;					// 투사체의 스플라인 위치를 애니메이팅 합니다.
+	float Alpha = 0.f;						// 투사체 스플라인 위치 알파
+	float Duration;							// 투사체 생존기간(스플라인의 길이와 투사체의 속도에 따라 계산됨)
 
 	
 	// 범위공격을 할 것인지 (구)

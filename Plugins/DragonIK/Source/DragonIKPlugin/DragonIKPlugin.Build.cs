@@ -54,7 +54,7 @@ public class DragonIKPlugin : ModuleRules
                 "CoreUObject",
                 "Engine",
                 "Slate",
-                "SlateCore",
+                "SlateCore", "DieselPunk", "DieselPunk",
 				// ... add private dependencies that you statically link with here ...	
 			}
             );

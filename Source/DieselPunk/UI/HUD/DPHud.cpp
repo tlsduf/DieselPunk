@@ -13,6 +13,7 @@
 #include "DieselPunk/Component/StatControlComponent.h"
 #include "DieselPunk/Core/DPLevelScriptActor.h"
 #include "DieselPunk/Manager/ObjectManager.h"
+#include "Engine/Level.h"
 
 void UDPHud::OnCreated()
 {
@@ -27,6 +28,8 @@ void UDPHud::OnCreated()
 	if(ADPLevelScriptActor* dpLvScript = Cast<ADPLevelScriptActor>(level->GetLevelScriptActor()))
 	{
 		dpLvScript->GetDelegateStartWave().AddUObject(this, &UDPHud::OnWaveStarted);
+		dpLvScript->GetDelegateClearWave().AddUObject(this, &UDPHud::OnWaveCleared);
+		dpLvScript->GetDelegateCountDefcon().AddUObject(this, &UDPHud::CountDefconTime);
 		for(int32 id : dpLvScript->GetMonsterSpawnerIds())
 		{
 			if(AMonsterSpawner* spawner = Cast<AMonsterSpawner>(FObjectManager::GetInstance()->FindActor(id)))
@@ -36,10 +39,19 @@ void UDPHud::OnCreated()
 		}
 	}
 
+	ACharacterPC* player = FObjectManager::GetInstance()->GetPlayer();
+	if(player)
+	{
+		player->GetStatControlComponent()->GetSetStatDelegate().AddUObject(this, &UDPHud::OnStatChanged);
+		// 플레이어의 InitStat 보다 먼저 호출되기 때문에 -9999값이 반환됨 // CharacterPC의 CheckViewMiddleForInteractInstallationUI() 에서 호출
+		//InitPlayerHpBar(player->GetStat(ECharacterStatType::Hp), player->GetStat(ECharacterStatType::MaxHp));
+	}
+	
 	ACharacterNexus* nexus = FObjectManager::GetInstance()->GetNexus();
 	if(nexus)
 	{
 		nexus->GetStatControlComponent()->GetSetStatDelegate().AddUObject(this, &UDPHud::OnStatChanged);
+		// 넥서스가 맵에 선 배치되어있기 때문에 GetStat이 가능
 		InitDieselCoreHpBar(nexus->GetStat(ECharacterStatType::Hp), nexus->GetStat(ECharacterStatType::MaxHp));
 	}
 	OnOffViewCard();
@@ -75,6 +87,18 @@ void UDPHud::OnWaveStarted(int32 InCurrentWaveIndex, int32 InMaxWaveCount, int32
 	text = FText::FromString(FString::Printf(TEXT("%d"), InMaxMonster));
 	MaxMonsterText->SetText(text);
 	CurrentMonsterText->SetText(text);
+
+	HudFadeCanvas->OnWaveStarted();
+}
+
+void UDPHud::OnWaveCleared()
+{
+	HudFadeCanvas->OnWaveCleared();
+}
+
+void UDPHud::CountDefconTime(int32 InDefconTime)
+{
+	HudFadeCanvas->CountDefconTime(InDefconTime);
 }
 
 void UDPHud::OnMonsterInSpawnerDead()
@@ -97,20 +121,62 @@ void UDPHud::InitDieselCoreHpBar(int32 InHp, int32 InMaxHp)
 	DieselCoreHpBar->SetPercent(value);
 }
 
+void UDPHud::InitPlayerHpBar(int32 InHp, int32 InMaxHp)
+{
+	PlayerHp = InHp;
+	PlayerMaxHp = InMaxHp;
+
+	double value = (double)PlayerHp / (double)PlayerMaxHp;
+
+	PlayerHpBar->SetPercent(value);
+}
+
 void UDPHud::OnStatChanged(TWeakObjectPtr<AActor> InActor, ECharacterStatType InCharacterType, int32 InValue)
 {
-	if(InCharacterType == ECharacterStatType::Hp)
+	ACharacterBase* charBase = Cast<ACharacterBase>(InActor);
+
+	if(charBase->GetCharacterType() == ECharacterType::Player)
 	{
-		DieselCoreHp = InValue;
-	}
-	else if(InCharacterType == ECharacterStatType::MaxHp)
-	{
-		DieselCoreMaxHp = InValue;
+		// Player 체력 UI
+		if(InCharacterType == ECharacterStatType::Hp)
+		{
+			PlayerHp = InValue;
+		}
+		else if(InCharacterType == ECharacterStatType::MaxHp)
+		{
+			PlayerMaxHp = InValue;
+		}
+
+		double value = (double)PlayerHp / (double)PlayerMaxHp;
+
+		PlayerHpBar->SetPercent(value);
+		// Player 체력 <= 0 일 때, // ReSpawn
+		if(InCharacterType == ECharacterStatType::Hp)
+			if(InValue <= 0)
+				HudFadeCanvas->OnMainPCDieScreen(10);
 	}
 
-	double value = (double)DieselCoreHp / (double)DieselCoreMaxHp;
+	if(charBase->GetCharacterType() == ECharacterType::Nexus)
+	{
+		// Nexus 체력 UI
+		if(InCharacterType == ECharacterStatType::Hp)
+		{
+			DieselCoreHp = InValue;
+		}
+		else if(InCharacterType == ECharacterStatType::MaxHp)
+		{
+			DieselCoreMaxHp = InValue;
+		}
 
-	DieselCoreHpBar->SetPercent(value);
+		double value = (double)DieselCoreHp / (double)DieselCoreMaxHp;
+
+		DieselCoreHpBar->SetPercent(value);
+
+		// Nexus 체력 <= 0 일 때, // GameOver
+		if(InCharacterType == ECharacterStatType::Hp)
+			if(InValue <= 0)
+				HudFadeCanvas->GameOverScreen();
+	}
 }
 
 void UDPHud::OnOffViewCard()

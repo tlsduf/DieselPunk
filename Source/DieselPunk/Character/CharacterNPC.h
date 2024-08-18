@@ -51,10 +51,6 @@ protected:
 	
 	/////////////////////////////////////////////////////////////////////
 	// for Character info Management //
-	
-	// NPC 타입
-	UPROPERTY(EditAnywhere, Category = "MYDP_info")
-	ENPCType NPCType = ENPCType::Enemy;						
 
 	UPROPERTY()
 	AAIController* AIController = nullptr;
@@ -136,9 +132,6 @@ public:
 	
 	// 타겟을 업데이트하고, 업데이트 조건에 따라 댈리게이트를 실행합니다.
 	void ChangeTarget(TWeakObjectPtr<AActor> inTarget);
-	
-	// Getter, Setter
-	ENPCType GetNPCType() const { return NPCType; }
 
 	void SetAIController(AAIController* inController) { AIController = inController; }
 

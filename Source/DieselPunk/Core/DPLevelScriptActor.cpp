@@ -136,18 +136,19 @@ void ADPLevelScriptActor::CheckWaveCleared()
 	{
 		WaveClearEvent();
 		WaveIndex++;
-		BindStartWave();
+		bPlayingWave = false;
+		StartWaveSequence();
 	}
 	
 	LOG_SCREEN(FColor::Blue, TEXT("웨이브 클리어?  %hhd"), isWaveCleared);
 }
 
 // =============================================================
-// 스테이지의 웨이브를 바인딩합니다
+// 스테이지의 웨이브를 (예약/시작)합니다. 다음 웨이브를 (에약/시작)합니다.
 // =============================================================
-void ADPLevelScriptActor::BindStartWave()
+void ADPLevelScriptActor::StartWaveSequence()
 {
-	//WaveIndex 가 StageInfo배열의 개수보다 크면 예외처리
+	//WaveIndex 가 StageInfo배열의 개수보다 크면 예외처리 << 의미:설정한 웨이브가 끝남
 	if(StageInfo.Num() <= WaveIndex)
 		return;
 
@@ -160,30 +161,22 @@ void ADPLevelScriptActor::BindStartWave()
 		{
 			GetWorld()->GetTimerManager().ClearTimer(WaveTHandle);
 			_StartWave();
-			return;
 		}
-		TWeakObjectPtr<ADPLevelScriptActor> thisPtr = this;
-		GetWorld()->GetTimerManager().SetTimer(WaveTHandle, [thisPtr](){
-				if(thisPtr.IsValid())
-					thisPtr->_StartWave();
-			},StageInfo[WaveIndex].DefconTime, false);
+		else
+		{
+			TWeakObjectPtr<ADPLevelScriptActor> thisPtr = this;
+			GetWorld()->GetTimerManager().SetTimer(WaveTHandle, [thisPtr](){
+					if(thisPtr.IsValid())
+						thisPtr->_StartWave();
+				},StageInfo[WaveIndex].DefconTime, false);
+			//Hud Event
+			DelegateCountDefcon.Broadcast(StageInfo[WaveIndex].DefconTime);
+		}
 	}
-}
-
-// =============================================================
-// 스테이지의 웨이브를 시작합니다
-// =============================================================
-void ADPLevelScriptActor::CallStartWave()
-{
-	//WaveIndex 가 StageInfo배열의 개수보다 크면 예외처리
-	if(StageInfo.Num() <= WaveIndex)
-		return;
-
-	if(bPlayingWave)
-		return;
-	
-	if( !StageInfo[WaveIndex].bDefconUse)
+	else
+	{
 		_StartWave();
+	}
 }
 
 // =============================================================
@@ -200,6 +193,9 @@ void ADPLevelScriptActor::WaveClearEvent()
 	if (playerPawn == nullptr)
 		return;
 	playerPawn->ChangeStat(ECharacterStatType::Cost, StageInfo[WaveIndex].CostReward);
+
+	//Hud Event
+	DelegateClearWave.Broadcast();
 }
 
 void ADPLevelScriptActor::ChangeReciveDecal()
@@ -236,8 +232,17 @@ void ADPLevelScriptActor::_StartWave()
 {
 	if(StageInfo.Num() <= WaveIndex)
 		return;
-
-	LOG_SCREEN(FColor::Red, TEXT("!!! %d 번째 웨이브 시작 !!!"), WaveIndex + 1);
+	
+	if(bPlayingWave)
+	{
+		LOG_SCREEN(FColor::Red, TEXT("%d 번째 웨이브 진행중"), WaveIndex + 1);
+		return;
+	}
+	else
+	{
+		LOG_SCREEN(FColor::Red, TEXT("%d 번째 웨이브 시작"), WaveIndex + 1);
+	}
+	bPlayingWave = true;
 
 	for(int32 i = 0; i < MonsterSpawnerIDs.Num(); ++i)
 	{
@@ -257,6 +262,7 @@ void ADPLevelScriptActor::_StartWave()
 			count += waveInfo.bDoRep ? waveInfo.SpawnCount * waveInfo.Reps : waveInfo.SpawnCount;
 	}
 
+	//Hud Event
 	DelegateStartWave.Broadcast(WaveIndex, StageInfo.Num(), count);
 }
 

@@ -203,6 +203,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetUIControlOff();
 
+	void SetUIControlForPlayerDie();
+	void SetUIControlForPlayerRespawn();
+	
 	//카드를 Activate한 후 처리를 담당합니다.
 	int32 PostActivateCard();
 

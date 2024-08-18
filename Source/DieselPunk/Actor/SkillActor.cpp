@@ -4,6 +4,7 @@
 
 #include "Weapon.h"
 #include "../Character/CharacterBase.h"
+#include "DieselPunk/Manager/ObjectManager.h"
 #include "GameFramework/Controller.h"
 
 
@@ -52,4 +53,9 @@ void ASkillActor::InitTransformOffset()
 	if(FixOwnerPosition && OwnerCharacter.IsValid())
 		SetActorLocation(OwnerCharacter->GetActorLocation());
 	AddActorLocalTransform(OffsetTransform);
+}
+
+void ASkillActor::DestroyByObjectManager()
+{
+	FObjectManager::GetInstance()->DestroyActor(this);
 }

@@ -30,7 +30,6 @@ void ACharacterMonster::BeginPlay()
 {
 	Super::BeginPlay();
 	CharacterType = ECharacterType::Monster;
-	NPCType = ENPCType::Enemy;
 
 	//StatControlComponent->GetSetStatDelegate().AddUObject(this, &ACharacterMonster)
 }
@@ -43,7 +42,8 @@ void ACharacterMonster::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	OriginForwardVector = GetActorForwardVector();
-	UpdateSplineWhenFarAwayFromSpline(DeltaTime);
+	if( GetStat(ECharacterStatType::Hp) > 0)
+		UpdateSplineWhenFarAwayFromSpline(DeltaTime);
 
 	// Navigation
 	if(DPNavigationComponent == nullptr)
@@ -137,7 +137,11 @@ bool ACharacterMonster::bPlayerTargeting()
 {
 	if(Player == nullptr)
 		return false;
-
+	
+	if(ACharacterPC* player = Cast<ACharacterPC>(Player))
+		if(player->GetStat(ECharacterStatType::Hp) <= 0 )
+			return false;
+	
 	// DrawDebug
 	if(DebugOnOff)
 		DrawDebugSearchArea();
@@ -406,7 +410,7 @@ void ACharacterMonster::StartRagdollAndDestroy()
 	TWeakObjectPtr<ACharacterMonster> thisPtr = this;
 	GetWorld()->GetTimerManager().SetTimer(DestroyTHandle, [thisPtr](){
 	if(thisPtr.IsValid())
-		thisPtr->Destroy();
+		thisPtr->DestroyByObjectManager();
 	},5.f, false);
 }
 

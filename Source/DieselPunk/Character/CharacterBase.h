@@ -39,9 +39,9 @@ protected:
 	UPROPERTY()
 	class ADamageUIActor *DamageUIActor;	// 데미지 UI 액터
 
-	Animator HpBarAnimator;					// 체력바 애니메이터
+
 	float HpPercent = 1;					// 체력바 퍼센테이지
-	Animator HpBarAfterImageAnimator;		// 체력바잔상 애니메이터
+
 	float HpPercentAfterImage = 1;			// 체력바잔상 퍼센테이지
 
 	/////////////////////////////////////////////////////////////////////
@@ -123,6 +123,7 @@ public:
 	// 데미지 처리
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent, class AController *EventInstigator, AActor *DamageCauser) override;
 
+	void DestroyByObjectManager();
 	
 	/////////////////////////////////////////////////////////////////////
 	// for UI // Animation //
@@ -149,7 +150,7 @@ public:
 
 	// 체력이 0이하일 때, true 반환
 	UFUNCTION(BlueprintPure)
-	bool IsDead();
+	bool IsDead() {return GetStat(ECharacterStatType::Hp) <= 0;};
 
 	float PlayCharacterStatusEffectAnimMontage(float InPlayRate, const FName& InSectionName);
 	virtual void _OnInterruptSkillAnimation(){}

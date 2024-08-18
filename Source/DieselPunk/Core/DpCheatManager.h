@@ -24,9 +24,9 @@ class DIESELPUNK_API UDpCheatManager : public UCheatManager
 	//MonsterSpawner 활성화합니다.
 	UFUNCTION(exec)
 	void StartSpawn(const FString& InCharacterName);
-	
-	//Stage 의 Wave를 시작합니다.
+
+	//Player를 죽입니다.
 	UFUNCTION(exec)
-	void StartStage();
+	void Kill_PC();
 };
 

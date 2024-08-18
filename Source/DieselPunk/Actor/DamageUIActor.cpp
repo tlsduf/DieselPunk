@@ -5,6 +5,8 @@
 
 #include <Components/WidgetComponent.h>
 
+#include "DieselPunk/Manager/ObjectManager.h"
+
 #include UE_INLINE_GENERATED_CPP_BY_NAME(DamageUIActor)
 
 // Sets default values
@@ -80,34 +82,6 @@ void ADamageUIActor::BeginPlay()
 	
 	TWeakObjectPtr<ADamageUIActor> thisPtr = this;
 
-	// XY축 움직임 애니메이션
-	AnimatorParam XYAccelparam;
-	XYAccelparam.StartValue = 1.f;
-	XYAccelparam.EndValue = 0.f;
-	XYAccelparam.DurationTime = LifeTime;
-	XYAccelparam.AnimType = EAnimType::CubicIn;
-	XYAccelparam.DurationFunc = [thisPtr](float InCurValue)
-	{
-		if(thisPtr.IsValid())
-			thisPtr->XYAccel = InCurValue;
-	};
-	XYAccelAnimator.SetParam(XYAccelparam);
-	XYAccelAnimator.Start();
-
-	// Z축 움직임 애니메이션
-	AnimatorParam ZAccelparam;
-	ZAccelparam.StartValue = 1.f;
-	ZAccelparam.EndValue = 0.f;
-	ZAccelparam.DurationTime = LifeTime;
-	ZAccelparam.AnimType = EAnimType::QuadOut;
-	ZAccelparam.DurationFunc = [thisPtr](float InCurValue)
-	{
-		if(thisPtr.IsValid())
-			thisPtr->ZAccel = InCurValue;
-	};
-	ZAccelAnimator.SetParam(ZAccelparam);
-	ZAccelAnimator.Start();
-
 	// LifeTime 후에 파괴
 	GetWorld()->GetTimerManager().SetTimer(DestroyTHandle, [thisPtr](){
 			if(thisPtr.IsValid())
@@ -118,16 +92,15 @@ void ADamageUIActor::BeginPlay()
 void ADamageUIActor::Tick(float InDeltaTime)
 {
 	Super::Tick(InDeltaTime);
-
-	// AccelAnimator 업데이트
-	XYAccelAnimator.Update(InDeltaTime);
-	ZAccelAnimator.Update(InDeltaTime);
+	
+	if( Alpha >= 0)
+		Alpha += (-1 / LifeTime) * InDeltaTime;
 	
 	// 위치 업데이트
 	FVector currentLocation = GetActorLocation();
 	FVector XYVector = FVector(XVelocity,YVelocity,0);
 	FVector ZVector = FVector( 0, 0, ZVelocity);
-	currentLocation += (XYAccel * XYVector * InDeltaTime) + (ZAccel * ZVector * InDeltaTime);
+	currentLocation += (Alpha * XYVector * InDeltaTime) + (Alpha * ZVector * InDeltaTime);
 	SetActorLocation(currentLocation);
 }
 
@@ -136,5 +109,5 @@ void ADamageUIActor::SelfDestroy()
 {
 	// 초기화해야 할게 있나?
 	DamageUI->Destruct();
-	Destroy();
+	FObjectManager::GetInstance()->DestroyActor(this);
 }

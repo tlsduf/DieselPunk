@@ -4,6 +4,7 @@
 
 #include "GameFramework/Actor.h"
 #include "../Interface/DpManagementTargetInterFace.h"
+#include "DieselPunk/Character/CharacterBase.h"
 #include "SkillActor.generated.h"
 
 class ACharacterBase;
@@ -43,4 +44,6 @@ public:
 	
 	// 설정한 OffsetTransform만큼 이동하여 초기 위치를 설정합니다.
 	virtual void InitTransformOffset();
+
+	void DestroyByObjectManager();
 };

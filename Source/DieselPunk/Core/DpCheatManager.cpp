@@ -57,9 +57,10 @@ void UDpCheatManager::StartSpawn(const FString& InCharacterName)
 		monsterSpawner->StartSpawn(InCharacterName);
 }
 
-//Stage 의 Wave를 시작합니다.
-void UDpCheatManager::StartStage()
+//Player를 죽입니다.
+void UDpCheatManager::Kill_PC()
 {
-	
+	ACharacterPC* player = FObjectManager::GetInstance()->GetPlayer();
+	player->ChangeStat(ECharacterStatType::Hp, -player->GetStat(ECharacterStatType::Hp));
 }
 

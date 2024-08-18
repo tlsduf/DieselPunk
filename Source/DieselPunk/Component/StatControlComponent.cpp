@@ -4,17 +4,16 @@
 #include "StatControlComponent.h"
 #include "../Character/CharacterBase.h"
 #include "../Raw/Buff.h"
+#include "../Logic/PlayerControllerBase.h"
 
 #include <GameFramework/CharacterMovementComponent.h>
-
-#include "Components/CapsuleComponent.h"
-#include "Components/SkeletalMeshComponent.h"
 #include "DieselPunk/Character/CharacterMonster.h"
 #include "DieselPunk/Character/CharacterTurret.h"
 #include "DieselPunk/Core/DPLevelScriptActor.h"
 #include "DieselPunk/Data/BuffDataTable.h"
 #include "DieselPunk/Data/StatDataTable.h"
 #include "DieselPunk/Manager/DatatableManager.h"
+#include "DieselPunk/Manager/ObjectManager.h"
 #include "DieselPunk/Raw/BuffStat.h"
 #include "DieselPunk/Raw/BuffStatusEffect.h"
 #include "Engine/Level.h"
@@ -114,19 +113,38 @@ void UStatControlComponent::SetStatDelegateFunction(TWeakObjectPtr<AActor> InAct
 	}
 	else if(InStatType == ECharacterStatType::Hp)
 	{
-		if(InValue <= 0)
-		{
-			ADPLevelScriptActor* level = Cast<ADPLevelScriptActor>(Owner->GetLevel()->GetLevelScriptActor());
+		if(InValue > 0)
+			return;
 
-			// monster 면 랙돌 아니면 Destroy
-			if(ACharacterMonster* monster = Cast<ACharacterMonster>(Owner))
-				monster->StartRagdollAndDestroy();
-			else
-				Owner->Destroy();
-			
-			// 레벨관리
-			if(level)
-				level->CheckWaveCleared();
+		ACharacterBase* charBase = Cast<ACharacterBase>(InActor);
+
+		if(charBase->GetCharacterType() == ECharacterType::Player)
+		{
+			// DeadState // 컨트롤러 세팅 // n초 후 캐릭터 리스폰 // UI는 GetSetStatDelegate 델리게이트로 처리
+			if(ACharacterPC* player = Cast<ACharacterPC>(charBase))
+				player->SetDeadStatePC();
+		}
+		
+		if(charBase->GetCharacterType() == ECharacterType::Monster)
+		{
+			if(ADPLevelScriptActor* level = Cast<ADPLevelScriptActor>(InActor->GetLevel()->GetLevelScriptActor()))
+				level->CheckWaveCleared();	//레벨 관리
+			if(ACharacterMonster* monster = Cast<ACharacterMonster>(charBase))
+				monster->StartRagdollAndDestroy();	//랙돌 애니메이션
+		}
+		
+		if(charBase->GetCharacterType() == ECharacterType::Turret || charBase->GetCharacterType() == ECharacterType::Installation)
+		{
+			FObjectManager::GetInstance()->UpdateSplinePathAllEnemy();	//ALL 몬스터 경로 갱신
+			FObjectManager::GetInstance()->DestroyActor(charBase);
+		}
+
+		if(charBase->GetCharacterType() == ECharacterType::Nexus)
+		{
+			// 컨트롤러 세팅 // UI는 GetSetStatDelegate 델리게이트로 처리
+			APlayerControllerBase* controller = Cast<APlayerControllerBase>(FObjectManager::GetInstance()->GetPlayer()->GetController());
+			if(controller)
+				controller->SetUIControlOff();
 		}
 	}
 }

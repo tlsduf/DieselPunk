@@ -105,7 +105,7 @@ void ACharacterTurret::SetTarget()
 			FObjectManager::GetInstance()->FindActorArrayByPredicate(outActors, [](AActor* InActor)
 			{
 				if(ACharacterNPC* thisNPC = Cast<ACharacterNPC>(InActor))
-					if(thisNPC->GetCharacterType() == ECharacterType::Monster)
+					if(thisNPC->GetCharacterType() == ECharacterType::Monster && thisNPC->GetStat(ECharacterStatType::Hp) > 0)
 						return true;
 				return false;
 			});
@@ -117,7 +117,7 @@ void ACharacterTurret::SetTarget()
 				if(ACharacterNPC* thisNPC = Cast<ACharacterNPC>(InActor))
 				{
 					//공중 유닛은 제외하고 대상 찾기
-					if(thisNPC->GetCharacterType() == ECharacterType::Monster && !thisNPC->GetStatControlComponent()->IsTrait(ENPCTraitType::Fly))
+					if(thisNPC->GetCharacterType() == ECharacterType::Monster && !thisNPC->GetStatControlComponent()->IsTrait(ENPCTraitType::Fly) && thisNPC->GetStat(ECharacterStatType::Hp) > 0)
 						return true;
 				}
 				return false;
@@ -134,7 +134,6 @@ void ACharacterTurret::SetTarget()
 			return true;
 		});
 		//타겟을 공격할 수 있는 조건(벽에 막히거나)
-		//TODO
 		if(!bPierceWallOfTurret)
 		{
 			outActors.RemoveAll([thisPtr](int32 ID)
@@ -160,6 +159,15 @@ void ACharacterTurret::SetTarget()
 	else
 	{
 		// 유효하다면 타겟 추적
+		// 타겟이 죽었는가? (hp <= 0) // 죽었다면 타겟 초기화
+		if(ACharacterBase* charBase = Cast<ACharacterBase>(Target))
+		{
+			if(charBase->GetStat(ECharacterStatType::Hp) <= 0)
+			{
+				ChangeTarget(nullptr);
+				return;
+			}
+		}
 		// 타겟이 범위안에 있는지 탐색 // 유효하지 않으면 타겟 초기화
 		if(!InValidSearchArea(Target->GetActorLocation()))
 		{

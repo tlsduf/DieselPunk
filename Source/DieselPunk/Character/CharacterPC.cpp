@@ -17,12 +17,8 @@
 #include <Components/SkeletalMeshComponent.h>
 
 #include <GameFramework/Controller.h>
-#include <EnhancedInputComponent.h>
 
 #include "CharacterTurret.h"
-#include "Blueprint/WidgetTree.h"
-#include "Components/Image.h"
-#include "Components/TextBlock.h"
 #include "../Manager/UIManager.h"
 #include "../UI/UserWidgetBase.h"
 #include "../UI/HUD/Hand.h"
@@ -30,7 +26,6 @@
 
 #include "DieselPunk/Actor/Weapon.h"
 #include "DieselPunk/Animation/SoldierAnimInstance.h"
-#include "DieselPunk/Manager/ObjectManager.h"
 #include "DieselPunk/Skill/SkillPC/SkillSpawnTurret.h"
 #include "DieselPunk/UI/HUD/DPHud.h"
 #include "Kismet/GameplayStatics.h"
@@ -59,6 +54,13 @@ void ACharacterPC::CheckViewMiddleForInteractInstallationUI()
 		hud->SetViewInteractionUI(LookInstallation.IsValid() || SelectInstallation.IsValid());
 		hud->SelectedInteractionUI(SelectInstallation.IsValid());
 	}
+}
+
+void ACharacterPC::InitHud()
+{
+	TWeakObjectPtr<UDPHud> hud = Cast<UDPHud>(FindWidgetBase(Cast<APlayerControllerBase>(Controller)->GetHUDId()));
+	if(hud.IsValid())
+		hud->InitPlayerHpBar(GetStat(ECharacterStatType::Hp), GetStat(ECharacterStatType::MaxHp));
 }
 
 ACharacterPC::ACharacterPC()
@@ -159,6 +161,9 @@ void ACharacterPC::BeginPlay()
 			break;
 		}
 	}
+
+	// 플레이어 정보를 UI에 전달합	니다.
+	InitHud();
 }
 
 // Called every frame
@@ -198,12 +203,11 @@ void ACharacterPC::Tick(float DeltaTime)
 		if (IsZoomed)
 			SetDefaultZoomProp();
 	}
-
-
+	
 	// 레벨이 올랐음을 감지하는 구문.
 	if(TempLevel != GetStat(ECharacterStatType::Level))
 	{
-		ChangeStat(ECharacterStatType::Hp , GetStat(ECharacterStatType::MaxHp));
+		ChangeStat(ECharacterStatType::Hp , GetStat(ECharacterStatType::MaxHp) - GetStat(ECharacterStatType::Hp));
 		TempLevel = GetStat(ECharacterStatType::Level);
 		LevelUpEvent();
 	}
@@ -897,4 +901,40 @@ void ACharacterPC::SetBuffStatusEffectRoleType(EBuffStatusEffectRoleType InBuffS
 		SpringArm->bUsePawnControlRotation = false;
 		SpringArm->SetWorldRotation(controllerRotation);
 	}
+}
+
+// 플레이어가 사망했을 때의 상태를 세팅합니다.
+void ACharacterPC::SetDeadStatePC()
+{
+	// DeadState
+	// visual-invisible // TODO DeadAnimation
+	GetMesh()->SetHiddenInGame(true);
+	
+	// 컨트롤러 세팅
+	APlayerControllerBase* controller = Cast<APlayerControllerBase>(GetController());
+	if(controller)
+		controller->SetUIControlForPlayerDie();
+	// n초 후 캐릭터 리스폰 // 현재는 10초 // TODO property로 빼야함
+	FTimerHandle timerHandle;
+	TWeakObjectPtr<ACharacterPC> thisPtr = this;
+	GetWorld()->GetTimerManager().SetTimer(timerHandle, [thisPtr](){
+			if(thisPtr.IsValid())
+				thisPtr->ReSpawnPC();
+			},10.f, false);
+}
+
+// 플레이어를 리스폰하며, 리스폰할 때의 상태를 세팅합니다.
+void ACharacterPC::ReSpawnPC()
+{
+	// LiveState
+	// visual-visible // TODO ReSpawnAnimation
+	GetMesh()->SetHiddenInGame(false);
+	
+	// 컨트롤러 세팅
+	APlayerControllerBase* controller = Cast<APlayerControllerBase>(GetController());
+	if(controller)
+		controller->SetUIControlForPlayerRespawn();
+
+	//플레이어 리스폰
+	ChangeStat(ECharacterStatType::Hp, GetStat(ECharacterStatType::MaxHp));
 }
