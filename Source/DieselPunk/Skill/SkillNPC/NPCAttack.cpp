@@ -53,7 +53,7 @@ void UNPCAttack::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 
 				return;
 			}
-			DrawDebugLine(GetWorld(), monster->GetMesh()->GetSocketLocation(TEXT("Grenade_socket")), monster->GetAttackTarget()->GetActorLocation(), FColor::Red);
+			DrawDebugLine(GetWorld(), monster->GetGrenadeSocketLocation(TEXT("Grenade_socket")), monster->GetAttackTarget()->GetActorLocation(), FColor::Red);
 		}
 	}
 }
@@ -111,18 +111,20 @@ void UNPCAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 	auto ownerPawn = Cast<ACharacterNPC>(OwnerCharacter);
 	if(!ownerPawn)
 		return;
+
+	PlayEffect(TEXT("Grenade_socket"));
 	
 	if(ProjectileType == EProjectileType::TargetAttack)
 	{
 		TArray<FHitResult> results;
 		if(ownerPawn->GetCharacterType() == ECharacterType::Player || ownerPawn->GetCharacterType() == ECharacterType::Turret)
 		{
-			GetWorld()->LineTraceMultiByChannel(results, ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket"), InTarget->GetActorLocation()
+			GetWorld()->LineTraceMultiByChannel(results, ownerPawn->GetGrenadeSocketLocation("Grenade_socket"), InTarget->GetActorLocation()
 			, ECC_DP_PlayerChannel);
 		}
 		else if(ownerPawn->GetCharacterType() == ECharacterType::Monster)
 		{
-			GetWorld()->LineTraceMultiByChannel(results, ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket"), InTarget->GetActorLocation()
+			GetWorld()->LineTraceMultiByChannel(results, ownerPawn->GetGrenadeSocketLocation("Grenade_socket"), InTarget->GetActorLocation()
 			, ECC_DP_EnemyChannel);
 		}
 
@@ -134,7 +136,7 @@ void UNPCAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 				{
 					FEffectTransform hitET;
 					hitET.Location = HitEffectTransform.Location + hitResult.Location;
-					hitET.Rotation = HitEffectTransform.Rotation + ownerPawn->GetMesh()->GetSocketRotation("Grenade_socket").GetInverse();
+					hitET.Rotation = HitEffectTransform.Rotation + ownerPawn->GetGrenadeSocketRotation("Grenade_socket").GetInverse();
 					hitET.Scale = HitEffectTransform.Scale;
 					if (N_HitEffect)
 						UtilEffect::SpawnNiagaraEffect(GetWorld(), N_HitEffect, hitET);
@@ -148,8 +150,8 @@ void UNPCAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 	else if(ProjectileType == EProjectileType::Straight)
 	{
 		FSpawnParam param;
-		param.Location = ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket");
-		param.Rotation = ownerPawn->GetMesh()->GetSocketRotation("Grenade_socket");
+		param.Location = ownerPawn->GetGrenadeSocketLocation("Grenade_socket");
+		param.Rotation = ownerPawn->GetGrenadeSocketRotation("Grenade_socket");
 
 		TWeakObjectPtr<UNPCAttack> thisPtr = this;
 		float damage = Damage;
@@ -172,8 +174,8 @@ void UNPCAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 	else if(ProjectileType == EProjectileType::Parabola)
 	{
 		FSpawnParam param;
-		param.Location = ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket");
-		param.Rotation = ownerPawn->GetMesh()->GetSocketRotation("Grenade_socket");
+		param.Location = ownerPawn->GetGrenadeSocketLocation("Grenade_socket");
+		param.Rotation = ownerPawn->GetGrenadeSocketRotation("Grenade_socket");
 
 		TWeakObjectPtr<UNPCAttack> thisPtr = this;
 		TWeakObjectPtr<AActor> targetPtr = InTarget;
@@ -467,12 +469,12 @@ void UNPCAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 		TArray<FHitResult> results;
 		if(ownerPawn->GetCharacterType() == ECharacterType::Player || ownerPawn->GetCharacterType() == ECharacterType::Turret)
 		{
-			GetWorld()->LineTraceMultiByChannel(results, ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket"), InTarget->GetActorLocation()
+			GetWorld()->LineTraceMultiByChannel(results, ownerPawn->GetGrenadeSocketLocation("Grenade_socket"), InTarget->GetActorLocation()
 			, ECC_DP_PlayerChannel);
 		}
 		else if(ownerPawn->GetCharacterType() == ECharacterType::Monster)
 		{
-			GetWorld()->LineTraceMultiByChannel(results, ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket"), InTarget->GetActorLocation()
+			GetWorld()->LineTraceMultiByChannel(results, ownerPawn->GetGrenadeSocketLocation("Grenade_socket"), InTarget->GetActorLocation()
 			, ECC_DP_EnemyChannel);
 		}
 
@@ -484,7 +486,7 @@ void UNPCAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 				{
 					FEffectTransform hitET;
 					hitET.Location = HitEffectTransform.Location + hitResult.Location;
-					hitET.Rotation = HitEffectTransform.Rotation + ownerPawn->GetMesh()->GetSocketRotation("Grenade_socket").GetInverse();
+					hitET.Rotation = HitEffectTransform.Rotation + ownerPawn->GetGrenadeSocketRotation("Grenade_socket").GetInverse();
 					hitET.Scale = HitEffectTransform.Scale;
 					if (N_HitEffect)
 						UtilEffect::SpawnNiagaraEffect(GetWorld(), N_HitEffect, hitET);
@@ -503,8 +505,8 @@ void UNPCAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 void UNPCAttack::PlayEffect(const FName& InAttachSocketName)
 {
 	FEffectTransform effectTransform = ShotEffectTransform;
-	effectTransform.Location += OwnerCharacter->GetMesh()->GetSocketLocation(InAttachSocketName);
-	effectTransform.Rotation += OwnerCharacter->GetMesh()->GetSocketRotation(InAttachSocketName);
+	effectTransform.Location += OwnerCharacter->GetGrenadeSocketLocation(InAttachSocketName);
+	effectTransform.Rotation += OwnerCharacter->GetGrenadeSocketRotation(InAttachSocketName);
 	
 	if (N_ShotEffect)
 		UtilEffect::SpawnNiagaraEffect(GetWorld(), N_ShotEffect, effectTransform);

@@ -318,6 +318,22 @@ void ACharacterBase::SetBuffStatusEffectRoleType(EBuffStatusEffectRoleType InBuf
 		CanSkill = InCan;
 }
 
+FVector ACharacterBase::GetGrenadeSocketLocation(const FName& InSocketName)
+{
+	if(GetMesh())
+		return GetMesh()->GetSocketLocation(InSocketName);
+
+	return GetActorLocation();
+}
+
+FRotator ACharacterBase::GetGrenadeSocketRotation(const FName& InSocketName)
+{
+	if(GetMesh())
+		return GetMesh()->GetSocketRotation(InSocketName);
+
+	return GetActorRotation();
+}
+
 void ACharacterBase::RagdollImpulse(float DamageAmount, AController *EventInstigator, AActor *DamageCauser)
 {
 	//플레이어와 몬스터일 경우에만 Impulse

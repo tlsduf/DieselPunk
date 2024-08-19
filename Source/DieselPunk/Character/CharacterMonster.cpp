@@ -13,6 +13,7 @@
 #include "DieselPunk/Component/StatControlComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "CharacterNexus.h"
+#include "Animation/AnimSequence.h"
 #include "DieselPunk/Animation/MonsterAnimInstance.h"
 
 
@@ -22,6 +23,8 @@
 ACharacterMonster::ACharacterMonster()
 {
 	DPNavigationComponent = CreateDefaultSubobject<UDPNavigationComponent>(TEXT("DPNavigationComponent"));
+	WeaponComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponComponent"));
+	WeaponComponent->SetupAttachment(GetMesh(), TEXT("RHand_socket"));
 }
 
 // =============================================================
@@ -419,5 +422,31 @@ void ACharacterMonster::StartRagdollAndDestroy()
 	if(thisPtr.IsValid())
 		thisPtr->DestroyByObjectManager();
 	},5.f, false);
+}
+
+void ACharacterMonster::PlayWeaponShotAnimation()
+{
+	if(WeaponComponent)
+		WeaponComponent->PlayAnimation(ShotAnimSequence, false);
+}
+
+FVector ACharacterMonster::GetGrenadeSocketLocation(const FName& InSocketName)
+{
+	if(WeaponComponent)
+	{
+		if(WeaponComponent->GetSocketByName(InSocketName))
+			return WeaponComponent->GetSocketLocation(InSocketName);
+	}
+	return Super::GetGrenadeSocketLocation(InSocketName);
+}
+
+FRotator ACharacterMonster::GetGrenadeSocketRotation(const FName& InSocketName)
+{
+	if(WeaponComponent)
+	{
+		if(WeaponComponent->GetSocketByName(InSocketName))
+			return WeaponComponent->GetSocketRotation(InSocketName);
+	}
+	return Super::GetGrenadeSocketRotation(InSocketName);
 }
 

@@ -41,7 +41,7 @@ void USkillSoldierQ::SkillTriggered()
 // 몽타주에서 실행합니다.
 void USkillSoldierQ::Shot()
 {
-	FVector shotLocation = OwnerCharacterPC->GetMesh()->GetSocketLocation("Grenade_socket");
+	FVector shotLocation = OwnerCharacterPC->GetGrenadeSocketLocation("Grenade_socket");
 	const FRotator shotRotation = OwnerController->GetControlRotation();
 	FRotator spawnPitch = FRotator(0, 0, 0);
 	

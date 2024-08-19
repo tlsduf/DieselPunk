@@ -37,6 +37,8 @@ class DIESELPUNK_API ACharacterMonster : public ACharacterNPC, public IThrowable
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "MYDP_Navi", meta = (AllowPrivateAccess = "true"))
 	UDPNavigationComponent* DPNavigationComponent;
+	UPROPERTY(EditDefaultsOnly, Category = "MYDP_Weapon", meta = (AllowPrivateAccess = "true"))
+	USkeletalMeshComponent* WeaponComponent;
 
 	FVector NowGoalLoc = FVector::ZeroVector;	// 처음으로 도달할 목표 위치 // 처음으로 도달할 경유지점 위치
 	TMap<FVector, FRoutingLine> RoutingLines;	// GoalLoc를 업데이트 해주기 위한 선분과 경유지점 TMap입니다.
@@ -54,6 +56,10 @@ protected:
 
 	//[임시] 1초마다 UpdateSplinePath()발동용
 	float elapsedTime = 0.f;
+
+
+	UPROPERTY(EditDefaultsOnly, Category="MYDP_Weapon")
+	TObjectPtr<UAnimSequence> ShotAnimSequence = nullptr;
 	
 protected:
 	ACharacterMonster();
@@ -102,4 +108,9 @@ public:
 
 	// Ragdoll Test
 	void StartRagdollAndDestroy();
+
+	void PlayWeaponShotAnimation();
+
+	virtual FVector GetGrenadeSocketLocation(const FName& InSocketName) override;
+	virtual FRotator GetGrenadeSocketRotation(const FName& InSocketName) override;
 };

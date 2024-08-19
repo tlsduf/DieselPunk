@@ -9,6 +9,7 @@
 #include <Components/SkeletalMeshComponent.h>
 
 #include "DieselPunk/Animation/DPAnimInstance.h"
+#include "DieselPunk/Character/CharacterMonster.h"
 #include "DieselPunk/Character/CharacterPC.h"
 #include "DieselPunk/Skill/SkillSoldier/SkillSoldierLM.h"
 
@@ -39,5 +40,10 @@ void UDPAnimNotify_Shot::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceB
 		//		animInst->AttackEndSign();
 		//}
 		character->AbilityShot(DamageCoefficient);
+
+		if(ACharacterMonster* monster = Cast<ACharacterMonster>(character))
+		{
+			monster->PlayWeaponShotAnimation();
+		}
 	}
 }

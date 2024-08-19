@@ -269,7 +269,7 @@ bool ACharacterNPC::TargetLineTracing(TWeakObjectPtr<AActor> InTarget)
 	if(SearchAreaData.OnLineTracing)
 	{
 		TArray<FHitResult> results;
-		if(GetWorld()->LineTraceMultiByChannel(results, GetMesh()->GetSocketLocation(TEXT("Grenade_socket")), InTarget->GetActorLocation(), ECC_WorldStatic))
+		if(GetWorld()->LineTraceMultiByChannel(results, GetGrenadeSocketLocation(TEXT("Grenade_socket")), InTarget->GetActorLocation(), ECC_WorldStatic))
 		{
 			for(const FHitResult& result : results)
 			{

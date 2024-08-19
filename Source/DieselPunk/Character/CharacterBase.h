@@ -188,6 +188,9 @@ public:
 	void SetCanSkill(bool InCanSkill){CanSkill = InCanSkill;}
 	bool GetCanSkill(){return CanSkill;}
 
+	virtual FVector GetGrenadeSocketLocation(const FName& InSocketName);
+	virtual FRotator GetGrenadeSocketRotation(const FName& InSocketName);
+
 	/////////////////////////////////////////////////////////////////////
 	// Skill //
 	virtual void AbilityShot(double InDamageCoefficient){}
