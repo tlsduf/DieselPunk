@@ -23,19 +23,19 @@ protected:
 	bool IsInAir = false;
 
 	UPROPERTY(BlueprintReadOnly, Category = "MYDP_Movement", Meta = (AllowPrivateAccess = true))
-	FVector Velocity = FVector();
+	FVector Velocity = FVector::ZeroVector;
 
 	UPROPERTY(BlueprintReadOnly, Category = "MYDP_Movement", Meta = (AllowPrivateAccess = true))
-	FRotator ActorRotation = FRotator();
+	FRotator ActorRotation = FRotator::ZeroRotator;
 
 	UPROPERTY(BlueprintReadOnly, Category = "MYDP_Movement", Meta = (AllowPrivateAccess = true))
-	FRotator BaseAimRotation = FRotator();
+	FRotator BaseAimRotation = FRotator::ZeroRotator;
 
 	UPROPERTY(BlueprintReadOnly, Category = "MYDP_Movement", Meta = (AllowPrivateAccess = true))
-	FRotator DeltaRotation = FRotator();
+	FRotator DeltaRotation = FRotator::ZeroRotator;
 
 	UPROPERTY(BlueprintReadOnly, Category = "MYDP_Movement", Meta = (AllowPrivateAccess = true))
-	FRotator CharacterDirectionRotation = FRotator();
+	FRotator CharacterDirectionRotation = FRotator::ZeroRotator;
 
 	UPROPERTY(BlueprintReadOnly, Category = "MYDP_Movement", Meta = (AllowPrivateAccess = true))
 	float Speed = 0;

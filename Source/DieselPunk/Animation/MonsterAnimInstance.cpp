@@ -13,6 +13,15 @@ void UMonsterAnimInstance::NativeUpdateAnimation(float InDeltaSeconds)
 {
 	Super::NativeUpdateAnimation(InDeltaSeconds);
 
+	if(TryGetPawnOwner() == nullptr)
+		return;
+	
+	MonsterLocation = TryGetPawnOwner()->GetActorLocation();
+	PlayerLocation = Character->GetActorLocation();
+	FVector direction = PlayerLocation - MonsterLocation;
+	direction.Normalize();
+	TargetingRotation = direction.Rotation();
+	
 	AddRotation();
 }
 

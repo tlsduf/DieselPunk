@@ -3,6 +3,7 @@
 #pragma once
 
 #include "../Animation/DPAnimInstance.h"
+#include "DieselPunk/Character/CharacterBase.h"
 #include "MonsterAnimInstance.generated.h"
 
 /**
@@ -18,6 +19,18 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP", Meta = (AllowPrivateAccess = true))
 	TSoftObjectPtr<UAnimMontage> MonsterMontage;
 
+	// 몬스터 위치
+	UPROPERTY(BlueprintReadOnly, Category = "MYDP_Movement", Meta = (AllowPrivateAccess = true))
+	FVector MonsterLocation = FVector::ZeroVector;
+	
+	// 플레이어 위치
+	UPROPERTY(BlueprintReadOnly, Category = "MYDP_Movement", Meta = (AllowPrivateAccess = true))
+	FVector PlayerLocation = FVector::ZeroVector;
+
+	// 플레이어 위치
+	UPROPERTY(BlueprintReadOnly, Category = "MYDP_Movement", Meta = (AllowPrivateAccess = true))
+	FRotator TargetingRotation = FRotator::ZeroRotator;
+	
 	// 공중몹 프로펠러 회전
 	UPROPERTY(BlueprintReadOnly, Category = "MYDP", Meta = (AllowPrivateAccess = true))
 	int Radian = 0;
