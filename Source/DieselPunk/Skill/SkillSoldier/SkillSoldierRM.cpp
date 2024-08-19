@@ -34,6 +34,8 @@ void USkillSoldierRM::AbilityStart(AActor* InTarget)
 	CoolTimeHandler->SetCoolTime(CoolTime);
 	
 	auto ownerPawn = Cast<ACharacterBase>(OwnerCharacter);
+	if (auto pc = Cast<ACharacterPC>(ownerPawn))
+		pc->StopJog();
 	if(UDPAnimInstance* animInst = Cast<UDPAnimInstance>(ownerPawn->GetMesh()->GetAnimInstance()))	
 		animInst->AttackSign(EAbilityType::MouseRM);
 }

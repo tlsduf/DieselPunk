@@ -23,14 +23,14 @@ void USkillSoldierShift::SkillStarted()
 {
 	Super::SkillStarted();
 	
-	//OwnerCharacterPC->StartJog();
+	OwnerCharacterPC->StartJog();
 }
 
 void USkillSoldierShift::SkillTriggered()
 {
 	Super::SkillTriggered();
 
-	OwnerCharacterPC->StartJog();
+	//OwnerCharacterPC->StartJog();
 	//StartDash();
 }
 
