@@ -4,6 +4,7 @@
 #pragma once
 
 #include "../UserWidgetBase.h"
+#include "Components/Image.h"
 #include "HudFadeCanvas.generated.h"
 
 class FOnButtonClickedEvent;
@@ -51,6 +52,12 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
 	UTextBlock* LeftText = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+	UImage* LeftButtonImage = nullptr;
+
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+	UTextBlock* LeftButtonText = nullptr;
 
 	//Animation///////////////////////////////////////////////////////////////////
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidgetAnim), Transient)

@@ -22,6 +22,10 @@
 void UHudFadeCanvas::OnCreated()
 {
 	Super::OnCreated();
+
+	InitUIVisibility(FHudFadeCanvasUIType::LeftText);
+	PlayScaleUpAnimation();
+	PlayFadeInAnimation();
 }
 
 void UHudFadeCanvas::InitUIVisibility(uint8 InVisibilityUIType)
@@ -57,9 +61,17 @@ void UHudFadeCanvas::InitUIVisibility(uint8 InVisibilityUIType)
 		BottomText_Under->SetVisibility(ESlateVisibility::Hidden);
 
 	if(InVisibilityUIType & (uint8)FHudFadeCanvasUIType::LeftText)
+	{
 		LeftText->SetVisibility(ESlateVisibility::Visible);
+		LeftButtonImage->SetVisibility(ESlateVisibility::Visible);
+		LeftButtonText->SetVisibility(ESlateVisibility::Visible);
+	}
 	else
+	{
 		LeftText->SetVisibility(ESlateVisibility::Hidden);
+		LeftButtonImage->SetVisibility(ESlateVisibility::Hidden);
+		LeftButtonText->SetVisibility(ESlateVisibility::Hidden);
+	}
 }
 
 void UHudFadeCanvas::StopAllAnimation()

@@ -57,6 +57,7 @@ void UDPHud::OnCreated()
 	OnOffViewCard();
 
 	HudFadeCanvas->SetOwner(Owner.Get());
+	HudFadeCanvas->OnCreated();
 }
 
 void UDPHud::SetViewInteractionUI(bool InView)
