@@ -58,6 +58,8 @@ void UDPHud::OnCreated()
 
 	HudFadeCanvas->SetOwner(Owner.Get());
 	HudFadeCanvas->OnCreated();
+
+	SetViewCard(nullptr);
 }
 
 void UDPHud::SetViewInteractionUI(bool InView)
@@ -136,6 +138,9 @@ void UDPHud::InitPlayerHpBar(int32 InHp, int32 InMaxHp)
 
 void UDPHud::OnStatChanged(TWeakObjectPtr<AActor> InActor, ECharacterStatType InCharacterType, int32 InValue)
 {
+	if(!InActor.IsValid())
+		return;
+	
 	ACharacterBase* charBase = Cast<ACharacterBase>(InActor);
 
 	if(charBase->GetCharacterType() == ECharacterType::Player)
