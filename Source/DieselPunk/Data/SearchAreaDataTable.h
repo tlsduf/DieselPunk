@@ -40,4 +40,8 @@ struct DIESELPUNK_API FSearchAreaDataTable : public FDPTableRowBase
 	// 최소 사거리
 	UPROPERTY(EditAnywhere)
 	int AtkMinRange = 0;
+
+	// 라인 트레이싱
+	UPROPERTY(EditAnywhere)
+	bool OnLineTracing = false;
 };

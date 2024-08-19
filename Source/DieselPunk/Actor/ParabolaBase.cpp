@@ -68,8 +68,8 @@ void AParabolaBase::BeginPlay()
 
 	DistanceAtGoal = FVector::Distance(GoalLocation, StartLocation);
 
-	FlightTime = MinFlightTime + ParabolaArrivalTimeCoefficient *
-		(DistanceAtGoal - OwnerCharacter->GetStat(ECharacterStatType::AtkMinRange)) / OwnerCharacter->GetStat(ECharacterStatType::ShellFall);
+	//FlightTime = MinFlightTime + ParabolaArrivalTimeCoefficient *
+	//	(DistanceAtGoal - OwnerCharacter->GetStat(ECharacterStatType::AtkMinRange)) / OwnerCharacter->GetStat(ECharacterStatType::ShellFall);
 
 	FallTime = FlightTime * 0.5f;
 	

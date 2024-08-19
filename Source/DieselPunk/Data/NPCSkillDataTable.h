@@ -150,18 +150,18 @@ struct DIESELPUNK_API FNPCSkillDataTable : public FDPTableRowBase
 	USoundBase* ShotSound = nullptr;
 
 	//히트 시 재생할 나이아가라 이펙트
-	UPROPERTY(EditAnywhere, Category="MYDP_Effect", meta=(EditCondition="ProjectileType == EProjectileType::TargetAttack || ProjectileType == EProjectileType::Melee"))
+	UPROPERTY(EditAnywhere, Category="MYDP_Effect", meta=(EditCondition="ProjectileType == EProjectileType::TargetAttack || ProjectileType == EProjectileType::Melee || ProjectileType == EProjectileType::Sniping"))
 	class UNiagaraSystem* N_HitEffect = nullptr;
 	
 	//히트 시 재생할 캐스케이드 이펙트
-	UPROPERTY(EditAnywhere, Category="MYDP_Effect", meta=(EditCondition="ProjectileType == EProjectileType::TargetAttack || ProjectileType == EProjectileType::Melee"))
+	UPROPERTY(EditAnywhere, Category="MYDP_Effect", meta=(EditCondition="ProjectileType == EProjectileType::TargetAttack || ProjectileType == EProjectileType::Melee || ProjectileType == EProjectileType::Sniping"))
 	UParticleSystem* HitEffect = nullptr;
 
 	//히트 오프셋 트랜스폼
-	UPROPERTY(EditAnywhere, Category="MYDP_Effect", meta=(EditCondition="ProjectileType == EProjectileType::TargetAttack || ProjectileType == EProjectileType::Melee"))
+	UPROPERTY(EditAnywhere, Category="MYDP_Effect", meta=(EditCondition="ProjectileType == EProjectileType::TargetAttack || ProjectileType == EProjectileType::Melee || ProjectileType == EProjectileType::Sniping"))
 	FEffectTransform HitEffectTransform = FEffectTransform();
 
 	//히트 시 재생할 사운드
-	UPROPERTY(EditAnywhere, Category="MYDP_Effect", meta=(EditCondition="ProjectileType == EProjectileType::TargetAttack || ProjectileType == EProjectileType::Melee"))
+	UPROPERTY(EditAnywhere, Category="MYDP_Effect", meta=(EditCondition="ProjectileType == EProjectileType::TargetAttack || ProjectileType == EProjectileType::Melee || ProjectileType == EProjectileType::Sniping"))
 	USoundBase* HitSound = nullptr;
 };

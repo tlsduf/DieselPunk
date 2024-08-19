@@ -14,6 +14,7 @@
 #include "DieselPunk/Actor/ProjectileSkillActorBase.h"
 #include "DieselPunk/Actor/StraightSkillActorBase.h"
 #include "DieselPunk/Actor/ThrowableActor.h"
+#include "DieselPunk/Character/CharacterMonster.h"
 #include "DieselPunk/Component/StatControlComponent.h"
 #include "DieselPunk/Data/NPCSkillDataTable.h"
 #include "DieselPunk/Data/ProjectileSkillActorDataTable.h"
@@ -33,6 +34,28 @@ UNPCAttack::UNPCAttack() : Super()
 void UNPCAttack::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void UNPCAttack::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if(SnipingStart)
+	{
+		ACharacterMonster* monster = Cast<ACharacterMonster>(OwnerCharacter);
+		if(monster)
+		{
+			if(!monster->GetAttackTarget().IsValid() || CurrentTarget != monster->GetAttackTarget())
+			{
+				if(UDPAnimInstance* animInst = Cast<UDPAnimInstance>(monster->GetMesh()->GetAnimInstance()))
+					animInst->AttackEndSign();
+				SnipingStart = false;
+				CurrentTarget = monster->GetAttackTarget().IsValid() ? monster->GetAttackTarget() : nullptr;
+
+				return;
+			}
+			DrawDebugLine(GetWorld(), monster->GetMesh()->GetSocketLocation(TEXT("Grenade_socket")), monster->GetAttackTarget()->GetActorLocation(), FColor::Red);
+		}
+	}
 }
 
 void UNPCAttack::AbilityStart(AActor* InTarget)
@@ -69,6 +92,11 @@ void UNPCAttack::AbilityStart(AActor* InTarget)
 	else if(ProjectileType == EProjectileType::SuicideBomb)
 	{
 		AbilityShot(1.f, InTarget);
+	}
+	else if(ProjectileType == EProjectileType::Sniping)
+	{
+		SnipingStart = true;
+		CurrentTarget = InTarget;
 	}
 }
 
@@ -152,7 +180,12 @@ void UNPCAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 		FName projectileName = ProjectileName;
 		float damage = Damage;
 		float maxRange = MaxRange;
-		param.CallBackSpawn = [thisPtr, damage, maxRange, targetPtr, projectileName](AActor* InActor)
+		int32 minRange = 0;
+		ACharacterNPC* npc = Cast<ACharacterNPC>(OwnerCharacter);
+		int32 shellFall = OwnerCharacter->GetStat(ECharacterStatType::ShellFall);
+		if(npc)
+			minRange = npc->GetSearchAreaData().AtkMinRange;
+		param.CallBackSpawn = [thisPtr, damage, maxRange, targetPtr, projectileName, minRange, shellFall](AActor* InActor)
 		{
 			if(thisPtr.IsValid() && targetPtr.IsValid())
 			{
@@ -161,6 +194,8 @@ void UNPCAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 				parabola->SetMaxRange(maxRange);
 				parabola->SetGoalLocation(targetPtr->GetActorLocation());
 				parabola->SetProjectileSkillActorName(projectileName);
+				parabola->SetMinRange(minRange);
+				parabola->SetShellFall(shellFall);
 			}
 		};
 		const FProjectileSkillActorDataTable* table = FDataTableManager::GetInstance()->GetData<FProjectileSkillActorDataTable>(EDataTableType::ProjectileSkillActor, projectileName.ToString());
@@ -426,6 +461,42 @@ void UNPCAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 	
 		
 		UGameplayStatics::ApplyDamage(InTarget, Damage, OwnerController, nullptr, nullptr);
+	}
+	else if(ProjectileType == EProjectileType::Sniping)
+	{
+		TArray<FHitResult> results;
+		if(ownerPawn->GetCharacterType() == ECharacterType::Player || ownerPawn->GetCharacterType() == ECharacterType::Turret)
+		{
+			GetWorld()->LineTraceMultiByChannel(results, ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket"), InTarget->GetActorLocation()
+			, ECC_DP_PlayerChannel);
+		}
+		else if(ownerPawn->GetCharacterType() == ECharacterType::Monster)
+		{
+			GetWorld()->LineTraceMultiByChannel(results, ownerPawn->GetMesh()->GetSocketLocation("Grenade_socket"), InTarget->GetActorLocation()
+			, ECC_DP_EnemyChannel);
+		}
+
+		if(!results.IsEmpty())
+		{
+			for(const FHitResult& hitResult : results)
+			{
+				if(hitResult.GetActor() == InTarget)
+				{
+					FEffectTransform hitET;
+					hitET.Location = HitEffectTransform.Location + hitResult.Location;
+					hitET.Rotation = HitEffectTransform.Rotation + ownerPawn->GetMesh()->GetSocketRotation("Grenade_socket").GetInverse();
+					hitET.Scale = HitEffectTransform.Scale;
+					if (N_HitEffect)
+						UtilEffect::SpawnNiagaraEffect(GetWorld(), N_HitEffect, hitET);
+					if (HitEffect)
+						UtilEffect::SpawnParticleEffect(GetWorld(), HitEffect, hitET);
+					UGameplayStatics::ApplyDamage(InTarget, Damage * InDamageCoefficient, OwnerController, nullptr, nullptr);
+					return;
+				}
+			}
+		}
+		SnipingStart = false;
+		CurrentTarget = nullptr;
 	}
 }
 

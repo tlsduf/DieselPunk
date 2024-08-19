@@ -13,6 +13,7 @@
 #include "DieselPunk/Component/StatControlComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "CharacterNexus.h"
+#include "DieselPunk/Animation/MonsterAnimInstance.h"
 
 
 // =============================================================
@@ -61,6 +62,12 @@ void ACharacterMonster::Tick(float DeltaTime)
 	// 경로 DebugDraw
 	if(DebugOnOff)
 		DPNavigationComponent->DrawDebugSpline();
+
+	
+	// 애니메이션 타겟 SET
+	UMonsterAnimInstance* monsterAnimInstace = Cast<UMonsterAnimInstance>(GetMesh()->GetAnimInstance());
+	if(monsterAnimInstace != nullptr)
+		monsterAnimInstace->SetCurTarget(Cast<ACharacterBase>(Target));
 }
 
 // =============================================================
@@ -124,7 +131,7 @@ void ACharacterMonster::UpdateEnemyTarget()
 	}
 	
 	float distance = FVector::Dist(GetActorLocation(), nexus->GetActorLocation());
-	if(distance > GetStat(ECharacterStatType::AtkMaxRange))
+	if(distance > SearchAreaData.AtkMaxRange)
 		ChangeTarget(nullptr);
 	else
 		ChangeTarget(nexus);
@@ -149,7 +156,7 @@ bool ACharacterMonster::bPlayerTargeting()
 	FVector playerLoc = Player->GetActorLocation();
 	FVector playerLocXY = FVector(playerLoc.X, playerLoc.Y, GetActorLocation().Z);
 	
-	bool inRange = InValidSearchArea(playerLoc);
+	bool inRange = InValidSearchArea(playerLoc) && TargetLineTracing(Player);
 	if(!inRange)
 		return inRange;
 	
@@ -198,7 +205,7 @@ void ACharacterMonster::SetInRange()
 	{
 		FVector VRange = GetActorLocation() - GetAttackTarget()->GetActorLocation();
 		float FRange = VRange.Size();
-		InRange = (GetStat(ECharacterStatType::AtkMaxRange) < FRange) ? false : true;
+		InRange = (SearchAreaData.AtkMaxRange < FRange) ? false : true;
 	}
 	else
 		InRange = false;

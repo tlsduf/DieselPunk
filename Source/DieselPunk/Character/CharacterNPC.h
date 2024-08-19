@@ -33,6 +33,9 @@ struct FSearchAreaData
 
 	// 최소 사거리
 	int AtkMinRange = 0;
+
+	// 라인 트레이싱 할건지
+	bool OnLineTracing = false;
 };
 
 UCLASS()
@@ -118,6 +121,9 @@ public:
 	// inLocation이 유효 범위 안에 있으면 True 반환
 	bool InValidSearchArea(FVector InLocation);
 
+	// 타겟에 라인 트레이싱을 합니다.
+	bool TargetLineTracing(TWeakObjectPtr<AActor> InTarget);
+
 	// 다각형 내부에 점이 위치하는지 확인합니다. // Point in polygon algorithm
 	bool IsInPolygon(double InX, double InY);
 	
@@ -152,4 +158,5 @@ public:
 	EAbilityType GetTopPriorityUseableSkill();
 	bool IsAllParabolaAttack();
 	const UNPCAttack* GetNPCAttack(EAbilityType InAbilityType);
+	FORCEINLINE const FSearchAreaData& GetSearchAreaData(){return SearchAreaData;}
 };

@@ -189,7 +189,8 @@ enum class EProjectileType : uint8
 	Parabola		UMETA( ToolTip = "곡사포" ),
 	Throwing		UMETA( ToolTip = "던지기" ),
 	SuicideBomb		UMETA( ToolTip = "자폭" ),
-	Melee			UMETA( ToolTip = "근접 공격" )
+	Melee			UMETA( ToolTip = "근접 공격" ),
+	Sniping			UMETA( ToolTip = "저격" )
 };
 
 // 스킬 거리 타입

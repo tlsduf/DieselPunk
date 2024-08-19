@@ -130,7 +130,8 @@ void ACharacterTurret::SetTarget()
 		{
 			//todo: 공중 크리쳐의 경우에는 범위 내에 존재하는 지 확인하는 함수 따로 제작 필요(THEQ)
 			if(thisPtr.IsValid())
-				return !thisPtr->InValidSearchArea(FObjectManager::GetInstance()->FindActor(ID)->GetActorLocation());
+				return !thisPtr->InValidSearchArea(FObjectManager::GetInstance()->FindActor(ID)->GetActorLocation())
+					|| !thisPtr->TargetLineTracing(FObjectManager::GetInstance()->FindActor(ID));
 			return true;
 		});
 		//타겟을 공격할 수 있는 조건(벽에 막히거나)
@@ -169,7 +170,7 @@ void ACharacterTurret::SetTarget()
 			}
 		}
 		// 타겟이 범위안에 있는지 탐색 // 유효하지 않으면 타겟 초기화
-		if(!InValidSearchArea(Target->GetActorLocation()))
+		if(!InValidSearchArea(Target->GetActorLocation()) || !TargetLineTracing(Target))
 		{
 			ChangeTarget(nullptr);
 			return;

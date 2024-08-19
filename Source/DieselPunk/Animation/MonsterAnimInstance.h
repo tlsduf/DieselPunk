@@ -6,6 +6,7 @@
 #include "DieselPunk/Character/CharacterBase.h"
 #include "MonsterAnimInstance.generated.h"
 
+class ACharacterNPC;
 /**
  * 
  */
@@ -19,14 +20,6 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP", Meta = (AllowPrivateAccess = true))
 	TSoftObjectPtr<UAnimMontage> MonsterMontage;
 
-	// 몬스터 위치
-	UPROPERTY(BlueprintReadOnly, Category = "MYDP_Movement", Meta = (AllowPrivateAccess = true))
-	FVector MonsterLocation = FVector::ZeroVector;
-	
-	// 플레이어 위치
-	UPROPERTY(BlueprintReadOnly, Category = "MYDP_Movement", Meta = (AllowPrivateAccess = true))
-	FVector PlayerLocation = FVector::ZeroVector;
-
 	// 플레이어 위치
 	UPROPERTY(BlueprintReadOnly, Category = "MYDP_Movement", Meta = (AllowPrivateAccess = true))
 	FRotator TargetingRotation = FRotator::ZeroRotator;
@@ -34,6 +27,9 @@ private:
 	// 공중몹 프로펠러 회전
 	UPROPERTY(BlueprintReadOnly, Category = "MYDP", Meta = (AllowPrivateAccess = true))
 	int Radian = 0;
+	
+	UPROPERTY()
+	TWeakObjectPtr<ACharacterBase> CurTarget = nullptr;
 	
 public:
 	// 생성자
@@ -50,6 +46,9 @@ public:
 	void PauseMontage(EAbilityType InAbilityType);
 	// 몽타주를 다시 재생합니다.
 	void ResumeMontage(EAbilityType InAbilityType);
+	
+	// 현재 타겟을 설정합니다.
+	void SetCurTarget(TWeakObjectPtr<ACharacterBase> InCharacter);
 
 private:
 

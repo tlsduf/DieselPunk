@@ -13,14 +13,19 @@ void UMonsterAnimInstance::NativeUpdateAnimation(float InDeltaSeconds)
 {
 	Super::NativeUpdateAnimation(InDeltaSeconds);
 
-	if(TryGetPawnOwner() == nullptr)
-		return;
-	
-	MonsterLocation = TryGetPawnOwner()->GetActorLocation();
-	PlayerLocation = Character->GetActorLocation();
-	FVector direction = PlayerLocation - MonsterLocation;
-	direction.Normalize();
-	TargetingRotation = direction.Rotation();
+	if(CurTarget.IsValid())
+	{
+		AActor* owner = TryGetPawnOwner();
+		if(!owner)
+			return;
+		
+		FVector startLoc = owner->GetActorLocation();
+		FVector endLoc = CurTarget->GetActorLocation();
+
+		FVector direction = endLoc - startLoc;
+		direction.Normalize();
+		TargetingRotation = direction.Rotation();
+	}
 	
 	AddRotation();
 }
@@ -74,6 +79,14 @@ void UMonsterAnimInstance::ResumeMontage(EAbilityType InAbilityType)
 	if(!animMontage)
 		return;
 	Montage_Resume(animMontage);
+}
+
+void UMonsterAnimInstance::SetCurTarget(TWeakObjectPtr<ACharacterBase> InCharacter)
+{
+	if(InCharacter.IsValid())
+		CurTarget = InCharacter;
+	else
+		CurTarget = nullptr;
 }
 
 // 공중몹 프로펠러 회전

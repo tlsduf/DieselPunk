@@ -80,6 +80,10 @@ protected:
 
 	//시작지점부터 골까지의 거리
 	float DistanceAtGoal = 0.f;
+
+	int32 MinRange = 0;
+
+	int32 ShellFall = 0;
 public:
 	// Sets default values for this actor's properties
 	AParabolaSkillActorBase();
@@ -101,4 +105,6 @@ protected:
 public:
 	FORCEINLINE void SetGoalLocation(FVector InGoalLocation){GoalLocation = InGoalLocation;}
 	FORCEINLINE void SetDirection(FVector InDirection){Direction = InDirection;}
+	FORCEINLINE void SetMinRange(int32 InMinRange){MinRange = InMinRange;}
+	FORCEINLINE void SetShellFall(int32 InShellFall){ShellFall = InShellFall;}
 };

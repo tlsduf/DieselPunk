@@ -63,6 +63,12 @@ protected:
 	//버프
 	TArray<FName> Buffs;
 	/////////////////////////////////////////////////////////////////////////
+
+	/////Melee//////////////////////////////////////////////////////////////////
+	bool SnipingStart = false;
+
+	TWeakObjectPtr<AActor> CurrentTarget = nullptr;
+	/////////////////////////////////////////////////////////////////////////
 	
 
 	//발사 시 재생할 나이아가라 이펙트
@@ -101,6 +107,8 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
 	virtual void AbilityStart(AActor* InTarget = nullptr) override;
 
 	virtual void AbilityShot(double InDamageCoefficient, AActor* InTarget = nullptr) override;

@@ -68,6 +68,7 @@ void ACharacterNPC::BeginPlay()
 		SearchAreaData.AtkMaxRange = table->AtkMaxRange;
 		SearchAreaData.AtkMaxRangeForFly = table->AtkMaxRangeForFly;
 		SearchAreaData.AtkMinRange = table->AtkMinRange;
+		SearchAreaData.OnLineTracing = table->OnLineTracing;
 	}
 }
 
@@ -205,8 +206,8 @@ void ACharacterNPC::MakeSearchArea()
 		return;
 	
 	FVector firstPoint = GetActorLocation() + (GetActorRightVector() * SearchAreaData.RectangleWidth * 0.5f);
-	FVector secondPoint = GetActorLocation() + (GetActorRightVector() * SearchAreaData.RectangleWidth * 0.5f) + GetActorForwardVector() * GetStat(ECharacterStatType::AtkMaxRange);
-	FVector thirdPoint = GetActorLocation() + (-1 * GetActorRightVector() * SearchAreaData.RectangleWidth * 0.5f) + GetActorForwardVector() * GetStat(ECharacterStatType::AtkMaxRange);
+	FVector secondPoint = GetActorLocation() + (GetActorRightVector() * SearchAreaData.RectangleWidth * 0.5f) + GetActorForwardVector() * SearchAreaData.AtkMaxRange;
+	FVector thirdPoint = GetActorLocation() + (-1 * GetActorRightVector() * SearchAreaData.RectangleWidth * 0.5f) + GetActorForwardVector() * SearchAreaData.AtkMaxRange;
 	FVector fourthPoint = GetActorLocation() + (-1 * GetActorRightVector() * SearchAreaData.RectangleWidth * 0.5f);
 
 	// Set RectanglePoints
@@ -231,8 +232,8 @@ bool ACharacterNPC::InValidSearchArea(FVector InLocation)
 		inLoc.Z = 0.f;
 		
 		float distance = FVector::Dist(ownerLoc, inLoc);
-		bool inMaxDistance = distance <= GetStat(ECharacterStatType::AtkMaxRange);		// 최대거리 안에 위치?
-		bool inMinDistance = distance >= GetStat(ECharacterStatType::AtkMinRange);		// 최소거리 밖에 위치?
+		bool inMaxDistance = distance <= SearchAreaData.AtkMaxRange;		// 최대거리 안에 위치?
+		bool inMinDistance = distance >= SearchAreaData.AtkMinRange;		// 최소거리 밖에 위치?
 		bool inMaxHeight = InLocation.Z <= GetActorLocation().Z + SearchAreaData.CircleHeight * 0.5f;
 		bool inMinHeight = InLocation.Z >= GetActorLocation().Z - SearchAreaData.CircleHeight * 0.5f;
 	
@@ -251,11 +252,53 @@ bool ACharacterNPC::InValidSearchArea(FVector InLocation)
 		targetDir.Normalize();
 		double dot = FVector::DotProduct(OriginForwardVector, targetDir);
 
-		return distance < GetStat(ECharacterStatType::AtkMaxRange)
-			&& distance > GetStat(ECharacterStatType::AtkMinRange)
+		return distance < SearchAreaData.AtkMaxRange
+			&& distance > SearchAreaData.AtkMinRange
 			&& dot > FMath::Cos(FMath::DegreesToRadians(SearchAreaData.ArcAngle * 0.5));
 	}
 	
+	return false;
+}
+
+bool ACharacterNPC::TargetLineTracing(TWeakObjectPtr<AActor> InTarget)
+{
+	//넥서스랑 설치물은 라인트레이싱 할 필요 없음
+	if(CharacterType == ECharacterType::Nexus || CharacterType == ECharacterType::Installation)
+		return false;
+	
+	if(SearchAreaData.OnLineTracing)
+	{
+		TArray<FHitResult> results;
+		if(GetWorld()->LineTraceMultiByChannel(results, GetMesh()->GetSocketLocation(TEXT("Grenade_socket")), InTarget->GetActorLocation(), ECC_WorldStatic))
+		{
+			for(const FHitResult& result : results)
+			{
+				if(result.GetActor() == this)
+					continue;
+
+				if(ACharacterBase* charBase = Cast<ACharacterBase>(result.GetActor()))
+				{
+					if(CharacterType == ECharacterType::Monster)
+					{
+						if(charBase->GetCharacterType() == ECharacterType::Turret
+						|| charBase->GetCharacterType() == ECharacterType::Installation
+						|| charBase->GetCharacterType() == ECharacterType::Player)
+							return result.GetActor() == InTarget;
+					}
+					else if(CharacterType == ECharacterType::Turret)
+					{
+						if(charBase->GetCharacterType() == ECharacterType::Monster)
+							return result.GetActor() == InTarget;
+					}
+				}
+				else
+					return false;
+			}
+		}
+	}
+	else
+		return true;
+
 	return false;
 }
 
@@ -290,8 +333,8 @@ void ACharacterNPC::DrawDebugSearchArea()
 {
 	if(SearchAreaData.SearchAreaType == ESearchAreaType::Circle)
 	{
-		DrawDebugCircle(GetWorld(), GetActorLocation(), GetStat(ECharacterStatType::AtkMaxRange), 16, FColor::Red, false, -1, 0, 3, FVector(0,1,0), FVector(1,0,0), true);
-		DrawDebugCircle(GetWorld(), GetActorLocation(), GetStat(ECharacterStatType::AtkMinRange), 16, FColor::Green, false, -1, 0, 3, FVector(0,1,0), FVector(1,0,0), true);
+		DrawDebugCircle(GetWorld(), GetActorLocation(), SearchAreaData.AtkMaxRange, 16, FColor::Red, false, -1, 0, 3, FVector(0,1,0), FVector(1,0,0), true);
+		DrawDebugCircle(GetWorld(), GetActorLocation(), SearchAreaData.AtkMinRange, 16, FColor::Green, false, -1, 0, 3, FVector(0,1,0), FVector(1,0,0), true);
 
 		/*float dif = GetStat().GetStat(ECharacterStatType::AttackMaxRange) - GetStat().GetStat(ECharacterStatType::AttackMinRange);
 		float colorDif = 255 / 4;
@@ -317,26 +360,26 @@ void ACharacterNPC::DrawDebugSearchArea()
 		FRotator right = OriginForwardVector.Rotation() + FRotator(0.0, SearchAreaData.ArcAngle * 0.5, 0.0);
 		FRotator left = OriginForwardVector.Rotation() + FRotator(0.0, SearchAreaData.ArcAngle * -0.5, 0.0);
 		DrawDebugLine(GetWorld(),
-			GetActorLocation() + left.Vector() * GetStat(ECharacterStatType::AtkMinRange),
-			GetActorLocation() + left.Vector() * GetStat(ECharacterStatType::AtkMaxRange),
+			GetActorLocation() + left.Vector() * SearchAreaData.AtkMinRange,
+			GetActorLocation() + left.Vector() * SearchAreaData.AtkMaxRange,
 			FColor::Red, false, -1, 0, 3);
 
 		
 		DrawDebugLine(GetWorld(),
-			GetActorLocation() + right.Vector() * GetStat(ECharacterStatType::AtkMinRange),
-			GetActorLocation() + right.Vector() * GetStat(ECharacterStatType::AtkMaxRange),
+			GetActorLocation() + right.Vector() * SearchAreaData.AtkMinRange,
+			GetActorLocation() + right.Vector() * SearchAreaData.AtkMaxRange,
 			FColor::Red, false, -1, 0, 3);
 
 		DrawDebugCircleArc(GetWorld(),
 			GetActorLocation(),
-			GetStat(ECharacterStatType::AtkMinRange),
+			SearchAreaData.AtkMinRange,
 			OriginForwardVector,
 			FMath::DegreesToRadians(SearchAreaData.ArcAngle * 0.5),
 			12, FColor::Red, false, -1, 0, 3);
 		
 		DrawDebugCircleArc(GetWorld(),
 			GetActorLocation(),
-			GetStat(ECharacterStatType::AtkMaxRange),
+			SearchAreaData.AtkMaxRange,
 			OriginForwardVector,
 			FMath::DegreesToRadians(SearchAreaData.ArcAngle * 0.5),
 			12, FColor::Red, false, -1, 0, 3);
