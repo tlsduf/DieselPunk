@@ -7,8 +7,11 @@
 #include "Components/BackgroundBlur.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
+#include "DieselPunk/Character/CharacterBase.h"
 #include "DieselPunk/Core/DPLevelScriptActor.h"
+#include "DieselPunk/Logic/PlayerControllerBase.h"
 #include "Engine/Level.h"
+#include "Kismet/GameplayStatics.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(HudFadeCanvas)
 
@@ -39,7 +42,7 @@ void UHudFadeCanvas::InitUIVisibility(uint8 InVisibilityUIType)
 		Button->SetVisibility(ESlateVisibility::Hidden);
 
 	if(InVisibilityUIType & (uint8)FHudFadeCanvasUIType::ButtonText)
-		ButtonText->SetVisibility(ESlateVisibility::Visible);
+		ButtonText->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	else
 		ButtonText->SetVisibility(ESlateVisibility::Hidden);
 	
@@ -253,5 +256,30 @@ void UHudFadeCanvas::GameOverScreen()
 	PlayFadeInAnimation();
 	PlayScaleUpAnimation();
 	PlayBlurOnAnimation();
+
+	//Binding Button
+	Button->OnClicked.AddDynamic(this, &UHudFadeCanvas::OnLevelRestarted);
+
+	//Setting MouseControl
+	ACharacterBase* charBase = Cast<ACharacterBase>(Owner);
+	if(charBase)
+	{
+		if(APlayerControllerBase* playerController = Cast<APlayerControllerBase>(charBase->GetController()))
+		{
+			playerController->ClearAllBindInputActions();
+			playerController->SetUIControlOn();
+			//playerController->SetShowMouseCursor(true);
+			//SetCursor(EMouseCursor::Type::Default);
+			FInputModeUIOnly inputMode;
+			inputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+			playerController->SetInputMode(inputMode);
+		}
+	}
+}
+
+void UHudFadeCanvas::OnLevelRestarted()
+{
+	UGameplayStatics::OpenLevel(GetWorld(), FName(*GetWorld()->GetName()), false);
+	Button->OnClicked.Clear();
 }
 

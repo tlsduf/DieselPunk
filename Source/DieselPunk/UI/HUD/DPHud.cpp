@@ -55,6 +55,8 @@ void UDPHud::OnCreated()
 		InitDieselCoreHpBar(nexus->GetStat(ECharacterStatType::Hp), nexus->GetStat(ECharacterStatType::MaxHp));
 	}
 	OnOffViewCard();
+
+	HudFadeCanvas->SetOwner(Owner.Get());
 }
 
 void UDPHud::SetViewInteractionUI(bool InView)

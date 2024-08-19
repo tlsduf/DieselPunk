@@ -110,5 +110,8 @@ public:
 	void CountingReSpawnTime();
 	void LevelClearScreen();	// 레벨을 클리어 했을 때
 	void GameOverScreen();	// 넥서스의 체력이 0이하가 됐을 때
+
+	UFUNCTION()
+	void OnLevelRestarted();
 };
 

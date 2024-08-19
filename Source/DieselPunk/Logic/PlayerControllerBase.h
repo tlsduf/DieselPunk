@@ -237,4 +237,6 @@ public:
 	void SetVisibilityHud(ESlateVisibility InSlateVisibilty);
 
 	bool GetIsCardActivate(){return IsCardActivate;}
+
+	void ClearAllBindInputActions();
 };

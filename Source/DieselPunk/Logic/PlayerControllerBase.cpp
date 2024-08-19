@@ -803,3 +803,14 @@ void APlayerControllerBase::SetVisibilityHud(ESlateVisibility InSlateVisibilty)
 		HUD->SetVisibility(InSlateVisibilty);
 }
 
+void APlayerControllerBase::ClearAllBindInputActions()
+{
+	if (UEnhancedInputComponent *EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent))
+	{
+		EnhancedInputComponent->ClearActionBindings();
+		EnhancedInputComponent->ClearActionEventBindings();
+		EnhancedInputComponent->ClearActionValueBindings();
+		EnhancedInputComponent->ClearAxisBindings();
+	}
+}
+
