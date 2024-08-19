@@ -189,6 +189,7 @@ void UHudFadeCanvas::CountingDefconTime()
 	if(DefconCount <= 0)
 	{
 		GetWorld()->GetTimerManager().ClearTimer(DefconTHandle);
+		return;
 	}
 	
 	if(DefconCount > 3)
@@ -234,6 +235,7 @@ void UHudFadeCanvas::CountingReSpawnTime()
 		StopAllAnimation();
 		PlayFadeOutAnimation();
 		PlayScaleDownAnimation();
+		return;
 	}
 
 	FText text = FText::FromString(FString::Printf(TEXT("%d"), ReSpawnTime));
