@@ -28,5 +28,22 @@ class DIESELPUNK_API UDpCheatManager : public UCheatManager
 	//Player를 죽입니다.
 	UFUNCTION(exec)
 	void Kill_PC();
+
+	// 모든 터렛의 Debug를 킴
+	UFUNCTION(exec)
+	void DebugOn_Turret();
+
+	// 모든 터렛의 Debug를 끔
+	UFUNCTION(exec)
+	void DebugOff_Turret();
+	
+	// 모든 몬스터의 Debug를 킴
+	UFUNCTION(exec)
+	void DebugOn_Monster();
+
+	// 모든 몬스터의 Debug를 끔
+	UFUNCTION(exec)
+	void DebugOff_Monster();
+	
 };
 

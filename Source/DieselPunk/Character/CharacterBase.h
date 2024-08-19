@@ -175,6 +175,7 @@ public:
 	bool GetInCombat() const { return InCombat; }
 	void SetInCombat(bool inBool) { InCombat = inBool; }
 
+	void SetDebugOnOff(bool b) {DebugOnOff = b;}
 	bool GetDebugOnOff() const { return DebugOnOff; }
 	
 	virtual void SetBuffStatusEffectRoleType(EBuffStatusEffectRoleType InBuffStatusEffectRolType, bool InCan);

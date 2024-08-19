@@ -177,7 +177,7 @@ void ACharacterPC::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//LOG_SCREEN(FColor::White, TEXT("isjog : %hhd Incombat : %hhd"), IsJog, InCombat);
+	LOG_SCREEN(FColor::White, TEXT("isjog : %hhd Incombat : %hhd"), IsJog, InCombat);
 	// 뛰는 상태인지 판별하여 MaxWalkSpeed 초기화.
 	if (IsJog)
 	{
