@@ -26,8 +26,11 @@
 
 #include "DieselPunk/Actor/Weapon.h"
 #include "DieselPunk/Animation/SoldierAnimInstance.h"
+#include "DieselPunk/Component/StatControlComponent.h"
+#include "DieselPunk/Raw/BuffStatusEffect.h"
 #include "DieselPunk/Skill/SkillPC/SkillSpawnTurret.h"
 #include "DieselPunk/UI/HUD/DPHud.h"
+#include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -164,6 +167,9 @@ void ACharacterPC::BeginPlay()
 
 	// 플레이어 정보를 UI에 전달합	니다.
 	InitHud();
+
+	// 맵에 배치된 PlayerStarts의 위치를 받아옵니다.
+	GetPlyaerStartsLocation();
 }
 
 // Called every frame
@@ -911,6 +917,7 @@ void ACharacterPC::SetDeadStatePC()
 	GetMesh()->SetHiddenInGame(true);
 	
 	// 컨트롤러 세팅
+	GetStatControlComponent()->AddBuff(TEXT("Death"));
 	APlayerControllerBase* controller = Cast<APlayerControllerBase>(GetController());
 	if(controller)
 		controller->SetUIControlForPlayerDie();
@@ -933,8 +940,27 @@ void ACharacterPC::ReSpawnPC()
 	// 컨트롤러 세팅
 	APlayerControllerBase* controller = Cast<APlayerControllerBase>(GetController());
 	if(controller)
+	{
 		controller->SetUIControlForPlayerRespawn();
+		controller->SetControlRotation(SpawnRotation);
+	}
 
-	//플레이어 리스폰
+	//플레이어 리스폰(임시) // TODO playerStarts를 상속받는 클래스를 제작해서 오브젝트매니저로 관리
+	SetActorLocation(SpawnLocation);
+	SetActorRotation(SpawnRotation);
 	ChangeStat(ECharacterStatType::Hp, GetStat(ECharacterStatType::MaxHp));
+}
+
+void ACharacterPC::GetPlyaerStartsLocation()
+{
+	TArray<AActor*> PlayerStarts;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), PlayerStarts);
+	if (PlayerStarts.Num() > 0)
+	{
+		if (APlayerStart* SelectedPlayerStart = Cast<APlayerStart>(PlayerStarts[0]))
+		{
+			SpawnLocation = SelectedPlayerStart->GetActorLocation();
+			SpawnRotation = SelectedPlayerStart->GetActorRotation();
+		}
+	}
 }

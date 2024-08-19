@@ -162,7 +162,8 @@ public:
 
 	TWeakObjectPtr<UPlayerSkill> CurrentCachedSkill = nullptr;
 
-	//bool UseCard = false;
+	FVector SpawnLocation = FVector::ZeroVector;
+	FRotator SpawnRotation = FRotator::ZeroRotator;
 
 protected:
 	void CheckViewMiddleForInteractInstallationUI();
@@ -318,5 +319,7 @@ public:
 	void SetDeadStatePC();
 	// 플레이어를 리스폰하며, 리스폰할 때의 상태를 세팅합니다.
 	void ReSpawnPC();
+	// BeginPlay 시에, 맵에 배치된 PlayerStarts의 위치를 받아옵니다.
+	void GetPlyaerStartsLocation();
 };
 
