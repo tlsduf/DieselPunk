@@ -101,8 +101,8 @@ void APlayerControllerBase::SetupInputComponent()
         EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APlayerControllerBase::Jump);
         EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &APlayerControllerBase::StopJumping);
 
-        EnhancedInputComponent->BindAction(InputCtrl, ETriggerEvent::Started, this, &APlayerControllerBase::StartJog);
-        EnhancedInputComponent->BindAction(InputCtrl, ETriggerEvent::Completed, this, &APlayerControllerBase::StopJog);
+        EnhancedInputComponent->BindAction(InputLeftShift, ETriggerEvent::Started, this, &APlayerControllerBase::StartJog);
+        EnhancedInputComponent->BindAction(InputLeftShift, ETriggerEvent::Completed, this, &APlayerControllerBase::StopJog);
     	EnhancedInputComponent->BindAction(InputC, ETriggerEvent::Completed, this, &APlayerControllerBase::ReplaceCard);
 
         //EnhancedInputComponent->BindAction(MouseWheelUp, ETriggerEvent::Started, this, &APlayerControllerBase::SetZoomInProp);
@@ -124,6 +124,8 @@ void APlayerControllerBase::SetupInputComponent()
         //스킬 호출에 관한 바인딩
         for (EAbilityType type : TEnumRange<EAbilityType>())
         {
+        	if(!SkillInputActions.Find(type) || !*SkillInputActions.Find(type))
+        		continue;
         	TMap<ETriggerEvent, int32>& handles = BindInputActionHandle.FindOrAdd(type);
         	handles.Add(ETriggerEvent::Started, EnhancedInputComponent->BindAction(SkillInputActions[type], ETriggerEvent::Started, this, &APlayerControllerBase::OnInputSkillStarted).GetHandle());
         	handles.Add(ETriggerEvent::Ongoing, EnhancedInputComponent->BindAction(SkillInputActions[type], ETriggerEvent::Ongoing, this, &APlayerControllerBase::OnInputSkillOngoing).GetHandle());

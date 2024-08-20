@@ -23,7 +23,7 @@ void USkillSoldierShift::SkillStarted()
 {
 	Super::SkillStarted();
 	
-	OwnerCharacterPC->StartJog();
+	//OwnerCharacterPC->StartJog();
 }
 
 void USkillSoldierShift::SkillTriggered()
@@ -36,7 +36,7 @@ void USkillSoldierShift::SkillTriggered()
 
 void USkillSoldierShift::SkillCompleted()
 {
-	OwnerCharacterPC->StopJog();
+	//OwnerCharacterPC->StopJog();
 }
 
 void USkillSoldierShift::StartDash()

@@ -72,7 +72,7 @@ class DIESELPUNK_API APlayerControllerBase : public APlayerController
 	TArray<UInputAction*> InputUseCard;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP_Input", meta = (AllowPrivateAccess = "true"))
-	UInputAction *InputCtrl;
+	UInputAction *InputLeftShift;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MYDP_Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction *InputCardActivate;
