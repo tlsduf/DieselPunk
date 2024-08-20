@@ -477,6 +477,9 @@ void UNPCAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 			GetWorld()->LineTraceMultiByChannel(results, ownerPawn->GetGrenadeSocketLocation("Grenade_socket"), InTarget->GetActorLocation()
 			, ECC_DP_EnemyChannel);
 		}
+		
+		SnipingStart = false;
+		CurrentTarget = nullptr;
 
 		if(!results.IsEmpty())
 		{
@@ -497,8 +500,6 @@ void UNPCAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 				}
 			}
 		}
-		SnipingStart = false;
-		CurrentTarget = nullptr;
 	}
 }
 

@@ -24,7 +24,8 @@ void UMonsterAnimInstance::NativeUpdateAnimation(float InDeltaSeconds)
 
 		FVector direction = endLoc - startLoc;
 		direction.Normalize();
-		TargetingRotation = direction.Rotation();
+		TargetingRotation = direction.Rotation() - owner->GetActorRotation();
+		TargetingRotation.Normalize();
 	}
 	
 	AddRotation();
