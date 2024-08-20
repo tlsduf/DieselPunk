@@ -481,25 +481,48 @@ void UNPCAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 		SnipingStart = false;
 		CurrentTarget = nullptr;
 
-		if(!results.IsEmpty())
+		FSpawnParam param;
+		param.Location = ownerPawn->GetGrenadeSocketLocation("Grenade_socket");
+		param.Rotation = (InTarget->GetActorLocation() - param.Location).Rotation();
+		param.Rotation.Normalize();
+		
+		TWeakObjectPtr<UNPCAttack> thisPtr = this;
+		float damage = Damage;
+		float maxRange = MaxRange;
+		FName projectileName = ProjectileName;
+		param.CallBackSpawn = [thisPtr, damage, maxRange, projectileName](AActor* InActor)
 		{
-			for(const FHitResult& hitResult : results)
+			if(thisPtr.IsValid())
 			{
-				if(hitResult.GetActor() == InTarget)
-				{
-					FEffectTransform hitET;
-					hitET.Location = HitEffectTransform.Location + hitResult.Location;
-					hitET.Rotation = HitEffectTransform.Rotation + ownerPawn->GetGrenadeSocketRotation("Grenade_socket").GetInverse();
-					hitET.Scale = HitEffectTransform.Scale;
-					if (N_HitEffect)
-						UtilEffect::SpawnNiagaraEffect(GetWorld(), N_HitEffect, hitET);
-					if (HitEffect)
-						UtilEffect::SpawnParticleEffect(GetWorld(), HitEffect, hitET);
-					UGameplayStatics::ApplyDamage(InTarget, Damage * InDamageCoefficient, OwnerController, nullptr, nullptr);
-					return;
-				}
+				AStraightSkillActorBase* straight = Cast<AStraightSkillActorBase>(InActor);
+				straight->SetDamage(damage);
+				straight->SetMaxRange(maxRange);
+				straight->SetProjectileSkillActorName(projectileName);
 			}
-		}
+		};
+		const FProjectileSkillActorDataTable* table = FDataTableManager::GetInstance()->GetData<FProjectileSkillActorDataTable>(EDataTableType::ProjectileSkillActor, projectileName.ToString());
+		if(table)
+			FObjectManager::GetInstance()->CreateActor<AProjectileSkillActorBase>(table->ProjectileSkillActorClass, param, ownerPawn);
+
+		//if(!results.IsEmpty())
+		//{
+		//	for(const FHitResult& hitResult : results)
+		//	{
+		//		if(hitResult.GetActor() == InTarget)
+		//		{
+		//			FEffectTransform hitET;
+		//			hitET.Location = HitEffectTransform.Location + hitResult.Location;
+		//			hitET.Rotation = HitEffectTransform.Rotation + ownerPawn->GetGrenadeSocketRotation("Grenade_socket").GetInverse();
+		//			hitET.Scale = HitEffectTransform.Scale;
+		//			if (N_HitEffect)
+		//				UtilEffect::SpawnNiagaraEffect(GetWorld(), N_HitEffect, hitET);
+		//			if (HitEffect)
+		//				UtilEffect::SpawnParticleEffect(GetWorld(), HitEffect, hitET);
+		//			UGameplayStatics::ApplyDamage(InTarget, Damage * InDamageCoefficient, OwnerController, nullptr, nullptr);
+		//			return;
+		//		}
+		//	}
+		//}
 	}
 }
 

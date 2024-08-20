@@ -118,7 +118,7 @@ struct DIESELPUNK_API FNPCSkillDataTable : public FDPTableRowBase
 	EProjectileType ProjectileType = EProjectileType::TargetAttack;
 
 	//발사할 발사체 이름, ProjectileType이 Straight, Parabola일 때 설정해야 합니다.
-	UPROPERTY(EditAnywhere, Category="MYDP_Data", meta=(EditCondition="ProjectileType == EProjectileType::Straight || ProjectileType == EProjectileType::Parabola"))
+	UPROPERTY(EditAnywhere, Category="MYDP_Data", meta=(EditCondition="ProjectileType == EProjectileType::Straight || ProjectileType == EProjectileType::Parabola || ProjectileType == EProjectileType::Sniping"))
 	FName ProjectileName = NAME_None;
 
 	//던질 액터 정보

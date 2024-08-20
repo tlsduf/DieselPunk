@@ -80,7 +80,7 @@ struct DIESELPUNK_API FProjectileSkillActorDataTable : public FDPTableRowBase
 	EProjectileType ProjectileType = EProjectileType::TargetAttack;
 	
 	//직사 발사체 정보
-	UPROPERTY(EditAnywhere, Category="MYDP_Data", meta=(EditCondition="ProjectileType == EProjectileType::Straight"))
+	UPROPERTY(EditAnywhere, Category="MYDP_Data", meta=(EditCondition="ProjectileType == EProjectileType::Straight || ProjectileType == EProjectileType::Sniping"))
 	FStarightSkillActorData StraightSkillActorData;
 
 	//곡사 발사체 정보
