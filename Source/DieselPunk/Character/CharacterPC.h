@@ -321,5 +321,8 @@ public:
 	void ReSpawnPC();
 	// BeginPlay 시에, 맵에 배치된 PlayerStarts의 위치를 받아옵니다.
 	void GetPlyaerStartsLocation();
+
+	virtual FVector GetGrenadeSocketLocation(const FName& InSocketName);
+	virtual FRotator GetGrenadeSocketRotation(const FName& InSocketName);
 };
 

@@ -59,7 +59,7 @@ void USkillSoldierLM::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 	bool Hit = GetWorld()->LineTraceSingleByChannel(hit, lineTraceLocation, endLocation, ECC_DP_Player);	//라인 트레이스 
 
 	// Muzzle Location by BoneName
-	FVector shotLocation =OwnerCharacterPC->GetMesh()->GetSocketLocation("Muzzle_01");
+	FVector shotLocation =OwnerCharacterPC->GetGrenadeSocketLocation("Grenade_socket");
 	FRotator shotRotation = (Hit ? hit.Location - shotLocation : endLocation - shotLocation).Rotation();	//트레이스 히트된 위치로 발사
 	//FRotator shotRotation = (endLocation - shotLocation).Rotation();	//고정된 위치로 발사
 

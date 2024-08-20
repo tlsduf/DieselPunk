@@ -72,4 +72,7 @@ public:
 	bool CanActivateAbility(const EAbilityType& InAbilityType);
 	void ReloadWeapon();
 	void OnAbilityBeShot();
+
+	FVector GetGrenadeSocketLocation(const FName& InSocketName);
+	FRotator GetGrenadeSocketRotation(const FName& InSocketName);
 };

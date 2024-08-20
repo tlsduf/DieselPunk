@@ -155,3 +155,19 @@ void AWeapon::OnAbilityBeShot()
 	--AmmoLeft;
 	LOG_SCREEN(FColor::White, TEXT("Shot! Ammo Left: %d"), AmmoLeft);
 }
+
+FVector AWeapon::GetGrenadeSocketLocation(const FName& InSocketName)
+{
+	if(Mesh)
+		return Mesh->GetSocketLocation(InSocketName);
+
+	return GetActorLocation();
+}
+
+FRotator AWeapon::GetGrenadeSocketRotation(const FName& InSocketName)
+{
+	if(Mesh)
+		return Mesh->GetSocketRotation(InSocketName);
+
+	return GetActorRotation();
+}

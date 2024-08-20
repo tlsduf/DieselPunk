@@ -964,3 +964,19 @@ void ACharacterPC::GetPlyaerStartsLocation()
 		}
 	}
 }
+
+FVector ACharacterPC::GetGrenadeSocketLocation(const FName& InSocketName)
+{
+	if(Weapon)
+		return Weapon->GetGrenadeSocketLocation(InSocketName);
+	
+	return Super::GetGrenadeSocketLocation(InSocketName);
+}
+
+FRotator ACharacterPC::GetGrenadeSocketRotation(const FName& InSocketName)
+{
+	if(Weapon)
+		return Weapon->GetGrenadeSocketRotation(InSocketName);
+	
+	return Super::GetGrenadeSocketRotation(InSocketName);
+}
