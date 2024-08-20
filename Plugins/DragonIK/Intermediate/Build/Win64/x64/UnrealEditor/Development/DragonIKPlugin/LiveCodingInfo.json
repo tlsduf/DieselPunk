@@ -2,14 +2,13 @@
 	"RemapUnityFiles": 
 	{
 		"Module.DragonIKPlugin.1.cpp.obj": [
+			"AnimNode_DragonAimSolver.cpp.obj",
 			"AnimNode_DragonAimSolver.gen.cpp.obj",
 			"AnimNode_DragonControlBase.gen.cpp.obj",
 			"AnimNode_DragonFabrikSolver.gen.cpp.obj",
 			"AnimNode_DragonFeetSolver.gen.cpp.obj",
 			"AnimNode_DragonPhysicsSolver.gen.cpp.obj",
-			"AnimNode_DragonSpineSolver.gen.cpp.obj"
-		],
-		"Module.DragonIKPlugin.2.cpp.obj": [
+			"AnimNode_DragonSpineSolver.gen.cpp.obj",
 			"AnimNode_DragonTwistArmSolver.gen.cpp.obj",
 			"AnimNode_DragonWarpSolver.gen.cpp.obj",
 			"AnimNode_DragonWeaponArmSolver.gen.cpp.obj",
@@ -17,21 +16,18 @@
 			"DragonIKPhysicsComponent.gen.cpp.obj",
 			"DragonIKPhysicsHolder.gen.cpp.obj",
 			"DragonIKPlugin.init.gen.cpp.obj",
-			"DragonIKTraceManagerComponent.gen.cpp.obj"
-		],
-		"Module.DragonIKPlugin.3.cpp.obj": [
+			"DragonIKTraceManagerComponent.gen.cpp.obj",
 			"DragonIKWeaponPhysicsComponent.gen.cpp.obj",
 			"DragonIK_Library.gen.cpp.obj"
 		],
-		"Module.DragonIKPlugin.4.cpp.obj": [
-			"AnimNode_DragonAimSolver.cpp.obj",
+		"Module.DragonIKPlugin.2.cpp.obj": [
 			"AnimNode_DragonControlBase.cpp.obj",
 			"AnimNode_DragonFabrikSolver.cpp.obj",
 			"AnimNode_DragonFeetSolver.cpp.obj",
 			"AnimNode_DragonPhysicsSolver.cpp.obj",
 			"AnimNode_DragonSpineSolver.cpp.obj"
 		],
-		"Module.DragonIKPlugin.5.cpp.obj": [
+		"Module.DragonIKPlugin.3.cpp.obj": [
 			"AnimNode_DragonTwistArmSolver.cpp.obj",
 			"AnimNode_DragonWarpSolver.cpp.obj",
 			"AnimNode_DragonWeaponArmSolver.cpp.obj",

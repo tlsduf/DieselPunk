@@ -6450,14 +6450,6 @@
 			"Type": "SymbolFile"
 		},
 		{
-			"Path": "$(ProjectDir)/Plugins/Developer/RiderLink/Binaries/Win64/UnrealEditor-RiderDebuggerSupport.dll",
-			"Type": "DynamicLibrary"
-		},
-		{
-			"Path": "$(ProjectDir)/Plugins/Developer/RiderLink/Binaries/Win64/UnrealEditor-RiderDebuggerSupport.pdb",
-			"Type": "SymbolFile"
-		},
-		{
 			"Path": "$(ProjectDir)/Plugins/Developer/RiderLink/Binaries/Win64/UnrealEditor-RiderGameControl.dll",
 			"Type": "DynamicLibrary"
 		},

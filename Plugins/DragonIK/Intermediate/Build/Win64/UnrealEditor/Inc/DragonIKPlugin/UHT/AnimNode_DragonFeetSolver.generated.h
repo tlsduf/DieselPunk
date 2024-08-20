@@ -14,7 +14,7 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 #endif
 #define DRAGONIKPLUGIN_AnimNode_DragonFeetSolver_generated_h
 
-#define FID_Users_user_Desktop_Unreal_DieselPunk_Plugins_DragonIK_Source_DragonIKPlugin_Public_AnimNode_DragonFeetSolver_h_54_GENERATED_BODY \
+#define FID_DieselPunk_Plugins_DragonIK_Source_DragonIKPlugin_Public_AnimNode_DragonFeetSolver_h_54_GENERATED_BODY \
 	friend struct Z_Construct_UScriptStruct_FAnimNode_DragonFeetSolver_Statics; \
 	static class UScriptStruct* StaticStruct(); \
 	typedef FAnimNode_DragonControlBase Super;
@@ -23,7 +23,7 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 template<> DRAGONIKPLUGIN_API UScriptStruct* StaticStruct<struct FAnimNode_DragonFeetSolver>();
 
 #undef CURRENT_FILE_ID
-#define CURRENT_FILE_ID FID_Users_user_Desktop_Unreal_DieselPunk_Plugins_DragonIK_Source_DragonIKPlugin_Public_AnimNode_DragonFeetSolver_h
+#define CURRENT_FILE_ID FID_DieselPunk_Plugins_DragonIK_Source_DragonIKPlugin_Public_AnimNode_DragonFeetSolver_h
 
 
 #define FOREACH_ENUM_EIK_TYPE_PLUGIN(op) \
