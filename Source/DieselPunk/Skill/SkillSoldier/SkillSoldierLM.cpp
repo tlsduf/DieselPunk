@@ -63,7 +63,7 @@ void USkillSoldierLM::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 	{
 		if(hit.GetActor()->Tags.Find(FName(TEXT("InvisibleWall"))) == INDEX_NONE)
 		{
-			hitLoc = hit.GetActor()->GetActorLocation();
+			hitLoc = hit.Location;
 			break;
 		}
 	}
