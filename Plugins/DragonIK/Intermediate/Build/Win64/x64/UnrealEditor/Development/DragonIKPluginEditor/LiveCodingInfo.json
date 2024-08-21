@@ -2,6 +2,15 @@
 	"RemapUnityFiles": 
 	{
 		"Module.DragonIKPluginEditor.cpp.obj": [
+			"AnimGraphNode_DragonAimSolver.gen.cpp.obj",
+			"AnimGraphNode_DragonControlBase.gen.cpp.obj",
+			"AnimGraphNode_DragonFeetSolver.gen.cpp.obj",
+			"AnimGraphNode_DragonPhysicsSolver.gen.cpp.obj",
+			"AnimGraphNode_DragonSpineSolver.gen.cpp.obj",
+			"AnimGraphNode_DragonTwistArmSolver.gen.cpp.obj",
+			"AnimGraphNode_DragonWarpSolver.gen.cpp.obj",
+			"AnimGraphNode_DragonWeaponArmSolver.gen.cpp.obj",
+			"DragonIKPluginEditor.init.gen.cpp.obj",
 			"AnimGraphNode_DragonAimSolver.cpp.obj",
 			"AnimGraphNode_DragonControlBase.cpp.obj",
 			"AnimGraphNode_DragonFeetSolver.cpp.obj",
@@ -17,16 +26,7 @@
 			"DragonPhysicsSolverEditMode.cpp.obj",
 			"DragonTwistArmSolverEditMode.cpp.obj",
 			"DragonWarpSolverEditMode.cpp.obj",
-			"DragonWeaponArmSolverEditMode.cpp.obj",
-			"AnimGraphNode_DragonAimSolver.gen.cpp.obj",
-			"AnimGraphNode_DragonControlBase.gen.cpp.obj",
-			"AnimGraphNode_DragonFeetSolver.gen.cpp.obj",
-			"AnimGraphNode_DragonPhysicsSolver.gen.cpp.obj",
-			"AnimGraphNode_DragonSpineSolver.gen.cpp.obj",
-			"AnimGraphNode_DragonTwistArmSolver.gen.cpp.obj",
-			"AnimGraphNode_DragonWarpSolver.gen.cpp.obj",
-			"AnimGraphNode_DragonWeaponArmSolver.gen.cpp.obj",
-			"DragonIKPluginEditor.init.gen.cpp.obj"
+			"DragonWeaponArmSolverEditMode.cpp.obj"
 		]
 	}
 }
