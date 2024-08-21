@@ -3,18 +3,12 @@
 #include "BTService_Update_Enemy.h"
 #include "..\Logic\NPCAIController.h"
 #include "../Character/CharacterNPC.h"
-#include "../Manager/ObjectManager.h"
-
 
 #include <BehaviorTree/BlackboardComponent.h>
 #include <Kismet/GameplayStatics.h>
 #include <AIController.h>
-#include <Navigation/PathFollowingComponent.h>
 
 #include "DieselPunk/Character/CharacterMonster.h"
-#include "DieselPunk/Skill/SkillBase.h"
-#include "DieselPunk/Skill/SkillNPC/NPCAttack.h"
-#include "Interfaces/ITargetDevice.h"
 
 
 UBTService_Update_Enemy::UBTService_Update_Enemy()
