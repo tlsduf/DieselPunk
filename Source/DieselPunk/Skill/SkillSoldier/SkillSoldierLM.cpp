@@ -55,12 +55,22 @@ void USkillSoldierLM::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 	OwnerController->GetPlayerViewPoint(lineTraceLocation, lineTraceRotation);
 	
 	FVector endLocation = lineTraceLocation + lineTraceRotation.Vector() * 10000;
-	FHitResult hit;
-	bool Hit = GetWorld()->LineTraceSingleByChannel(hit, lineTraceLocation, endLocation, ECC_DP_Player);	//라인 트레이스 
+	TArray<FHitResult> hits;
+	bool isHit = GetWorld()->LineTraceMultiByChannel(hits, lineTraceLocation, endLocation, ECC_DP_Player);	//라인 트레이스
+
+	FVector hitLoc = endLocation;
+	for(const FHitResult& hit : hits)
+	{
+		if(hit.GetActor()->Tags.Find(FName(TEXT("InvisibleWall"))) == INDEX_NONE)
+		{
+			hitLoc = hit.GetActor()->GetActorLocation();
+			break;
+		}
+	}
 
 	// Muzzle Location by BoneName
 	FVector shotLocation =OwnerCharacterPC->GetGrenadeSocketLocation("Grenade_socket");
-	FRotator shotRotation = (Hit ? hit.Location - shotLocation : endLocation - shotLocation).Rotation();	//트레이스 히트된 위치로 발사
+	FRotator shotRotation = (hitLoc - shotLocation).Rotation();	//트레이스 히트된 위치로 발사
 	//FRotator shotRotation = (endLocation - shotLocation).Rotation();	//고정된 위치로 발사
 
 	
