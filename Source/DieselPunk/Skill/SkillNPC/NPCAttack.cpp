@@ -483,8 +483,13 @@ void UNPCAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 
 		FSpawnParam param;
 		param.Location = ownerPawn->GetGrenadeSocketLocation("Grenade_socket");
-		param.Rotation = (InTarget->GetActorLocation() - param.Location).Rotation();
+		FRotator r1 = (InTarget->GetActorLocation() - param.Location).Rotation();
+		r1.Normalize();
+		FRotator r2 = FRotator(FMath::FRandRange(-CrossHairAngle, CrossHairAngle),FMath::FRandRange(-CrossHairAngle, CrossHairAngle),0);
+		r2.Normalize();
+		param.Rotation = r1 + r2;
 		param.Rotation.Normalize();
+
 		
 		TWeakObjectPtr<UNPCAttack> thisPtr = this;
 		float damage = Damage;
@@ -580,4 +585,6 @@ void UNPCAttack::SetNPCSkillName(const FName& InNPCSkillName)
 	HitEffect = data->HitEffect;
 	HitEffectTransform = data->HitEffectTransform;
 	HitSound = data->HitSound;
+
+	CrossHairAngle = data->CrossHairAngle;
 }

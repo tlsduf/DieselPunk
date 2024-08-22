@@ -133,6 +133,10 @@ struct DIESELPUNK_API FNPCSkillDataTable : public FDPTableRowBase
 	UPROPERTY(EditAnywhere, Category="MYDP_Data", meta=(EditCondition="ProjectileType == EProjectileType::Melee && SkillRangeType == ESkillDistanceType::MeleeAttack"))
 	FMeleeAttackData MeleeAttackData;
 
+	//탄퍼짐 각도(Projectile이 Range이고 SkillRangeType이 Sniping이어야 합니다.)
+	UPROPERTY(EditAnywhere, Category="MYDP_Data", meta=(EditCondition="ProjectileType == EProjectileType::Sniping"))
+	float CrossHairAngle;
+
 	//발사 시 재생할 나이아가라 이펙트
 	UPROPERTY(EditAnywhere, Category="MYDP_Effect")
 	class UNiagaraSystem* N_ShotEffect = nullptr;
