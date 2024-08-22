@@ -122,7 +122,7 @@ public:
 	bool InValidSearchArea(FVector InLocation);
 
 	// 타겟에 라인 트레이싱을 합니다.
-	bool TargetLineTracing(TWeakObjectPtr<AActor> InTarget);
+	bool TargetLineTracing(TWeakObjectPtr<AActor> InTarget, bool IsStartGrenadeSocket = false);
 
 	// 다각형 내부에 점이 위치하는지 확인합니다. // Point in polygon algorithm
 	bool IsInPolygon(double InX, double InY);

@@ -134,10 +134,10 @@ void ACharacterMonster::UpdateEnemyTarget()
 	}
 	
 	float distance = FVector::Dist(GetActorLocation(), nexus->GetActorLocation());
-	if(distance > SearchAreaData.AtkMaxRange)
-		ChangeTarget(nullptr);
-	else
+	if(distance <= SearchAreaData.AtkMaxRange && TargetLineTracing(nexus))
 		ChangeTarget(nexus);
+	else
+		ChangeTarget(nullptr);
 }
 
 // =============================================================

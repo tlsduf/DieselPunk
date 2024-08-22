@@ -260,7 +260,7 @@ bool ACharacterNPC::InValidSearchArea(FVector InLocation)
 	return false;
 }
 
-bool ACharacterNPC::TargetLineTracing(TWeakObjectPtr<AActor> InTarget)
+bool ACharacterNPC::TargetLineTracing(TWeakObjectPtr<AActor> InTarget, bool IsStartGrenadeSocket)
 {
 	//넥서스랑 설치물은 라인트레이싱 할 필요 없음
 	if(CharacterType == ECharacterType::Nexus || CharacterType == ECharacterType::Installation)
@@ -268,8 +268,14 @@ bool ACharacterNPC::TargetLineTracing(TWeakObjectPtr<AActor> InTarget)
 	
 	if(SearchAreaData.OnLineTracing)
 	{
+		bool startBody = false;
+		bool startSocket = false;
 		TArray<FHitResult> results;
-		if(GetWorld()->LineTraceMultiByChannel(results, GetGrenadeSocketLocation(TEXT("Grenade_socket")), InTarget->GetActorLocation(), ECC_WorldStatic))
+		DrawDebugLine(GetWorld(), GetActorLocation(), InTarget->GetActorLocation(), FColor::Cyan);
+		DrawDebugLine(GetWorld(), GetGrenadeSocketLocation(TEXT("Grenade_socket")), InTarget->GetActorLocation(), FColor::Magenta);
+		FCollisionQueryParams params;
+		params.AddIgnoredActor(this);
+		if(GetWorld()->LineTraceMultiByChannel(results, GetActorLocation(), InTarget->GetActorLocation(), ECC_WorldStatic, params))
 		{
 			for(const FHitResult& result : results)
 			{
@@ -282,19 +288,49 @@ bool ACharacterNPC::TargetLineTracing(TWeakObjectPtr<AActor> InTarget)
 					{
 						if(charBase->GetCharacterType() == ECharacterType::Turret
 						|| charBase->GetCharacterType() == ECharacterType::Installation
-						|| charBase->GetCharacterType() == ECharacterType::Player)
-							return result.GetActor() == InTarget;
+						|| charBase->GetCharacterType() == ECharacterType::Player
+						|| charBase->GetCharacterType() == ECharacterType::Nexus)
+							startBody =  result.GetActor() == InTarget;
 					}
 					else if(CharacterType == ECharacterType::Turret)
 					{
 						if(charBase->GetCharacterType() == ECharacterType::Monster)
-							return result.GetActor() == InTarget;
+							startBody =  result.GetActor() == InTarget;
 					}
 				}
 				else
 					return false;
 			}
 		}
+
+		if(GetWorld()->LineTraceMultiByChannel(results, GetGrenadeSocketLocation(TEXT("Grenade_socket")), InTarget->GetActorLocation(), ECC_WorldStatic, params))
+		{
+			for(const FHitResult& result : results)
+			{
+				if(result.GetActor() == this)
+					continue;
+
+				if(ACharacterBase* charBase = Cast<ACharacterBase>(result.GetActor()))
+				{
+					if(CharacterType == ECharacterType::Monster)
+					{
+						if(charBase->GetCharacterType() == ECharacterType::Turret
+						|| charBase->GetCharacterType() == ECharacterType::Installation
+						|| charBase->GetCharacterType() == ECharacterType::Player
+						|| charBase->GetCharacterType() == ECharacterType::Nexus)
+							startSocket =  result.GetActor() == InTarget;
+					}
+					else if(CharacterType == ECharacterType::Turret)
+					{
+						if(charBase->GetCharacterType() == ECharacterType::Monster)
+							startSocket =  result.GetActor() == InTarget;
+					}
+				}
+				else
+					return false;
+			}
+		}
+		return startBody && startSocket;
 	}
 	else
 		return true;

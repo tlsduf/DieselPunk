@@ -206,7 +206,7 @@ void UHudFadeCanvas::CountingDefconTime()
 void UHudFadeCanvas::OnMainPCDieScreen(int32 InReSpawnTime)
 {
 	//Setting Properties
-	SetTextBlock(FHudFadeCanvasUIType::TopText, FText::FromString(FString::Printf(TEXT("중상을 당해 후송 되었습니다."))), 7, FColor::Red);
+	SetTextBlock(FHudFadeCanvasUIType::TopText, FText::FromString(FString::Printf(TEXT("사망"))), 7, FColor::Red);
 	SetTextBlock(FHudFadeCanvasUIType::BottomText_Upper, FText::FromString(FString::Printf(TEXT("임무 재배치 까지"))), 4, FColor::White);
 	FText text = FText::FromString(FString::Printf(TEXT("%d"), InReSpawnTime));
 	SetTextBlock(FHudFadeCanvasUIType::BottomText_Under, text, 7, FColor::White);

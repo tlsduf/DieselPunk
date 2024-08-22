@@ -915,6 +915,8 @@ void ACharacterPC::SetDeadStatePC()
 	// DeadState
 	// visual-invisible // TODO DeadAnimation
 	GetMesh()->SetHiddenInGame(true);
+	if(Weapon)
+		Weapon->SetActorHiddenInGame(true);
 	
 	// 컨트롤러 세팅
 	GetStatControlComponent()->AddBuff(TEXT("Death"));
