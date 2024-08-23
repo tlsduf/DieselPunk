@@ -117,7 +117,7 @@ void AProjectileSkillActorBase::ApplyRadialDamage()
 			TArray<FHitResult> sweepResults;
 			FVector startLocation = GetActorLocation();
 			FVector endLocation = startLocation;
-			if(OwnerCharacter->GetDebugOnOff())
+			if(DebugOnOff)
 				DrawDebugSphere(GetWorld(), startLocation, info.Key, 16, FColor::Red, false, 3, 0, 1);
 			UtilCollision::CapsuleSweepMulti(GetWorld(), sweepResults, startLocation, endLocation, info.Key, GetProjectileOwnerType(), DebugOnOff);
 			if(!sweepResults.IsEmpty())

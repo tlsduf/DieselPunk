@@ -53,7 +53,7 @@ void UNPCAttack::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 
 				return;
 			}
-			DrawDebugLine(GetWorld(), monster->GetGrenadeSocketLocation(TEXT("Grenade_socket")), monster->GetAttackTarget()->GetActorLocation(), FColor::Red);
+			//DrawDebugLine(GetWorld(), monster->GetGrenadeSocketLocation(TEXT("Grenade_socket")), monster->GetAttackTarget()->GetActorLocation(), FColor::Red);
 		}
 	}
 }
@@ -288,7 +288,7 @@ void UNPCAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 				}
 			}
 		}
-		DrawDebugSphere(GetWorld(), ownerPawn->GetActorLocation(), SuicideBombRadius, 12, FColor::Red, false, 3, 0, 2);
+		//DrawDebugSphere(GetWorld(), ownerPawn->GetActorLocation(), SuicideBombRadius, 12, FColor::Red, false, 3, 0, 2);
 		ownerPawn->GetStatControlComponent()->SetStat(ECharacterStatType::Hp, 0);
 	}
 	else if(ProjectileType == EProjectileType::Melee)
@@ -352,7 +352,7 @@ void UNPCAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 					}
 				}
 			}
-			DrawDebugSphere(GetWorld(), ownerLoc, MaxRange, 12, FColor::Cyan, false, 2, 0, 3);
+			//DrawDebugSphere(GetWorld(), ownerLoc, MaxRange, 12, FColor::Cyan, false, 2, 0, 3);
 		}
 		else if(SkillHittingRange == ESearchAreaType::Rectangle)
 		{
@@ -397,7 +397,7 @@ void UNPCAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 					}
 				}
 			}
-			DrawDebugBox(GetWorld(), ownerLoc, RectangleBoxExtend / 2.f, FColor::Cyan, false, 2, 0, 3);
+			//DrawDebugBox(GetWorld(), ownerLoc, RectangleBoxExtend / 2.f, FColor::Cyan, false, 2, 0, 3);
 		}
 		else if(SkillHittingRange == ESearchAreaType::Arc)
 		{
@@ -452,13 +452,13 @@ void UNPCAttack::AbilityShot(double InDamageCoefficient, AActor* InTarget)
 					}
 				}
 			}
-			DrawDebugCone(GetWorld()
-				, ownerLoc
-				, ownerPawn->GetActorForwardVector()
-				, MaxRange
-				, FMath::DegreesToRadians(ArcAngle)
-				, FMath::DegreesToRadians(ArcAngle)
-				, 12, FColor::Cyan, false, 2, 0, 3);
+			//DrawDebugCone(GetWorld()
+			//	, ownerLoc
+			//	, ownerPawn->GetActorForwardVector()
+			//	, MaxRange
+			//	, FMath::DegreesToRadians(ArcAngle)
+			//	, FMath::DegreesToRadians(ArcAngle)
+			//	, 12, FColor::Cyan, false, 2, 0, 3);
 		}
 	
 		

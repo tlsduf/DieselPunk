@@ -271,8 +271,11 @@ bool ACharacterNPC::TargetLineTracing(TWeakObjectPtr<AActor> InTarget, bool IsSt
 		bool startBody = false;
 		bool startSocket = false;
 		TArray<FHitResult> results;
-		DrawDebugLine(GetWorld(), GetActorLocation(), InTarget->GetActorLocation(), FColor::Cyan);
-		DrawDebugLine(GetWorld(), GetGrenadeSocketLocation(TEXT("Grenade_socket")), InTarget->GetActorLocation(), FColor::Magenta);
+		if(DebugOnOff)
+		{
+			DrawDebugLine(GetWorld(), GetActorLocation(), InTarget->GetActorLocation(), FColor::Cyan);
+			DrawDebugLine(GetWorld(), GetGrenadeSocketLocation(TEXT("Grenade_socket")), InTarget->GetActorLocation(), FColor::Magenta);
+		}
 		FCollisionQueryParams params;
 		params.AddIgnoredActor(this);
 		if(GetWorld()->LineTraceMultiByChannel(results, GetActorLocation(), InTarget->GetActorLocation(), ECC_WorldStatic, params))
