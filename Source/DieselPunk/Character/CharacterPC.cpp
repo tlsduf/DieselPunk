@@ -938,6 +938,8 @@ void ACharacterPC::ReSpawnPC()
 	// LiveState
 	// visual-visible // TODO ReSpawnAnimation
 	GetMesh()->SetHiddenInGame(false);
+	if(Weapon)
+		Weapon->SetActorHiddenInGame(false);
 	
 	// 컨트롤러 세팅
 	APlayerControllerBase* controller = Cast<APlayerControllerBase>(GetController());
