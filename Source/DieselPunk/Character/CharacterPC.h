@@ -285,6 +285,8 @@ public:
 	//카드가 없다면 카드를 드로우합니다.
 	void DrawCard();
 
+	FORCEINLINE void ResetReplaceUseCostCount() {ReplaceUseCostCount = 0;}
+
 	// 카드 덱 카운트 변경 델리게이트를 반환합니다.
 	FDelegate_ChangeDeckCount& GetDelegateChangeDeckCount(){return DelegateChangeDeckCount;}
 

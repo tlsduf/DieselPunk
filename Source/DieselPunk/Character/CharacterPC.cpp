@@ -27,9 +27,11 @@
 #include "DieselPunk/Actor/Weapon.h"
 #include "DieselPunk/Animation/SoldierAnimInstance.h"
 #include "DieselPunk/Component/StatControlComponent.h"
+#include "DieselPunk/Core/DPLevelScriptActor.h"
 #include "DieselPunk/Raw/BuffStatusEffect.h"
 #include "DieselPunk/Skill/SkillPC/SkillSpawnTurret.h"
 #include "DieselPunk/UI/HUD/DPHud.h"
+#include "Engine/Level.h"
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -170,6 +172,14 @@ void ACharacterPC::BeginPlay()
 
 	// 맵에 배치된 PlayerStarts의 위치를 받아옵니다.
 	GetPlyaerStartsLocation();
+
+	//웨이브 클리어 시 리플레이스 카운트를 초기화합니다.
+	ULevel* level = GetWorld()->GetCurrentLevel();
+	if(!level)
+		return;
+	
+	if(ADPLevelScriptActor* dpLvScript = Cast<ADPLevelScriptActor>(level->GetLevelScriptActor()))
+		dpLvScript->GetDelegateClearWave().AddUObject(this, &ACharacterPC::ResetReplaceUseCostCount);
 }
 
 // Called every frame
